@@ -10,4 +10,6 @@ from Mesh import *
 
 mesh1d=Mesh1D(10,0.0,1.0,1)
 mesh1d.CreateMesh()
-mesh1d.PlotMesh()
+# mesh1d.PlotMesh()
+
+test=np.zeros((6,90))
