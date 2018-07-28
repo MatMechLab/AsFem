@@ -95,14 +95,15 @@ class Mesh2D:
         self.Ymin=ymin
         self.Ymax=ymax
 
-        if meshtype != 'quad4' or meshtype !='quad8' or meshtype !='quad9':
+        
+        if (meshtype != 'quad4') and (meshtype !='quad8') and (meshtype !='quad9'):
             sys.exit('*** Error: unsupported mesh type !!!')
         self.MeshType=meshtype
     
     def CreateMesh(self):
         if self.MeshType=='quad4':
-            dx=(self.Xmax-self.Xmin)
-            dy=(self.Ymax-self.Ymin)
+            dx=(self.Xmax-self.Xmin)/self.Nx
+            dy=(self.Ymax-self.Ymin)/self.Ny
 
             self.nElmts=self.Nx*self.Ny
             self.nNodes=(self.Nx+1)*(self.Ny+1)
@@ -128,14 +129,44 @@ class Mesh2D:
                     self.Conn[e-1,1]=i2
                     self.Conn[e-1,2]=i3
                     self.Conn[e-1,3]=i4
+        elif self.MeshType=='quad9':
+            dx=(self.Xmax-self.Xmin)/(2.0*self.Nx)
+            dy=(self.Ymax-self.Ymin)/(2.0*self.Ny)
+
+            self.nElmts=self.Nx*self.Ny
+            self.nNodes=(2*self.Nx+1)*(2*self.Ny+1)-self.nElmts
+            self.nNodesPerElmts=8
+
+            self.NodeCoords=np.zeros((self.nNodes,2))
+            self.Conn=np.zeros((self.nElmts,self.nNodesPerElmts),dtype=np.int)
+
+            for j in range(self.Ny+1):
+                for i in range(2*self.Nx+1+1):
+                    k=(j-1)*(2*self.Nx+1+self.Nx+1)+i
+                    self.NodeCoords[k-1,0]=self.Xmin+(i-1)*dx 
+                    self.NodeCoords[k-1,1]=self.Ymin+(j-1)*2*dy
+
+                for i in range(self.Nx+1+1):
+                    k=(j-1)*(2*self.Nx+1+self.Nx+1)+2*self.Nx+1+i
+                    self.NodeCoords[k-1,0]=self.Xmin+(i-1)*2*dx
+                    self.NodeCoords[k-1,1]=self.Ymin+(j-1)*2*dy+dy
+                    
     
+    def SplitBCMesh(self):
+
 
     def PlotMesh(self):
+        plt.hold
         for e in range(self.nElmts):
             elConn=self.Conn[e,:]-1
+            np.append(elConn,elConn[0])
             x=self.NodeCoords[elConn,0]
             y=self.NodeCoords[elConn,1]
-            plt.plot(x,y,'-b+')
+            plt.plot(x,y,'-k+')
+            i=np.array([elConn[-1],elConn[0]])
+            x=self.NodeCoords[i,0]
+            y=self.NodeCoords[i,1]
+            plt.plot(x,y,'-k+')
         plt.show()
         
 
