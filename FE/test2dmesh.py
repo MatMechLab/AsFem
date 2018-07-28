@@ -8,6 +8,7 @@
 
 from Mesh import *
 
-mesh2d=Mesh2D(5,5,0.0,2.0,0.0,2.0,'quad4')
+mesh2d=Mesh2D(20,20,0.0,2.0,0.0,2.0,'quad4')
 mesh2d.CreateMesh()
+mesh2d.SplitBCMesh()
 mesh2d.PlotMesh()
