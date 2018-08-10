@@ -42,12 +42,13 @@ def elmt(elCoords,elU):
     RHS=np.zeros(nDofs)
     Proj=np.zeros((3+3+2)*Lint)# stress+strain+vonMises+hydrostatic stress
 
-    E=10.0;nu=0.3 # Young's modulus and poisson ratio
+    E=10.0e6;nu=0.3 # Young's modulus and poisson ratio
     D=np.zeros((3,3)) # Constitutive law
-    D[0,0]=1.0;D[0,1]=nu
-    D[1,0]=nu ;D[1,1]=1.0
-    D[2,2]=0.5*(1-nu)
-    D=D*E/(1-nu**2)
+
+    term1=E/(1-nu**2);term2=E*nu/(1-nu**2)
+    D[0,0]=term1;D[0,1]=term2
+    D[1,0]=term2;D[1,1]=term1
+    D[2,2]=0.5*E/(1+nu)
 
     for gpInd in range(Lint):
         xi =gs[gpInd,1]
@@ -56,7 +57,6 @@ def elmt(elCoords,elU):
         JxW=gs[gpInd,0]*xsj
 
         B=np.zeros((3,2*nNodes))
-        S=np.zeros((3,2*nNodes))
         for i in range(nNodes):
             B[0,2*i  ]=shp[i,1]
             B[0,2*i+1]=0.0
@@ -95,12 +95,12 @@ def elmt(elCoords,elU):
 
 
         C=np.dot(Bt,S)
-        for i in range(2*nNodes):
+        for iInd in range(2*nNodes):
             # For residual
             for k in range(3):
-                RHS[i]+=-Bt[i,k]*stress[k]*JxW
-            for j in range(2*nNodes):
-                K[i,j]+=C[i,j]*JxW
+                RHS[iInd]+=-Bt[iInd,k]*stress[k]*JxW
+            for jInd in range(2*nNodes):
+                K[iInd,jInd]+=C[iInd,jInd]*JxW
     return K,RHS,Proj
 #######################################################
 def FormKR(mesh,U):
@@ -112,25 +112,26 @@ def FormKR(mesh,U):
     Proj=np.zeros((nElmts,(3+3+2)*8))
 
     for e in range(nElmts):
-        elConn=mesh.Conn[e,:]
-        elCoords=mesh.NodeCoords[elConn-1]
+        elConn=mesh.Conn[e,:]-1
+        elCoords=mesh.NodeCoords[elConn]
         elU=np.zeros(2*nNodesPerElmt)
         for i in range(nNodesPerElmt):
-            elU[2*i  ]=U[2*(elConn[i]-1)  ]
-            elU[2*i+1]=U[2*(elConn[i]-1)+1]
+            elU[2*i  ]=U[2*elConn[i]  ]
+            elU[2*i+1]=U[2*elConn[i]+1]
 
         k,rhs,proj=elmt(elCoords,elU)
+
 
         i=len(proj)
         Proj[e,0:i]=proj[:]
 
         # Assemble k,rhs to system matrix
         for i in range(nNodesPerElmt):
-            iInd=elConn[i]-1
+            iInd=elConn[i]
             RHS[2*iInd  ]+=rhs[2*i  ]
             RHS[2*iInd+1]+=rhs[2*i+1]
             for j in range(nNodesPerElmt):
-                jInd=elConn[j]-1
+                jInd=elConn[j]
                 AMATRX[2*iInd  ,2*jInd  ]+=k[2*i  ,2*j  ]
                 AMATRX[2*iInd  ,2*jInd+1]+=k[2*i  ,2*j+1]
                 AMATRX[2*iInd+1,2*jInd  ]+=k[2*i+1,2*j  ]
@@ -165,8 +166,6 @@ def ApplyDispBC(sidename,dofname,mesh,U,value):
         for i in range(nNodesPerBCElmt):
             iInd=2*elConn[i]+component-1
             U[iInd]=value
-
-    return U
 ########################################################
 ### Apply constrain condition
 ########################################################
@@ -191,40 +190,58 @@ def ApplyConstrainBC(sidename,dofname,mesh,AMATRIX,RHS):
         sys.exit('dof name=%s in invalid!!!'%(dofname))
     
     ne=np.size(BCConn,0)
-    penalty=1.0e10
+    nNodesPerBCElmt=np.size(BCConn,1)
+    penalty=1.0e15
     for e in range(ne):
         elConn=BCConn[e,:]-1
-        for i in range(len(elConn)):
+        for i in range(nNodesPerBCElmt):
             iInd=2*elConn[i]+component-1
             AMATRIX[iInd,iInd]=penalty
             RHS[iInd]=0.0
-    
-    return AMATRIX,RHS
 ##########################################################
+def PlotDisp(mesh,U,Flag):
+    x=mesh.NodeCoords[:,0]
+    y=mesh.NodeCoords[:,1]
+    ux=U[0::2]
+    uy=U[1::2]
+    plt.figure(1)
+    plt.title('$u_{x}$')
+    plt.tricontourf(x,y,ux,20)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(ux),np.max(ux))
 
+    plt.figure(2)
+    x=[];ux=[]
+    for i in range(mesh.nNodes):
+        if mesh.NodeCoords[i,1]==1.0:
+            x.append(mesh.NodeCoords[i,0])
+            ux.append(U[i])
+    plt.plot(x,ux)
+    print(ux)
+    plt.show()
 
 if __name__=='__main__':
     Welcome()
-    nx=5;ny=1
-    W=5.0;H=2.0
+    nx=20;ny=8
+    W=10.0;H=2.0
     mesh=Mesh2D(nx,ny,0.0,W,0.0,H,'quad4')
     mesh.CreateMesh()
     mesh.SplitBCMesh()
     
     nDofs=2*mesh.nNodes
-    U0=np.zeros(nDofs)
     U=np.zeros(nDofs)
 
+    ApplyDispBC('right','ux',mesh,U,0.1)
 
-    iters=0;MaxIters=2;IsConvergent=False
+    iters=0;MaxIters=10;IsConvergent=False
     atol=1.0e-12;rtol=1.0e-9 # absolute error and relative error
     iters=0;IsConvergent=False
     while iters<MaxIters and (not IsConvergent):
-        U=ApplyDispBC('right','ux',mesh,U,1.0)
         AMATRIX,RHS,Proj=FormKR(mesh,U)
         ## For constrain condition
-        AMATRIX,RHS=ApplyConstrainBC('left','ux',mesh,AMATRIX,RHS)
-        AMATRIX,RHS=ApplyConstrainBC('bottom','uy',mesh,AMATRIX,RHS)
+        ApplyConstrainBC('left','ux',mesh,AMATRIX,RHS)
+        ApplyConstrainBC('bottom','uy',mesh,AMATRIX,RHS)
         
 
         dU=np.linalg.solve(AMATRIX,RHS)
@@ -241,6 +258,9 @@ if __name__=='__main__':
             IsConvergent=True
             break
         iters+=1
-        
+    
+    PlotDisp(mesh,U,True)
+
+
 
 
