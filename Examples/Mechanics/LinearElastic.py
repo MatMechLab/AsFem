@@ -19,7 +19,7 @@ from ShapeFuns import *
 def Welcome():
     print('********************************************')
     print('*** Welcome to use this simple script!   ***')
-    print('*** Simple fem code for laplace equation ***')
+    print('*** Simple fem code for 2d linear elastic***')
     print('*** Author: FlyFox                       ***')
     print('*** Email: walkandthinker@gmail.com      ***')
     print('*** QQ group: 797998860                  ***')
@@ -320,7 +320,6 @@ if __name__=='__main__':
     ngp=2
     AMATRIX=np.zeros((nDofs,nDofs))
     RHS=np.zeros(nDofs)
-    Lint=ngp*ngp
     Proj=np.zeros((mesh.nNodes,10))
 
 
@@ -338,7 +337,7 @@ if __name__=='__main__':
 
         dU=np.linalg.solve(AMATRIX,RHS)
         U[:]+=dU[:]
-        # ApplyDispBC('right','ux',mesh,U,0.1)
+        
 
         if iters==0:
             R0_norm=np.linalg.norm(RHS)
