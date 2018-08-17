@@ -6,13 +6,14 @@ Python scripts for simple finite element analysis
 - [Numpy](http://www.numpy.org/)
 - [Scipy](https://www.scipy.org/)
 - [Matplotlib](https://matplotlib.org/)
+- [Numba(optional)](https://numba.pydata.org/)
 
 # Catagories
 - [x] HeatConduct
-- [x] Poisson 
+- [x] Poisson
 - [ ] LinearElastic
 - [ ] NonlinearElastic
 - [ ] PhaseField
 
 # Bug report
-walkandthinker@gmail.com 
+walkandthinker@gmail.com
