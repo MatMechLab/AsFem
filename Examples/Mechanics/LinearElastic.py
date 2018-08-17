@@ -24,10 +24,21 @@ def Welcome():
     print('*** Email: walkandthinker@gmail.com      ***')
     print('*** QQ group: 797998860                  ***')
     print('********************************************')
+
+############################################################
+### Projection 
+############################################################
+def Projection(nNodes,IX,xsj,shp,val,Proj):
+    for i in range(nNodes):
+        k=IX[i]
+        xs=shp[i,0]*xsj
+        Proj[k,0]+=xs
+        for j in range(9):
+            Proj[k,1+j]+=val[j]*xs
 ############################################################
 ### user element for linear elastic problem
 ############################################################
-def elmt(elCoords,elU):
+def elmt(IX,elCoords,elU,Proj):
     nNodes=np.size(elCoords,0)
     nDofs=2*nNodes
 
@@ -40,7 +51,7 @@ def elmt(elCoords,elU):
 
     K=np.zeros((nDofs,nDofs))
     RHS=np.zeros(nDofs)
-    Proj=np.zeros((3+3+2)*Lint)# stress+strain+vonMises+hydrostatic stress
+    val=np.zeros(9)
 
     E=10.0e6;nu=0.3 # Young's modulus and poisson ratio
     D=np.zeros((3,3)) # Constitutive law
@@ -82,16 +93,20 @@ def elmt(elCoords,elU):
         #############################
         ### For projection value
         # For stress
-        Proj[gpInd*(3+3+2)+1-1]=stress[1-1]
-        Proj[gpInd*(3+3+2)+2-1]=stress[2-1]
-        Proj[gpInd*(3+3+2)+3-1]=stress[3-1]
+        val[1-1]=stress[1-1]
+        val[2-1]=stress[2-1]
+        val[3-1]=stress[3-1]
         # For strain
-        Proj[gpInd*(3+3+2)+4-1]=strain[1-1]
-        Proj[gpInd*(3+3+2)+5-1]=strain[2-1]
-        Proj[gpInd*(3+3+2)+6-1]=strain[3-1]
+        val[4-1]=strain[1-1]
+        val[5-1]=strain[2-1]
+        val[6-1]=strain[3-1]
         # For von Mises
-        Proj[gpInd*(3+3+2)+7-1]=np.sqrt(stress[0]**2+stress[1]**2+3*stress[2]**2-stress[0]*stress[1])
-        Proj[gpInd*(3+3+2)+8-1]=(stress[0]+stress[1])/2.0
+        val[7-1]=np.sqrt(stress[0]**2+stress[1]**2+3*stress[2]**2-stress[0]*stress[1])
+        val[8-1]=(stress[0]+stress[1])/2.0
+
+
+        # Do projection from gauss point to nodal point
+        Projection(nNodes,IX,xsj,shp,val,Proj)
 
 
         C=np.dot(Bt,S)
@@ -101,15 +116,16 @@ def elmt(elCoords,elU):
                 RHS[iInd]+=-Bt[iInd,k]*stress[k]*JxW
             for jInd in range(2*nNodes):
                 K[iInd,jInd]+=C[iInd,jInd]*JxW
-    return K,RHS,Proj
+        
+    return K,RHS
 #######################################################
-def FormKR(mesh,U):
+def FormKR(mesh,U,AMATRIX,RHS,Proj):
     nElmts=mesh.nElmts
     nNodesPerElmt=mesh.nNodesPerElmts
     nDofs=mesh.nNodes*2
-    AMATRX=np.zeros((nDofs,nDofs)) # [K]{u}=F-->here AMATRX is K
-    RHS=np.zeros(nDofs)
-    Proj=np.zeros((nElmts,(3+3+2)*8))
+    AMATRIX[:,:]=0.0 # [K]{u}=F-->here AMATRX is K
+    RHS[:]=0.0
+    Proj[:,:]=0.0
 
     for e in range(nElmts):
         elConn=mesh.Conn[e,:]-1
@@ -119,11 +135,8 @@ def FormKR(mesh,U):
             elU[2*i  ]=U[2*elConn[i]  ]
             elU[2*i+1]=U[2*elConn[i]+1]
 
-        k,rhs,proj=elmt(elCoords,elU)
-
-
-        i=len(proj)
-        Proj[e,0:i]=proj[:]
+        k,rhs=elmt(elConn,elCoords,elU,Proj)
+        
 
         # Assemble k,rhs to system matrix
         for i in range(nNodesPerElmt):
@@ -132,12 +145,15 @@ def FormKR(mesh,U):
             RHS[2*iInd+1]+=rhs[2*i+1]
             for j in range(nNodesPerElmt):
                 jInd=elConn[j]
-                AMATRX[2*iInd  ,2*jInd  ]+=k[2*i  ,2*j  ]
-                AMATRX[2*iInd  ,2*jInd+1]+=k[2*i  ,2*j+1]
-                AMATRX[2*iInd+1,2*jInd  ]+=k[2*i+1,2*j  ]
-                AMATRX[2*iInd+1,2*jInd+1]+=k[2*i+1,2*j+1]
-
-    return AMATRX,RHS,Proj
+                AMATRIX[2*iInd  ,2*jInd  ]+=k[2*i  ,2*j  ]
+                AMATRIX[2*iInd  ,2*jInd+1]+=k[2*i  ,2*j+1]
+                AMATRIX[2*iInd+1,2*jInd  ]+=k[2*i+1,2*j  ]
+                AMATRIX[2*iInd+1,2*jInd+1]+=k[2*i+1,2*j+1]
+    
+    # For projection value
+    for i in range(mesh.nNodes):
+        for j in range(9):
+            Proj[i,1+j]/=Proj[i,0]
 #######################################################
 def ApplyDispBC(sidename,dofname,mesh,U,value):
     if sidename=='left':
@@ -191,7 +207,7 @@ def ApplyConstrainBC(sidename,dofname,mesh,AMATRIX,RHS):
     
     ne=np.size(BCConn,0)
     nNodesPerBCElmt=np.size(BCConn,1)
-    penalty=1.0e15
+    penalty=1.0e16
     for e in range(ne):
         elConn=BCConn[e,:]-1
         for i in range(nNodesPerBCElmt):
@@ -204,26 +220,95 @@ def PlotDisp(mesh,U,Flag):
     y=mesh.NodeCoords[:,1]
     ux=U[0::2]
     uy=U[1::2]
+
     plt.figure(1)
-    plt.title('$u_{x}$')
-    plt.tricontourf(x,y,ux,20)
+    plt.title('$u_{x}$',fontsize=16)
+    plt.tricontourf(x,y,ux,60)
     plt.gca().set_aspect('equal', adjustable='box')
     plt.colorbar()
     plt.clim(np.min(ux),np.max(ux))
 
     plt.figure(2)
-    x=[];ux=[]
-    for i in range(mesh.nNodes):
-        if mesh.NodeCoords[i,1]==1.0:
-            x.append(mesh.NodeCoords[i,0])
-            ux.append(U[i])
-    plt.plot(x,ux)
-    print(ux)
-    plt.show()
+    plt.title('$u_{y}$',fontsize=16)
+    plt.tricontourf(x,y,uy,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(uy),np.max(uy))
+
+    if Flag==True:
+        plt.show()
+
+def PlotStressStrain(mesh,Proj,Flag):
+    x=mesh.NodeCoords[:,0]
+    y=mesh.NodeCoords[:,1]
+    sxx=Proj[:,1]
+    sxy=Proj[:,2]
+    syy=Proj[:,3]
+
+    stxx=Proj[:,4]
+    stxy=Proj[:,5]
+    styy=Proj[:,6]
+
+    vonMises=Proj[:,7]
+
+
+    plt.figure(3)
+    plt.title('$\sigma_{xx}$',fontsize=16)
+    plt.tricontourf(x,y,sxx,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(sxx),np.max(sxx))
+
+    plt.figure(4)
+    plt.title('$\sigma_{xy}$',fontsize=16)
+    plt.tricontourf(x,y,sxy,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(sxy),np.max(sxy))
+
+    plt.figure(5)
+    plt.title('$\sigma_{yy}$',fontsize=16)
+    plt.tricontourf(x,y,syy,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(syy),np.max(syy))
+
+    ### For strain
+    plt.figure(6)
+    plt.title('$\epsilon_{xx}$',fontsize=16)
+    plt.tricontourf(x,y,stxx,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(stxx),np.max(stxx))
+
+    plt.figure(7)
+    plt.title('$\epsilon_{xy}$',fontsize=16)
+    plt.tricontourf(x,y,stxy,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(stxy),np.max(stxy))
+
+    plt.figure(8)
+    plt.title('$\epsilon_{yy}$',fontsize=16)
+    plt.tricontourf(x,y,styy,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(styy),np.max(styy))
+
+    plt.figure(9)
+    plt.title('$vonMises$',fontsize=16)
+    plt.tricontourf(x,y,vonMises,60)
+    plt.gca().set_aspect('equal', adjustable='box')
+    plt.colorbar()
+    plt.clim(np.min(vonMises),np.max(vonMises))
+
+    if Flag==True:
+        plt.show()
+    
 
 if __name__=='__main__':
     Welcome()
-    nx=20;ny=8
+    nx=40;ny=20
     W=10.0;H=2.0
     mesh=Mesh2D(nx,ny,0.0,W,0.0,H,'quad4')
     mesh.CreateMesh()
@@ -232,20 +317,28 @@ if __name__=='__main__':
     nDofs=2*mesh.nNodes
     U=np.zeros(nDofs)
 
-    ApplyDispBC('right','ux',mesh,U,0.1)
+    ngp=2
+    AMATRIX=np.zeros((nDofs,nDofs))
+    RHS=np.zeros(nDofs)
+    Lint=ngp*ngp
+    Proj=np.zeros((mesh.nNodes,10))
+
+
 
     iters=0;MaxIters=10;IsConvergent=False
-    atol=1.0e-12;rtol=1.0e-9 # absolute error and relative error
+    atol=1.0e-13;rtol=1.0e-10 # absolute error and relative error
     iters=0;IsConvergent=False
     while iters<MaxIters and (not IsConvergent):
-        AMATRIX,RHS,Proj=FormKR(mesh,U)
+        ApplyDispBC('right','ux',mesh,U,0.1)
+        FormKR(mesh,U,AMATRIX,RHS,Proj)
         ## For constrain condition
         ApplyConstrainBC('left','ux',mesh,AMATRIX,RHS)
         ApplyConstrainBC('bottom','uy',mesh,AMATRIX,RHS)
-        
+        ApplyConstrainBC('right','ux',mesh,AMATRIX,RHS)
 
         dU=np.linalg.solve(AMATRIX,RHS)
         U[:]+=dU[:]
+        # ApplyDispBC('right','ux',mesh,U,0.1)
 
         if iters==0:
             R0_norm=np.linalg.norm(RHS)
@@ -259,7 +352,8 @@ if __name__=='__main__':
             break
         iters+=1
     
-    PlotDisp(mesh,U,True)
+    PlotDisp(mesh,U,False)
+    PlotStressStrain(mesh,Proj,True)
 
 
 

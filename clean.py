@@ -11,7 +11,7 @@ import shutil
 currentdir=os.getcwd()
 print('We are in folder:%s\n'%(currentdir))
 
-vtu=0;jit=0
+vtu=0;jit=0;pycache=0
 for subdir,dirs,files in os.walk(currentdir):
     #>>> clean files
     for file in files:
@@ -34,8 +34,19 @@ for subdir,dirs,files in os.walk(currentdir):
             except:
                 if(not IdeaRemove):
                     print('%s is not here'%(dir))
+        if '__pycache__' in dir:
+            try:
+                pycache+=1
+                removepath=subdir+'/'+dir
+                print('remove folder: ',dir)
+                shutil.rmtree(removepath)
+                IdeaRemove=True
+            except:
+                if(not IdeaRemove):
+                    print('%s is not here'%(dir))
 
 
 ################################################
 print('Remove %4d .vtu files!'%(vtu))
 print('Remove %4d .jit folder!'%(jit))
+print('Remove %4d pycache folder!'%(pycache))
