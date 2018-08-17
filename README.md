@@ -11,9 +11,10 @@ Python scripts for simple finite element analysis
 # Catagories
 - [x] HeatConduct
 - [x] Poisson
-- [ ] LinearElastic
+- [x] LinearElastic
 - [ ] NonlinearElastic
-- [ ] PhaseField
+- [x] PhaseField
+- [x] Thermal-Mechanics 
 
 # Bug report
 walkandthinker@gmail.com
