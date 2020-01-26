@@ -1,0 +1,15 @@
+#ifndef ASFEM_LINEARSOLVERTYPE_H
+#define ASFEM_LINEARSOLVERTYPE_H
+
+enum class LinearSolverType
+{
+    SPARSELU,
+    SPARSEQR,
+    CG,
+    BICG,
+    GMRES,
+    PARDISOLU,
+    UMFPACK
+};
+
+#endif // ASFEM_LINEARSOLVERTYPE_H

@@ -1,0 +1,14 @@
+#ifndef ASFEM_TIMESTEPPINGTYPE_H
+#define ASFEM_TIMESTEPPINGTYPE_H
+
+enum class TimeSteppingType
+{
+    BACKWARDEULER,
+    CRANKNICOLSON,
+    BDF2,
+    BDF3,
+    BDF4,
+    BDF5
+};
+
+#endif // ASFEM_TIMESTEPPINGTYPE_H
