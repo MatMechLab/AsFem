@@ -17,7 +17,7 @@ cmake=0
 for subdir,dirs,files in os.walk(currentdir):
     #>>> clean files
     for file in files:
-        if ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file) or ('.tex' in file) or ('.jpg' in file) or ('.png' in file) or ('.pdf' in file):
+        if ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.png' in file) or ('.pdf' in file):
             continue
         elif ('ASFEM' in file) or ('asfem' in file):
             try:
