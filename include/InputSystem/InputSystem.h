@@ -39,6 +39,7 @@
 #include "NonlinearSolver/NonlinearSolverBlock.h"
 #include "TimeStepping/TimeSteppingBlock.h"
 
+#include "OutputSystem/OutputBlock.h"
 
 class InputSystem{
 public:
@@ -55,7 +56,8 @@ public:
                        FE &fe,
                        NonlinearSolverBlock &nonlinearSolverBlock,
                        TimeSteppingBlock &timesteppingblock,
-                       JobBlock &jobBlock);
+                       JobBlock &jobBlock,
+                       OutputBlock &outputblock);
 
 private:
     //**************************************
@@ -84,6 +86,9 @@ private:
 
     //*** for projection block
     bool ReadProjectionBlock(ifstream &in,string str,int &linenum,Solution &solution);
+
+    //*** for output block
+    bool ReadOutputBlock(ifstream &in,string str,int &linenum,OutputBlock &outputblock);
 
 public:
     //**************************************

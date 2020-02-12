@@ -158,7 +158,7 @@ void FEProblem::InitFEProblem(){
     }
     PetscPrintf(PETSC_COMM_WORLD,"***   start to initialize the output system ...                       ***\n");
     
-    _outputSystem.SetInputFileName(_inputSystem.GetInputFileName());
+    // _outputSystem.SetInputFileName(_inputSystem.GetInputFileName());
     _outputSystem.InitOutputStream();
     
     if(_rank==0){

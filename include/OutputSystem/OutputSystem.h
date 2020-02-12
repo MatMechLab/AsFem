@@ -15,6 +15,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <filesystem>
+#include <cstdlib>
 
 #include "petsc.h"
 
@@ -25,8 +27,10 @@
 #include "Utils/StringUtils.h"
 #include "Mesh/Mesh.h"
 #include "DofHandler/DofHandler.h"
+#include "OutputBlock.h"
 
 using namespace std;
+
 
 
 class OutputSystem{
@@ -44,6 +48,9 @@ public:
     void WriteResultToVTU(const int &step,Mesh &mesh,DofHandler &dofHandler,const Vec &U);
     void WriteResultToVTU(const int &step,Mesh &mesh,DofHandler &dofHandler,const Vec &U,const int &nproj,const vector<string> &namelist,const Vec &Proj);
 
+
+    OutputBlock _OutputBlock;
+    void PrintOutputSystem() const;
 private:
     bool _IsInit=false;
     bool _IsLogOn=false;

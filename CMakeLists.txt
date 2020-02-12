@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(AsFem)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 ###############################################
 ### Set your PETSc path here                ###
@@ -115,7 +115,7 @@ set(src ${src} src/InputSystem/ReadJobBlock.cpp)
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
 set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
 set(src ${src} src/InputSystem/ReadTimeSteppingBlock.cpp)
-
+set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###
@@ -303,6 +303,7 @@ set(src ${src} src/NonlinearSolver/PrintIterationInfo.cpp)
 #############################################################
 ### For Output System                                     ###
 #############################################################
+set(inc ${inc} include/OutputSystem/OutputBlock.h include/OutputSystem/OutputFileType.h)
 set(inc ${inc} include/OutputSystem/OutputSystem.h)
 set(src ${src} src/OutputSystem/OutputSystem.cpp)
 set(src ${src} src/OutputSystem/InitOutputStream.cpp)

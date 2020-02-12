@@ -47,3 +47,7 @@ name=phi
   type=static
   debug=dep
 [end]
+
+[output]
+  folder=test
+[end]

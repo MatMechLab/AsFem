@@ -20,5 +20,6 @@ bool FEProblem::RunInputSystem(){
                                       _fe,
                                       _nonlinearsolverblock,
                                       _timesteppingblock,
-                                      _jobBlock);
+                                      _jobBlock,
+                                      _outputSystem._OutputBlock);
 }

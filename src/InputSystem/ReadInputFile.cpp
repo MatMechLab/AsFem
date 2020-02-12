@@ -19,7 +19,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 FE &fe,
                                 NonlinearSolverBlock &nonlinearSolverBlock,
                                 TimeSteppingBlock &timesteppingblock,
-                                JobBlock &jobBlock){
+                                JobBlock &jobBlock,
+                                OutputBlock &outputblock){
     ifstream in;
     string str;
     int linenum=0;
@@ -36,6 +37,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     // bool HasLinearSolverBlock=false;
     bool HasNonLinearSolverBlock=false;
     bool HasProjectionBlock=false;
+    bool HasOutputBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -71,6 +73,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasNonLinearSolverBlock=false;
     HasProjectionBlock=false;
     HasTimeSteppingBlock=false;
+    HasOutputBlock=false;
 
 
     while(!in.eof()){
@@ -281,6 +284,22 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if((str.find("[output]")!=string::npos)&&str.length()==8){
+            int lastendlinenum;
+            if(IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadOutputBlock(in,str,linenum,outputblock)){
+                    HasOutputBlock=true;
+                }
+                else{
+                    HasOutputBlock=false;
+                }
+            }
+            else{
+                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [output]/[end] bracket pair is not match             !!!   ***\n");
+                Msg_AsFem_Exit();
+                return false;
+            }
+        }
         else if(str.find("[]")!=string::npos){
             Msg_Input_LineError(linenum);
             Msg_Input_BlockBracketNotComplete();
@@ -325,6 +344,12 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         fe.SetOrder(mesh.GetMeshOrder());
         fe.SetBCOrder(mesh.GetMeshOrder());
     }
+
+
+    if(!HasOutputBlock){
+        outputblock.Reset();
+    }
+    outputblock._InputFileName=_InputFileName;
 
     // if(!HasLinearSolverBlock){
     //     linearSolverBlockInfo.Reset();
