@@ -13,21 +13,25 @@ void OutputSystem::InitOutputStream(){
     _InputFileName=_OutputBlock._InputFileName;
 
     int i=_InputFileName.find_last_of('.');
-    _OutputBlock.PrintOutputBlock();
     if(_OutputBlock._FolderName.size()<1){
         _OutputFilePrefix=_InputFileName.substr(0,i);
+        _OutputBlock._OutputFilePrefix=_OutputFilePrefix;
     }
     else{
         _OutputFilePrefix=_OutputBlock._FolderName+"/"+_InputFileName.substr(0,i);
+        _OutputBlock._OutputFilePrefix=_OutputFilePrefix;
         if(std::filesystem::create_directory(_OutputBlock._FolderName)){
-            PetscPrintf(PETSC_COMM_WORLD,"***   create folder(%25s) sucessful              !!!   ***\n",_OutputBlock._FolderName.c_str());
+            PetscPrintf(PETSC_COMM_WORLD,"***   create folder(%25s) sucessful        !!!   ***\n",_OutputBlock._FolderName.c_str());
         }
         else{
-            PetscPrintf(PETSC_COMM_WORLD,"***   create folder failed, make sure you have write permission !!!   ***\n");
-            Msg_AsFem_Exit();
+            if(!std::filesystem::exists(_OutputBlock._FolderName)){
+                PetscPrintf(PETSC_COMM_WORLD,"***   create folder failed, make sure you have write permission !!!   ***\n");
+                Msg_AsFem_Exit();
+            }
         }
     }
     _LogFileName=_OutputFilePrefix+".log";
+    _OutputBlock._LogFileName=_LogFileName;
     ofstream _LogFile;
     if(_IsLogOn){
         _LogFile.open(_LogFileName,ios::out);

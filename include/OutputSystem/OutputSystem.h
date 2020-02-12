@@ -50,7 +50,9 @@ public:
 
 
     OutputBlock _OutputBlock;
-    void PrintOutputSystem() const;
+    void PrintOutputSystem() const{
+        _OutputBlock.PrintOutputBlock();
+    }
 private:
     bool _IsInit=false;
     bool _IsLogOn=false;

@@ -48,10 +48,11 @@ public:
     }
 
     void PrintOutputBlock()const{
-        PetscPrintf(PETSC_COMM_WORLD,"*** +Output block information:                                        ***\n");
+        PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
+        
+        PetscPrintf(PETSC_COMM_WORLD,"*** Output block information:                                         ***\n");
         
         if(_OutputFileType==OutputFileType::VTU){
-            PetscPrintf(PETSC_COMM_WORLD,"*** +Output block information:                                        ***\n");
             PetscPrintf(PETSC_COMM_WORLD,"***   output file type = VTU                                          ***\n");
         }
         else if(_OutputFileType==OutputFileType::VTK){
@@ -64,10 +65,10 @@ public:
             PetscPrintf(PETSC_COMM_WORLD,"***   output folder    = emtpy                                        ***\n");
         }
         else{
-            PetscPrintf(PETSC_COMM_WORLD,"***   output folder    = %-42s                                  ***\n",_FolderName.c_str());
+            PetscPrintf(PETSC_COMM_WORLD,"***   output folder    = %-42s   ***\n",_FolderName.c_str());
         }
 
-        PetscPrintf(PETSC_COMM_WORLD,"***   output fileprefix= %-42s                                  ***\n",_OutputFilePrefix.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"***   output fileprefix= %-42s   ***\n",_OutputFilePrefix.c_str());
     }
 };
 

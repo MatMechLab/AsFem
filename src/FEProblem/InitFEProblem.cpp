@@ -196,6 +196,8 @@ void FEProblem::InitFEProblem(){
         _timesteppingblock.PrintTimeSteppingBlock();
         _nonlinearsolverblock.PrintNonlinearSolverBlock();
     }
+
+    _outputSystem.PrintOutputSystem();
     
     _feCtrlInfo.IsDebug=_jobBlock._IsDebug;
     _feCtrlInfo.IsDepDebug=_jobBlock._IsDepDebug;
