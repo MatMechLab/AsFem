@@ -146,7 +146,7 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
                     }
                     else{
                         PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported IC type in [ics] sub block               !!!   ***\n");
-                        PetscPrintf(PETSC_COMM_WORLD,"***        type= %-25s is invalid       !!!   ***\n",substr.c_str());
+                        PetscPrintf(PETSC_COMM_WORLD,"***        type= %-25s is invalid           !!!   ***\n",substr.c_str());
                         Msg_AsFem_Exit();
                     }
                 }
