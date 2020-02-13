@@ -46,7 +46,7 @@ void MateSystem::NonlinearPoissonMaterial(const int &nDim,const double &t,const 
     }
     else if(nDim==2){
         // cout<<"work"<<endl;
-        _ScalarMaterials[0]=InputParams[0]*(1.2+sin(gpU[0]));// sigma
+        _ScalarMaterials[0]=InputParams[0]*(1.25+sin(gpU[0]));// sigma
         _ScalarMaterials[1]=InputParams[0]*cos(gpU[0]);// dsigma/dphi
         _ScalarMaterials[2]=InputParams[1]*(0.0+sin(gpCoord(1)*gpCoord(2)));// F
         _ScalarMaterials[3]=0.0;// dF/dphi
