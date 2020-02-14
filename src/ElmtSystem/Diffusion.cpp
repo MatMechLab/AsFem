@@ -30,8 +30,7 @@ void ElmtSystem::Diffusion(const int &isw,const int &nDim,const int &nNodes,
     if(isw==3||isw==6){
         for(int i=1;i<=nNodes;++i){
             rhs(i)+=gpV[0]*shp.shape_value(i)
-                   +ScalarMaterials[0]*(gpGradU[0]*shp.shape_grad(i))
-                   +ScalarMaterials[1]*shp.shape_value(i);
+                   +ScalarMaterials[0]*(gpGradU[0]*shp.shape_grad(i));
             if(isw==6){
                 for(int j=1;j<=nNodes;++j){
                     K(i,j)+=shp.shape_value(j)*shp.shape_value(i)*ctan[1]
