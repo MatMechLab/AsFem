@@ -122,7 +122,7 @@ bool Mesh::ReadMeshFromGmsh(){
             _MeshUniPhyDim.clear();
 
             int elmtid,phyid,geoid,ntags,elmttype,vtktype;
-            int nodes,dim,maxdim;
+            int nodes,dim,maxdim,elmtorder;
             vector<int> tempconn;
             MeshType meshtype,bcmeshtype;
 
@@ -130,6 +130,7 @@ bool Mesh::ReadMeshFromGmsh(){
             _nNodesPerLineElmt=0;
             _nNodesPerSurfaceElmt=0;
             maxdim=-1;
+            _nOrder=1;
             for(int e=0;e<_nElmts;++e){
                 in>>elmtid>>elmttype>>ntags>>phyid>>geoid;
 
@@ -138,6 +139,9 @@ bool Mesh::ReadMeshFromGmsh(){
                 vtktype=GetElmtVTKCellTypeViaGmshElmtType(elmttype);
                 meshtype=GetElmtTypeViaGmshElmtType(elmttype);
                 bcmeshtype=GetBCElmtTypeViaGmshElmtType(elmttype);
+                elmtorder=GetElmtOrderViaGmshElmtType(elmttype);
+                if(elmtorder>_nOrder) _nOrder=elmtorder;
+
 
                 if(dim==1){
                     _nNodesPerLineElmt=nodes;

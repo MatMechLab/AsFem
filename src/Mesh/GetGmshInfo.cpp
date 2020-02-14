@@ -115,7 +115,112 @@ int Mesh::GetNodesNumViaGmshElmtType(int elmttype) const{
             return -1;
     }
 }
-
+//***************************************
+int Mesh::GetElmtOrderViaGmshElmtType(int elmttype) const{
+    switch(elmttype){
+        case 1:
+            // 2-node line
+            return 1;
+        case 2:
+            // 3-node triangle
+            return 1;
+        case 3:
+            // 4-node quadrangle
+            return 1;
+        case 4:
+            // 4-node tetrahedron
+            return 1;
+        case 5:
+            // 8-node hexahedron
+            return 2;
+        case 6:
+            // 6-node prism
+            return 1;
+        case 7:
+            // 5-node pyramid
+            return 1;
+        case 8:
+            //3-node second order line
+            return 2;
+        case 9:
+            // 6-node second order triangle
+            return 2;
+        case 10:
+            // 9-node second order quadrangle
+            return 2;
+        case 11:
+            // 10-node second order tetrahedron
+            return 2;
+        case 12:
+            // 27-node second order hexahedron
+            return 2;
+        case 13:
+            // 18-node second order prism
+            return 2;
+        case 14:
+            // 14-node second order pyramid
+            return 2;
+        case 15:
+            // 1-node point
+            return 0;
+        case 16:
+            // 8-node second order quadrangle
+            return 2;
+        case 17:
+            // 20-node second order hexahedron
+            return 2;
+        case 18:
+            // 15-node second order prism
+            return 2;
+        case 19:
+            // 13-node second order pyramid
+            return 2;
+        case 20:
+            // 9-node third order incomplete triangle
+            return 3;
+        case 21:
+            // 10-node third order triangle
+            return 3;
+        case 22:
+            // 12-node fourth order incomplete triangle
+            return 4;
+        case 23:
+            // 15-node fourth order triangle
+            return 4;
+        case 24:
+            // 15-node fifth order incomplete triangle
+            return 5;
+        case 25:
+            // 21-node fifth order complete triangle
+            return 5;
+        case 26:
+            // 4-node third order edge
+            return 3;
+        case 27:
+            // 5-node fourth order edge
+            return 4;
+        case 28:
+            // 6-node fifth order edge
+            return 5;
+        case 29:
+            // 20-node third order tetrahedron
+            return 3;
+        case 30:
+            // 35-node fourth order tetrahedron
+            return 4;
+        case 31:
+            // 56-node fifth order tetrahedron
+            return 5;
+        case 92:
+            // 64-node third order hexahedron
+            return 3;
+        case 93:
+            // 125-node fourth order hexahedron
+            return 4;
+        default:
+            return -1;
+    }
+}
 //***************************************
 int Mesh::GetSurfaceElmtTypeViaGmshBulkElmtType(int elmttype) const{
     switch(elmttype){

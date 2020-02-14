@@ -21,7 +21,7 @@ name=phi
 [mates]
   [nonlinear]
     type=nlpoisson
-    params=1.5e0 0.5
+    params=0.25e0 0.5
   [end]
 [end]
 
@@ -32,7 +32,7 @@ name=phi
     type=dirichlet
     dof=phi
     boundary=left bottom1 bottom2 right1 right2 top
-    value=0.0
+    value=1.0
   [end]
 [end]
 

@@ -239,6 +239,7 @@ private:
     int GetNodesNumViaGmshElmtType(int elmttype) const;
     int GetSurfaceElmtTypeViaGmshBulkElmtType(int elmttype) const;
     int GetElmtDimViaGmshElmtType(int elmttype) const;
+    int GetElmtOrderViaGmshElmtType(int elmttype) const;
     string GetElmtNameViaGmshElmtType(int elmttype) const;
     MeshType GetElmtTypeViaGmshElmtType(int elmttype) const;
     MeshType GetBCElmtTypeViaGmshElmtType(int elmttype) const;
