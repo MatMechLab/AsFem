@@ -180,6 +180,7 @@ void FEProblem::InitFEProblem(){
 
 
     _mesh.PrintMeshInfo();
+    _fe.PrintQPointInfo();
     _dofHandler.PrintDofInfo();
     _bcSystem.PrintBCSystemInfo();
     _icSystem.PrintICSystemInfo();

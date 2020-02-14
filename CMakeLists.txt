@@ -252,6 +252,7 @@ set(src ${src} src/EquationSystem/CreateSparsityPattern.cpp)
 #############################################################
 set(inc ${inc} include/FE/FE.h)
 set(src ${src} src/FE/FE.cpp src/FE/InitFE.cpp)
+set(src ${src} src/FE/PrintQPointInfo.cpp)
 ##################
 ### For ShapeFun
 ##################

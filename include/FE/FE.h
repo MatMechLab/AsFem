@@ -45,6 +45,9 @@ public:
     inline int GetBCOrder() const {return _nBCOrder;}
 
 
+    void PrintQPointInfo() const;
+
+
 public:
     string _QPointType="gauss";
     bool _IsInit=false;

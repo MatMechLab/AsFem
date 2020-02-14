@@ -4,9 +4,9 @@
   type=asfem
   dim=2
   xmin= 0.0
-  xmax=4.0
-  ymin=0.0
-  ymax=4.0
+  xmax=10.0
+  ymin= 0.0
+  ymax=10.0
   nx=100
   ny=100
   meshtype=quad4
@@ -16,10 +16,6 @@
 name=c
 [end]
 
-[qpoint]
-  type=gauss
-  order=2
-[end]
 
 [elmts]
   [poisson]

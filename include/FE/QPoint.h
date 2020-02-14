@@ -40,6 +40,7 @@ public:
     inline int GetDim() const {return _nDim;}
     inline int GetQpOrder() const {return _nOrder;}
     inline int GetQpPointsNum() const {return _nQpPoints;}
+    inline string GetQpType()const{return _QPointType;}
     
     inline double operator()(int i,int j) const {return _qp_coords[(i-1)*(_nDim+1)+j];}
     inline double& operator()(int i,int j) {return _qp_coords[(i-1)*(_nDim+1)+j];}
