@@ -18,14 +18,14 @@ name=phi
   [poisson]
 	  type=poisson
 	  dofs=phi
-	  mate=nonlinear
+	  mate=linear
     domain=alldomain
   [end]
 [end]
 
 [mates]
-  [nonlinear]
-    type=nlpoisson
+  [linear]
+    type=constpoisson
     params=0.25e0 0.5
   [end]
 [end]
@@ -36,7 +36,7 @@ name=phi
   [fixphi]
     type=dirichlet
     dof=phi
-    boundary=left bottom1 bottom2 right1 right2 top
+    boundary=left right1 right2
     value=1.0
   [end]
 [end]

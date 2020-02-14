@@ -341,8 +341,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
 
     if(!HasQpBlock){
         fe.SetQPointType("gauss");
-        fe.SetOrder(mesh.GetMeshOrder());
-        fe.SetBCOrder(mesh.GetMeshOrder());
+        fe.SetOrder(mesh.GetMeshOrder()+1);
+        fe.SetBCOrder(mesh.GetMeshOrder()+1);
     }
 
 

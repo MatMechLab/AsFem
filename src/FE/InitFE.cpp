@@ -11,14 +11,15 @@
 
 void FE::InitFE(Mesh &mesh){
 
-    SetOrder(mesh.GetMeshOrder());
-    SetBCOrder(mesh.GetMeshOrder());
+    // SetOrder(mesh.GetMeshOrder());
+    // SetBCOrder(mesh.GetMeshOrder());
     SetDim(mesh.GetMaxDim());
     SetDimMin(mesh.GetMinDim());
+
     _shp_bulk=ShapeFun(mesh.GetDim(),mesh.GetBulkMeshType());
     _shp_bulk.PreCalc();
 
-    _qp_bulk=QPoint(mesh.GetDim(),GetOrder()+1);
+    _qp_bulk=QPoint(mesh.GetDim(),GetOrder());
     _qp_bulk.SetQPointType(_QPointType);
     _qp_bulk.CreateQPoints(mesh.GetBulkMeshType());
     
@@ -31,11 +32,11 @@ void FE::InitFE(Mesh &mesh){
         _shp_line=ShapeFun(1,mesh.GetLineMeshType());
         _shp_line.PreCalc();
 
-        _qp_surface=QPoint(2,GetBCOrder()+1);
+        _qp_surface=QPoint(2,GetBCOrder());
         _qp_surface.SetQPointType(_QPointType);
         _qp_surface.CreateQPoints(mesh.GetSurfaceMeshType());
 
-        _qp_line=QPoint(1,GetBCOrder()+1);
+        _qp_line=QPoint(1,GetBCOrder());
         _qp_line.SetQPointType(_QPointType);
         _qp_line.CreateQPoints(mesh.GetLineMeshType());
 
@@ -46,7 +47,7 @@ void FE::InitFE(Mesh &mesh){
         _shp_line=ShapeFun(1,mesh.GetLineMeshType());
         _shp_line.PreCalc();
 
-        _qp_line=QPoint(1,GetBCOrder()+1);
+        _qp_line=QPoint(1,GetBCOrder());
         _qp_line.SetQPointType(_QPointType);
         _qp_line.CreateQPoints(mesh.GetLineMeshType());
 

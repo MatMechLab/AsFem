@@ -35,6 +35,8 @@ void QPoint::Create2DGaussPoint(MeshType meshtype){
         case MeshType::TRI3:
         case MeshType::TRI6:
         {
+            // for the details, one is referred to:
+            // http://www.ce.memphis.edu/7111/notes/class_notes/chapter_03d_slides.pdf
             switch (GetQpOrder())
             {
                 case 0:
@@ -44,7 +46,7 @@ void QPoint::Create2DGaussPoint(MeshType meshtype){
                     _qp_coords.resize(_nQpPoints*(GetDim()+1),0.0);
                     (*this)(1,1)=1.0/3.0;
                     (*this)(1,2)=1.0/3.0;
-                    (*this)(1,0)=0.5;
+                    (*this)(1,0)=1.0;
                     return;
                 }
                 case 2:
@@ -53,15 +55,15 @@ void QPoint::Create2DGaussPoint(MeshType meshtype){
                     _qp_coords.resize(_nQpPoints*(GetDim()+1),0.0);
                     (*this)(1,1)=2.0/3.0;
                     (*this)(1,2)=1.0/6.0;
-                    (*this)(1,0)=1.0/6.0;
+                    (*this)(1,0)=1.0/3.0;
 
                     (*this)(2,1)=1.0/6.0;
                     (*this)(2,2)=2.0/3.0;
-                    (*this)(2,0)=1.0/6.0;
+                    (*this)(2,0)=1.0/3.0;
                 
                     (*this)(3,1)=1.0/6.0;
                     (*this)(3,2)=1.0/6.0;
-                    (*this)(3,0)=1.0/6.0;
+                    (*this)(3,0)=1.0/3.0;
                     return;
                 }
                 case 3:
@@ -84,6 +86,72 @@ void QPoint::Create2DGaussPoint(MeshType meshtype){
                     (*this)(4,1)=double(6.4494897427831780981972840747059e-01L);
                     (*this)(4,2)=double(2.8001991549907407200279599420481e-01L);
                     (*this)(4,0)=double(9.0979309128011415302815498962418e-02L);
+
+                    return;
+                }
+                case 4:
+                {
+                    _nQpPoints=6;
+                    _qp_coords.resize(_nQpPoints*(GetDim()+1),0.0);
+
+                    (*this)(1,1)= 0.0915762135;
+                    (*this)(1,2)= 0.8168475730;
+                    (*this)(1,0)= 0.1099517437;
+
+                    (*this)(2,1)= 0.0915762135;
+                    (*this)(2,2)= 0.0915762135;
+                    (*this)(2,0)= 0.1099517437;
+
+                    (*this)(3,1)= 0.8168475730;
+                    (*this)(3,2)= 0.0915762135;
+                    (*this)(3,0)= 0.1099517437;
+
+                    (*this)(4,1)= 0.4459484909;
+                    (*this)(4,2)= 0.1081030182;
+                    (*this)(4,0)= 0.2233815897;
+
+                    (*this)(5,1)= 0.4459484909;
+                    (*this)(5,2)= 0.4459484909;
+                    (*this)(5,0)= 0.2233815897;
+
+                    (*this)(6,1)= 0.1081030182;
+                    (*this)(6,2)= 0.4459484909;
+                    (*this)(6,0)= 0.2233815897;
+
+                    return;
+                }
+                case 5:
+                {
+                    _nQpPoints=7;
+                    _qp_coords.resize(_nQpPoints*(GetDim()+1),0.0);
+
+                    (*this)(1,1)= 1.0/3.0;
+                    (*this)(1,2)= 1.0/3.0;
+                    (*this)(1,0)= 0.2250000000;
+
+                    (*this)(2,1)= 0.1012865073;
+                    (*this)(2,2)= 0.7974269854;
+                    (*this)(2,0)= 0.1259391805;
+
+                    (*this)(3,1)= 0.1012865073;
+                    (*this)(3,2)= 0.1012865073;
+                    (*this)(3,0)= 0.1259391805;
+
+                    (*this)(4,1)= 0.7974269854;
+                    (*this)(4,2)= 0.1012865073;
+                    (*this)(4,0)= 0.1259391805;
+
+                    (*this)(5,1)= 0.0597158718;
+                    (*this)(5,2)= 0.4701420641;
+                    (*this)(5,0)= 0.1323941528;
+
+                    (*this)(6,1)= 0.4701420641;
+                    (*this)(6,2)= 0.4701420641;
+                    (*this)(6,0)= 0.1323941528;
+
+                    (*this)(7,1)= 0.4701420641;
+                    (*this)(7,2)= 0.0597158718;
+                    (*this)(7,0)= 0.1323941528;
 
                     return;
                 }

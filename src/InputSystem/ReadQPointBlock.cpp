@@ -79,6 +79,7 @@ bool InputSystem::ReadQPointBlock(ifstream &in,string str,int &linenum,FE &fe){
                     Msg_AsFem_Exit();
                 }
                 fe.SetOrder(int(numbers[0]));
+                fe.SetBCOrder(int(numbers[0]));
             }
         }
         else if(str.find("bcorder=")!=string::npos||
