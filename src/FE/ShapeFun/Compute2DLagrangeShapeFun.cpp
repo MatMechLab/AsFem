@@ -131,7 +131,7 @@ void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,cons
             // taken from: http://www.sd.ruhr-uni-bochum.de/downloads/Shape_funct.pdf
             (*this)(1,0)= (1.0-xi-eta)*(1.0-2*xi-2*eta);
             (*this)(1,1)=-3.0+4.0*eta+4.0*xi;
-            (*this)(1,1)=-3.0+4.0*eta+4.0*xi;
+            (*this)(1,2)=-3.0+4.0*eta+4.0*xi;
 
             (*this)(2,0)= xi*(2.0*xi-1.0);
             (*this)(2,1)= 4.0*xi-1.0;
