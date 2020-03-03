@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2019
+//* All rights reserved, Yang Bai @ CopyRight 2020
 //* https://github.com/walkandthinker/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -55,14 +55,26 @@ public:
         }
         else{
             PetscPrintf(PETSC_COMM_WORLD,"***   parameters          =");
-            int count=0;
+            int count=0,j=0;
             for(auto it:_Params){
                 PetscPrintf(PETSC_COMM_WORLD,"%13.5e ",it);
                 count+=1;
-                if(count%5==0&&_Params.size()%5!=0){
-                    PetscPrintf(PETSC_COMM_WORLD,"\n***                        ");
+                j+=1;
+                if(count%3==0){
+                    if(j<int(_Params.size())){
+                        PetscPrintf(PETSC_COMM_WORLD," ***\n***                        ");
+                    }
+                    else{
+                        PetscPrintf(PETSC_COMM_WORLD," ***");
+                    }
                     count=0;
                 }
+            }
+            if(_Params.size()%3==1){
+                PetscPrintf(PETSC_COMM_WORLD,"                             ***");
+            }
+            else if(_Params.size()%3==2){
+                PetscPrintf(PETSC_COMM_WORLD,"               ***");
             }
             PetscPrintf(PETSC_COMM_WORLD,"\n");
         }
