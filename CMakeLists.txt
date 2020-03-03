@@ -40,6 +40,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-copy")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
 
 
+###############################################
+### For release mode in Windows (VS2019)    ###
+###############################################
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /W1 /arch:AVX")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GL /openmp")
 
 
 #############################################################
