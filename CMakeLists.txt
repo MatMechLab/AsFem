@@ -232,7 +232,8 @@ set(src ${src} src/MateSystem/MieheLinearElasticMaterial.cpp)
 set(src ${src} src/MateSystem/MieheNeoHookeanMaterial.cpp)
 ### for borden's phase field fracture material 
 set(src ${src} src/MateSystem/BordenLinearElasticMaterial.cpp)
-
+### for user's materials
+set(src ${src} src/MateSystem/UserMaterial1.cpp)
 
 
 
