@@ -52,9 +52,9 @@ void ElmtSystem::UserElmt1(const int &isw,const int &nDim,const int &nNodes,
     }
     else if(isw==9){
         // do projection
-        Proj[0]=ScalarMaterials[0]*gpGradU[0](1);
-        Proj[1]=ScalarMaterials[0]*gpGradU[0](2);
-        Proj[2]=ScalarMaterials[0]*gpGradU[0](3);
+        Proj[0]=gpGradU[0](1);
+        Proj[1]=gpGradU[0](2);
+        Proj[2]=gpGradU[0](3);
         Proj[3]=gpU[0];
         Proj[4]=t*dt;
         Proj[5]=gpCoord(1);
