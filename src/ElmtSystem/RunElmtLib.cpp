@@ -78,6 +78,12 @@ void ElmtSystem::RunElmtLib(const int &isw,const ElmtType &iuel,const int &nDim,
                 ScalarMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
+    case ElmtType::User1Elmt:
+        UserElmt1(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
+                shp,
+                ScalarMaterials,Rank2Materials,Rank4Materials,
+                gpHist,gpHistOld,gpProj,localK,localR);
+        break;
     default:
         PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported element type in uel                      !!!   ***\n");
         Msg_AsFem_Exit();

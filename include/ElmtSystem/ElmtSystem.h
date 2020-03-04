@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2019
+//* All rights reserved, Yang Bai @ CopyRight 2020
 //* https://github.com/walkandthinker/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -183,6 +183,21 @@ private:
     //*** Miehe's phase field fracture model
     //***********************************************
     void BordenFracture(const int &isw,const int &nDim,const int &nNodes,
+                const double &t,const double &dt,const double (&ctan)[2],
+                const Vector3d &gpCoord,
+                const vector<double> &gpU,const vector<double> &gpV,
+                const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                const ShapeFun &shp,
+                const vector<double> &ScalarMaterials,
+                const vector<RankTwoTensor> &Rank2Materials,
+                const vector<RankFourTensor> &Rank4Materials,
+                vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                MatrixXd &localK,VectorXd &localR);
+
+    //*******************************************************
+    //*** for User-Defined-Element (UEL) code
+    //*******************************************************
+    void UserElmt1(const int &isw,const int &nDim,const int &nNodes,
                 const double &t,const double &dt,const double (&ctan)[2],
                 const Vector3d &gpCoord,
                 const vector<double> &gpU,const vector<double> &gpV,
