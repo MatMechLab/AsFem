@@ -9,10 +9,6 @@
 name=phi
 [end]
 
-[qpoint]
-  type=gauss
-  order=5
-[end]
 
 [elmts]
   [poisson]

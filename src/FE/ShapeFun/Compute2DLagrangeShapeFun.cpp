@@ -146,13 +146,13 @@ void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,cons
             (*this)(4,2)=-4.0*xi;
 
             (*this)(5,0)= 4.0*xi*eta;
-            (*this)(5,1)= 4.0;
-            (*this)(5,2)= 4.0;
+            (*this)(5,1)= 4.0*eta;
+            (*this)(5,2)= 4.0*xi;
 
             (*this)(6,0)= 4.0*eta*(1.0-xi-eta);
             (*this)(6,1)=-4.0*eta;
             (*this)(6,2)= 4.0*(1-2*eta-xi);
-
+            
             break;
         }
         default:
