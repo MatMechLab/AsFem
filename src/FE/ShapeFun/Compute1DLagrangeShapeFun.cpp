@@ -9,7 +9,7 @@
 
 #include "FE/ShapeFun.h"
 
-void ShapeFun::Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes){
+void ShapeFun::Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes,bool flag){
     _DetJac=0.0;
     switch (GetShapeFunNums()){
         case 2:
@@ -62,7 +62,7 @@ void ShapeFun::Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes){
         PetscPrintf(PETSC_COMM_WORLD,"*** Error: singular element in 1D case                          !!!   ***\n");
         Msg_AsFem_Exit();
     }
-
+    if(!flag) return;
     for(int i=1;i<=GetShapeFunNums();i++){
         (*this)(i,1)=(*this)(i,1)/_DetJac;
         _shape_value[i-1]=(*this)(i,0);

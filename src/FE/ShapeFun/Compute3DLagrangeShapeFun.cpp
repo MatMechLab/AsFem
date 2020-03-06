@@ -12,7 +12,8 @@
 void ShapeFun::Compute3DLagrangeShapeFun(const double &xi,
                                          const double &eta,
                                          const double &zeta,
-                                         const Nodes &nodes){
+                                         const Nodes &nodes,
+                                         bool flag){
     switch (GetMeshType()){
         case MeshType::HEX8:
         {
@@ -371,6 +372,8 @@ void ShapeFun::Compute3DLagrangeShapeFun(const double &xi,
         PetscPrintf(PETSC_COMM_WORLD,"*** Error: singular element in 3D case                          !!!   ***\n");
         Msg_AsFem_Exit();
     }
+
+    if(!flag) return;// if we do not use the natural coorinate (x,y,z) then stop here and return
 
     // taken from: http://mathworld.wolfram.com/MatrixInverse.html
     _XJac[0][0]=(_Jac[1][1]*_Jac[2][2]-_Jac[1][2]*_Jac[2][1])/_DetJac;

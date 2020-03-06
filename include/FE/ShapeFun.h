@@ -40,9 +40,9 @@ public:
     ShapeFun();
     ShapeFun(int dim,MeshType meshtype);
     void PreCalc();
-    void Calc(const double &xi,const Nodes &nodes);// for 1D case
-    void Calc(const double &xi,const double &eta,const Nodes &nodes);// for 2D case
-    void Calc(const double &xi,const double &eta,const double &zeta,const Nodes &nodes);
+    void Calc(const double &xi,const Nodes &nodes,bool flag=true);// for 1D case
+    void Calc(const double &xi,const double &eta,const Nodes &nodes,bool flag=true);// for 2D case
+    void Calc(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,bool flag=true);
 
 
     inline double shape_value(const int &i) const{
@@ -77,9 +77,9 @@ public:
 
 
 private:
-    void Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes);
-    void Compute2DLagrangeShapeFun(const double &xi,const double &eta,const Nodes &nodes);
-    void Compute3DLagrangeShapeFun(const double &xi,const double &eta,const double &zeta,const Nodes &nodes);
+    void Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes,bool flag=true);
+    void Compute2DLagrangeShapeFun(const double &xi,const double &eta,const Nodes &nodes,bool flag=true);
+    void Compute3DLagrangeShapeFun(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,bool flag=true);
 
 
 private:

@@ -9,7 +9,7 @@
 
 #include "FE/ShapeFun.h"
 
-void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,const Nodes &nodes){
+void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,const Nodes &nodes,bool flag){
     _DetJac=0.0;
     switch (GetMeshType()){
         case MeshType::QUAD4:
@@ -180,6 +180,8 @@ void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,cons
         PetscPrintf(PETSC_COMM_WORLD,"*** Error: singular element in 2D case                          !!!   ***\n");
         Msg_AsFem_Exit();
     }
+
+    if(!flag) return;// if we do not use the natural coorinate (x,y,z) then stop here and return
 
     _Jac[0][0]= _dxdxi;_Jac[0][1]= _dydxi;
     _Jac[1][0]=_dxdeta;_Jac[1][1]=_dydeta;
