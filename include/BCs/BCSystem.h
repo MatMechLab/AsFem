@@ -98,6 +98,8 @@ private:
 
     PetscReal _xi,_eta,_JxW;
     Nodes _elNodes;
+    double _xs[3][3],_dist;
+    Vector3d _normals;
     Vec _Useq;
     VecScatter _scatteru;
 };

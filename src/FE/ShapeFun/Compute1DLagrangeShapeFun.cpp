@@ -62,9 +62,10 @@ void ShapeFun::Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes,boo
         PetscPrintf(PETSC_COMM_WORLD,"*** Error: singular element in 1D case                          !!!   ***\n");
         Msg_AsFem_Exit();
     }
-    if(!flag) return;
     for(int i=1;i<=GetShapeFunNums();i++){
-        (*this)(i,1)=(*this)(i,1)/_DetJac;
+        if(flag){
+            (*this)(i,1)=(*this)(i,1)/_DetJac;
+        }
         _shape_value[i-1]=(*this)(i,0);
         _shape_grad[i-1].setZero();
         _shape_grad[i-1](1)=(*this)(i,1);

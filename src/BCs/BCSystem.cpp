@@ -13,4 +13,5 @@ BCSystem::BCSystem(){
     _BCBlockList.clear();
     _nBCBlocks=0;
     _PenaltyFactor=1.0;
+    _normals=0.0;
 }

@@ -181,7 +181,7 @@ void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,cons
         Msg_AsFem_Exit();
     }
 
-    if(!flag) return;// if we do not use the natural coorinate (x,y,z) then stop here and return
+    
 
     _Jac[0][0]= _dxdxi;_Jac[0][1]= _dydxi;
     _Jac[1][0]=_dxdeta;_Jac[1][1]=_dydeta;
@@ -193,9 +193,12 @@ void ShapeFun::Compute2DLagrangeShapeFun(const double &xi,const double &eta,cons
 
     double temp;
     for(int i=1;i<=GetShapeFunNums();i++){
-        temp=(*this)(i,1)*_XJac[0][0]+(*this)(i,2)*_XJac[0][1];
-        (*this)(i,2)=(*this)(i,1)*_XJac[1][0]+(*this)(i,2)*_XJac[1][1];
-        (*this)(i,1)=temp;
+
+        if(flag){
+            temp=(*this)(i,1)*_XJac[0][0]+(*this)(i,2)*_XJac[0][1];
+            (*this)(i,2)=(*this)(i,1)*_XJac[1][0]+(*this)(i,2)*_XJac[1][1];
+            (*this)(i,1)=temp;
+        }
 
        _shape_value[i-1]=(*this)(i,0);
        _shape_grad[i-1].setZero();

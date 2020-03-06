@@ -41,7 +41,7 @@ void BCSystem::AddBCBlock(BCBlock &bcblock){
             _nBCBlocks=int(_BCBlockList.size());
         }
         else{
-            PetscPrintf(PETSC_COMM_WORLD,"*** Error: duplicated [%25s] in [bcs] sub block !!!   ***\n",bcblock._BCBlockName.c_str());
+            PetscPrintf(PETSC_COMM_WORLD,"*** Error: duplicate [%22s] in [bcs] subblock !!!   ***\n",bcblock._BCBlockName.c_str());
             Msg_AsFem_Exit();
         }
     }

@@ -373,7 +373,7 @@ void ShapeFun::Compute3DLagrangeShapeFun(const double &xi,
         Msg_AsFem_Exit();
     }
 
-    if(!flag) return;// if we do not use the natural coorinate (x,y,z) then stop here and return
+    
 
     // taken from: http://mathworld.wolfram.com/MatrixInverse.html
     _XJac[0][0]=(_Jac[1][1]*_Jac[2][2]-_Jac[1][2]*_Jac[2][1])/_DetJac;
@@ -390,21 +390,23 @@ void ShapeFun::Compute3DLagrangeShapeFun(const double &xi,
 
     double temp1,temp2,temp3;
     for(int i=1;i<=GetShapeFunNums();i++){
-        temp1 =(*this)(i,1)*_XJac[0][0]
+
+        if(flag){
+            temp1 =(*this)(i,1)*_XJac[0][0]
               +(*this)(i,2)*_XJac[0][1]
               +(*this)(i,3)*_XJac[0][2];
-
-        temp2 =(*this)(i,1)*_XJac[1][0]
+            temp2 =(*this)(i,1)*_XJac[1][0]
               +(*this)(i,2)*_XJac[1][1]
               +(*this)(i,3)*_XJac[1][2];
-
-        temp3 =(*this)(i,1)*_XJac[2][0]
+              
+            temp3 =(*this)(i,1)*_XJac[2][0]
               +(*this)(i,2)*_XJac[2][1]
               +(*this)(i,3)*_XJac[2][2];
 
-        (*this)(i,1) = temp1;
-        (*this)(i,2) = temp2;
-        (*this)(i,3) = temp3;
+            (*this)(i,1) = temp1;
+            (*this)(i,2) = temp2;
+            (*this)(i,3) = temp3;
+        }
 
         _shape_value[i-1]=(*this)(i,0);
 

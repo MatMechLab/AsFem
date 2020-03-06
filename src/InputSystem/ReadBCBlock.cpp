@@ -85,6 +85,11 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                         bcblock._BCType=BCType::PresetBC;
                         HasElmt=true;
                     }
+                    else if(substr.find("pressure")!=string::npos && substr.length()==8){
+                        bcblock._BCTypeName="pressure";
+                        bcblock._BCType=BCType::PressureBC;
+                        HasElmt=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=SplitStrNum(str);
                         if(number.size()<1){
@@ -144,8 +149,8 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                     }
                     else{
                         Msg_Input_LineError(linenum);
-                        PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported material in [bcs] sub block              !!!   ***\n");
-                        PetscPrintf(PETSC_COMM_WORLD,"***        type= %-25s is invalid       !!!   ***\n",substr.c_str());
+                        PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported type in [bcs] sub block                  !!!   ***\n");
+                        PetscPrintf(PETSC_COMM_WORLD,"***        type= %-29s is invalid       !!!   ***\n",substr.c_str());
                         Msg_AsFem_Exit();
                     }
                 }

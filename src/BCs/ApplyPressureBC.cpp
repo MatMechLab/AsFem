@@ -14,7 +14,7 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                     Vec &RHS){
     PetscInt i,j,e,ee,gpInd;
     PetscInt iInd;
-    PetscScalar value;
+    PetscScalar value=0.0;
     string bcname;
     int rankne,eStart,eEnd;
 
@@ -34,6 +34,7 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
 
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetIthElmtIndexViaPhyName(bcname,e+1);
+            _normals=0.0;
            
             if(_nDim==0){
                 // for point case,(bulk dim=1, bc dim=0)
@@ -49,17 +50,40 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                 // cout<<"e="<<ee<<":";
                 for(gpInd=1;gpInd<=fe._qp_line.GetQpPointsNum();++gpInd){
                     _xi=fe._qp_line(gpInd,1);
-                    fe._shp_line.Calc(_xi,_elNodes);
+                    fe._shp_line.Calc(_xi,_elNodes,false);
                     _JxW=fe._shp_line.GetDetJac()*fe._qp_line(gpInd,0);
-                    // cout<<"gp="<<gpInd<<", xi="<<_xi<<", w="<<fe._qp_line(gpInd,0)<<",J="<<fe._shp_line.GetDetJac()<<endl;
+                    _normals=0.0;
+                    _xs[0][0]=0.0;// dx/dxi
+                    _xs[1][0]=0.0;// dy/dxi
+                    _xs[2][0]=0.0;// dz/dxi
+                    for(i=1;i<=_nNodesPerBCElmt;++i){
+                        _xs[0][0]+=fe._shp_line.shape_grad(i)(1)*_elNodes(i,1);
+                        _xs[1][0]+=fe._shp_line.shape_grad(i)(1)*_elNodes(i,2);
+                        // dont need the following line, now we dont know how to define
+                        // a normal vector of 3 D line
+                        //_xs[2][0]+=fe._shp_line.shape_grad(i)(1)*_elNodes(i,2);
+                        // cout<<fe._shp_line.shape_grad(i)(1)<<" ";
+                    }
+                    // cout<<endl;
+                    _dist=sqrt(_xs[0][0]*_xs[0][0]+_xs[1][0]*_xs[1][0]);
+                    _normals(1)= _xs[1][0]/_dist;// dy/dxi
+                    _normals(2)=-_xs[0][0]/_dist;// dx/dxi
+                    _normals(3)= 0.0;            // dz/dxi==0    
+                    // cout<<"normal="<<_normals(1)<<" "<<_normals(2)<<endl;
+                    
                     for(i=1;i<=_nNodesPerBCElmt;++i){
                         j=mesh.GetIthElmtJthConn(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
-                        value=fe._shp_line.shape_value(i)*bcvalue*_JxW;
+                        // here Traction=P*normal
+                        if(iInd==1){
+                            // for Ux
+                            value=fe._shp_line.shape_value(i)*bcvalue*_normals(1)*_JxW;
+                        }
+                        else if(iInd==2){
+                            // for Uy
+                            value=fe._shp_line.shape_value(i)*bcvalue*_normals(2)*_JxW;
+                        }
                         VecSetValue(RHS,iInd,value,ADD_VALUES);
-                        // cout<<"\tiInd="<<iInd<<",x="<<_elNodes(i,1)<<",y="<<_elNodes(i,2)<<",";
-                        // cout<<"j="<<j<<", gp value="<<value<<", shp=";
-                        // cout<<fe._shp_line.shape_value(i)<<endl;
                     }
                 }
             }
@@ -69,8 +93,37 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                 for(gpInd=1;gpInd<=fe._qp_surface.GetQpPointsNum();++gpInd){
                     _xi=fe._qp_surface(gpInd,1);
                     _eta=fe._qp_surface(gpInd,2);
-                    fe._shp_surface.Calc(_xi,_eta,_elNodes);
+                    fe._shp_surface.Calc(_xi,_eta,_elNodes,false);
                     _JxW=fe._shp_surface.GetDetJac()*fe._qp_surface(gpInd,0);
+
+                    _xs[0][0]=0.0;// dx/dxi
+                    _xs[0][1]=0.0;// dx/deta
+
+                    _xs[1][0]=0.0;// dy/dxi
+                    _xs[1][1]=0.0;// dy/deta
+
+                    _xs[2][0]=0.0;// dz/dxi
+                    _xs[2][1]=0.0;// dz/deta
+                    for(i=1;i<=_nNodesPerBCElmt;++i){
+                        _xs[0][0]+=fe._shp_surface.shape_grad(i)(1)*_elNodes(i,1);
+                        _xs[0][1]+=fe._shp_surface.shape_grad(i)(2)*_elNodes(i,1);
+                        
+                        _xs[1][0]+=fe._shp_surface.shape_grad(i)(1)*_elNodes(i,2);
+                        _xs[1][1]+=fe._shp_surface.shape_grad(i)(2)*_elNodes(i,2);
+
+                        _xs[2][0]+=fe._shp_surface.shape_grad(i)(1)*_elNodes(i,3);
+                        _xs[2][1]+=fe._shp_surface.shape_grad(i)(2)*_elNodes(i,3);
+                    }
+                    _normals(1) = _xs[2-1][1-1]*_xs[3-1][2-1]-_xs[3-1][1-1]*_xs[2-1][2-1];
+                    _normals(2) = _xs[3-1][1-1]*_xs[1-1][2-1]-_xs[1-1][1-1]*_xs[3-1][2-1];
+                    _normals(3) = _xs[1-1][1-1]*_xs[2-1][2-1]-_xs[2-1][1-1]*_xs[1-1][2-1];
+
+                    _dist=sqrt(_normals(1)*_normals(1)+_normals(2)*_normals(2)*_normals(2)+_normals(3)*_normals(3));
+
+                    _normals(1)=_normals(1)/_dist;
+                    _normals(2)=_normals(2)/_dist;
+                    _normals(3)=_normals(3)/_dist;
+
                     for(i=1;i<=_nNodesPerBCElmt;++i){
                         j=mesh.GetIthElmtJthConn(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
