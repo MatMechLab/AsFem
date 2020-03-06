@@ -159,6 +159,7 @@ set(src ${src} src/BCs/ApplyBC.cpp)
 set(src ${src} src/BCs/ApplyDirichletBC.cpp)
 set(src ${src} src/BCs/ApplyPresetBC.cpp)
 set(src ${src} src/BCs/ApplyNeumannBC.cpp)
+set(src ${src} src/BCs/ApplyPressureBC.cpp)
 set(src ${src} src/BCs/ApplyUser1BC.cpp)
 
 

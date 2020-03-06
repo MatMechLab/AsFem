@@ -47,12 +47,19 @@ private:
     //*** apply boundary conditions
     //***********************************
     void ApplyDirichletBC(Mesh &mesh,DofHandler &dofHandler,const PetscInt &DofIndex,const PetscReal &bcvalue,vector<string> bclist,Mat &K,Vec &RHS,Vec &U);
+    
     void ApplyNeumannBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                     const PetscInt &DofIndex,const PetscReal &bcvalue,vector<string> bclist,
                     Vec &RHS);
+
+    void ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
+                    const PetscInt &DofIndex,const PetscReal &bcvalue,vector<string> bclist,
+                    Vec &RHS);
+
     void ApplyPresetBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
             const PetscInt &DofIndex,const PetscReal &bcvalue,vector<string> bclist,const PetscReal (&ctan)[2],
             Mat &K,Vec &RHS,Vec &U);
+            
     void ApplyUser1BC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
             const PetscInt &DofIndex,const PetscReal &bcvalue,vector<string> bclist,const PetscReal (&ctan)[2],
             Mat &K,Vec &RHS,Vec &U);

@@ -9,7 +9,7 @@
 
 #include "BCs/BCSystem.h"
 
-void BCSystem::ApplyNeumannBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
+void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                     const PetscInt &DofIndex,const PetscReal &bcvalue,vector<string> bclist,
                     Vec &RHS){
     PetscInt i,j,e,ee,gpInd;
@@ -18,10 +18,8 @@ void BCSystem::ApplyNeumannBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
     string bcname;
     int rankne,eStart,eEnd;
 
-
     for(unsigned int ibc=0;ibc<bclist.size();++ibc){
         bcname=bclist[ibc];
-
 
         MPI_Comm_size(PETSC_COMM_WORLD,&_size);
         MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
@@ -34,25 +32,9 @@ void BCSystem::ApplyNeumannBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
         _nDim=mesh.GetDimViaPhyName(bcname);
         _nNodesPerBCElmt=mesh.GetBCElmtNodesNumViaPhyName(bcname);
 
-        // cout<<"nDim="<<_nDim
-        //     <<" ,bcname="<<bcname
-        //     <<", bcvalue="<<bcvalue
-        //     <<",eEnd="<<eEnd
-        //     <<",nNodesPerBCElmt="<<_nNodesPerBCElmt
-        //     <<endl;
-
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetIthElmtIndexViaPhyName(bcname,e+1);
-            // cout<<"bcname="<<bcname<<", bcvalue="<<bcvalue<<", e="<<ee<<":eEnd="<<eEnd<<endl;
-            // for(i=1;i<=mesh.GetIthElmtNodesNumViaPhyName(bcname,e+1);++i){
-            //     j=mesh.GetIthElmtJthConn(ee,i);
-            //     iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
-            //     VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
-            //     VecSetValues(RHS,1,&iInd,&fix,INSERT_VALUES);
-            //     MatSetValues(K,1,&iInd,1,&iInd,&_PenaltyFactor,INSERT_VALUES);
-            //     // cout<<iInd+1<<" ";
-            // }
-            // cout<<endl;
+           
             if(_nDim==0){
                 // for point case,(bulk dim=1, bc dim=0)
                 for(i=1;i<=_nNodesPerBCElmt;++i){

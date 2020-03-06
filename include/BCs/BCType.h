@@ -15,6 +15,7 @@ enum class BCType{
     PresetBC,
     DirichletBC,
     NeumannBC,
+    PressureBC,
     User1BC,
     User2BC,
     User3BC,

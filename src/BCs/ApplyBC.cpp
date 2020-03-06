@@ -34,6 +34,9 @@ void BCSystem::ApplyBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const PetscReal 
         else if(it._BCType==BCType::PresetBC){
             ApplyPresetBC(mesh,dofHandler,fe,DofIndex,bcvalue,bclist,ctan,K,RHS,U);
         }
+        else if(it._BCType==BCType::PressureBC){
+            ApplyPressureBC(mesh,dofHandler,fe,DofIndex,bcvalue,bclist,RHS);
+        }
         else if(it._BCType==BCType::User1BC){
             ApplyUser1BC(mesh,dofHandler,fe,DofIndex,bcvalue,bclist,ctan,K,RHS,U);
         }
