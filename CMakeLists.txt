@@ -227,6 +227,8 @@ set(src ${src} src/MateSystem/LinearThermalElasticMaterial.cpp)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
 ### for saint venant material
 set(src ${src} src/MateSystem/SaintVenantMaterial.cpp)
+### for compressive neohookean material
+set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
 
 ### for phase field fracture material 
 set(src ${src} src/MateSystem/MieheLinearElasticMaterial.cpp)
