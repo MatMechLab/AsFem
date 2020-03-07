@@ -25,8 +25,8 @@ void MateSystem::UserMaterial2(const int &nDim,const double &t,const double &dt,
     if(gpHist[0]){}
     if(gpHistOld[0]){}
 
-    if(InputParams.size()<5){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for phasefield fracture, 6 parameters are required   !!!   ***\n");
+    if(InputParams.size()<7){
+        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for phasefield fracture, 7 parameters are required   !!!   ***\n");
         PetscPrintf(PETSC_COMM_WORLD,"***        Emin,Emax,nu,Gc,L,viscosity are expected for Miehe's model!***\n");
         Msg_AsFem_Exit();
     }
