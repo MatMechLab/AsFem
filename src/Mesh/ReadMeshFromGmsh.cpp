@@ -13,7 +13,7 @@ bool Mesh::ReadMeshFromGmsh(){
     ifstream in;
     in.open(_GmshFileName,ios::in);
     if(!in.is_open()){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: can\'t read the .msh file(=%15s)      !!!   ***\n",_GmshFileName.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"*** Error: can\'t read the .msh file(=%20s)      !!!   ***\n",_GmshFileName.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"***        please make sure file name is correct                !!!   ***\n");
         Msg_AsFem_Exit();
     }

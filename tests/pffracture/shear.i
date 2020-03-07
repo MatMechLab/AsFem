@@ -2,7 +2,7 @@
 
 [mesh]
   type=gmsh
-  file=rect.msh
+  file=sample.msh
 [end]
 
 [dofs]
@@ -30,7 +30,7 @@ name=ux uy d
 [mates]
   [frac]
     type=miehelinear
-    params=2.1e2 0.2 2.7e-3 1.0e-2 1.0e-7     1
+    params=2.1e2 0.2 2.7e-3 2.0e-2 1.0e-7     1
     //     E     nu  Gc     L      viscosity  UseHist
     // UseHist=1-->use the stagger solution
     // UseHist=0-->use the fully coupled solution
@@ -70,7 +70,7 @@ name=ux uy d
 [timestepping]
   type=be
   dt=1.0e-4
-  dtmax=1.0e-2
+  dtmax=1.0e-3
   dtmin=5.0e-7
   endtime=1.0e2
   adaptive=true
