@@ -201,5 +201,6 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
     }
 
     SNESLineSearchSetOrder(_linesearch,nonlinearsolverblock._LineSearchOrder);
+    SNESSetForceIteration(_snes,PETSC_TRUE);
 
 }

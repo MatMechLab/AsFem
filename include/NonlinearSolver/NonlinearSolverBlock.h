@@ -25,8 +25,8 @@ public:
     string _SolverName;
     NonlinearSolverType _SolverType;
     LineSearchType _LineSearchType;
-    PetscInt _MaxIters,_LineSearchOrder;
-    PetscReal _RAbsTol,_RRelTol,_STol;
+    PetscInt _MaxIters=50,_LineSearchOrder;
+    PetscReal _RAbsTol=1.0e-7,_RRelTol=1.0e-9,_STol=1.0e-16;
 
     void Reset(){
         // _SolverName="NewtonRaphson";
@@ -38,8 +38,8 @@ public:
         _LineSearchOrder=2;
         _MaxIters=50;
         _RAbsTol=1.0e-7;
-        _RRelTol=1.0e-8;
-        _STol=1.0e-15;// |dx|<|x|*stol
+        _RRelTol=1.0e-9;
+        _STol=1.0e-16;// |dx|<|x|*stol
     }
 
     void PrintNonlinearSolverBlock()const{

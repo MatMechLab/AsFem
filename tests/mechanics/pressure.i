@@ -34,27 +34,27 @@ name=von hydro sig_xx sig_yy sig_xy
   [FixUx]
     type=dirichlet
     dof=ux
-    boundary=right
+    boundary=surface
     value=0.0
   [end]
   [FixUy]
     type=dirichlet
     dof=uy
-    boundary=bottom
+    boundary=surface
     value=0.0
   [end]
   [./P2Ux]
     type=pressure
     dof=ux
     value=-5.0
-    boundary=surface
+    boundary=right
   [end]
-  [./P2Uy]
-    type=pressure
-    dof=uy
-    value=-5.0
-    boundary=surface
-  [end]
+  //[./P2Uy]
+  //  type=pressure
+  //  dof=uy
+  //  value=-5.0
+  //  boundary=surface
+  //[end]
 [end]
 
 [job]
