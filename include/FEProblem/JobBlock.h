@@ -36,6 +36,39 @@ public:
         _IsProjection=false;
         _Interval=0;
     }
+
+    void PrintJobBlockInfo() const{
+        PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
+        PetscPrintf(PETSC_COMM_WORLD,"*** Job block information:                                            ***\n");
+        
+        if(_JobType==JobType::StaticJob){
+            PetscPrintf(PETSC_COMM_WORLD,"***   job type        = static                                        ***\n");
+        }
+        else if(_JobType==JobType::TransientJob){
+            PetscPrintf(PETSC_COMM_WORLD,"***   job type        = transient                                     ***\n");
+        }
+
+        PetscPrintf(PETSC_COMM_WORLD,"***   output interval = %2d                                            ***\n",_Interval);
+        if(_IsDebug){
+            if(_IsDepDebug){
+                PetscPrintf(PETSC_COMM_WORLD,"***   debug           = deep                                          ***\n");
+            }
+            else{
+                PetscPrintf(PETSC_COMM_WORLD,"***   debug           = true                                          ***\n");
+            }
+        }
+        else{
+            PetscPrintf(PETSC_COMM_WORLD,"***   debug           = false                                          ***\n");   
+        }
+        if(_IsProjection){
+            PetscPrintf(PETSC_COMM_WORLD,"***   projection      = true                                          ***\n");
+        }
+        else{
+            PetscPrintf(PETSC_COMM_WORLD,"***   projection      = false                                         ***\n");
+        }
+        PetscPrintf(PETSC_COMM_WORLD,"*************************************************************************\n");
+
+    }
 };
 
 

@@ -200,6 +200,8 @@ void FEProblem::InitFEProblem(){
 
     _outputSystem.PrintOutputSystem();
     
+    _jobBlock.PrintJobBlockInfo();
+    
     _feCtrlInfo.IsDebug=_jobBlock._IsDebug;
     _feCtrlInfo.IsDepDebug=_jobBlock._IsDepDebug;
     _feCtrlInfo.IsProjection=_jobBlock._IsProjection;
