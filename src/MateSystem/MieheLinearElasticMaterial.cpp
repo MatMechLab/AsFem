@@ -100,9 +100,9 @@ void MateSystem::MieheLinearElasticMaterial(const int &nDim,const double &t,cons
     StressNeg=I*lambda*TrNeg+StrainNeg*2.0*mu;
     // now we can have the final stress
     double d=gpU[nDim];
-    if(d<1.0e-3) d=1.0e-3;
-    if(d>1.0-1.0e-3) d=1.0-1.0e-3;
-    const double k=1.0e-4; // to avoid the zero stiffness matrix
+    if(d<1.0e-2) d=1.0e-2;
+    if(d>1.0-1.0e-2) d=1.0-1.0e-2;
+    const double k=1.0e-3; // to avoid the zero stiffness matrix
     Stress=((1-d)*(1-d)+k)*StressPos+StressNeg;
     // store the stress and dstress/dd in rank2 material
     _Rank2Materials[1]=Stress;
@@ -110,9 +110,9 @@ void MateSystem::MieheLinearElasticMaterial(const int &nDim,const double &t,cons
     // for our constitutive law
     double SignPos,SignNeg;
     SignPos=0.0;
-    if(StrainTrace>0.0) SignPos=1.0;
+    if(StrainTrace>=0.0) SignPos=1.0;
     SignNeg=0.0;
-    if(StrainTrace<0.0) SignNeg=1.0;
+    if(StrainTrace<=0.0) SignNeg=1.0;
     _Rank4Materials[0]=(I.CrossDot(I)*lambda*SignPos+ProjPos*2*mu)*((1-d)*(1-d)+k)
                       +(I.CrossDot(I)*lambda*SignNeg+ProjNeg*2*mu);
 
