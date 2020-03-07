@@ -202,5 +202,7 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
 
     SNESLineSearchSetOrder(_linesearch,nonlinearsolverblock._LineSearchOrder);
     SNESSetForceIteration(_snes,PETSC_TRUE);
-
+    SNESSetConvergedReason(_snes,SNES_CONVERGED_FNORM_ABS);
+    SNESSetConvergedReason(_snes,SNES_CONVERGED_FNORM_RELATIVE);
+    
 }

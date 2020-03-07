@@ -70,20 +70,25 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                     _normals(2)=-_xs[0][0]/_dist;// dx/dxi
                     _normals(3)= 0.0;            // dz/dxi==0    
                     // cout<<"normal="<<_normals(1)<<" "<<_normals(2)<<endl;
+                    // cout<<"|normal|="<<sqrt(_normals(1)*_normals(1)+_normals(2)*_normals(2))<<endl;
                     
                     for(i=1;i<=_nNodesPerBCElmt;++i){
                         j=mesh.GetIthElmtJthConn(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
                         // here Traction=P*normal
-                        if(iInd==1){
+                        if(DofIndex==1){
                             // for Ux
+                            // cout<<"Ux="<<bcvalue*_normals(1)<<endl;
                             value=fe._shp_line.shape_value(i)*bcvalue*_normals(1)*_JxW;
+                            // cout<<"i="<<i<<","<<"Ux="<<value<<endl;
+                            VecSetValue(RHS,iInd,value,ADD_VALUES);
                         }
-                        else if(iInd==2){
+                        else if(DofIndex==2){
                             // for Uy
+                            // cout<<"Uy="<<bcvalue*_normals(1)<<endl;
                             value=fe._shp_line.shape_value(i)*bcvalue*_normals(2)*_JxW;
+                            VecSetValue(RHS,iInd,value,ADD_VALUES);
                         }
-                        VecSetValue(RHS,iInd,value,ADD_VALUES);
                     }
                 }
             }
@@ -127,7 +132,15 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                     for(i=1;i<=_nNodesPerBCElmt;++i){
                         j=mesh.GetIthElmtJthConn(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
-                        value=fe._shp_surface.shape_value(i)*bcvalue*_JxW;
+                        if(DofIndex==1){
+                            value=fe._shp_surface.shape_value(i)*bcvalue*_normals(1)*_JxW;
+                        }
+                        else if(DofIndex==2){
+                            value=fe._shp_surface.shape_value(i)*bcvalue*_normals(2)*_JxW;
+                        }
+                        else if(DofIndex==3){
+                            value=fe._shp_surface.shape_value(i)*bcvalue*_normals(3)*_JxW;
+                        }
                         VecSetValue(RHS,iInd,value,ADD_VALUES);
                     }
                 }

@@ -29,32 +29,37 @@ name=von hydro sig_xx sig_yy sig_xy
   [end]
 [end]
 
+[nonlinearsolver]
+  type=newtonls
+  stol=1.0e-32
+[end]
+
 
 [bcs]
   [FixUx]
     type=dirichlet
     dof=ux
-    boundary=surface
+    boundary=right
     value=0.0
   [end]
   [FixUy]
     type=dirichlet
     dof=uy
-    boundary=surface
+    boundary=bottom
     value=0.0
   [end]
-  [./P2Ux]
+  [P2Ux]
     type=pressure
     dof=ux
-    value=-5.0
-    boundary=right
+    value=-0.5
+    boundary=surface
   [end]
-  //[./P2Uy]
-  //  type=pressure
-  //  dof=uy
-  //  value=-5.0
-  //  boundary=surface
-  //[end]
+  [P2Uy]
+    type=pressure
+    dof=uy
+    value=-0.5
+    boundary=surface
+  [end]
 [end]
 
 [job]
