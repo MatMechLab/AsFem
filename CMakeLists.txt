@@ -238,6 +238,7 @@ set(src ${src} src/MateSystem/MieheNeoHookeanMaterial.cpp)
 set(src ${src} src/MateSystem/BordenLinearElasticMaterial.cpp)
 ### for user's materials
 set(src ${src} src/MateSystem/UserMaterial1.cpp)
+set(src ${src} src/MateSystem/UserMaterial2.cpp)
 
 
 
