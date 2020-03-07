@@ -4,8 +4,8 @@
   type=asfem
   dim=3
   zmax=10.0
-  nx=5
-  ny=5
+  nx=4
+  ny=4
   nz=100
   meshtype=hex8
 [end]
@@ -30,7 +30,7 @@ name=von hydro sig_xx sig_yy sig_zz sig_zy sig_zx sig_xy
 [mates]
   [neohookean]
     type=neohookean
-    params=210.0 0.3
+    params=10.0 0.3
   [end]
 [end]
 
@@ -58,13 +58,21 @@ name=von hydro sig_xx sig_yy sig_zz sig_zy sig_zx sig_xy
   [loadUz]
     type=dirichlet
     dof=uz
-    value=0.1
+    value=1.0e-1*t
     boundary=front
   [end]
 [end]
 
+[timestepping]
+  type=be
+  dt=1.0e-5
+  endtime=1.0
+  adaptive=true
+  dtmax=1.0e-1
+[end]
+
 [job]
-  type=static
+  type=transient
   debug=dep
   projection=true
 [end]

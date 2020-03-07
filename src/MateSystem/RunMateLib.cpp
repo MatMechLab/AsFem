@@ -55,6 +55,9 @@ void MateSystem::RunMateLib(const MateType &imate,const int &mateindex,const int
     case MateType::SaintVenantMate:
         SaintVenantMaterial(nDim,t,dt,_MateBlockList[mateindex-1]._Params,gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;
+    case MateType::NeoHookeanMate:
+        NeoHookeanMaterial(nDim,t,dt,_MateBlockList[mateindex-1]._Params,gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+        break;
     case MateType::User1Mate:
         UserMaterial1(nDim,t,dt,_MateBlockList[mateindex-1]._Params,gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;

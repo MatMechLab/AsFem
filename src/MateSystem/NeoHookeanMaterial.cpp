@@ -80,9 +80,9 @@ void MateSystem::NeoHookeanMaterial(const int &nDim,const double &t,const double
     //******************************
     //*** now we calculate our jacobian matrix
     //******************************
-    _Rank4Materials[0]=Cinv.ODot(Cinv)*mu
+    _Rank4Materials[0]=Cinv.ODot(Cinv)*mu*2
                       +Cinv.CrossDot(Cinv)*lambda*(2*J-1)*J
-                      -Cinv.ODot(Cinv)*lambda*(J-1)*J;
+                      -Cinv.ODot(Cinv)*lambda*(J-1)*J*2;
 
 
     // use the fourth one to calculate the vonMises stress
