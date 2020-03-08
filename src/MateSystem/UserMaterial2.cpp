@@ -58,7 +58,7 @@ void MateSystem::UserMaterial2(const int &nDim,const double &t,const double &dt,
     const double Emin=InputParams[0];
     const double Emax=InputParams[1];
     double dE=(Emax-Emin)/2.0;
-    double EE=(Emin+Emax)/2.0+dE*sin(gpCoord(1))*cos(gpCoord(2));
+    double EE=(Emin+Emax)/2.0+dE*sin(2*gpCoord(1)*gpCoord(2));
     double nu=InputParams[2]; // Poisson ratio
     double lambda=EE*nu/((1+nu)*(1-2*nu));// lame const
     double mu=EE/(2*(1+nu));

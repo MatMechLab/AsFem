@@ -13,10 +13,6 @@ name=ux uy d
   name=vonMises Hydro sigxx sigyy sigxy
 [end]
 
-[qpoint]
-  type=gauss
-  order=2
-[end]
 
 [elmts]
   [solids]
@@ -30,7 +26,7 @@ name=ux uy d
 [mates]
   [frac]
     type=user2
-    params=50.0 2.1e2 0.3 2.7e-3 2.0e-2 1.0e-7     1
+    params=1.0 2.1e2 0.3 1.0e-3 2.0e-2 1.0e-7     1
     //     E     nu  Gc     L      viscosity  UseHist
     // UseHist=1-->use the stagger solution
     // UseHist=0-->use the fully coupled solution
@@ -68,14 +64,14 @@ name=ux uy d
   [loadUy]
     type=dirichlet
     dof=uy
-    value=2.0*t
+    value=-2.0*t
     boundary=left
   [end]
 [end]
 
 [timestepping]
   type=be
-  dt=1.0e-5
+  dt=1.0e-4
   dtmax=1.0e-3
   dtmin=5.0e-7
   endtime=1.0e2
