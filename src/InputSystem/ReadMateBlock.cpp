@@ -131,6 +131,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::LinearElasticPhaseFieldFracMate;
                         HasElmt=true;
                     }
+                    else if(substr.find("cohesivepffrac")!=string::npos&&substr.length()==14){
+                        mateBlock._MateTypeName="cohesivepffrac";
+                        mateBlock._MateType=MateType::CohesivePFFracMate;
+                        HasElmt=true;
+                    }
                     else if(substr.find("miehelinear")!=string::npos&&substr.length()==11){
                         mateBlock._MateTypeName="miehelinear";
                         mateBlock._MateType=MateType::MieheLinearElasticFracMate;
