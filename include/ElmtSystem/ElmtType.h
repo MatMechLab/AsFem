@@ -22,6 +22,7 @@ enum class ElmtType{
     ThermalMechanicsElmt,
     PhaseFieldFracElmt,
     MieheFractureElmt,
+    CohesivePFFracElmt,
     BordenFractureElmt,
     User1Elmt,
     User2Elmt,

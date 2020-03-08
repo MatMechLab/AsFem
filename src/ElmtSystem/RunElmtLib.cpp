@@ -72,6 +72,12 @@ void ElmtSystem::RunElmtLib(const int &isw,const ElmtType &iuel,const int &nDim,
                 ScalarMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
+    case ElmtType::CohesivePFFracElmt:
+        CohesivePFFracture(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
+                shp,
+                ScalarMaterials,Rank2Materials,Rank4Materials,
+                gpHist,gpHistOld,gpProj,localK,localR);
+        break;
     case ElmtType::BordenFractureElmt:
         BordenFracture(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,

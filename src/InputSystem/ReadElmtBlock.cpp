@@ -123,6 +123,11 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         elmtBlock._ElmtType=ElmtType::MieheFractureElmt;
                         HasElmtType=true;
                     }
+                    else if(substr.find("cohesivepffrac")!=string::npos && substr.length()==14){
+                        elmtBlock._ElmtTypeName="cohesivepffrac";
+                        elmtBlock._ElmtType=ElmtType::CohesivePFFracElmt;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("bordenfrac")!=string::npos && substr.length()==10){
                         elmtBlock._ElmtTypeName="bordenfrac";
                         elmtBlock._ElmtType=ElmtType::BordenFractureElmt;
