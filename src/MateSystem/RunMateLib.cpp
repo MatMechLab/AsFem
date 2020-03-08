@@ -46,6 +46,9 @@ void MateSystem::RunMateLib(const MateType &imate,const int &mateindex,const int
     case MateType::MieheLinearElasticFracMate:
         MieheLinearElasticMaterial(nDim,t,dt,_MateBlockList[mateindex-1]._Params,gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;
+    case MateType::CohesivePFFracMate:
+        CohesivePFFractureMaterial(nDim,t,dt,_MateBlockList[mateindex-1]._Params,gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+        break;
     case MateType::MieheNeoHookeanFracMate:
         MieheNeoHookeanMaterial(nDim,t,dt,_MateBlockList[mateindex-1]._Params,gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;
