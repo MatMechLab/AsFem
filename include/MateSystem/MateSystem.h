@@ -199,6 +199,16 @@ private:
                           vector<double> &gpHist,const vector<double> &gpHistOld);
 
     //******************************************************
+    //*** For dendrite material (only in 2d !!!)
+    //******************************************************
+    void DendriteMaterial(const int &nDim,const double &t,const double &dt,
+                        const vector<double> InputParams,
+                        const Vector3d &gpCoord,
+                        const vector<double> &gpU,const vector<double> &gpV,
+                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                        vector<double> &gpHist,const vector<double> &gpHistOld);
+
+    //******************************************************
     //*** For User-Defined-Material (umat) code
     //******************************************************
     void UserMaterial1(const int &nDim,const double &t,const double &dt,

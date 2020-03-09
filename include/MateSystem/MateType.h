@@ -35,6 +35,7 @@ enum class MateType{
     MieheNeoHookeanFracMate,
     BordenLinearElasticFracMate,
     NeoHookeanPhaseFieldFracMate,
+    DendriteMate,
     User1Mate,
     User2Mate,
     User3Mate,

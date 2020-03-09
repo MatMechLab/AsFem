@@ -241,7 +241,8 @@ set(src ${src} src/MateSystem/CohesivePFFractureMaterial.cpp)
 ### for user's materials
 set(src ${src} src/MateSystem/UserMaterial1.cpp)
 set(src ${src} src/MateSystem/UserMaterial2.cpp)
-
+### for dendrite material (in 2d)
+set(src ${src} src/MateSystem/DendriteMaterial.cpp)
 
 
 #############################################################
