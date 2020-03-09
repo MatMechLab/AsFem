@@ -22,9 +22,9 @@ void ICSystem::ApplyIC(Mesh &mesh,DofHandler &dofHandler,Vec &U){
             case ICType::RandomIC:
                 ApplyRandomIC(_ICBlockList[iblock-1]._Params,DofIndex,mesh,dofHandler,U);
                 break;
-            // case ICType::CircleIC:
-            //     ApplyCircleIC(_ICBlockList[iblock-1]._Params,DofIndex,mesh,dofHandler,U);
-            //     break;
+            case ICType::CircleIC:
+                ApplyCircleIC(_ICBlockList[iblock-1]._Params,DofIndex,mesh,dofHandler,U);
+                break;
             default:
                 PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported initial condition type                   !!!   ***\n");
                 Msg_AsFem_Exit();

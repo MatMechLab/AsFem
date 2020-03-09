@@ -4,17 +4,18 @@
   type=asfem
   dim=2
   xmin= 0.0
-  xmax=10.0
+  xmax= 8.0
   ymin= 0.0
-  ymax=10.0
-  nx=150
-  ny=150
+  ymax= 8.0
+  nx=250
+  ny=250
   meshtype=quad4
 [end]
 
 [dofs]
-name=F dFdphi K dKdtheta T_x T_y
+name=phi T
 [end]
+
 
 [projection]
   name=vonMises Hydro sigxx sigyy sigxy
@@ -39,10 +40,10 @@ name=F dFdphi K dKdtheta T_x T_y
 [end]
 
 [ics]
-  [const]
-    type=const
-    dof=d
-    params=0.0
+  [circle]
+    type=circle
+    dof=T
+    params=4.0 4.0 0.1 1.0 0.0
   [end]
 [end]
 
@@ -51,7 +52,7 @@ name=F dFdphi K dKdtheta T_x T_y
 
 [timestepping]
   type=be
-  dt=1.0e-5
+  dt=1.0e-4
   dtmax=5.0e-2
   dtmin=5.0e-7
   endtime=1.0e2

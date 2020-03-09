@@ -176,6 +176,7 @@ set(src ${src} src/ICs/PrintICSystemInfo.cpp)
 set(src ${src} src/ICs/ApplyIC.cpp)
 set(src ${src} src/ICs/ApplyConstIC.cpp)
 set(src ${src} src/ICs/ApplyRandomIC.cpp)
+set(src ${src} src/ICs/ApplyCircleIC.cpp)
 
 #############################################################
 ### For Element  System                                   ###

@@ -55,6 +55,7 @@ private:
     //*******************************
     void ApplyConstIC(const vector<double> Params,const int &DofIndex,Mesh &mesh,DofHandler &dofHandler,Vec &U);
     void ApplyRandomIC(const vector<double> Params,const int &DofIndex,Mesh &mesh,DofHandler &dofHandler,Vec &U);
+    void ApplyCircleIC(const vector<double> Params,const int &DofIndex,Mesh &mesh,DofHandler &dofHandler,Vec &U);
 
 private:
     vector<ICBlock> _ICBlockList;
