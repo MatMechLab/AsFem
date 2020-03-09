@@ -82,12 +82,14 @@ set(inc ${inc} include/Utils/MathUtils.h)
 set(inc ${inc} include/Utils/Vector3d.h)
 set(inc ${inc} include/Utils/MatrixXd.h)
 set(inc ${inc} include/Utils/VectorXd.h)
+### For Vector3d
+set(src ${src} src/Utils/Vector3d.cpp)
 ### For rank-2 tensor
 set(inc ${inc} include/Utils/RankTwoTensor.h)
-set(inc ${inc} src/Utils/Tensors/RankTwoTensor.cpp)
+set(src ${src} src/Utils/Tensors/RankTwoTensor.cpp)
 ### For rank-4 tensor
 set(inc ${inc} include/Utils/RankFourTensor.h)
-set(inc ${inc} src/Utils/Tensors/RankFourTensor.cpp)
+set(src ${src} src/Utils/Tensors/RankFourTensor.cpp)
 
 #############################################################
 ### For message printer                                   ###

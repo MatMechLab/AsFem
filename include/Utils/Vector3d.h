@@ -12,11 +12,14 @@
 
 #include <iostream>
 #include <iomanip>
+#include <cmath>
+
+using namespace std;
 
 class Vector3d{
 public:
     Vector3d(const double val=0.0){
-        _vals[0]=val;_vals[1]=val;_vals[2]=0.0;
+        _vals[0]=val;_vals[1]=val;_vals[2]=val;
     }
     inline double& operator()(const int &i){
         return _vals[i-1];
@@ -100,13 +103,7 @@ public:
         temp._vals[2]=_vals[2]*val;
         return temp;
     }
-    // inline friend Vector3d operator*(const double &val,const Vector3d &a)const{
-    //     Vector3d temp(0.0);
-    //     temp._vals[0]=a._vals[0]*val;
-    //     temp._vals[1]=a._vals[1]*val;
-    //     temp._vals[2]=a._vals[2]*val;
-    //     return temp;
-    // }
+    inline friend Vector3d operator*(const double &val,const Vector3d &a);
     inline double operator*(const Vector3d &a){
         return _vals[0]*a._vals[0]
               +_vals[1]*a._vals[1]
