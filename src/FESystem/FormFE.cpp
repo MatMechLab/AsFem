@@ -209,6 +209,7 @@ void FESystem::FormFE(const int &isw,const double &t,const double &dt,const doub
             elmtSystem.RunElmtLib(isw,iuel,nDim,nNodes,t,dt,ctan,_gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
                                   fe._shp_bulk,
                                   mateSystem._ScalarMaterials,
+                                  mateSystem._VectorMaterials,
                                   mateSystem._Rank2Materials,
                                   mateSystem._Rank4Materials,
                                   _gpHist,_gpHistOld,_gpProj,_localK,_localR);

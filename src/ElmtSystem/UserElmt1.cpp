@@ -16,11 +16,13 @@ void ElmtSystem::UserElmt1(const int &isw,const int &nDim,const int &nNodes,
             const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
             const ShapeFun &shp,
             const vector<double> &ScalarMaterials,
+            const vector<Vector3d> &VectorMaterials,
             const vector<RankTwoTensor> &Rank2Materials,
             const vector<RankFourTensor> &Rank4Materials,
             vector<double> &Hist,const vector<double> &HistOld,vector<double> &Proj,
             MatrixXd &K,VectorXd &rhs){
     if(nDim){};
+    if(VectorMaterials.size()) {};
     if(Rank2Materials.size()){};
     if(Rank4Materials.size()){};
     

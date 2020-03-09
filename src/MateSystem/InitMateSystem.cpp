@@ -11,6 +11,7 @@
 
 void MateSystem::InitMateSystem(){
     _ScalarMaterials.resize(50,0.0);
+    _VectorMaterials.resize(50,Vector3d(0.0));
     _Rank2Materials.resize(10,RankTwoTensor(0.0));
     _Rank4Materials.resize(5,RankFourTensor(0.0));
 }

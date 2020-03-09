@@ -12,6 +12,7 @@
 
 MateSystem::MateSystem(){
     _ScalarMaterials.clear();
+    _VectorMaterials.clear();
     _Rank2Materials.clear();
     _Rank4Materials.clear();
     _MateBlockList.clear();

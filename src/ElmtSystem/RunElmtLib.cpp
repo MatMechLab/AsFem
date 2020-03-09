@@ -16,6 +16,7 @@ void ElmtSystem::RunElmtLib(const int &isw,const ElmtType &iuel,const int &nDim,
                 const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                 const ShapeFun &shp,
                 const vector<double> &ScalarMaterials,
+                const vector<Vector3d> &VectorMaterials,
                 const vector<RankTwoTensor> &Rank2Materials,
                 const vector<RankFourTensor> &Rank4Materials,
                 vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
@@ -27,67 +28,67 @@ void ElmtSystem::RunElmtLib(const int &isw,const ElmtType &iuel,const int &nDim,
     case ElmtType::PoissonElmt:
         Poisson(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::DiffusionElmt:
         Diffusion(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::CahnHilliardElmt:
         CahnHilliard(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::MechCahnHilliardElmt:
         MechanicalCahnHilliard(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::TensorCahnHilliardElmt:
         TensorCahnHilliard(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::MechanicsElmt:
         Mechanics(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::ThermalMechanicsElmt:
         ThermalMechanics(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::MieheFractureElmt:
         MieheFracture(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::CohesivePFFracElmt:
         CohesivePFFracture(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::BordenFractureElmt:
         BordenFracture(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     case ElmtType::User1Elmt:
         UserElmt1(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,
-                ScalarMaterials,Rank2Materials,Rank4Materials,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
     default:

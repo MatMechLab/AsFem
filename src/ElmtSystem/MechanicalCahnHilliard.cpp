@@ -16,6 +16,7 @@ void ElmtSystem::MechanicalCahnHilliard(const int &isw,const int &nDim,const int
             const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
             const ShapeFun &shp,
             const vector<double> &ScalarMaterials,
+            const vector<Vector3d> &VectorMaterials,
             const vector<RankTwoTensor> &Rank2Materials,
             const vector<RankFourTensor> &Rank4Materials,
             vector<double> &Hist,const vector<double> &HistOld,vector<double> &Proj,
@@ -25,6 +26,7 @@ void ElmtSystem::MechanicalCahnHilliard(const int &isw,const int &nDim,const int
     //********************************
     if(t||dt){}
     if(gpCoord(1)||gpU[0]||gpV[0]||gpGradU[0](1)||gpGradV[0](1)){}
+    if(VectorMaterials.size()) {}
     if(Rank2Materials.size()||Rank4Materials.size()){}
     //********************************
 

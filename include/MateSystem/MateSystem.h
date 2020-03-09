@@ -221,6 +221,7 @@ public:
     //*** material paramers to be used in uel
     //********************************************
     vector<double> _ScalarMaterials;
+    vector<Vector3d> _VectorMaterials;
     vector<RankTwoTensor> _Rank2Materials;
     vector<RankFourTensor> _Rank4Materials;
 private:

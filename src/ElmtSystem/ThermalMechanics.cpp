@@ -16,6 +16,7 @@ void ElmtSystem::ThermalMechanics(const int &isw,const int &nDim,const int &nNod
             const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
             const ShapeFun &shp,
             const vector<double> &ScalarMaterials,
+            const vector<Vector3d> &VectorMaterials,
             const vector<RankTwoTensor> &Rank2Materials,
             const vector<RankFourTensor> &Rank4Materials,
             vector<double> &Hist,const vector<double> &HistOld,vector<double> &Proj,
@@ -24,6 +25,7 @@ void ElmtSystem::ThermalMechanics(const int &isw,const int &nDim,const int &nNod
     //*** to get rid of warnings
     //********************************
     if(t||dt){}
+    if(VectorMaterials.size()){}
     if(gpCoord(1)||gpU[0]||gpV[0]||gpGradU[0](1)||gpGradV[0](1)){}
     if(Hist.size()||HistOld.size()){}
     //*********************************

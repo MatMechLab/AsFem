@@ -16,13 +16,15 @@ void ElmtSystem::Poisson(const int &isw,const int &nDim,const int &nNodes,
             const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
             const ShapeFun &shp,
             const vector<double> &ScalarMaterials,
+            const vector<Vector3d> &VectorMaterials,
             const vector<RankTwoTensor> &Rank2Materials,
             const vector<RankFourTensor> &Rank4Materials,
             vector<double> &Hist,const vector<double> &HistOld,vector<double> &Proj,
             MatrixXd &K,VectorXd &rhs){
     if(nDim){};
-    if(Rank2Materials.size()){};
-    if(Rank4Materials.size()){};
+    if(VectorMaterials.size()) {}
+    if(Rank2Materials.size()){}
+    if(Rank4Materials.size()){}
     
     // In constpoisson material:
     // _MateValues[0]=1.0;// sigma
