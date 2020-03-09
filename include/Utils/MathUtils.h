@@ -28,6 +28,10 @@ inline double operator*(const Vector3d &a,const Vector3d &b){
     return a(1)*b(1)+a(2)*b(2)+a(3)*b(3);
 }
 
+inline double sign(const double &x){
+    return x >= 0.0 ? 1.0 : -1.0;
+}
+
 // double AtDotB(const Vec &a,const Vec &b){
 //     PetscScalar res;
 //     VecTDot(a,b,&res);
