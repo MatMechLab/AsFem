@@ -5,6 +5,7 @@
   file=sample.msh
 [end]
 
+
 [dofs]
 name=ux uy d
 [end]
