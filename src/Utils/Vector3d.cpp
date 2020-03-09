@@ -9,7 +9,7 @@
 
 #include "Utils/Vector3d.h"
 
-inline Vector3d operator*(const double &val,const Vector3d &a){
+Vector3d operator*(const double &val,const Vector3d &a){
     Vector3d temp(0.0);
     temp._vals[0]=a._vals[0]*val;
     temp._vals[1]=a._vals[1]*val;
