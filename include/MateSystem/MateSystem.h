@@ -26,6 +26,7 @@
 #include "MateType.h"
 #include "MateBlock.h"
 
+#include "Utils/MathUtils.h"
 #include "Utils/Vector3d.h"
 #include "Utils/VectorXd.h"
 #include "Utils/MatrixXd.h"
