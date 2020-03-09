@@ -137,6 +137,14 @@ public:
         return (*this);
     }
 
+    //*** for different norm calculation
+    inline double normsq()const{
+        return _vals[0]*_vals[0]+_vals[1]*_vals[1]+_vals[2]*_vals[2];
+    }
+    inline double norm()const{
+        return sqrt(_vals[0]*_vals[0]+_vals[1]*_vals[1]+_vals[2]*_vals[2]);
+    }
+
 private:
     double _vals[3];
 };
