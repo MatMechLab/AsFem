@@ -133,6 +133,11 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         elmtBlock._ElmtType=ElmtType::BordenFractureElmt;
                         HasElmtType=true;
                     }
+                    else if(substr.find("dendrite")!=string::npos && substr.length()==8){
+                        elmtBlock._ElmtTypeName="dendrite";
+                        elmtBlock._ElmtType=ElmtType::DendriteElmt;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=SplitStrNum(substr);
                         if(number.size()<1){

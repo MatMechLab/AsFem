@@ -196,6 +196,8 @@ set(src ${src} src/ElmtSystem/TensorCahnHilliard.cpp)
 set(src ${src} src/ElmtSystem/MieheFracture.cpp)
 set(src ${src} src/ElmtSystem/CohesivePFFracture.cpp)
 set(src ${src} src/ElmtSystem/BordenFracture.cpp)
+### for dendrite model
+set(src ${src} src/ElmtSystem/DendriteModel.cpp)
 ### for User-Element (UEL)
 set(src ${src} src/ElmtSystem/UserElmt1.cpp)
 

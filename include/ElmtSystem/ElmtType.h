@@ -24,6 +24,7 @@ enum class ElmtType{
     MieheFractureElmt,
     CohesivePFFracElmt,
     BordenFractureElmt,
+    DendriteElmt,
     User1Elmt,
     User2Elmt,
     User3Elmt,

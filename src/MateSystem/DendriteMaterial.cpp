@@ -25,26 +25,28 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     if(gpHist[0]){}
     if(gpHistOld[0]){}
 
-    if(InputParams.size()<6){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for 2d dendrite mate, 6 parameters are required      !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        L, eps, delta, J, theta0 and K are expected          !!!   ***\n");
+    if(InputParams.size()<7){
+        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for 2d dendrite mate, 7 parameters are required      !!!   ***\n");
+        PetscPrintf(PETSC_COMM_WORLD,"***        L,eps,delta,J,theta0,Conduct and eta are expected    !!!   ***\n");
         Msg_AsFem_Exit();
     }
 
     //*********************************************************************
     //*** Input parameters from your input file should be:
-    //*** L     ---> mobility coefficient for Allen-Cahn equation
-    //*** eps   ---> interface thickness parameter
-    //*** delta ---> strength of anisotropy
-    //*** j     ---> number of angles
-    //*** theta0---> reference angle
-    //*** k     ---> thermal conductivity
+    //*** L      ---> mobility coefficient for Allen-Cahn equation
+    //*** eps    ---> interface thickness parameter
+    //*** delta  ---> strength of anisotropy
+    //*** j      ---> number of angles
+    //*** theta0 ---> reference angle
+    //*** conduct---> thermal conductivity
+    //*** eta    ---> latent heat
     double L=InputParams[0];
     double eps=InputParams[1];
     double delta=InputParams[2];
     int J=int(InputParams[3]);
     double theta0=InputParams[4];
     double Conduct=InputParams[5];
+    double eta=InputParams[6];
 
     double F,dFdphi,d2Fdphi2,d2FdphidT;
     double m,dmdT;
@@ -114,14 +116,15 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
 
     _ScalarMaterials[0]=L;
     _ScalarMaterials[1]=Conduct;
-    _ScalarMaterials[2]=F;
-    _ScalarMaterials[3]=dFdphi;
-    _ScalarMaterials[4]=d2Fdphi2;
-    _ScalarMaterials[5]=d2FdphidT;
+    _ScalarMaterials[2]=eta;
+    _ScalarMaterials[3]=F;
+    _ScalarMaterials[4]=dFdphi;
+    _ScalarMaterials[5]=d2Fdphi2;
+    _ScalarMaterials[6]=d2FdphidT;
 
-    _ScalarMaterials[6]=K;
-    _ScalarMaterials[7]=dKdtheta;
-    _ScalarMaterials[8]=d2Kdtheta;
+    _ScalarMaterials[7]=K;
+    _ScalarMaterials[8]=dKdtheta;
+    _ScalarMaterials[9]=d2Kdtheta;
 
     _VectorMaterials[0]=dkdgradphi;
     _VectorMaterials[1]=ddkdgradphi;

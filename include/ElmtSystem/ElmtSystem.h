@@ -218,6 +218,22 @@ private:
                 const vector<RankFourTensor> &Rank4Materials,
                 vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
+    
+    //***********************************************
+    //*** For 2D dendrite model
+    //***********************************************
+    void DendriteModel(const int &isw,const int &nDim,const int &nNodes,
+                const double &t,const double &dt,const double (&ctan)[2],
+                const Vector3d &gpCoord,
+                const vector<double> &gpU,const vector<double> &gpV,
+                const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                const ShapeFun &shp,
+                const vector<double> &ScalarMaterials,
+                const vector<Vector3d> &VectorMaterials,
+                const vector<RankTwoTensor> &Rank2Materials,
+                const vector<RankFourTensor> &Rank4Materials,
+                vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                MatrixXd &localK,VectorXd &localR);
 
     //*******************************************************
     //*** for User-Defined-Element (UEL) code

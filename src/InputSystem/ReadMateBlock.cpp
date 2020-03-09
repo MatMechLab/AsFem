@@ -156,6 +156,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::LinearElasticCahnHilliardMate;
                         HasElmt=true;
                     }
+                    else if(substr.find("dendrite")!=string::npos&&substr.length()==8){
+                        mateBlock._MateTypeName="dendrite";
+                        mateBlock._MateType=MateType::DendriteMate;
+                        HasElmt=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=SplitStrNum(substr);
                         if(number.size()<1){
