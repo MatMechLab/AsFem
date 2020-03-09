@@ -42,7 +42,7 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     double eps=InputParams[1];
     double delta=InputParams[2];
     int J=int(InputParams[3]);
-    double K=InputParams[4];
+    double Conduct=InputParams[4];
 
     double F,dFdphi,d2Fdphi2,d2FdphidT;
     double m,dmdT;
@@ -50,6 +50,7 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     double phi,T;
     double gradphix,gradphiy;
     const double PI=3.14159265359;
+    double K,dK,d2K;// interfacial term and its derivative
 
     phi=gpU[0];
     gradphix=gpGradU[0](1);
@@ -69,8 +70,57 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     //*** now we do the normal vector's derivative
     //******************************************************
     double theta,dthetadn;
-    double n,dndgradphi;
-    Vector3d dkdgradphi,ddkdgradphi;
+    double n,nsq;
+    double tol=1.0e-9;
+    Vector3d dkdgradphi,ddkdgradphi,v;
+    Vector3d dndgradphi;
 
-    n=gradphix/gpGradU[0];
+    n=0.0;
+    nsq=gpGradU[0].normsq();
+    if(nsq>tol){
+        n=gpGradU[0](1)/gpGradU[0].norm();
+    }
+
+    if(n>1.0-tol){
+        n=1.0-tol;
+    }
+    
+    if(n<-(1.0-tol)){
+        n=-(1.0-tol);
+    }
+
+    theta=acos(n)*sign(gpGradU[0](2));
+
+    dthetadn=sign(gpGradU[0](2))/sqrt(1.0-n*n);
+
+    dndgradphi=0.0;
+    if(nsq>tol){
+        dndgradphi(1)= gradphiy*gradphiy/(gpGradU[0].norm()*gpGradU[0].normsq());
+        dndgradphi(2)=-gradphix*gradphiy/(gpGradU[0].norm()*gpGradU[0].normsq());
+    }    
+
+    K=eps*(1.0+delta*cos(J*(theta-theta0*PI/180.0)));
+    dK=-eps*delta*J*sin(J*(theta-theta0*PI/180.0));
+    d2K=-eps*delta*J*J*cos(J*(theta-theta0*PI/180.0));
+
+    dkdgradphi=dK*dthetadn*dndgradphi;
+    ddkdgradphi=d2K*dthetadn*dndgradphi;
+
+    v(1)=-gradphiy;
+    v(2)= gradphix;
+    v(3)= 0.0;
+
+    _ScalarMaterials[0]=L;
+    _ScalarMaterials[1]=dFdphi;
+    _ScalarMaterials[2]=d2Fdphi2;
+    _ScalarMaterials[3]=d2FdphidT;
+
+    _ScalarMaterials[4]=K;
+    _ScalarMaterials[5]=dK;
+    _ScalarMaterials[6]=d2K;
+
+    _VectorMaterials[0]=dkdgradphi;
+    _VectorMaterials[1]=ddkdgradphi;
+    _VectorMaterials[2]=v;
+    
 }
