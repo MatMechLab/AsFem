@@ -78,7 +78,7 @@ void ElmtSystem::DendriteModel(const int &isw,const int &nDim,const int &nNodes,
                     dVdphi(2)= shp.shape_grad(j)(1);
                     dVdphi(3)= 0.0;
                     K(2*i-1,2*j-1)+=L*(dkdgradphi*shp.shape_grad(j))*dkdtheta*(V*shp.shape_grad(i))*ctan[0]
-                                   +L*k*(ddkdgradphi*shp.shape_grad(i))*(V*shp.shape_grad(i))*ctan[0]
+                                   +L*k*(ddkdgradphi*shp.shape_grad(j))*(V*shp.shape_grad(i))*ctan[0]
                                    +L*k*dkdtheta*(dVdphi*shp.shape_grad(i))*ctan[0]
                                    +L*2*k*(dkdgradphi*shp.shape_grad(j))*(gpGradU[0]*shp.shape_grad(i))*ctan[0]
                                    +L*k*k*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[0]
@@ -91,9 +91,9 @@ void ElmtSystem::DendriteModel(const int &isw,const int &nDim,const int &nNodes,
                     K(2*i  ,2*j  )+=shp.shape_value(j)*shp.shape_value(i)*ctan[1];
 
                     // Kt,t
-                    K(2*i  ,2*j  )+=Conduct*shp.shape_grad(j)*shp.shape_grad(i)*ctan[0];
+                    K(2*i  ,2*j  )+=Conduct*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[0];
                     // Kt,phi
-                    K(2*i  ,2*j-1)+=-eta*shp.shape_grad(j)*shp.shape_grad(i)*ctan[1];
+                    K(2*i  ,2*j-1)+=-eta*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[1];
                 }
             }
         }

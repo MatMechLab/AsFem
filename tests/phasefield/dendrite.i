@@ -9,7 +9,7 @@
   ymax= 8.0
   nx=250
   ny=250
-  meshtype=quad4
+  meshtype=quad8
 [end]
 
 [dofs]
@@ -17,8 +17,9 @@ name=phi T
 [end]
 
 
+
 [projection]
-  name=vonMises Hydro sigxx sigyy sigxy
+  name=F dFdphi K dkdtheta T_x T_y
 [end]
 
 
@@ -34,16 +35,17 @@ name=phi T
 [mates]
   [dendrite]
     type=dendrite
-    params=3333.33 0.01 0.04  6 90.0   1.0     1.8
-    //     L       eps  delta J theta0 Conduct eta
+    params=3333.33 0.01 0.04  6 90.0   1.0      1.8
+    //     L       eps  delta J theta0 Conduct  eta
   [end]
 [end]
 
 [ics]
   [circle]
     type=circle
-    dof=T
-    params=4.0 4.0 0.1 1.0 0.0
+    dof=phi
+    params=4.0 4.0 0.07 0.1  1.0 0.0
+    //     x0  y0  R    rwid vin vout
   [end]
 [end]
 
@@ -52,7 +54,7 @@ name=phi T
 
 [timestepping]
   type=be
-  dt=1.0e-4
+  dt=1.0e-5
   dtmax=5.0e-2
   dtmin=5.0e-7
   endtime=1.0e2

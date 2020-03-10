@@ -80,9 +80,9 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     Vector3d dndgradphi;
 
     n=0.0;
-    nsq=gpGradU[0].normsq();
+    nsq=gradphix*gradphix+gradphiy*gradphiy;
     if(nsq>tol){
-        n=gpGradU[0](1)/gpGradU[0].norm();
+        n=gradphix/sqrt(nsq);
     }
 
     if(n>1.0-tol){
@@ -93,14 +93,15 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
         n=-(1.0-tol);
     }
 
-    theta=acos(n)*sign(gpGradU[0](2));
+    theta=acos(n)*sign(gradphiy);
 
-    dthetadn=-sign(gpGradU[0](2))/sqrt(1.0-n*n);
+    dthetadn=-sign(gradphiy)/sqrt(1.0-n*n);
 
     dndgradphi=0.0;
     if(nsq>tol){
-        dndgradphi(1)= gradphiy*gradphiy/(gpGradU[0].norm()*gpGradU[0].normsq());
-        dndgradphi(2)=-gradphix*gradphiy/(gpGradU[0].norm()*gpGradU[0].normsq());
+        dndgradphi(1)= gradphiy*gradphiy/(nsq*sqrt(nsq));
+        dndgradphi(2)=-gradphix*gradphiy/(nsq*sqrt(nsq));
+        dndgradphi(3)=0.0;
     }    
 
     K=eps*(1.0+delta*cos(J*(theta-theta0*PI/180.0)));

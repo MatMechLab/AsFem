@@ -10,9 +10,9 @@
 #include "ICs/ICSystem.h"
 
 void ICSystem::ApplyCircleIC(const vector<double> Params,const int &DofIndex,Mesh &mesh,DofHandler &dofHandler,Vec &U){
-    if(Params.size()<5){
+    if(Params.size()<6){
         PetscPrintf(PETSC_COMM_WORLD,"*** Error: for circle IC, you need at least 5 params            !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        x0,y0,radius,valuein,valueout are expected           !!!   ***\n");
+        PetscPrintf(PETSC_COMM_WORLD,"***        x0,y0,radius,rwidth,valuein,valueout are expected    !!!   ***\n");
         Msg_AsFem_Exit();
     }
 
@@ -27,19 +27,24 @@ void ICSystem::ApplyCircleIC(const vector<double> Params,const int &DofIndex,Mes
     if(_rank==_size-1) iEnd=mesh.GetNodesNum();
     PetscScalar value;
 
-    double x,y,x0,y0,radius,dist,val1,val2;
+    double x,y,x0,y0,radius,rwidth,theta,dist,val1,val2;
+    const double PI=3.14159265359;
 
     x0=Params[0];y0=Params[1];
-    radius=Params[2];
-    val1=Params[3];val2=Params[4];
+    radius=Params[2];rwidth=Params[3];
+    val1=Params[4];val2=Params[5];
 
     for(ii=iStart;ii<iEnd;++ii){
         i=ii+1;
         x=mesh.GetIthNodeJthCoord(i,1);
         y=mesh.GetIthNodeJthCoord(i,2);
         dist=sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0));
-        if(dist<=radius){
+        if(dist<=radius-rwidth/2.0){
             value=val1;
+        }
+        else if(dist<radius+rwidth/2.0 && dist>radius-rwidth/2.0){
+            theta=(dist-radius+rwidth/2.0)/rwidth;
+            value=val2+(val1-val2)*(1+cos(theta*PI))/2.0;
         }
         else{
             value=val2;
