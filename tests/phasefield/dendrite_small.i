@@ -4,18 +4,17 @@
   type=asfem
   dim=2
   xmin= 0.0
-  xmax= 2.0
+  xmax= 3.0
   ymin= 0.0
-  ymax= 2.0
-  nx=250
-  ny=250
-  meshtype=quad9
+  ymax= 3.0
+  nx=300
+  ny=300
+  meshtype=quad4
 [end]
 
 [dofs]
 name=phi T
 [end]
-
 
 
 [projection]
@@ -35,8 +34,8 @@ name=phi T
 [mates]
   [dendrite]
     type=dendrite
-    params=500.0 0.01 0.04  4 90.0   1.0      1.8
-    //     L     eps  delta J theta0 Conduct  eta
+    params=3333.3 0.01 0.04  6 90.0   1.0      1.8
+    //     L      eps  delta J theta0 Conduct  eta
   [end]
 [end]
 
@@ -44,7 +43,7 @@ name=phi T
   [circle]
     type=circle
     dof=phi
-    params=1.0 1.0 0.05 0.05  1.0 0.0
+    params=1.5 1.5 0.05 0.05  1.0 0.0
     //     x0  y0  R    rwid vin vout
   [end]
 [end]
@@ -54,7 +53,7 @@ name=phi T
 
 [timestepping]
   type=be
-  dt=5.0e-4
+  dt=2.0e-4
   dtmax=5.0e-2
   dtmin=5.0e-7
   endtime=1.0e2

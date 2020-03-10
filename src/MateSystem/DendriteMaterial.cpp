@@ -77,7 +77,8 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     //******************************************************
     double theta,dthetadn;
     double n,nsq;
-    double tol=1.0e-14;
+    const double tol=1.0e-9;
+    const double threshold=1.0-tol;
     Vector3d dkdgradphi,ddkdgradphi,v;
     Vector3d dndgradphi;
 
@@ -87,12 +88,12 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
         n=gradphix/sqrt(nsq);
     }
 
-    if(n>1.0-tol){
-        n=1.0-tol;
+    if(n>threshold){
+        n=threshold;
     }
     
-    if(n<-(1.0-tol)){
-        n=-(1.0-tol);
+    if(n<-threshold){
+        n=-threshold;
     }
 
     theta=acos(n)*sign(gradphiy);

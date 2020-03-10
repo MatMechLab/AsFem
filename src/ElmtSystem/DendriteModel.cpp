@@ -94,7 +94,7 @@ void ElmtSystem::DendriteModel(const int &isw,const int &nDim,const int &nNodes,
                     // Kt,t
                     K(2*i  ,2*j  )+=Conduct*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[0];
                     // Kt,phi
-                    K(2*i  ,2*j-1)+=-eta*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[1];
+                    K(2*i  ,2*j-1)+=-eta*shp.shape_value(j)*shp.shape_value(i)*ctan[1];
                 }
             }
         }
