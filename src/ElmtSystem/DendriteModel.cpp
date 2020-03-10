@@ -60,6 +60,7 @@ void ElmtSystem::DendriteModel(const int &isw,const int &nDim,const int &nNodes,
                            +L*k*dkdtheta*(V*shp.shape_grad(i))
                            +L*k*k*(gpGradU[0]*shp.shape_grad(i))
                            +L*dFdphi*shp.shape_value(i);
+                // cout<<"i="<<i<<":"<<L*k*dkdtheta*(V*shp.shape_grad(i))<<endl;
                 // R_T
                 rhs(2*i  )+=gpV[1]*shp.shape_value(i)
                            +Conduct*(gpGradU[1]*shp.shape_grad(i))

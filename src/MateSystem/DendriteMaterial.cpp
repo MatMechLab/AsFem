@@ -48,6 +48,8 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     double Conduct=InputParams[5];
     double eta=InputParams[6];
 
+    // cout<<"L="<<L<<", eps="<<eps<<", delta="<<delta<<", J="<<J<<", theta="<<theta0<<endl;
+
     double F,dFdphi,d2Fdphi2,d2FdphidT;
     double m,dmdT;
 
@@ -75,7 +77,7 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     //******************************************************
     double theta,dthetadn;
     double n,nsq;
-    double tol=1.0e-9;
+    double tol=1.0e-14;
     Vector3d dkdgradphi,ddkdgradphi,v;
     Vector3d dndgradphi;
 
@@ -111,9 +113,14 @@ void MateSystem::DendriteMaterial(const int &nDim,const double &t,const double &
     dkdgradphi=dKdtheta*dthetadn*dndgradphi;
     ddkdgradphi=d2Kdtheta*dthetadn*dndgradphi;
 
+
+    // cout<<"dndgradphi="<<dndgradphi(1)<<", "<<dndgradphi(2)<<endl;
+
     v(1)=-gradphiy;
     v(2)= gradphix;
     v(3)= 0.0;
+
+    
 
     _ScalarMaterials[0]=L;
     _ScalarMaterials[1]=Conduct;

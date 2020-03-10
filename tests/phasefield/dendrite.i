@@ -7,8 +7,8 @@
   xmax= 8.0
   ymin= 0.0
   ymax= 8.0
-  nx=250
-  ny=250
+  nx=200
+  ny=200
   meshtype=quad8
 [end]
 
@@ -35,7 +35,7 @@ name=phi T
 [mates]
   [dendrite]
     type=dendrite
-    params=3333.33 0.01 0.04  6 90.0   1.0      1.8
+    params=3333.33 0.02 0.04  6 90.0   1.0      1.8
     //     L       eps  delta J theta0 Conduct  eta
   [end]
 [end]
@@ -44,7 +44,7 @@ name=phi T
   [circle]
     type=circle
     dof=phi
-    params=4.0 4.0 0.07 0.1  1.0 0.0
+    params=4.0 4.0 0.08 0.12  1.0 0.0
     //     x0  y0  R    rwid vin vout
   [end]
 [end]
