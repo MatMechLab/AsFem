@@ -18,14 +18,14 @@ bool InputSystem::ReadDofsBlock(ifstream &in,string str,int &linenum,DofHandler 
     vector<string> namelist;
     // now str already contains [dofs]
     getline(in,str);linenum+=1;
-    str=StrToLower(str);
+    // str=StrToLower(str);
     namelist.clear();
     
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
         if(IsCommentLine(str)||str.length()<1){
             getline(in,str);linenum+=1;
-            str=StrToLower(str);
+            // str=StrToLower(str);
             continue;
         }
         if(str.find("name=")!=string::npos||

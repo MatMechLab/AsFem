@@ -12,18 +12,18 @@
   meshtype=quad4
 [end]
 
-[projection]
-name=gradphi_x gradphi_y
-[end]
+//[projection]
+//name=gradphi_x gradphi_y
+//[end]
 
 [dofs]
-name=phi
+name=Phi
 [end]
 
 [elmts]
   [poisson]
 	  type=user1
-	  dofs=phi
+	  dofs=Phi
 	  mate=nonlinear
     domain=alldomain
   [end]
@@ -40,7 +40,7 @@ name=phi
 [bcs]
   [fixphi]
     type=dirichlet
-    dof=phi
+    dof=Phi
     boundary=left
     value=1.0
   [end]

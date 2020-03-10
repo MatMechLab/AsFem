@@ -35,7 +35,8 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
     // now str="[bcs]"
     while (linenum<=lastendlinenum){
         getline(in,str);linenum+=1;
-        str=StrToLower(str);
+        str0=str;
+        str=StrToLower(str0);
         str=RemoveStrSpace(str);
         if(IsCommentLine(str)||str.size()<1) continue;
 
@@ -64,9 +65,9 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
             }
             while(str.find("[end]")==string::npos&&str.find("[END]")==string::npos){
                 getline(in,str);linenum+=1;
-                str=StrToLower(str);
-                str0=str;
                 str=RemoveStrSpace(str);
+                str0=str;
+                str=StrToLower(str0);
                 if(IsCommentLine(str)||str.size()<1) continue;
                 if(str.find("type=")!=string::npos){
                     string substr=str.substr(str.find_first_of('=')+1);
@@ -168,7 +169,7 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                         Msg_AsFem_Exit();
                     }
                     else{
-                        bcblock._DofName=str.substr(4);
+                        bcblock._DofName=str0.substr(4);
                         if(!dofHandler.IsValidDofName(bcblock._DofName)){
                             Msg_Input_LineError(linenum);
                             PetscPrintf(PETSC_COMM_WORLD,"*** Error: invalid dof name found in [bcs] sub block            !!!   ***\n");

@@ -35,7 +35,8 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
     // now the str is [elmts]
     while(linenum<=lastendlinenum){
         getline(in,str);linenum+=1;
-        str0=StrToLower(str);
+        str0=str;
+        str=StrToLower(str0);
         str=RemoveStrSpace(str);
         if(IsCommentLine(str)||str.size()<1) continue;
 
@@ -62,8 +63,8 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
             }
             while(str.find("[end]")==string::npos&&str.find("[END]")==string::npos){
                 getline(in,str);linenum+=1;
-                str=StrToLower(str);
                 str0=str;
+                str=StrToLower(str0);
                 str=RemoveStrSpace(str);
 
                 if(IsCommentLine(str)||str.size()<1) {
