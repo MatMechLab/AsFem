@@ -133,6 +133,11 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         elmtBlock._ElmtType=ElmtType::BordenFractureElmt;
                         HasElmtType=true;
                     }
+                    else if(substr.find("thermal")!=string::npos && substr.length()==7){
+                        elmtBlock._ElmtTypeName="thermal";
+                        elmtBlock._ElmtType=ElmtType::ThermalElmt;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("dendrite")!=string::npos && substr.length()==8){
                         elmtBlock._ElmtTypeName="dendrite";
                         elmtBlock._ElmtType=ElmtType::DendriteElmt;

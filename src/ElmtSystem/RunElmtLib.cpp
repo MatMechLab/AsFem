@@ -91,6 +91,12 @@ void ElmtSystem::RunElmtLib(const int &isw,const ElmtType &iuel,const int &nDim,
                 ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                 gpHist,gpHistOld,gpProj,localK,localR);
         break;
+    case ElmtType::ThermalElmt:
+        Thermal(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
+                shp,
+                ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                gpHist,gpHistOld,gpProj,localK,localR);
+        break;
     case ElmtType::User1Elmt:
         UserElmt1(isw,nDim,nNodes,t,dt,ctan,gpCoord,gpU,gpV,gpGradU,gpGradV,
                 shp,

@@ -197,6 +197,8 @@ set(src ${src} src/ElmtSystem/TensorCahnHilliard.cpp)
 set(src ${src} src/ElmtSystem/MieheFracture.cpp)
 set(src ${src} src/ElmtSystem/CohesivePFFracture.cpp)
 set(src ${src} src/ElmtSystem/BordenFracture.cpp)
+### for thermal conduct problem
+set(src ${src} src/ElmtSystem/Thermal.cpp)
 ### for dendrite model
 set(src ${src} src/ElmtSystem/DendriteModel.cpp)
 ### for User-Element (UEL)

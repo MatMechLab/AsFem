@@ -19,6 +19,7 @@ enum class ElmtType{
     TensorCahnHilliardElmt,
     MechCahnHilliardElmt,
     MechanicsElmt,
+    ThermalElmt,
     ThermalMechanicsElmt,
     PhaseFieldFracElmt,
     MieheFractureElmt,
