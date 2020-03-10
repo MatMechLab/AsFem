@@ -250,6 +250,8 @@ set(src ${src} src/MateSystem/UserMaterial1.cpp)
 set(src ${src} src/MateSystem/UserMaterial2.cpp)
 ### for dendrite material (in 2d)
 set(src ${src} src/MateSystem/DendriteMaterial.cpp)
+### for current induced thermal analysis
+set(src ${src} src/MateSystem/CurrentThermalMaterial.cpp)
 
 
 #############################################################

@@ -161,6 +161,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::DendriteMate;
                         HasElmt=true;
                     }
+                    else if(substr.find("currentthermal")!=string::npos&&substr.length()==14){
+                        mateBlock._MateTypeName="currentthermal";
+                        mateBlock._MateType=MateType::CurrentThermalMate;
+                        HasElmt=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=SplitStrNum(substr);
                         if(number.size()<1){
