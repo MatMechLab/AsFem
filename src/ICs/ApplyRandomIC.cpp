@@ -10,14 +10,16 @@
 #include "ICs/ICSystem.h"
 
 void ICSystem::ApplyRandomIC(const vector<double> Params,const int &DofIndex,Mesh &mesh,DofHandler &dofHandler,Vec &U){
-    if(Params.size()<1){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for random, you need at least one param              !!!   ***\n");
+    if(Params.size()<2){
+        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for random, you need at least two param              !!!   ***\n");
         PetscPrintf(PETSC_COMM_WORLD,"***        params=constvalue is expected in [ics]               !!!   ***\n");
         Msg_AsFem_Exit();
     }
 
     PetscRandomCreate(PETSC_COMM_WORLD,&_rnd);
     PetscRandomSetInterval(_rnd,Params[0],Params[1]);
+
+    // cout<<"value="<<Params[0]<<"   , "<<Params[1]<<endl;
 
     int iInd,i,ii;
     MPI_Comm_size(PETSC_COMM_WORLD,&_size);

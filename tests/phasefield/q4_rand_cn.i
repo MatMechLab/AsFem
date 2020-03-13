@@ -7,14 +7,16 @@
   xmax=10.0
   ymin= 0.0
   ymax=10.0
-  nx=100
-  ny=100
-  meshtype=quad4
+  nx=200
+  ny=200
+  meshtype=quad8
 [end]
 
 [dofs]
 name=C Mu
 [end]
+
+
 
 
 [elmts]
@@ -29,7 +31,7 @@ name=C Mu
 [mates]
   [free]
     type=cahnhilliard
-    params=1.0 2.5 0.04
+    params=1.0 2.5 0.06
   [end]
 [end]
 
@@ -42,11 +44,11 @@ name=C Mu
 [end]
 
 [timestepping]
-  type=cn
-  dt=1.0e-6
-  dtmax=1.0e-1
-  opts=4
-  endtime=1.0e2
+  type=be
+  dt=2.0e-5
+  dtmax=5.0e-1
+  opts=5
+  endtime=5.0e2
   adaptive=true
 [end]
 

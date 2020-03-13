@@ -21,7 +21,7 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
 
     bool HasICBlock=false;
     ICBlock icblock;
-    string tempstr,str0;
+    string tempstr,str0,stro;
     vector<double> number;
 
     bool HasElmt=false;
@@ -32,7 +32,9 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
     // now str="[bcs]"
     while (linenum<=lastendlinenum){
         getline(in,str);linenum+=1;
+        str0=str;
         str=RemoveStrSpace(str);
+        stro=str;
         str=StrToLower(str);
         if(IsCommentLine(str)||str.size()<1) continue;
 
@@ -61,9 +63,10 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
             }
             while(str.find("[end]")==string::npos&&str.find("[END]")==string::npos){
                 getline(in,str);linenum+=1;
-                str=StrToLower(str);
                 str0=str;
-                str=RemoveStrSpace(str0);
+                str=RemoveStrSpace(str);
+                stro=str;
+                str=StrToLower(stro);
                 if(IsCommentLine(str)||str.size()<1) continue;
                 if(str.find("type=")!=string::npos){
                     string substr=str.substr(str.find('=')+1);
@@ -163,7 +166,7 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
                         Msg_AsFem_Exit();
                     }
                     else{
-                        icblock._DofName=str.substr(4);
+                        icblock._DofName=stro.substr(4);
                         if(!dofHandler.IsValidDofName(icblock._DofName)){
                             Msg_Input_LineError(linenum);
                             PetscPrintf(PETSC_COMM_WORLD,"*** Error: invalid dof name found in [ics] sub block            !!!   ***\n");
