@@ -53,4 +53,5 @@ name=c
 [job]
   type=transient
   debug=dep
+  interval=2
 [end]

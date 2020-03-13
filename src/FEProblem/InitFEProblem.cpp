@@ -138,6 +138,7 @@ void FEProblem::InitFEProblem(){
     }
     PetscPrintf(PETSC_COMM_WORLD,"***   start to initialize the Nonlinear solver system ...             ***\n");
     _nonlinearsolver.Init(_nonlinearsolverblock);
+    _timesteppingblock._interval=_jobBlock._Interval;
     _timestepping.Init(_timesteppingblock);
     // _timestepping.InitSolver(_nonlinearsolverblock);
     
