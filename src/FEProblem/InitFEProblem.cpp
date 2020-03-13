@@ -140,6 +140,7 @@ void FEProblem::InitFEProblem(){
     _nonlinearsolver.Init(_nonlinearsolverblock);
     _timesteppingblock._interval=_jobBlock._Interval;
     _timestepping.Init(_timesteppingblock);
+    _feCtrlInfo.timesteppingtype=_timesteppingblock._TimeSteppingMethod;
     // _timestepping.InitSolver(_nonlinearsolverblock);
     
     if(_rank==0){

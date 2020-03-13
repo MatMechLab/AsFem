@@ -14,6 +14,8 @@
 
 #include "petsc.h"
 
+#include "TimeStepping/TimeSteppingType.h"
+
 using namespace std;
 
 class FeCtrlInfo{
@@ -26,6 +28,8 @@ public:
     bool IsDebug=true;
     bool IsDepDebug=false;
     bool IsProjection=false;
+
+    TimeSteppingType timesteppingtype=TimeSteppingType::BackWardEuler;
     
 };
 

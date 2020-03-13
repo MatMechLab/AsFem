@@ -109,6 +109,16 @@ public:
 
     void PrintInfo() const;
 
+private:
+    void BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
+                BCSystem &bcSystem,ICSystem &icSystem,
+                ElmtSystem &elmtSystem,MateSystem &mateSystem,
+                EquationSystem &equationSystem,Solution &solution,
+                FE &fe,FESystem &feSystem,
+                OutputSystem &outputSystem,
+                NonlinearSolver &nonlinearsolver,
+                FeCtrlInfo &fectrl);
+
 
 private:
     TS _ts;

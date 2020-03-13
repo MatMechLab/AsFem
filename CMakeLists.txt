@@ -344,6 +344,8 @@ set(src ${src} src/TimeStepping/TimeStepping.cpp)
 set(src ${src} src/TimeStepping/Init.cpp)
 set(src ${src} src/TimeStepping/Stepping.cpp)
 set(src ${src} src/TimeStepping/SteppingNew.cpp)
+### for backward euler
+set(src ${src} src/TimeStepping/BackwardEuler.cpp)
 
 #############################################################
 ### For FE Problem(the top level of AsFem)                ###
