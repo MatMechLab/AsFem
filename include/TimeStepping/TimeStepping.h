@@ -118,6 +118,15 @@ private:
                 OutputSystem &outputSystem,
                 NonlinearSolver &nonlinearsolver,
                 FeCtrlInfo &fectrl);
+        
+    void CrankNicolson(Mesh &mesh,DofHandler &dofHandler,
+                BCSystem &bcSystem,ICSystem &icSystem,
+                ElmtSystem &elmtSystem,MateSystem &mateSystem,
+                EquationSystem &equationSystem,Solution &solution,
+                FE &fe,FESystem &feSystem,
+                OutputSystem &outputSystem,
+                NonlinearSolver &nonlinearsolver,
+                FeCtrlInfo &fectrl);
 
 
 private:

@@ -27,6 +27,11 @@ void TimeStepping::SteppingNew(Mesh &mesh,DofHandler &dofHandler,
                       outputSystem,nonlinearsolver,fectrl);
     }
     else if(_TimeSteppingType==TimeSteppingType::CrankNicolson){
-        //
+        CrankNicolson(mesh,dofHandler,
+                    bcSystem,icSystem,
+                    elmtSystem,mateSystem,
+                    equationSystem,solution,
+                    fe,feSystem,
+                    outputSystem,nonlinearsolver,fectrl);
     }
 }

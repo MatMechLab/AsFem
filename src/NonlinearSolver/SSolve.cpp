@@ -37,18 +37,28 @@ PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     VecWAXPY(user->_solution._V,-1.0,user->_solution._Uold,U);//V=-Uold+Unew
     VecScale(user->_solution._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
 
+    if(user->_fectrlinfo.timesteppingtype==TimeSteppingType::BackWardEuler){
+        // VecCopy(Vec x, Vec y); y = x
+        VecCopy(U,user->_solution._Utemp);
+    }
+    else if(user->_fectrlinfo.timesteppingtype==TimeSteppingType::CrankNicolson){
+        //VecWAXPY(Vec w,PetscScalar a,Vec x,Vec y); w = a ∗ x + y
+        VecWAXPY(user->_solution._Utemp,1.0,U,user->_solution._Uold);
+        VecScale(user->_solution._Utemp,user->_fectrlinfo.ctan[0]);
+    }
+
     user->_feSystem.FormFE(3,user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                            user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,
                            user->_mateSystem,
-                           U,user->_solution._V,
+                           user->_solution._Utemp,user->_solution._V,
                            user->_solution._Hist,user->_solution._HistOld,user->_solution._Proj,
                            user->_equationSystem._AMATRIX,RHS);
     
-    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e5);
+    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e6);
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                         user->_fectrlinfo.t,user->_fectrlinfo.ctan,
-                        user->_equationSystem._AMATRIX,RHS,U);
+                        user->_equationSystem._AMATRIX,RHS,user->_solution._Utemp);
 
     SNESGetMaxNonlinearStepFailures(snes,&i);
 
@@ -67,18 +77,28 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     VecWAXPY(user->_solution._V,-1.0,user->_solution._Uold,U);//V=-Uold+Unew
     VecScale(user->_solution._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
 
+    if(user->_fectrlinfo.timesteppingtype==TimeSteppingType::BackWardEuler){
+        // VecCopy(Vec x, Vec y); y = x
+        VecCopy(U,user->_solution._Utemp);
+    }
+    else if(user->_fectrlinfo.timesteppingtype==TimeSteppingType::CrankNicolson){
+        //VecWAXPY(Vec w,PetscScalar a,Vec x,Vec y); w = a ∗ x + y
+        VecWAXPY(user->_solution._Utemp,1.0,U,user->_solution._Uold);
+        VecScale(user->_solution._Utemp,user->_fectrlinfo.ctan[0]);
+    }
+
     user->_feSystem.FormFE(6,user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                            user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,
                            user->_mateSystem,
-                           U,user->_solution._V,
+                           user->_solution._Utemp,user->_solution._V,
                            user->_solution._Hist,user->_solution._HistOld,user->_solution._Proj,
                            A,user->_equationSystem._RHS);
     
-    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e5);
+    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e6);
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                         user->_fectrlinfo.t,user->_fectrlinfo.ctan,
-                        A,user->_equationSystem._RHS,U);
+                        A,user->_equationSystem._RHS,user->_solution._Utemp);
 
     MatScale(A,-1.0);
     MatGetSize(B,&i,&i);

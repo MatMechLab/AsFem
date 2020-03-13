@@ -346,6 +346,8 @@ set(src ${src} src/TimeStepping/Stepping.cpp)
 set(src ${src} src/TimeStepping/SteppingNew.cpp)
 ### for backward euler
 set(src ${src} src/TimeStepping/BackwardEuler.cpp)
+### for cranck-nicolson method
+set(src ${src} src/TimeStepping/CrankNicolson.cpp)
 
 #############################################################
 ### For FE Problem(the top level of AsFem)                ###
