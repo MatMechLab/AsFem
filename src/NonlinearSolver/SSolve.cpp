@@ -13,7 +13,12 @@ PetscErrorCode Monitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
     MonitorCtx *user=(MonitorCtx*)ctx;
     user->iters=iters;
     user->rnorm=rnorm;
-    SNESGetSolutionNorm(snes,&user->dunorm);
+    if(iters==0){
+        SNESGetSolutionNorm(snes,&user->dunorm);
+    }
+    else{
+        SNESGetUpdateNorm(snes,&user->dunorm);
+    }
     user->enorm=rnorm*user->dunorm;
     if(iters==0){
         user->rnorm0=rnorm;
@@ -21,11 +26,13 @@ PetscErrorCode Monitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
         user->enorm0=user->enorm;
     }
     if(user->IsDepDebug){
-        PetscPrintf(PETSC_COMM_WORLD,"***    SNES solver: iters=%3d , |R|=%14.6e                    ***\n",iters,rnorm);
+        // PetscPrintf(PETSC_COMM_WORLD,"***    SNES solver: iters=%3d , |R|=%14.6e                    ***\n",iters,rnorm);
+        PetscPrintf(PETSC_COMM_WORLD,"***    SNES solver: iters=%3d ,|R|=%14.6e,|dU|=%14.6e ***\n",iters,rnorm,user->dunorm);
     }
     // PetscPrintf(PETSC_COMM_WORLD,"***    SNES solver: iters=%3d ,|R|=%14.6e,|E|=%14.6e,|dU|=%14.6e***\n",iters,rnorm,user->enorm,user->dunorm);
     return 0;
 }
+
 
 PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
@@ -54,7 +61,7 @@ PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx){
                            user->_solution._Hist,user->_solution._HistOld,user->_solution._Proj,
                            user->_equationSystem._AMATRIX,RHS);
     
-    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e6);
+    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                         user->_fectrlinfo.t,user->_fectrlinfo.ctan,
@@ -94,7 +101,7 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
                            user->_solution._Hist,user->_solution._HistOld,user->_solution._Proj,
                            A,user->_equationSystem._RHS);
     
-    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e6);
+    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                         user->_fectrlinfo.t,user->_fectrlinfo.ctan,

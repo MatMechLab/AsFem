@@ -66,6 +66,7 @@ extern PetscErrorCode Monitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx
 extern PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx);
 extern PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx);
 
+extern PetscErrorCode MyConvergent(SNES snes,PetscInt iters,PetscReal xnorm,PetscReal snorm,PetscReal fnorm,SNESConvergedReason *reason, void *cctx);
 
 class NonlinearSolver{
 public:

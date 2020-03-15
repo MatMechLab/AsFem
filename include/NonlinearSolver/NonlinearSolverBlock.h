@@ -25,8 +25,8 @@ public:
     string _SolverName;
     NonlinearSolverType _SolverType;
     LineSearchType _LineSearchType;
-    PetscInt _MaxIters=50,_LineSearchOrder;
-    PetscReal _RAbsTol=1.0e-7,_RRelTol=1.0e-9,_STol=1.0e-16;
+    PetscInt _MaxIters=25,_LineSearchOrder;
+    PetscReal _RAbsTol=1.0e-8,_RRelTol=1.0e-10,_STol=1.0e-16;
 
     void Reset(){
         // _SolverName="NewtonRaphson";
@@ -36,9 +36,9 @@ public:
         _SolverType=NonlinearSolverType::SNESNewtonLs;
         _LineSearchType=LineSearchType::LineSearchDefault;
         _LineSearchOrder=2;
-        _MaxIters=50;
-        _RAbsTol=1.0e-7;
-        _RRelTol=1.0e-9;
+        _MaxIters=25;
+        _RAbsTol=1.0e-8;
+        _RRelTol=1.0e-10;
         _STol=1.0e-16;// |dx|<|x|*stol
     }
 

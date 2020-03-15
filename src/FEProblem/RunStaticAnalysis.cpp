@@ -15,7 +15,9 @@ void FEProblem::RunStaticAnalysis(){
     //                        _bcSystem,_icSystem,_solution,_equationSystem,
     //                        _fe,
     //                        _feSystem);
-    
+    _feCtrlInfo.timesteppingtype=TimeSteppingType::BackWardEuler;
+    _feCtrlInfo.ctan[0]=1.0;
+    _feCtrlInfo.ctan[1]=1.0;
     _nonlinearsolver.SSolve(_mesh,_dofHandler,
                            _elmtSystem,_mateSystem,
                            _bcSystem,_icSystem,_solution,_equationSystem,

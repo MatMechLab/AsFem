@@ -23,10 +23,15 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
     //**** init ksp
     //***********************************
     SNESGetKSP(_snes,&_ksp);
-    KSPSetTolerances(_ksp,1.0e-10,1.0e-10,PETSC_DEFAULT,500000);
+    // KSPSetTolerances(_ksp,1.0e-10,1.0e-20,PETSC_DEFAULT,PETSC_DEFAULT);
     KSPGMRESSetRestart(_ksp,1200);
+    KSPSetType(_ksp,KSPGMRES);
     KSPGetPC(_ksp,&_pc);
     PCSetType(_pc,PCLU);
+    
+    PCFactorSetReuseOrdering(_pc,PETSC_TRUE);
+    // PCFactorSetUseInPlace(_pc,PETSC_TRUE);
+    
 
     KSPSetFromOptions(_ksp);
 
@@ -37,9 +42,10 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
     // SNESQNSetType(_snes,SNES_QN_LBFGS);
 
     SNESSetTolerances(_snes,_RAbsTol,_RRelTol,_STol,_MaxIters,-1);
+    SNESSetDivergenceTolerance(_snes,-1);
     
     
-
+    SNESSetType(_snes,SNESNEWTONLS);
     if(_SolverType==NonlinearSolverType::NewtonRaphson){
         SNESSetType(_snes,SNESNEWTONLS);
         SNESGetLineSearch(_snes,&_linesearch);
@@ -201,8 +207,8 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
     }
 
     SNESLineSearchSetOrder(_linesearch,nonlinearsolverblock._LineSearchOrder);
-    SNESSetForceIteration(_snes,PETSC_TRUE);
-    SNESSetConvergedReason(_snes,SNES_CONVERGED_FNORM_ABS);
-    SNESSetConvergedReason(_snes,SNES_CONVERGED_FNORM_RELATIVE);
+    // SNESSetForceIteration(_snes,PETSC_TRUE);
+    // SNESSetConvergedReason(_snes,SNES_CONVERGED_FNORM_ABS);
+    // SNESSetConvergedReason(_snes,SNES_CONVERGED_FNORM_RELATIVE);
     
 }
