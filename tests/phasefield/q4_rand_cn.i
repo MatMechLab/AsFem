@@ -9,7 +9,7 @@
   ymax=10.0
   nx=200
   ny=200
-  meshtype=quad8
+  meshtype=quad4
 [end]
 
 [dofs]
@@ -44,7 +44,7 @@ name=C Mu
 [end]
 
 [timestepping]
-  type=be
+  type=cn
   dt=2.0e-5
   dtmax=5.0e-1
   opts=5

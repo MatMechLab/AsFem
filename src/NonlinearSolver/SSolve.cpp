@@ -50,7 +50,7 @@ PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     }
     else if(user->_fectrlinfo.timesteppingtype==TimeSteppingType::CrankNicolson){
         //VecWAXPY(Vec w,PetscScalar a,Vec x,Vec y); w = a ∗ x + y
-        VecWAXPY(user->_solution._Utemp,1.0,U,user->_solution._Uold);
+        VecWAXPY(user->_solution._Utemp,1.0,user->_solution._Uold,U);
         VecScale(user->_solution._Utemp,user->_fectrlinfo.ctan[0]);
     }
 
@@ -90,7 +90,7 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     }
     else if(user->_fectrlinfo.timesteppingtype==TimeSteppingType::CrankNicolson){
         //VecWAXPY(Vec w,PetscScalar a,Vec x,Vec y); w = a ∗ x + y
-        VecWAXPY(user->_solution._Utemp,1.0,U,user->_solution._Uold);
+        VecWAXPY(user->_solution._Utemp,1.0,user->_solution._Uold,U);
         VecScale(user->_solution._Utemp,user->_fectrlinfo.ctan[0]);
     }
 
