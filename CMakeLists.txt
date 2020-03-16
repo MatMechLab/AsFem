@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 ###############################################
 ### Set your PETSc path here                ###
 ###############################################
-set(PETSC_DIR "/home/by/Programs/petsc/3.12.3")
+set(PETSC_DIR "/home/by/Programs/petsc/3.12.4")
 set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
 set(Eigen "/home/by/Programs/Eigen-dev")
 

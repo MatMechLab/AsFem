@@ -25,9 +25,12 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
     SNESGetKSP(_snes,&_ksp);
     // KSPSetTolerances(_ksp,1.0e-10,1.0e-20,PETSC_DEFAULT,PETSC_DEFAULT);
     KSPGMRESSetRestart(_ksp,1200);
-    KSPSetType(_ksp,KSPGMRES);
+    KSPSetType(_ksp,KSPPREONLY);
     KSPGetPC(_ksp,&_pc);
+    // PCSetType(_pc,PCLU);
     PCSetType(_pc,PCLU);
+
+    PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
     
     PCFactorSetReuseOrdering(_pc,PETSC_TRUE);
     // PCFactorSetUseInPlace(_pc,PETSC_TRUE);

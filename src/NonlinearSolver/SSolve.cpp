@@ -53,7 +53,6 @@ PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx){
         VecWAXPY(user->_solution._Utemp,1.0,user->_solution._Uold,U);
         VecScale(user->_solution._Utemp,user->_fectrlinfo.ctan[0]);
     }
-
     user->_feSystem.FormFE(3,user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                            user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,
                            user->_mateSystem,
@@ -94,6 +93,13 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
         VecScale(user->_solution._Utemp,user->_fectrlinfo.ctan[0]);
     }
 
+    // int rank;
+    // chrono::high_resolution_clock::time_point mystart,myend;
+    // MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
+    // if(rank==0){
+    //     mystart=chrono::high_resolution_clock::now();
+    // }
+
     user->_feSystem.FormFE(6,user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                            user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,
                            user->_mateSystem,
@@ -106,6 +112,13 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                         user->_fectrlinfo.t,user->_fectrlinfo.ctan,
                         A,user->_equationSystem._RHS,user->_solution._Utemp);
+
+   
+    // if(rank==0){
+    //     myend=chrono::high_resolution_clock::now();
+    // }
+    // PetscPrintf(PETSC_COMM_WORLD,"*** System assemble using time=%14.6e [s] \n",
+    // chrono::duration_cast<std::chrono::microseconds>(myend-mystart).count()/1.0e6);
 
     MatScale(A,-1.0);
     MatGetSize(B,&i,&i);
