@@ -16,10 +16,10 @@ void FEProblem::RunStaticAnalysis(){
     //                        _fe,
     //                        _feSystem);
 
-    chrono::high_resolution_clock::time_point mystart,myend;
-    if(_rank==0){
-        mystart=chrono::high_resolution_clock::now();
-    }
+    // chrono::high_resolution_clock::time_point mystart,myend;
+    // if(_rank==0){
+    //     mystart=chrono::high_resolution_clock::now();
+    // }
 
     _feCtrlInfo.timesteppingtype=TimeSteppingType::BackWardEuler;
     _feCtrlInfo.ctan[0]=1.0;
@@ -48,12 +48,12 @@ void FEProblem::RunStaticAnalysis(){
     PetscPrintf(PETSC_COMM_WORLD,"*** Write result to [%41s] !!!   ***\n",_outputSystem.GetVTUFileName().c_str());
     PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
 
-    if(_rank==0){
-        myend=chrono::high_resolution_clock::now();
-    }
+    // if(_rank==0){
+    //     myend=chrono::high_resolution_clock::now();
+    // }
 
-    PetscPrintf(PETSC_COMM_WORLD,"*** Nonlinear solver using time=%14.6e [s] \n",
-    chrono::duration_cast<std::chrono::microseconds>(myend-mystart).count()/1.0e6);
+    // PetscPrintf(PETSC_COMM_WORLD,"*** Nonlinear solver using time=%14.6e [s] \n",
+    // chrono::duration_cast<std::chrono::microseconds>(myend-mystart).count()/1.0e6);
 
     //************************************************************************************
     //*** this is for performance test(just assemble, dont solve the equations!!!)
