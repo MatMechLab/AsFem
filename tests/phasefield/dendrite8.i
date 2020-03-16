@@ -9,7 +9,7 @@
   ymax= 8.0
   nx=400
   ny=400
-  meshtype=quad4
+  meshtype=quad9
 [end]
 
 [dofs]
@@ -17,6 +17,10 @@ name=phi T
 [end]
 
 
+[qpoint]
+  type=gauss
+  order=4
+[end]
 
 [projection]
   name=F dFdphi K dkdtheta T_x T_y
@@ -35,7 +39,7 @@ name=phi T
 [mates]
   [dendrite]
     type=dendrite
-    params=3333.33 0.02 0.04  8 90.0   1.0      1.8
+    params=3333.33 0.02 0.05  8 90.0   1.0      1.8
     //     L       eps  delta J theta0 Conduct  eta
   [end]
 [end]
@@ -72,4 +76,5 @@ name=phi T
   type=transient
   debug=dep
   projection=true
+  interval=2
 [end]
