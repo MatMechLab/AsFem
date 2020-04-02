@@ -18,7 +18,7 @@ void OutputSystem::InitOutputStream(){
         _OutputBlock._OutputFilePrefix=_OutputFilePrefix;
     }
     else{
-        #if defined(__GNUC__) && (__GNUC___ > 6 || (__GNUC__ == 6 && __GNUC_MINOR__ >= 1))
+        #if defined(__GNUC__) && (__GNUC___ > 7 || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2))
         _OutputFilePrefix=_OutputBlock._FolderName+"/"+_InputFileName.substr(0,i);
         if(std::filesystem::create_directory(_OutputBlock._FolderName)){
             PetscPrintf(PETSC_COMM_WORLD,"***   create folder(%25s) sucessful        !!!   ***\n",_OutputBlock._FolderName.c_str());
@@ -29,7 +29,7 @@ void OutputSystem::InitOutputStream(){
                 Msg_AsFem_Exit();
             }
         }
-        #elseif defined(__GNUC__) && (__GNUC___ <=6))
+        #elseif defined(__GNUC__) && (__GNUC___ <=7))
         _OutputFilePrefix=_InputFileName.substr(0,i);
         #else
         _OutputFilePrefix=_OutputBlock._FolderName+"/"+_InputFileName.substr(0,i);
