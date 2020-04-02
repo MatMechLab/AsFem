@@ -16,13 +16,7 @@
 #include <vector>
 #include <fstream>
 
-#if defined(__GNUC__) && (__GNUC___ > 7 || (__GNUC__ == 7 && __GNUC_MINOR__ >= 2))
-#include <filesystem>
-#elseif defined(__GNUC__) && (__GNUC___ <7))
-#else
-// for MSVC
-#include <filesystem>
-#endif
+//#include <filesystem>
 
 #include <cstdlib>
 
