@@ -18,8 +18,8 @@ void OutputSystem::InitOutputStream(){
         _OutputBlock._OutputFilePrefix=_OutputFilePrefix;
     }
     else{
+        #if defined(__GNUC__) && (__GNUC___ > 6 || (__GNUC__ == 6 && __GNUC_MINOR__ >= 1))
         _OutputFilePrefix=_OutputBlock._FolderName+"/"+_InputFileName.substr(0,i);
-        _OutputBlock._OutputFilePrefix=_OutputFilePrefix;
         if(std::filesystem::create_directory(_OutputBlock._FolderName)){
             PetscPrintf(PETSC_COMM_WORLD,"***   create folder(%25s) sucessful        !!!   ***\n",_OutputBlock._FolderName.c_str());
         }
@@ -29,6 +29,21 @@ void OutputSystem::InitOutputStream(){
                 Msg_AsFem_Exit();
             }
         }
+        #elseif defined(__GNUC__) && (__GNUC___ <=6))
+        _OutputFilePrefix=_InputFileName.substr(0,i);
+        #else
+        _OutputFilePrefix=_OutputBlock._FolderName+"/"+_InputFileName.substr(0,i);
+        if(std::filesystem::create_directory(_OutputBlock._FolderName)){
+            PetscPrintf(PETSC_COMM_WORLD,"***   create folder(%25s) sucessful        !!!   ***\n",_OutputBlock._FolderName.c_str());
+        }
+        else{
+            if(!std::filesystem::exists(_OutputBlock._FolderName)){
+                PetscPrintf(PETSC_COMM_WORLD,"***   create folder failed, make sure you have write permission !!!   ***\n");
+                Msg_AsFem_Exit();
+            }
+        }
+        #endif
+        _OutputBlock._OutputFilePrefix=_OutputFilePrefix;
     }
     _LogFileName=_OutputFilePrefix+".log";
     _OutputBlock._LogFileName=_LogFileName;
