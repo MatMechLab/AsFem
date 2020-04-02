@@ -114,12 +114,15 @@ public:
         temp._vals[2]=_vals[2]*val;
         return temp;
     }
+
+    // Please put all the friend funs to the cpp file !!!
     friend Vector3d operator*(const double &val,const Vector3d &a);
-    // inline double operator*(const Vector3d &a){
-    //     return _vals[0]*a._vals[0]
-    //           +_vals[1]*a._vals[1]
-    //           +_vals[2]*a._vals[2];
-    // }
+
+    inline double operator*(const Vector3d &a)const{
+        return _vals[0]*a._vals[0]
+              +_vals[1]*a._vals[1]
+              +_vals[2]*a._vals[2];
+    }
     //*** for *=
     inline Vector3d& operator*=(const double &val){
         _vals[0]=_vals[0]*val;
