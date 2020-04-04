@@ -40,9 +40,9 @@ public:
     ShapeFun();
     ShapeFun(int dim,MeshType meshtype);
     void PreCalc();
-    void Calc(const double &xi,const Nodes &nodes,bool flag=true);// for 1D case
-    void Calc(const double &xi,const double &eta,const Nodes &nodes,bool flag=true);// for 2D case
-    void Calc(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,bool flag=true);
+    void Calc(const double &xi,const Nodes &nodes,const bool &flag);// for 1D case
+    void Calc(const double &xi,const double &eta,const Nodes &nodes,const bool &flag);// for 2D case
+    void Calc(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,const bool &flag);
 
 
     inline double shape_value(const int &i) const{

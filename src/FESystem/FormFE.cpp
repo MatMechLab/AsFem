@@ -127,14 +127,14 @@ void FESystem::FormFE(const int &isw,const double &t,const double &dt,const doub
             if(nDim==1){
                 w =fe._qp_bulk.GetIthQpPointJthCoord(gpInd,0);
                 xi=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,1);
-                fe._shp_bulk.Calc(xi,_elNodes);
+                fe._shp_bulk.Calc(xi,_elNodes,true);
                 DetJac=fe._shp_bulk.GetDetJac();
             }
             else if(nDim==2){
                 w  =fe._qp_bulk.GetIthQpPointJthCoord(gpInd,0);
                 xi =fe._qp_bulk.GetIthQpPointJthCoord(gpInd,1);
                 eta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,2);
-                fe._shp_bulk.Calc(xi,eta,_elNodes);
+                fe._shp_bulk.Calc(xi,eta,_elNodes,true);
                 DetJac=fe._shp_bulk.GetDetJac();
             }
             else if(nDim==3){
@@ -142,7 +142,7 @@ void FESystem::FormFE(const int &isw,const double &t,const double &dt,const doub
                 xi  =fe._qp_bulk.GetIthQpPointJthCoord(gpInd,1);
                 eta =fe._qp_bulk.GetIthQpPointJthCoord(gpInd,2);
                 zeta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,3);
-                fe._shp_bulk.Calc(xi,eta,zeta,_elNodes);
+                fe._shp_bulk.Calc(xi,eta,zeta,_elNodes,true);
                 DetJac=fe._shp_bulk.GetDetJac();
             }
             JxW=w*DetJac;

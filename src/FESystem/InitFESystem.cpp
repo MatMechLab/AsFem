@@ -87,16 +87,16 @@ void FESystem::InitFESystem(Mesh &mesh,
             w=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,0);
             xi=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,1);
             if(nDim==1){
-                fe._shp_bulk.Calc(xi,_elNodes);
+                fe._shp_bulk.Calc(xi,_elNodes,true);
             }
             else if(nDim==2){
                 eta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,2);
-                fe._shp_bulk.Calc(xi,eta,_elNodes);
+                fe._shp_bulk.Calc(xi,eta,_elNodes,true);
             }
             else if(nDim==3){
                 eta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,2);
                 zeta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,3);
-                fe._shp_bulk.Calc(xi,eta,zeta,_elNodes);
+                fe._shp_bulk.Calc(xi,eta,zeta,_elNodes,true);
             }
             DetJac=fe._shp_bulk.GetDetJac();
             JxW=1.0e3*DetJac*w;
