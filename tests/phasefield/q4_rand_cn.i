@@ -44,7 +44,7 @@ name=C Mu
 [end]
 
 [timestepping]
-  type=cn
+  type=be
   dt=2.0e-5
   dtmax=5.0e-1
   opts=5

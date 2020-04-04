@@ -7,8 +7,8 @@
   xmax= 4.0
   ymin= 0.0
   ymax= 4.0
-  nx=250
-  ny=250
+  nx=300
+  ny=300
   meshtype=quad4
 [end]
 
@@ -39,8 +39,8 @@ name=phi T
 [mates]
   [dendrite]
     type=dendrite
-    params=3333.33 0.025 0.055  8 90.0   1.0      1.8
-    //     L       eps   delta  J theta0 Conduct  eta
+    params=3333.33 0.03  0.08  4 90.0   1.0      1.8
+    //     L       eps   delta J theta0 Conduct  eta
   [end]
 [end]
 
@@ -62,6 +62,7 @@ name=phi T
   dtmax=5.0e-2
   dtmin=5.0e-7
   endtime=1.0e2
+  opts=4
   adaptive=true
 [end]
 [nonlinearsolver]
