@@ -67,17 +67,18 @@ name=ux uy d
 
 [timestepping]
   type=be
-  dt=1.0e-4
-  dtmax=1.0e-3
+  dt=1.0e-5
+  dtmax=1.0e-4
   dtmin=5.0e-7
   endtime=1.0e2
+  opts=4
   adaptive=true
 [end]
 [nonlinearsolver]
   type=newtonls
   r_abs_tol=5.0e-7
   r_rel_tol=1.5e-8
-  maxiters=15
+  maxiters=25
 [end]
 
 
