@@ -24,10 +24,11 @@ void NonlinearSolver::Init(NonlinearSolverBlock &nonlinearsolverblock){
     //***********************************
     SNESGetKSP(_snes,&_ksp);
     // KSPSetTolerances(_ksp,1.0e-10,1.0e-20,PETSC_DEFAULT,PETSC_DEFAULT);
-    KSPGMRESSetRestart(_ksp,1200);
+    KSPGMRESSetRestart(_ksp,1300);
     KSPGetPC(_ksp,&_pc);
 
-    #ifdef HASMUMPUS
+    #ifdef HASMUMPS
+    // cout<<"Using mumps"<<endl;
     PCSetType(_pc,PCLU);
     KSPSetType(_ksp,KSPPREONLY);
     PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
