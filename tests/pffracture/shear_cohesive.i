@@ -69,6 +69,7 @@ name=ux uy d
   dtmax=1.0e-3
   dtmin=5.0e-7
   endtime=1.0e2
+  opts=4
   adaptive=true
 [end]
 [nonlinearsolver]

@@ -28,7 +28,7 @@ public:
     PetscReal _FinalTime=1.0e-5;
     PetscReal _dtmax=0.1,_dtmin=1.0e-12,_dt0=1.0e-5;
     PetscInt _interval=1;
-    PetscInt _nOpts=5;
+    PetscInt _nOpts=4;
     PetscReal _CutFactor=0.8,_GrowthFactor=1.1;
     bool _IsAdaptive=false;
 
@@ -42,7 +42,7 @@ public:
         _CutFactor=0.8;
         _GrowthFactor=1.1;
         _interval=1;
-        _nOpts=5;
+        _nOpts=4;
         _IsAdaptive=false;
     }
 
