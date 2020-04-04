@@ -23,10 +23,10 @@ using namespace std;
 class JobBlock{
 public:
     string _JobTypeName;
-    JobType _JobType;
-    bool _IsDebug,_IsDepDebug;
-    bool _IsProjection;
-    PetscInt _Interval;
+    JobType _JobType=JobType::StaticJob;
+    bool _IsDebug=true,_IsDepDebug=false;
+    bool _IsProjection=false;
+    PetscInt _Interval=1;
 
     void Reset(){
         _JobTypeName.clear();
