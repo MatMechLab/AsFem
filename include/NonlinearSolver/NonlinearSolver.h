@@ -87,6 +87,10 @@ public:
                FE &fe,FESystem &feSystem,
                FeCtrlInfo &fectrlinfo);
 
+    inline double GetRnorm()const{return _Rnorm;}
+    inline double GetdUnorm()const{return _dUnorm;}
+    inline double GetEnorm()const{return _Enorm;}
+
 private:
     bool NewtonRaphson(Mesh &mesh,DofHandler &dofHandler,
                ElmtSystem &elmtSystem,MateSystem &mateSystem,

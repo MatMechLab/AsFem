@@ -68,7 +68,10 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
             currentime+=dt;
 
 
-            PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,1.1,2.2,4.5);
+            PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,
+                                                                                                 nonlinearsolver.GetRnorm(),
+                                                                                                 nonlinearsolver.GetdUnorm(),
+                                                                                                 nonlinearsolver.GetEnorm());
             PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
             // PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d, |R|=%14.6e, |dU|=%14.6e   ***\n",nonlinearsolver.GetCurrentIters()+1);
 
@@ -129,7 +132,10 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
                     VecCopy(solution._Uold,solution._Uolder);
                     VecCopy(solution._Unew,solution._Uold);
 
-                    PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,1.1,2.2,4.5);
+                    PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,
+                                                                                                 nonlinearsolver.GetRnorm(),
+                                                                                                 nonlinearsolver.GetdUnorm(),
+                                                                                                 nonlinearsolver.GetEnorm());
                     PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
             
 

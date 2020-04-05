@@ -167,6 +167,9 @@ bool NonlinearSolver::SSolve(Mesh &mesh,DofHandler &dofHandler,
     SNESGetConvergedReason(_snes,&_snesreason);
     
     _Iters=_monctx.iters;
+    _Rnorm=_monctx.rnorm;
+    _dUnorm=_monctx.dunorm;
+    _Enorm=_monctx.enorm;
 
     if(_snesreason==SNES_CONVERGED_FNORM_ABS){
         if(fectrlinfo.IsDepDebug){
