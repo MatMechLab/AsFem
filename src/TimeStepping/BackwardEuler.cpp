@@ -60,13 +60,17 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
         fectrl.CurrentStep+=1;
         fectrl.t+=dt;
         IsFailed=false;
+        PetscPrintf(PETSC_COMM_WORLD,"*** Time=%14.6e, dt=%14.6e, step=%8d             ***\n",fectrl.t,dt,fectrl.CurrentStep);
+
         if(nonlinearsolver.SSolve(mesh,dofHandler,elmtSystem,mateSystem,
                 bcSystem,icSystem,solution,equationSystem,fe,
                 feSystem,fectrl)){
             currentime+=dt;
 
 
-            PetscPrintf(PETSC_COMM_WORLD,"*** Time=%14.6e, dt=%14.6e, step=%6d, iters=%4d   ***\n",currentime,dt,fectrl.CurrentStep,nonlinearsolver.GetCurrentIters()+1);
+            PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,1.1,2.2,4.5);
+            PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
+            // PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d, |R|=%14.6e, |dU|=%14.6e   ***\n",nonlinearsolver.GetCurrentIters()+1);
 
             // update solution
             VecCopy(solution._Uold,solution._Uolder);
@@ -99,6 +103,8 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
                     outputSystem.WriteResultToVTU(fectrl.CurrentStep,mesh,dofHandler,solution._Unew);
                 }
                 PetscPrintf(PETSC_COMM_WORLD,"*** Write result to [%41s] !!!   ***\n",outputSystem.GetVTUFileName().c_str());
+                PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
+            
             }
         }
         else{
@@ -114,12 +120,18 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
                 fectrl.CurrentStep+=1;
                 fectrl.t+=dt;
                 PetscPrintf(PETSC_COMM_WORLD,"*** SNES solver failed, reduce dt to dt=%13.5e ***\n",dt);
+                PetscPrintf(PETSC_COMM_WORLD,"*** Time=%14.6e, dt=%14.6e, step=%8d             ***\n",fectrl.t,dt,fectrl.CurrentStep);
+
                 if(nonlinearsolver.SSolve(mesh,dofHandler,elmtSystem,mateSystem,
                     bcSystem,icSystem,solution,equationSystem,fe,
                     feSystem,fectrl)){
                     currentime+=dt;
                     VecCopy(solution._Uold,solution._Uolder);
                     VecCopy(solution._Unew,solution._Uold);
+
+                    PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,1.1,2.2,4.5);
+                    PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
+            
 
                     // update the history variable
                     feSystem.FormFE(8,currentime,dt,fectrl.ctan,
@@ -148,6 +160,8 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
                             outputSystem.WriteResultToVTU(fectrl.CurrentStep,mesh,dofHandler,solution._Unew);
                         }
                         PetscPrintf(PETSC_COMM_WORLD,"*** Write result to [%41s] !!!   ***\n",outputSystem.GetVTUFileName().c_str());
+                        PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
+            
                     }
                     break;
                 }
