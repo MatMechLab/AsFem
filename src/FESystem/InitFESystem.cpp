@@ -99,7 +99,10 @@ void FESystem::InitFESystem(Mesh &mesh,
                 fe._shp_bulk.Calc(xi,eta,zeta,_elNodes,true);
             }
             DetJac=fe._shp_bulk.GetDetJac();
-            JxW=1.0e3*DetJac*w;
+            // JxW=1.0e3*DetJac*w; // it seems this is too small, it may lead the SNES solver failed
+            //JxW=1.0e6*DetJac*w;
+            JxW=DetJac*w;
+            JxW=1.0; // maybe just keep it, do not scale the Ax=F system !!!
             if(JxW<_KMatrixFactor) _KMatrixFactor=JxW;
         }
     }
