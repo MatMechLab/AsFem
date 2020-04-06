@@ -46,8 +46,8 @@ void MateSystem::MieheLinearElasticMaterial(const int &nDim,const double &t,cons
     // InputParams[7-1]=0--> use strain decomposition(default)
     // InputParams[7-1]=1--> use stress decomposition(can be used for anisotropic case and compressive failure!)
     int DecompositionMode=0;
-    if(InputParams.size()==7){
-        if(int(InputParams[0])==0){
+    if(InputParams.size()>=7){
+        if(int(InputParams[7-1])==0){
             DecompositionMode=0;
         }
         else{
