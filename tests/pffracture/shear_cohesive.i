@@ -26,7 +26,7 @@ name=ux uy d
 [mates]
   [cohesive]
     type=cohesivepffrac
-    params=2.1e2 0.2 2.5    2.7e-3 2.0e-2 1.0e-7     1
+    params=2.1e2 0.2 2.5    2.7e-3 2.0e-2 1.0e-6     1
     //     E      nu SigmaC Gc     L      viscosity  UseHist
     // UseHist=1-->use the stagger solution
     // UseHist=0-->use the fully coupled solution
@@ -65,7 +65,7 @@ name=ux uy d
 
 [timestepping]
   type=be
-  dt=1.0e-4
+  dt=1.0e-5
   dtmax=1.0e-3
   dtmin=5.0e-7
   endtime=1.0e2

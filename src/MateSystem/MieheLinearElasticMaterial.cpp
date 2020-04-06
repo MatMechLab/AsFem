@@ -42,6 +42,19 @@ void MateSystem::MieheLinearElasticMaterial(const int &nDim,const double &t,cons
         UseHist=0;
     }
 
+    // we use the seventh one to indicate which decomposition method we want to use
+    // InputParams[7-1]=0--> use strain decomposition(default)
+    // InputParams[7-1]=1--> use stress decomposition(can be used for anisotropic case and compressive failure!)
+    int DecompositionMode=0;
+    if(InputParams.size()==7){
+        if(int(InputParams[0])==0){
+            DecompositionMode=0;
+        }
+        else{
+            DecompositionMode=1;
+        }
+    }
+
     //*********************************************
     //*** IMPORTANT!!!
     //*** in this model, d=0--->for undamaged case
@@ -77,51 +90,102 @@ void MateSystem::MieheLinearElasticMaterial(const int &nDim,const double &t,cons
     Strain=(_Rank2Materials[2]+_Rank2Materials[2].Transpose())*0.5;
     // our total strain
     _Rank2Materials[0]=Strain;
-    
+
+
     RankTwoTensor eigvec(0.0);
     double eigval[3];
 
-    RankFourTensor ProjPos=Strain.CalcPostiveProjTensor(eigval,eigvec);
+    RankFourTensor ProjPos(0.0);
     RankFourTensor I4Sym(RankFourTensor::InitIdentitySymmetric4);
-    RankFourTensor ProjNeg=I4Sym-ProjPos;
+    RankFourTensor ProjNeg(0.0);
 
-    StrainPos=ProjPos.DoubleDot(Strain);
-    StrainNeg=Strain-StrainPos;
-
-    double StrainTrace=Strain.Trace();
-
-    double TrPos= (abs(StrainTrace)+StrainTrace)*0.5;
-    double TrNeg=-(abs(StrainTrace)-StrainTrace)*0.5;
+    double StrainTrace,TrPos,TrNeg;
 
     // now we can split the positive and negative stress
     RankTwoTensor I(0.0);
-    I.SetToIdentity();// Unity tensor
-    StressPos=I*lambda*TrPos+StrainPos*2.0*mu;
-    StressNeg=I*lambda*TrNeg+StrainNeg*2.0*mu;
-    // now we can have the final stress
-    double d=gpU[nDim];
-    if(d<1.0e-2) d=1.0e-2;
-    if(d>1.0-1.0e-2) d=1.0-1.0e-2;
+
     const double k=1.0e-3; // to avoid the zero stiffness matrix
-    Stress=((1-d)*(1-d)+k)*StressPos+StressNeg;
-    // store the stress and dstress/dd in rank2 material
-    _Rank2Materials[1]=Stress;
-    _Rank2Materials[2]=(-2+2*d)*StressPos;//dStress/dD
-    // for our constitutive law
+    double d;
     double SignPos,SignNeg;
-    SignPos=0.0;
-    if(StrainTrace>=0.0) SignPos=1.0;
-    SignNeg=0.0;
-    if(StrainTrace<=0.0) SignNeg=1.0;
-    _Rank4Materials[0]=(I.CrossDot(I)*lambda*SignPos+ProjPos*2*mu)*((1-d)*(1-d)+k)
-                      +(I.CrossDot(I)*lambda*SignNeg+ProjNeg*2*mu);
-
-
-    // for the fracture free energy
     double Psi,PsiPos,PsiNeg;
-    PsiPos=0.5*lambda*TrPos*TrPos+mu*((StrainPos*StrainPos).Trace());
-    PsiNeg=0.5*lambda*TrNeg*TrNeg+mu*((StrainNeg*StrainNeg).Trace());
-    Psi=(1-d)*(1-d)*PsiPos+PsiNeg;
+
+    if(DecompositionMode==0){
+        // We use the strain decomposition for isotropic case
+        ProjPos=Strain.CalcPostiveProjTensor(eigval,eigvec);
+        ProjNeg=I4Sym-ProjPos;
+
+        StrainPos=ProjPos.DoubleDot(Strain);
+        StrainNeg=Strain-StrainPos;
+
+        StrainTrace=Strain.Trace();
+
+        TrPos= (abs(StrainTrace)+StrainTrace)*0.5;
+        TrNeg=-(abs(StrainTrace)-StrainTrace)*0.5;
+
+        // now we can split the positive and negative stress
+        I.SetToIdentity();// Unity tensor
+        StressPos=I*lambda*TrPos+StrainPos*2.0*mu;
+        StressNeg=I*lambda*TrNeg+StrainNeg*2.0*mu;
+        // now we can have the final stress
+        d=gpU[nDim];
+        if(d<1.0e-2) d=1.0e-2;
+        if(d>1.0-1.0e-2) d=1.0-1.0e-2;
+
+        Stress=((1-d)*(1-d)+k)*StressPos+StressNeg;
+        // store the stress and dstress/dd in rank2 material
+        _Rank2Materials[1]=Stress;
+        _Rank2Materials[2]=(-2+2*d)*StressPos;//dStress/dD
+        // for our constitutive law
+        SignPos=0.0;
+        if(StrainTrace>=0.0) SignPos=1.0;
+        SignNeg=0.0;
+        if(StrainTrace<=0.0) SignNeg=1.0;
+        _Rank4Materials[0]=(I.CrossDot(I)*lambda*SignPos+ProjPos*2*mu)*((1-d)*(1-d)+k)
+                          +(I.CrossDot(I)*lambda*SignNeg+ProjNeg*2*mu);
+
+
+        // for the fracture free energy
+        PsiPos=0.5*lambda*TrPos*TrPos+mu*((StrainPos*StrainPos).Trace());
+        PsiNeg=0.5*lambda*TrNeg*TrNeg+mu*((StrainNeg*StrainNeg).Trace());
+        Psi=(1-d)*(1-d)*PsiPos+PsiNeg;
+    }
+    else if(DecompositionMode==1){
+        // We use the stress to do the decomposition
+        // in this case, we can apply this model to anisotropic case and compressive failure
+        // for more details, one is referred to :
+        // "https://dukespace.lib.duke.edu/dspace/handle/10161/18247"
+        // Yingjie Liu's thesis:
+        //     "A Computational Framework for Fracture Modeling in Coupled Field Problems"
+        RankFourTensor ElasticityTensor(0.0);
+        ElasticityTensor.SetFromEandNu(EE,nu);
+        Stress=ElasticityTensor.DoubleDot(Strain);
+        ProjPos=Stress.CalcPostiveProjTensor(eigval,eigvec);
+        ProjNeg=I4Sym-ProjPos;
+
+        StressPos=ProjPos.DoubleDot(Stress);
+        StressNeg=Stress-StressPos;
+
+        // Now we store the final stress:
+        d=gpU[nDim];
+        if(d<1.0e-2) d=1.0e-2;
+        if(d>1.0-1.0e-2) d=1.0-1.0e-2;
+
+        // Now the Psi^{+} and Psi^{-} become extremelly easy
+        PsiPos=0.5*StressPos.DoubleDot(Strain);
+        PsiNeg=0.5*StressNeg.DoubleDot(Strain);
+
+        Psi=(1-d)*(1-d)*PsiPos+PsiNeg;
+
+
+        _Rank2Materials[1]=StressPos*((1-d)*(1-d)+k)+StressNeg;
+        
+        // Now its the dStress/dD term
+        _Rank2Materials[2]=StressPos*(-2+2*d);
+
+        // For the final jacobian, we can use
+        _Rank4Materials[0]=(I4Sym+((1-d)*(1-d)+k)*ProjPos).DoubleDot(ElasticityTensor);
+    }
+    
 
 
     // calculate H, and update the history variable
