@@ -67,7 +67,6 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
                 feSystem,fectrl)){
             currentime+=dt;
 
-
             PetscPrintf(PETSC_COMM_WORLD,"*** iters=%4d,|R|=%13.5e,|dU|=%13.5e,|E|=%13.5e ***\n",nonlinearsolver.GetCurrentIters()+1,
                                                                                                  nonlinearsolver.GetRnorm(),
                                                                                                  nonlinearsolver.GetdUnorm(),
@@ -122,7 +121,7 @@ void TimeStepping::BackwardEuler(Mesh &mesh,DofHandler &dofHandler,
                 fectrl.ctan[1]=1.0/dt;
                 fectrl.CurrentStep+=1;
                 fectrl.t+=dt;
-                PetscPrintf(PETSC_COMM_WORLD,"*** SNES solver failed, reduce dt to dt=%13.5e ***\n",dt);
+                PetscPrintf(PETSC_COMM_WORLD,"*** SNES solver failed, reduce delta t to dt=%13.5e            ***\n",dt);
                 PetscPrintf(PETSC_COMM_WORLD,"*** Time=%14.6e, dt=%14.6e, step=%8d             ***\n",fectrl.t,dt,fectrl.CurrentStep);
 
                 if(nonlinearsolver.SSolve(mesh,dofHandler,elmtSystem,mateSystem,
