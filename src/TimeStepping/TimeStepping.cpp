@@ -16,6 +16,6 @@ TimeStepping::TimeStepping(){
     _dt0=1.0e-5;
     _interval=1;
     _IsAdaptive=false;
-    _CutFactor=0.8;_GrowthFactor=1.1;
-    _nOpts=5;
+    _CutFactor=0.85;_GrowthFactor=1.1;
+    _nOpts=4;
 }
