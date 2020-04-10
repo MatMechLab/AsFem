@@ -31,6 +31,9 @@ bool Mesh::CreateMesh(){
         if(_IsGmshMesh){
             return ReadMeshFromGmsh();
         }
+        else if(_IsAbaqusMesh){
+            return ReadMeshFromAbaqus();
+        }
         else{
             // PetscPrintf(PETSC_COMM_WORLD,"*************************************************************************\n");
             PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsuppoted mesh import(only gmsh is supported)        !!!  ***\n");
