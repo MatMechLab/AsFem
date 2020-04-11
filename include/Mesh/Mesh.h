@@ -271,6 +271,29 @@ private:
     //*** For mesh from Abaqus's inp file
     //******************************************
     bool ReadMeshFromAbaqus();
+    int GetDimFromInpMeshTypeName(string meshtypename) const;
+    int GetVTKCellTypeFormInpMeshTypeName(string meshtypename) const;
+    int GetElmtOrderViaInpElmtTypeName(string meshtypename)const;
+    int GetAbaqusNodesNumFromInp(string filename) const;
+    int GetAbaqusElmtsNumFromInp(string filename) const;
+    int GetAbaqusBCElmtsNumFromInp(string filename) const;
+    int GetNodeSetsNumFromInp(string filename) const;
+    int GetElmtSetsNumFromInp(string filename) const;
+    int GetAbaqusBCElmtNodesNumFromInp(string meshtypename) const;
+    int GetElmtNodesNumFromInpElmtName(string meshtypename) const;
+
+    MeshType GetMeshTypeViaAbaqusMeshName(string meshtypename) const;
+    MeshType GetBCMeshTypeViaAbaqusMeshName(string meshtypename) const;
+    
+
+    string GetElmtTypeNameFromInp(string filename) const;
+    vector<string> GetNodeSetsNameFromInp(string filename) const;
+    vector<string> GetElmtSetsNameFromInp(string filename) const;
+    vector<vector<int>> GetNodeIndexSetsFromInp(string filename) const;
+    vector<vector<int>> GetElmtIndexSetsFromInp(string filename) const;
+
+    vector<int> GetNodeIndexVecFromInpNodeSetName(string filename,string nodesetname)const;
+    vector<int> GetElmtIndexVecFromInpNodeSetName(string filename,string elmtsetname)const;
     //******************************************
     //*** For print mesh information
     //******************************************

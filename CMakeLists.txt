@@ -139,7 +139,7 @@ set(src ${src} src/Mesh/SetElmtInfo.cpp)
 set(src ${src} src/Mesh/ReadMeshFromGmsh.cpp)
 set(src ${src} src/Mesh/ReadMeshFromAbaqus.cpp)
 set(src ${src} src/Mesh/GetGmshInfo.cpp)
-
+set(src ${src} src/Mesh/GetAbaqusInfo.cpp)
 
 
 #############################################################
