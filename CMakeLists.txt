@@ -245,6 +245,8 @@ set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
 set(src ${src} src/MateSystem/MieheLinearElasticMaterial.cpp)
 ### for phase field fracture with neohookean material
 set(src ${src} src/MateSystem/MieheNeoHookeanMaterial.cpp)
+### for anisotropic phase field fracture model
+set(src ${src} src/MateSystem/AnisoPFFractureMaterial.cpp)
 ### for borden's phase field fracture material 
 set(src ${src} src/MateSystem/BordenLinearElasticMaterial.cpp)
 set(src ${src} src/MateSystem/CohesivePFFractureMaterial.cpp)
