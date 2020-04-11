@@ -49,8 +49,6 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     //*******************************************
     const double EE=InputParams[0]; // Young's modulus
     const double nu=InputParams[1]; // Poisson ratio
-    const double lambda=EE*nu/((1+nu)*(1-2*nu));// lame const
-    const double mu=EE/(2*(1+nu));
 
     _ScalarMaterials[0]=InputParams[4];// viscosity
     _ScalarMaterials[1]=InputParams[2];// Gc
@@ -63,6 +61,8 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     theta2=InputParams[6];
     theta3=InputParams[8];
 
+    RankTwoTensor RotationTensor(0.0);
+    RotationTensor.SetFromEulerAngle(theta1,theta2,theta3);
 
     RankTwoTensor Stress(0.0),StressPos(0.0),StressNeg(0.0);
     RankTwoTensor Strain(0.0),StrainPos(0.0),StrainNeg(0.0);
@@ -85,14 +85,11 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     RankFourTensor I4Sym(RankFourTensor::InitIdentitySymmetric4);
     RankFourTensor ProjNeg(0.0);
 
-    double StrainTrace,TrPos,TrNeg;
-
     // now we can split the positive and negative stress
     RankTwoTensor I(0.0);
 
     const double k=5.0e-4; // to avoid the zero stiffness matrix
     double d;
-    double SignPos,SignNeg;
     double Psi,PsiPos,PsiNeg;
 
     // We use the stress to do the decomposition
@@ -103,9 +100,10 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     //     "A Computational Framework for Fracture Modeling in Coupled Field Problems"
     RankFourTensor ElasticityTensor(0.0);
     ElasticityTensor.SetFromEandNu(EE, nu);
-    Stress = ElasticityTensor.DoubleDot(Strain);
+    ElasticityTensor.Rotate(RotationTensor);
+
+    Stress  = ElasticityTensor.DoubleDot(Strain);
     ProjPos = Stress.CalcPostiveProjTensor(eigval, eigvec);
-    ProjNeg = I4Sym - ProjPos;
 
     StressPos = ProjPos.DoubleDot(Stress);
     StressNeg = Stress - StressPos;
@@ -117,18 +115,18 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     if (d>1.0-tol) d=1.0-tol;
 
     // Now the Psi^{+} and Psi^{-} become extremelly easy
-    PsiPos = 0.5 * StressPos.DoubleDot(Strain);
-    PsiNeg = 0.5 * StressNeg.DoubleDot(Strain);
+    PsiPos = 0.5*StressPos.DoubleDot(Strain);
+    PsiNeg = 0.5*StressNeg.DoubleDot(Strain);
 
-    Psi = (1 - d) * (1 - d) * PsiPos + PsiNeg;
+    Psi = (1-d)*(1-d)*PsiPos+PsiNeg;
 
-    _Rank2Materials[1] = StressPos * ((1 - d) * (1 - d) + k) + StressNeg;
+    _Rank2Materials[1]=StressPos*((1-d)*(1-d)+k)+StressNeg;
 
     // Now its the dStress/dD term
-    _Rank2Materials[2] = StressPos * (-2 + 2 * d);
+    _Rank2Materials[2] =StressPos*(-2+2*d);
 
     // For the final jacobian, we can use
-    _Rank4Materials[0] = (I4Sym + ((1 - d) * (1 - d) + k) * ProjPos).DoubleDot(ElasticityTensor);
+    _Rank4Materials[0] =(I4Sym+((1-d)*(1-d)+k-1)*ProjPos).DoubleDot(ElasticityTensor);
 
     // calculate H, and update the history variable
     _Rank2Materials[3].SetToZeros();// store the dH/dstrain rank2 tensor

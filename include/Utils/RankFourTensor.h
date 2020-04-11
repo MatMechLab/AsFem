@@ -166,7 +166,7 @@ public:
     //************************************************
     //*** For rotation by the rank-2 rotation tensor
     //************************************************
-    RankFourTensor Rotation(const RankTwoTensor &rotate) const;
+    RankFourTensor Rotate(const RankTwoTensor &rotate) const;
 
     //************************************************
     //**** for *=

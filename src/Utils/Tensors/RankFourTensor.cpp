@@ -176,7 +176,7 @@ RankFourTensor operator*(const RankTwoTensor &lhs,const RankFourTensor &a){
 //*** For rotation of a rank-4 tensor by the rank-2
 //*** rotation tensor
 //**************************************************
-RankFourTensor RankFourTensor::Rotation(const RankTwoTensor &rotate) const{
+RankFourTensor RankFourTensor::Rotate(const RankTwoTensor &rotate) const{
     //C_ijkl=C_mnpq*R_im*R_jn*R_kp*R_lq
     RankFourTensor temp(0.0);
     for(int i=1;i<=3;i++){
