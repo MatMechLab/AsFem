@@ -71,7 +71,7 @@
 	[fixUx]
 		type=dirichlet
 		dof=ux
-		boundary=bottom
+		boundary=left
 		value=0.0
 	[end]
 	[fixUy]
