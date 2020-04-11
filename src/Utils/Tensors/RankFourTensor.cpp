@@ -171,3 +171,31 @@ RankFourTensor operator*(const RankTwoTensor &lhs,const RankFourTensor &a){
     }
     return temp;
 }
+
+//**************************************************
+//*** For rotation of a rank-4 tensor by the rank-2
+//*** rotation tensor
+//**************************************************
+RankFourTensor RankFourTensor::Rotation(const RankTwoTensor &rotate) const{
+    //C_ijkl=C_mnpq*R_im*R_jn*R_kp*R_lq
+    RankFourTensor temp(0.0);
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
+                    temp(i,j,k,l)=0.0;
+                    for(int m=1;m<=3;m++){
+                        for(int n=1;n<=3;n++){
+                            for(int p=1;p<=3;p++){
+                                for(int q=1;q<=3;q++){
+                                    temp(i,j,k,l)+=(*this)(m,n,p,q)*rotate(i,m)*rotate(j,n)*rotate(k,p)*rotate(l,q);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return temp;
+}
