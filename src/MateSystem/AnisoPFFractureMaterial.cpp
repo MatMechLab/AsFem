@@ -25,9 +25,9 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     if(gpHist[0]){}
     if(gpHistOld[0]){}
 
-    if(InputParams.size()<8){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for phasefield fracture, 8 parameters are required   !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        E,nu,Gc,L,viscosity, theta1,2,3  are expected        !!!   ***\n");
+    if(InputParams.size()<10){
+        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for phasefield fracture, 10 parameters are required  !!!   ***\n");
+        PetscPrintf(PETSC_COMM_WORLD,"***        Ex,Ey,nux,nuy,Gc,L,viscosity,theta1,2,3  are expected!!!   ***\n");
         Msg_AsFem_Exit();
     }
     // we use the sixth one to indicate wether we use the history one(stager or not)
@@ -47,19 +47,23 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     //*** L=ScalarMaterials[2];
     //*** H=Hist[0];
     //*******************************************
-    const double EE=InputParams[0]; // Young's modulus
-    const double nu=InputParams[1]; // Poisson ratio
+    const double E1=InputParams[0]; // 
+    const double E2=InputParams[1]; //
+    const double nu1=InputParams[2]; // 
+    const double nu2=InputParams[3]; //
 
-    _ScalarMaterials[0]=InputParams[4];// viscosity
-    _ScalarMaterials[1]=InputParams[2];// Gc
-    _ScalarMaterials[2]=InputParams[3];// L
+    //Ex,Ey,nux,nuy,Gc,L,viscosity,theta1,2,3
+
+    _ScalarMaterials[0]=InputParams[6];// viscosity
+    _ScalarMaterials[1]=InputParams[4];// Gc
+    _ScalarMaterials[2]=InputParams[5];// L
 
     // the euler angle
     double theta1,theta2,theta3;
 
-    theta1=InputParams[5];
-    theta2=InputParams[6];
-    theta3=InputParams[8];
+    theta1=InputParams[7];
+    theta2=InputParams[8];
+    theta3=InputParams[9];
 
     RankTwoTensor RotationTensor(0.0);
     RotationTensor.SetFromEulerAngle(theta1,theta2,theta3);
@@ -99,8 +103,38 @@ void MateSystem::AnisoPFFractureMaterial(const int &nDim,const double &t,const d
     // Yingjie Liu's thesis:
     //     "A Computational Framework for Fracture Modeling in Coupled Field Problems"
     RankFourTensor ElasticityTensor(0.0);
-    ElasticityTensor.SetFromEandNu(EE, nu);
+    vector<double> C9(9,0.0);
+    double E3,nu3,K1,K2,K3,Mu1,Mu2,Mu3;
+    double C11,C12,C13,C22,C23,C33,C44,C55,C66;
+    K1=E1/(3*(1-2*nu1));Mu1=E1/(2*(1+nu1));
+    
+    K2=E2/(3*(1-2*nu2));Mu2=E2/(2*(1+nu2));
+
+    E3=0.5*(E1+E2);
+    nu3=0.5*(nu1+nu2);
+    
+    K3=E3/(3*(1-2*nu3));Mu3=E3/(2*(1+nu3));
+    
+    C11=(K1+4*Mu1/3.0);
+    C12=((K1-2*Mu1/3.0)+(K2-2*Mu2/3.0))*0.5;
+    C13=(K1-2*Mu1/3.0+K3-2*Mu3/3.0)*0.5;
+
+    C22=(K2+4*Mu2/3.0);
+    C23=(K2-2*Mu2/3.0+K3-2*Mu3/3.0)*0.5;
+
+    C33=K3+4*Mu3/3.0;
+    C44=(Mu2+Mu3)*0.5;  //C2323
+    C55=(Mu1+Mu3)*0.5;  //C3131
+    C66=(Mu1+Mu2)*0.5;  //C1212
+    C9[0]=C11;C9[1]=C12;C9[2]=C13;
+    C9[3]=C22;C9[4]=C23;
+    C9[5]=C33;
+    C9[6]=C44;
+    C9[7]=C55;
+    C9[8]=C66;
+    ElasticityTensor.SetFromSymmetric9(C9);
     ElasticityTensor.Rotate(RotationTensor);
+    
 
     Stress  = ElasticityTensor.DoubleDot(Strain);
     ProjPos = Stress.CalcPostiveProjTensor(eigval, eigvec);
