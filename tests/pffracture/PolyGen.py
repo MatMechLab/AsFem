@@ -8,9 +8,9 @@ Created on Sat Apr 11 17:13:18 2020
 """ 
 import numpy as np
 
-inputfilename='tensile50.i'
-meshfile='rect50.msh'
-grains=50
+inputfilename='tensile5.i'
+meshfile='rect5.msh'
+grains=5
 E=210.0;nu=0.3
 Gc=2.7e-3
 L=4.0e-3
