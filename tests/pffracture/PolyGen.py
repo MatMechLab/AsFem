@@ -8,17 +8,18 @@ Created on Sat Apr 11 17:13:18 2020
 """ 
 import numpy as np
 
-inputfilename='tensile5.i'
-meshfile='rect5.msh'
-grains=5
-E=210.0;nu=0.3
+inputfilename='tensile50.i'
+meshfile='rect50.msh'
+grains=50
+E1=210.0;nu1=0.3
+E2=90.0;nu2=0.2
 Gc=2.7e-3
 L=4.0e-3
 viscosity=1.0e-5
 
-Alpha=90.0;dAlpha=10.0
-Beta=90.0;dBeta=10.0
-Gamma=90.0;dGamma=10.0
+Alpha=65.0;dAlpha=25.0
+Beta=75.0;dBeta=15.0
+Gamma=90.0;dGamma=5.0
 
 Theta1=np.random.normal(Alpha, dAlpha, grains)
 Theta2=np.random.normal(Beta,dBeta,grains)
@@ -69,7 +70,7 @@ for i in range(grains):
     theta3=Theta3[i]
     str='\t[anisofrac%d]\n'%(i+1)
     str+='\t\ttype=anisopffrac\n'
-    str+='\t\tparams=%g %g %g %g %g %g %g %g\n'%(E,nu,Gc,L,viscosity,theta1,theta2,theta3)
+    str+='\t\tparams=%g %g %g %g %g %g %g %g %g %g\n'%(E1,E2,nu1,nu2,Gc,L,viscosity,theta1,theta2,theta3)
     str+='\t[end]\n'
     inp.write(str)
 str='[end]\n\n'
@@ -81,7 +82,7 @@ str='[bcs]\n'
 str+='\t[fixUx]\n'
 str+='\t\ttype=dirichlet\n'
 str+='\t\tdof=ux\n'
-str+='\t\tboundary=bottom\n'
+str+='\t\tboundary=left\n'
 str+='\t\tvalue=0.0\n'
 str+='\t[end]\n'
 
@@ -105,7 +106,7 @@ inp.write(str)
 str ='[timestepping]\n'
 str+='\ttype=be\n'
 str+='\tdt=1.0e-5\n'
-str+='\tdtmax=1.0e-4\n'
+str+='\tdtmax=4.0e-4\n'
 str+='\tdtmin=5.0e-9\n'
 str+='\tendtime=1.0e2\n'
 str+='\topts=4\n'

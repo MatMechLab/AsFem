@@ -47,23 +47,23 @@
 [mates]
 	[anisofrac1]
 		type=anisopffrac
-		params=210 0.3 0.0027 0.004 1e-05 69.6709 91.9911 76.7659
+		params=210 50 0.3 0.2 0.0027 0.004 1e-05 49.6071 84.6307 100.967
 	[end]
 	[anisofrac2]
 		type=anisopffrac
-		params=210 0.3 0.0027 0.004 1e-05 108.75 86.7641 74.0175
+		params=210 50 0.3 0.2 0.0027 0.004 1e-05 61.7844 68.9158 85.559
 	[end]
 	[anisofrac3]
 		type=anisopffrac
-		params=210 0.3 0.0027 0.004 1e-05 78.3269 99.7136 79.3489
+		params=210 50 0.3 0.2 0.0027 0.004 1e-05 23.3104 65.2141 82.5777
 	[end]
 	[anisofrac4]
 		type=anisopffrac
-		params=210 0.3 0.0027 0.004 1e-05 82.0308 81.6665 108.364
+		params=210 50 0.3 0.2 0.0027 0.004 1e-05 70.8536 76.8472 91.5993
 	[end]
 	[anisofrac5]
 		type=anisopffrac
-		params=210 0.3 0.0027 0.004 1e-05 90.7335 87.1857 91.866
+		params=210 50 0.3 0.2 0.0027 0.004 1e-05 54.2964 82.8409 88.7877
 	[end]
 [end]
 
@@ -91,7 +91,7 @@
 [timestepping]
 	type=be
 	dt=1.0e-5
-	dtmax=1.0e-4
+	dtmax=4.0e-4
 	dtmin=5.0e-9
 	endtime=1.0e2
 	opts=4
