@@ -320,6 +320,10 @@ public:
     void SetFromVoigt(const double &v11,const double &v22,const double &v12);// for 2D
     void SetFromVoigt(const double &v11,const double &v22,const double &v33,
                       const double &v23,const double &v31,const double &v12);// for 3D
+    //********************************************************
+    //**** For rotation tensor
+    //********************************************************
+    void SetFromEulerAngle(const double &theta1,const double &theta2,const double &theta3);
     //*******************************************************************
     //*** some higher order tensor calculation
     //*******************************************************************

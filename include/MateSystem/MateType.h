@@ -31,6 +31,7 @@ enum class MateType{
     NeoHookeanCahnHilliardMate,
     LinearElasticPhaseFieldFracMate,
     MieheLinearElasticFracMate,
+    AnisoLinearElasticPhaseFieldFracMate,
     CohesivePFFracMate,
     MieheNeoHookeanFracMate,
     BordenLinearElasticFracMate,

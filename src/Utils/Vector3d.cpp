@@ -11,8 +11,8 @@
 
 Vector3d operator*(const double &val,const Vector3d &a){
     Vector3d temp(0.0);
-    temp._vals[0]=a._vals[0]*val;
-    temp._vals[1]=a._vals[1]*val;
-    temp._vals[2]=a._vals[2]*val;
+    temp(1)=a(1)*val;
+    temp(2)=a(2)*val;
+    temp(3)=a(3)*val;
     return temp;
 }

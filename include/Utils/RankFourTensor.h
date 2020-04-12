@@ -163,6 +163,12 @@ public:
         }
         return temp;
     }
+    //************************************************
+    //*** For rotation by the rank-2 rotation tensor
+    //************************************************
+    RankFourTensor Rotate(const RankTwoTensor &rotate) const;
+
+    //************************************************
     //**** for *=
     inline RankFourTensor& operator*=(const double &a){
         for(int i=0;i<_N4;++i) _vals[i]=_vals[i]*a;

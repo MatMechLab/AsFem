@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 ###############################################
 ### Set your PETSc path here                ###
 ###############################################
-set(PETSC_DIR "/home/by/Programs/petsc/3.12.4")
+set(PETSC_DIR "/home/by/Programs/petsc/3.12.5")
 set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
 set(Eigen "/home/by/Programs/Eigen-dev")
 
@@ -26,18 +26,20 @@ include_directories("${Eigen}")
 ###############################################
 ### For debug mode                          ###
 ###############################################
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -fopenmp -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
 ### for gcc 9, you must add this!!!
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-copy")
 ### this will ignore all the warnings
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-copy -Wno-array-bounds")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-copy")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-copy")
 
 
 ###############################################
 ### For release mode                        ###
 ###############################################
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
+# if you have mumps installed, please use the following line
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG -DHASMUMPS")
 
 
 ###############################################
@@ -135,8 +137,9 @@ set(src ${src} src/Mesh/PrintMeshInfo.cpp)
 set(src ${src} src/Mesh/SaveMesh.cpp)
 set(src ${src} src/Mesh/SetElmtInfo.cpp)
 set(src ${src} src/Mesh/ReadMeshFromGmsh.cpp)
+set(src ${src} src/Mesh/ReadMeshFromAbaqus.cpp)
 set(src ${src} src/Mesh/GetGmshInfo.cpp)
-
+set(src ${src} src/Mesh/GetAbaqusInfo.cpp)
 
 
 #############################################################
@@ -242,6 +245,8 @@ set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
 set(src ${src} src/MateSystem/MieheLinearElasticMaterial.cpp)
 ### for phase field fracture with neohookean material
 set(src ${src} src/MateSystem/MieheNeoHookeanMaterial.cpp)
+### for anisotropic phase field fracture model
+set(src ${src} src/MateSystem/AnisoPFFractureMaterial.cpp)
 ### for borden's phase field fracture material 
 set(src ${src} src/MateSystem/BordenLinearElasticMaterial.cpp)
 set(src ${src} src/MateSystem/CohesivePFFractureMaterial.cpp)

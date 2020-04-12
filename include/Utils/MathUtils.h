@@ -12,21 +12,21 @@
 
 #include <iostream>
 
-#include "petsc.h"
+// #include "petsc.h"
 
-#include "Vector3d.h"
+// #include "Vector3d.h"
 
 using namespace std;
 
-inline Vector3d operator*(const double &a,const Vector3d &b){
-    Vector3d temp;
-    temp(1)=a*b(1);temp(2)=a*b(2);temp(3)=a*b(3);
-    return temp;
-}
+// inline Vector3d operator*(const double &a,const Vector3d &b){
+//     Vector3d temp;
+//     temp(1)=a*b(1);temp(2)=a*b(2);temp(3)=a*b(3);
+//     return temp;
+// }
 
-inline double operator*(const Vector3d &a,const Vector3d &b){
-    return a(1)*b(1)+a(2)*b(2)+a(3)*b(3);
-}
+// inline double operator*(const Vector3d &a,const Vector3d &b){
+//     return a(1)*b(1)+a(2)*b(2)+a(3)*b(3);
+// }
 
 inline double sign(const double &x){
     return x >= 0.0 ? 1.0 : -1.0;

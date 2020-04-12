@@ -4,12 +4,12 @@
   type=asfem
   dim=2
   xmin= 0.0
-  xmax= 8.0
+  xmax= 4.0
   ymin= 0.0
-  ymax= 8.0
-  nx=400
-  ny=400
-  meshtype=quad9
+  ymax= 4.0
+  nx=250
+  ny=250
+  meshtype=quad4
 [end]
 
 [dofs]
@@ -39,8 +39,8 @@ name=phi T
 [mates]
   [dendrite]
     type=dendrite
-    params=3333.33 0.02 0.05  8 90.0   1.0      1.8
-    //     L       eps  delta J theta0 Conduct  eta
+    params=3333.33 0.025 0.055  8 90.0   1.0      1.8
+    //     L       eps   delta  J theta0 Conduct  eta
   [end]
 [end]
 
@@ -48,7 +48,7 @@ name=phi T
   [circle]
     type=circle
     dof=phi
-    params=4.0 4.0 0.08 0.1  1.0 0.0
+    params=2.0 2.0 0.09 0.1  1.0 0.0
     //     x0  y0  R    rwid vin vout
   [end]
 [end]

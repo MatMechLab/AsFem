@@ -71,7 +71,7 @@ void BCSystem::ApplyPresetBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                 // cout<<"e="<<ee<<":";
                 for(gpInd=1;gpInd<=fe._qp_line.GetQpPointsNum();++gpInd){
                     _xi=fe._qp_line(gpInd,1);
-                    fe._shp_line.Calc(_xi,_elNodes);
+                    fe._shp_line.Calc(_xi,_elNodes,true);
                     _JxW=fe._shp_line.GetDetJac()*fe._qp_line(gpInd,0);
                     // cout<<"gp="<<gpInd<<", xi="<<xi<<", w="<<fe._qp_line(gpInd,0)<<",J="<<fe._shp_line.GetDetJac()<<endl;
                     uqp=0.0;
@@ -103,7 +103,7 @@ void BCSystem::ApplyPresetBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                 for(gpInd=1;gpInd<=fe._qp_surface.GetQpPointsNum();++gpInd){
                     _xi=fe._qp_surface(gpInd,1);
                     _eta=fe._qp_surface(gpInd,2);
-                    fe._shp_surface.Calc(_xi,_eta,_elNodes);
+                    fe._shp_surface.Calc(_xi,_eta,_elNodes,true);
                     _JxW=fe._shp_surface.GetDetJac()*fe._qp_surface(gpInd,0);
                     uqp=0.0;
                     for(i=1;i<=_nNodesPerBCElmt;++i){

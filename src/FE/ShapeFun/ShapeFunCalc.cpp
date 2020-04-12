@@ -9,16 +9,16 @@
 
 #include "FE/ShapeFun.h"
 
-void ShapeFun::Calc(const double &xi,const Nodes &nodes,bool flag){
+void ShapeFun::Calc(const double &xi,const Nodes &nodes,const bool &flag){
     Compute1DLagrangeShapeFun(xi,nodes,flag);
 }
 
 //*************************************
-void ShapeFun::Calc(const double &xi,const double &eta,const Nodes &nodes,bool flag){
+void ShapeFun::Calc(const double &xi,const double &eta,const Nodes &nodes,const bool &flag){
     Compute2DLagrangeShapeFun(xi,eta,nodes,flag);
 }
 
 //**************************************
-void ShapeFun::Calc(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,bool flag){
+void ShapeFun::Calc(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,const bool &flag){
     Compute3DLagrangeShapeFun(xi,eta,zeta,nodes,flag);
 }

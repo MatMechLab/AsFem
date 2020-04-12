@@ -14,10 +14,7 @@ name=ux uy d
   name=vonMises Hydro sigxx sigyy sigxy
 [end]
 
-[qpoint]
-  type=gauss
-  order=2
-[end]
+
 
 [elmts]
   [solids]
@@ -31,7 +28,7 @@ name=ux uy d
 [mates]
   [frac]
     type=miehelinear
-    params=2.1e2 0.2 2.7e-3 2.0e-2 1.0e-7     1
+    params=2.1e2 0.2 2.7e-3 2.0e-2 1.0e-6     1
     //     E     nu  Gc     L      viscosity  UseHist
     // UseHist=1-->use the stagger solution
     // UseHist=0-->use the fully coupled solution
@@ -70,17 +67,18 @@ name=ux uy d
 
 [timestepping]
   type=be
-  dt=1.0e-4
-  dtmax=1.0e-3
+  dt=1.0e-5
+  dtmax=1.0e-4
   dtmin=5.0e-7
   endtime=1.0e2
+  opts=4
   adaptive=true
 [end]
 [nonlinearsolver]
   type=newtonls
   r_abs_tol=5.0e-7
   r_rel_tol=1.5e-8
-  maxiters=15
+  maxiters=25
 [end]
 
 

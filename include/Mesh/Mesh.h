@@ -61,10 +61,29 @@ public:
     //*** set mesh type
     void SetMeshType(string meshtype);
     //***  for mesh mode(true for built-in, false for external one)
-    void SetMeshMode(bool flag){_IsBuiltInMesh=flag;if(flag)_IsGmshMesh=false;}
-    void SetMeshGmshMode(bool flag){_IsGmshMesh=flag;if(flag) _IsBuiltInMesh=false;}
+    void SetMeshMode(bool flag){
+        _IsBuiltInMesh=flag;
+        if(flag){
+            _IsGmshMesh=false;
+            _IsAbaqusMesh=false;
+        }
+    }
+    void SetMeshGmshMode(bool flag){
+        _IsGmshMesh=flag;
+        if(flag) {
+            _IsBuiltInMesh=false;
+            _IsAbaqusMesh=false;
+        }
+    }
+    void SetMeshAbaqusMode(bool flag){
+        _IsAbaqusMesh=flag;
+        if(flag){
+            _IsBuiltInMesh=false;
+            _IsGmshMesh=false;
+        }
+    }
     //*** set msh file name for gmsh import
-    void SetMshFileName(string filename){_GmshFileName=filename;}
+    void SetMshFileName(string filename){_GmshFileName=filename;_AbaqusFileName=filename;}
     //*** set ith element's volume
     void SetIthElmtVolume(const PetscInt &i,const PetscReal &volume){
         _ElmtVolume[i-1]=volume;
@@ -247,6 +266,34 @@ private:
     vector<int> GetIthElmtJthSurfaceConn(const int &elmttype,const int &e,const int &j)const;
     int GetElmtVTKCellTypeViaGmshElmtType(int elmttype) const;
     void ModifyElmtConnViaGmshElmtType(int elmttype,vector<int> &conn) const;
+
+    //******************************************
+    //*** For mesh from Abaqus's inp file
+    //******************************************
+    bool ReadMeshFromAbaqus();
+    int GetDimFromInpMeshTypeName(string meshtypename) const;
+    int GetVTKCellTypeFormInpMeshTypeName(string meshtypename) const;
+    int GetElmtOrderViaInpElmtTypeName(string meshtypename)const;
+    int GetAbaqusNodesNumFromInp(string filename) const;
+    int GetAbaqusElmtsNumFromInp(string filename) const;
+    int GetAbaqusBCElmtsNumFromInp(string filename) const;
+    int GetNodeSetsNumFromInp(string filename) const;
+    int GetElmtSetsNumFromInp(string filename) const;
+    int GetAbaqusBCElmtNodesNumFromInp(string meshtypename) const;
+    int GetElmtNodesNumFromInpElmtName(string meshtypename) const;
+
+    MeshType GetMeshTypeViaAbaqusMeshName(string meshtypename) const;
+    MeshType GetBCMeshTypeViaAbaqusMeshName(string meshtypename) const;
+    
+
+    string GetElmtTypeNameFromInp(string filename) const;
+    vector<string> GetNodeSetsNameFromInp(string filename) const;
+    vector<string> GetElmtSetsNameFromInp(string filename) const;
+    vector<vector<int>> GetNodeIndexSetsFromInp(string filename) const;
+    vector<vector<int>> GetElmtIndexSetsFromInp(string filename) const;
+
+    vector<int> GetNodeIndexVecFromInpNodeSetName(string filename,string nodesetname)const;
+    vector<int> GetElmtIndexVecFromInpNodeSetName(string filename,string elmtsetname)const;
     //******************************************
     //*** For print mesh information
     //******************************************
@@ -259,7 +306,7 @@ private:
     //************************************************
     bool _IsMeshCreated;
     string _MeshFileName;
-    string _GmshFileName;// for gmsh import
+    string _GmshFileName,_AbaqusFileName;// for gmsh import
     vector<PetscInt> _ElmtVTKCellType;PetscInt _BulkElmtVTKCellType;
     vector<PetscReal> _NodeCoords;// store all the node coornidates
     vector<vector<PetscInt>> _ElmtConn;// store all the elements' connectivity
@@ -270,7 +317,7 @@ private:
                                            // if 1D, then only bulk element conn is not empty
     vector<vector<PetscInt>> _LineElmtConn,_SurfaceElmtConn;
     MeshType _BulkMeshType,_SurfaceMeshType,_LineMeshType;
-    bool _IsBuiltInMesh,_IsGmshMesh;
+    bool _IsBuiltInMesh=true,_IsGmshMesh=false,_IsAbaqusMesh=false;
 
     //****************************************
     //*** for gmsh related information

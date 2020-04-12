@@ -44,12 +44,12 @@ name=C Mu
 [end]
 
 [timestepping]
-  type=cn
+  type=be
   dt=1.0e-5
   dtmax=5.0e-1
   opts=5
-  endtime=5.0e-5
-  adaptive=false
+  endtime=1.0e2
+  adaptive=true
 [end]
 
 [job]

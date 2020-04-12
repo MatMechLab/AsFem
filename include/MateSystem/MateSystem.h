@@ -161,6 +161,16 @@ private:
                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                           vector<double> &gpHist,const vector<double> &gpHistOld);
     //***************************************
+    //*** For anisotropic linear elastic fracture
+    //*** taken from Y.J. Liu
+    //***************************************
+     void AnisoPFFractureMaterial(const int &nDim,const double &t,const double &dt,
+                          const vector<double> InputParams,
+                          const Vector3d &gpCoord,
+                          const vector<double> &gpU,const vector<double> &gpV,
+                          const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                          vector<double> &gpHist,const vector<double> &gpHistOld);
+    //***************************************
     //*** For Miehe's model with neo-hookean material(finite deformation)
     //***************************************
     void MieheNeoHookeanMaterial(const int &nDim,const double &t,const double &dt,

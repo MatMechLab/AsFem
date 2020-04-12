@@ -554,6 +554,110 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
             Msg_AsFem_Exit();
         }
     }
+    else if(str.find("type=abaqus")!=string::npos||
+            str.find("type=Abaqus")!=string::npos||
+            str.find("type=ABAQUS")!=string::npos){
+        HasType=true;
+        IsBuiltIn=false;
+        getline(in,str);linenum+=1;
+        str=StrToLower(str);
+        mesh.SetMeshMode(IsBuiltIn);
+        mesh.SetMeshAbaqusMode(true);
+        bool HasFileName=false;
+        while(str.find("[end]")==string::npos&&
+              str.find("[END]")==string::npos){
+            str=RemoveStrSpace(str);
+            if(IsCommentLine(str)||str.length()<1){
+                getline(in,str);linenum+=1;
+                str=StrToLower(str);
+                continue;
+            }
+            if(str.find("file=")!=string::npos||
+               str.find("FILE=")!=string::npos){
+                if(str.compare(str.length()-4,4,".inp")==0||
+                   str.compare(str.length()-4,4,".Inp")==0||
+                   str.compare(str.length()-4,4,".INP")==0){
+                    string filename=str.substr(5,str.length());
+                    mesh.SetMshFileName(filename);
+                    IsSuccess=true;
+                    HasFileName=true;
+                    mesh.SetMeshMode(false);
+                }
+            }
+            else if(str.find("savemesh=")!=string::npos||
+                    str.find("Savemesh=")!=string::npos||
+                    str.find("SaveMesh=")!=string::npos||
+                    str.find("SAVEMESH=")!=string::npos){
+                int i=str.find_first_of('=');
+                string substr=str.substr(i+1,str.length());
+                substr=RemoveStrSpace(substr);
+                if(substr.find("true")!=string::npos||
+                   substr.find("True")!=string::npos||
+                   substr.find("TRUE")!=string::npos){
+                    IsSaveMesh=true;
+                }
+                else if(substr.find("false")!=string::npos||
+                        substr.find("False")!=string::npos||
+                        substr.find("FALSE")!=string::npos){
+                    IsSaveMesh=false;
+                }
+                else{
+                    Msg_Input_LineError(linenum);
+                    PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported option in savemesh= in [mesh]   !!!            ***\n");
+                    PetscPrintf(PETSC_COMM_WORLD,"***        savemesh=true[false] is expected            !!!            ***\n");
+                    Msg_AsFem_Exit();
+                }
+            }
+            else if(str.find("printmesh=")!=string::npos||
+                    str.find("Printmesh=")!=string::npos||
+                    str.find("PrintMesh=")!=string::npos||
+                    str.find("PRINTMESH=")!=string::npos){
+                int i=str.find_first_of('=');
+                string substr=str.substr(i+1,str.length());
+                substr=RemoveStrSpace(substr);
+                if(substr.find("true")!=string::npos||
+                   substr.find("True")!=string::npos||
+                   substr.find("TRUE")!=string::npos){
+                    IsPrint=true;IsDepPrint=false;
+                }
+                else if(substr.find("false")!=string::npos||
+                        substr.find("False")!=string::npos||
+                        substr.find("FALSE")!=string::npos){
+                    IsPrint=false;IsDepPrint=false;
+                }
+                else if(substr.find("dep")!=string::npos||
+                        substr.find("Dep")!=string::npos||
+                        substr.find("DEP")!=string::npos){
+                    IsPrint=true;IsDepPrint=true;
+                }
+                else{
+                    Msg_Input_LineError(linenum);
+                    PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported option in printmesh= in [mesh] block     !!!   ***\n");
+                    Msg_AsFem_Exit();
+                }
+            }
+            else if(str.find("[end]")!=string::npos||
+                    str.find("[END]")!=string::npos){
+                break;
+            }
+            else if(str.find("[]")!=string::npos){
+                Msg_Input_LineError(linenum);
+                Msg_Input_BlockBracketNotComplete();
+                Msg_AsFem_Exit();
+            }
+            else{
+                Msg_Input_LineError(linenum);
+                PetscPrintf(PETSC_COMM_WORLD,"*** Error: unknown option in [mesh] block                         !!! ***\n");
+                Msg_AsFem_Exit();
+            }
+            getline(in,str);linenum+=1;
+        }
+        if(!HasFileName){
+            IsSuccess=false;
+            PetscPrintf(PETSC_COMM_WORLD,"*** Error: file=correct file name should be given in [mesh] block !!! ***\n");
+            Msg_AsFem_Exit();
+        }
+    }
 
 
     string substr=_InputFileName.substr(0,_InputFileName.find_first_of('.'))+"_mesh.vtu";

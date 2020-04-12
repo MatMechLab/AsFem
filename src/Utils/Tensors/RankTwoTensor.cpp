@@ -113,6 +113,28 @@ void RankTwoTensor::SetFromVoigt(const double &v11,const double &v22,const doubl
     (*this)(2,1)=v12;(*this)(2,2)=v22;(*this)(2,3)=v23;
     (*this)(3,1)=v31;(*this)(3,2)=v23;(*this)(3,3)=v33;
 }
+void RankTwoTensor::SetFromEulerAngle(const double &theta1,const double &theta2,const double &theta3){
+    // set a rotation tensor from Euler-angle
+    const double PI=3.14159265359;
+    double x1=cos(theta1*PI/180.0);
+    double x2=cos(theta2*PI/180.0);
+    double x3=cos(theta3*PI/180.0);
+    double y1=sin(theta1*PI/180.0);
+    double y2=sin(theta2*PI/180.0);
+    double y3=sin(theta3*PI/180.0);
+
+    (*this)(1,1)= x1*x3-x2*y1*y3;
+    (*this)(1,2)= x3*y1+x1*x2*y3;
+    (*this)(1,3)= y2*y3;
+
+    (*this)(2,1)=-x1*y3-x2*x3*y1;
+    (*this)(2,2)= x1*x2*x3-y1*y3;
+    (*this)(2,3)= x3*y2;
+
+    (*this)(3,1)= y1*y2;
+    (*this)(3,2)=-x1*y2;
+    (*this)(3,3)= x2;
+}
 //****** for vector cross dot vector, which gives you a rank-2 tensor
 // RankTwoTensor CrossDot(const Eigen::Vector3d &a,const Eigen::Vector3d &b){
 //     RankTwoTensor temp(0.0);
