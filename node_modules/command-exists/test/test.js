@@ -3,14 +3,15 @@
 var expect = require('expect.js');
 var commandExists = require('..');
 var commandExistsSync = commandExists.sync;
+var resolve = require('path').resolve;
 var isUsingWindows = process.platform == 'win32'
 
 describe('commandExists', function(){
     describe('async - callback', function() {
-        it('it should find a command named ls or dir', function(done){
+        it('it should find a command named ls or xcopy', function(done){
             var commandToUse = 'ls'
             if (isUsingWindows) {
-                commandToUse = 'dir'
+                commandToUse = 'xcopy'
             }
 
             commandExists(commandToUse, function(err, exists) {
@@ -30,10 +31,10 @@ describe('commandExists', function(){
     });
 
     describe('async - promise', function() {
-        it('it should find a command named ls or dir', function(done){
+        it('it should find a command named ls or xcopy', function(done){
             var commandToUse = 'ls'
             if (isUsingWindows) {
-                commandToUse = 'dir'
+                commandToUse = 'xcopy'
             }
 
             commandExists(commandToUse)
@@ -56,10 +57,10 @@ describe('commandExists', function(){
     });
 
     describe('sync', function() {
-        it('it should find a command named ls or dir', function(){
+        it('it should find a command named ls or xcopy', function(){
             var commandToUse = 'ls'
             if (isUsingWindows) {
-                commandToUse = 'dir'
+                commandToUse = 'xcopy'
             }
             expect(commandExistsSync(commandToUse)).to.be(true);
         });
@@ -68,10 +69,10 @@ describe('commandExists', function(){
             expect(commandExistsSync('fdsafdsafdsafdsafdsa')).to.be(false);
         });
 
-        it('it should not find a command named ls or dir prefixed with some nonsense', function(){
+        it('it should not find a command named ls or xcopy prefixed with some nonsense', function(){
             var commandToUse = 'fdsafdsa ls'
             if (isUsingWindows) {
-                commandToUse = 'fdsafdsaf dir'
+                commandToUse = 'fdsafdsaf xcopy'
             }
             expect(commandExistsSync(commandToUse)).to.be(false);
         });
@@ -126,5 +127,21 @@ describe('commandExists', function(){
                 expect(commandExists.sync(commandToUse)).to.be(false);
             });
         }
+    });
+
+    describe('absolute path', function() {
+        it('it should report true if there is a command with that name in absolute path', function(done) {
+            var commandToUse = resolve('test/executable-script.js');
+            commandExists(commandToUse)
+            .then(function(command){
+                expect(command).to.be(commandToUse);
+                done();
+            });
+        });
+        
+        it('it should report false if there is not a command with that name in absolute path', function() {
+            var commandToUse = resolve('executable-script.js');
+            expect(commandExists.sync(commandToUse)).to.be(false);
+        });
     });
 });

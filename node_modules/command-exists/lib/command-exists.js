@@ -62,7 +62,8 @@ var commandExistsUnix = function(commandName, cleanedCommandName, callback) {
 }
 
 var commandExistsWindows = function(commandName, cleanedCommandName, callback) {
-  if (/[\x00-\x1f<>:"\|\?\*]/.test(commandName)) {
+  // Regex from Julio from: https://stackoverflow.com/questions/51494579/regex-windows-path-validator
+  if (!(/^(?!(?:.*\s|.*\.|\W+)$)(?:[a-zA-Z]:)?(?:(?:[^<>:"\|\?\*\n])+(?:\/\/|\/|\\\\|\\)?)+$/m.test(commandName))) {
     callback(null, false);
     return;
   }
@@ -93,7 +94,8 @@ var commandExistsUnixSync = function(commandName, cleanedCommandName) {
 }
 
 var commandExistsWindowsSync = function(commandName, cleanedCommandName, callback) {
-  if (/[\x00-\x1f<>:"\|\?\*]/.test(commandName)) {
+  // Regex from Julio from: https://stackoverflow.com/questions/51494579/regex-windows-path-validator
+  if (!(/^(?!(?:.*\s|.*\.|\W+)$)(?:[a-zA-Z]:)?(?:(?:[^<>:"\|\?\*\n])+(?:\/\/|\/|\\\\|\\)?)+$/m.test(commandName))) {
     return false;
   }
   try {
