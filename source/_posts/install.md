@@ -34,10 +34,13 @@ or download PETSc from your favorite browser, and choose the version you like fr
 
 Then you can unzip it via ‘tar -xf petsc.tar.gz’ or just right-click on it and unzip it. After that, cd into the petsc folder from your new terminal, and run the configuration file like below(please don't download any external packages, otherwise the configuration will fail):
 ```
-./configure --with-cc='win32fe cl' --with-fc=0 --with-cxx='win32fe cl' --with-mpi=0 \
+./configure --with-cc='win32fe cl' --with-fc=0 --with-cxx='win32fe cl' \
+--with-mpi=0 \
+--with-openmp=1 \
+--with-debugging=0 \
 --download-f2cblaslapack \
-CFLAGS='-fPIC -fopenmp -O3 -march=native' \
-CXXFLAGS='-fPIC -fopenmp -O3 -march=native' \
+COPTFLAGS='-O3 -fopenmp' \
+CXXOPTFLAGS='-O3 -fopenmp' \
 PETSC_DIR=`pwd`
 ```
 after the configuration is done, it will ask you to do several 'make xxxxxx' steps, then you just need to copy the 'make xxx' command from the terminal and copy it and run it.

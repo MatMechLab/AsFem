@@ -5,7 +5,7 @@
 # Site
 title: AsFem
 subtitle: 'A Simple Finite Element Method program'
-description: 'A simple finite element method program for phase-field modeling and multiphysics modeling'
+description: 'A simple finite element method program for phase-field modeling and multiphysics simulation'
 keywords: FEM, Phase-Field, MultiPhysics, Solid Mechanics
 author: Yang Bai
 language: en

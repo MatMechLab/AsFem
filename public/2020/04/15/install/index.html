@@ -28,7 +28,7 @@
 <meta property="og:description" content="WindowsFor windows users, it is highly recommended to download the executable file from here AsFem-Win If someone really needs to compile the source code by themselves, one can do the following steps:">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-15T13:49:58.000Z">
-<meta property="article:modified_time" content="2020-04-19T14:38:40.778Z">
+<meta property="article:modified_time" content="2020-04-29T18:16:59.781Z">
 <meta property="article:author" content="Yang Bai">
 <meta property="article:tag" content="Documents">
 <meta property="article:tag" content="Installation">
@@ -176,7 +176,7 @@
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/AsFem/images/avatar.gif">
       <meta itemprop="name" content="Yang Bai">
-      <meta itemprop="description" content="A simple finite element method program for phase-field modeling and multiphysics modeling">
+      <meta itemprop="description" content="A simple finite element method program for phase-field modeling and multiphysics simulation">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -201,7 +201,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-19 16:38:40" itemprop="dateModified" datetime="2020-04-19T16:38:40+02:00">2020-04-19</time>
+                <time title="Modified: 2020-04-29 20:16:59" itemprop="dateModified" datetime="2020-04-29T20:16:59+02:00">2020-04-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -235,7 +235,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -L -O http:&#x2F;&#x2F;ftp.mcs.anl.gov&#x2F;pub&#x2F;petsc&#x2F;release-snapshots&#x2F;petsc-3.11.4.tar.gz</span><br></pre></td></tr></table></figure>
 <p>or download PETSc from your favorite browser, and choose the version you like from here: <a href="https://www.mcs.anl.gov/petsc/mirror/release-snapshots/" target="_blank" rel="noopener">https://www.mcs.anl.gov/petsc/mirror/release-snapshots/</a></p>
 <p>Then you can unzip it via ‘tar -xf petsc.tar.gz’ or just right-click on it and unzip it. After that, cd into the petsc folder from your new terminal, and run the configuration file like below(please don’t download any external packages, otherwise the configuration will fail):</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --with-cc&#x3D;&#39;win32fe cl&#39; --with-fc&#x3D;0 --with-cxx&#x3D;&#39;win32fe cl&#39; --with-mpi&#x3D;0 \</span><br><span class="line">--download-f2cblaslapack \</span><br><span class="line">CFLAGS&#x3D;&#39;-fPIC -fopenmp -O3 -march&#x3D;native&#39; \</span><br><span class="line">CXXFLAGS&#x3D;&#39;-fPIC -fopenmp -O3 -march&#x3D;native&#39; \</span><br><span class="line">PETSC_DIR&#x3D;&#96;pwd&#96;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.&#x2F;configure --with-cc&#x3D;&#39;win32fe cl&#39; --with-fc&#x3D;0 --with-cxx&#x3D;&#39;win32fe cl&#39; \</span><br><span class="line">--with-mpi&#x3D;0 \</span><br><span class="line">--with-openmp&#x3D;1 \</span><br><span class="line">--with-debugging&#x3D;0 \</span><br><span class="line">--download-f2cblaslapack \</span><br><span class="line">COPTFLAGS&#x3D;&#39;-O3 -fopenmp&#39; \</span><br><span class="line">CXXOPTFLAGS&#x3D;&#39;-O3 -fopenmp&#39; \</span><br><span class="line">PETSC_DIR&#x3D;&#96;pwd&#96;</span><br></pre></td></tr></table></figure>
 <p>after the configuration is done, it will ask you to do several ‘make xxxxxx’ steps, then you just need to copy the ‘make xxx’ command from the terminal and copy it and run it.<br>After several steps (3~4, normally it is 1) ‘make xxxx’ 2) ‘make xxx install’ 3) ‘make xxxx test’), your PETSc should be ready. By default, the petsc is installed in the same folder as your petsc source code, but it may have a different name, i.e. win-opt-arch, something like that.</p>
 <h2 id="step-4"><a href="#step-4" class="headerlink" title="step-4"></a>step-4</h2><p>Now we can compile the AsFem source code. All you need to do is editing the CMakeLists.txt file in AsFem’s source code folder. Please choose the windows release configuration in CMakeLists.txt file, and make sure the path to your PETSc and Eigen is correct (in windows, the path is ‘C:\Program\xxx’, however, it should be modified as ‘C:/Program/XXX’, otherwise it can not be recognized). Another important thing is, in Linux the library file is named as ‘xxx.so’. However, it is different in windows, where you should give ‘petsc.lib’ or whatever the name you see in your petsc’s lib folder.</p>
 <p>After your CMakeLists.txt file is ready, open your VisualStudio2019 and open the AsFem folder(here you don’t need to create a new project, just open the AsFem folder should be fine), then compile it.<br>In order to run asfem, you need to put the petsc.dll file together with asfem executable.</p>
@@ -356,7 +356,7 @@
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
   <p class="site-author-name" itemprop="name">Yang Bai</p>
-  <div class="site-description" itemprop="description">A simple finite element method program for phase-field modeling and multiphysics modeling</div>
+  <div class="site-description" itemprop="description">A simple finite element method program for phase-field modeling and multiphysics simulation</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
