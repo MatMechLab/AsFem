@@ -112,10 +112,78 @@ int Mesh::GetAbaqusBCElmtNodesNumFromInp(string meshtypename) const{
 }
 //****************************************************
 int Mesh::GetElmtNodesNumFromInpElmtName(string meshtypename) const{
-    if(meshtypename.find("CPS4R")!=string::npos){
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
+        return 3;
+    }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
         return 4;
     }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
+        return 6;
+    }
     else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
+        return 8;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return 4;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return 8;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return 10;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
+        return 20;
+    }
+    else{
+        return -1;
+    }
+}
+//****************************************************
+int Mesh::GetSurfaceElmtNodesNumFromInptElmtName(string meshtypename)const{
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
+        return -1;
+    }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
+        return -1;
+    }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
+        return -1;
+    }
+    else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
+        return -1;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return 3;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return 4;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return 6;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
         return 8;
     }
     else{
@@ -123,12 +191,80 @@ int Mesh::GetElmtNodesNumFromInpElmtName(string meshtypename) const{
     }
 }
 //****************************************************
-int Mesh::GetVTKCellTypeFormInpMeshTypeName(string meshtypename) const{
-    if(meshtypename.find("CPS4R")!=string::npos){
-        return 9;
+int Mesh::GetLineElmtNodesNumFromInputElmtName(string meshtypename)const{
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
+        return 2;
+    }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
+        return 2;
+    }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
+        return 3;
     }
     else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
+        return 3;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return -1;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return -1;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return -1;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
+        return -1;
+    }
+    else{
+        return -1;
+    }
+}
+//****************************************************
+int Mesh::GetVTKCellTypeFormInpMeshTypeName(string meshtypename) const{
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
+        return 5;
+    }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
+        return 9;
+    }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
+        return 22;
+    }
+    else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
         return 23;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return 10;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return 12;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return 24;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
+        return 25;
     }
     else{
         return -1;
@@ -136,10 +272,38 @@ int Mesh::GetVTKCellTypeFormInpMeshTypeName(string meshtypename) const{
 }
 //****************************************************
 int Mesh::GetElmtOrderViaInpElmtTypeName(string meshtypename)const{
-    if(meshtypename.find("CPS4R")!=string::npos){
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
         return 1;
     }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
+        return 1;
+    }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
+        return 2;
+    }
     else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
+        return 2;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return 1;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return 2;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return 2;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
         return 2;
     }
     else{
@@ -149,11 +313,39 @@ int Mesh::GetElmtOrderViaInpElmtTypeName(string meshtypename)const{
 //****************************************************
 //****************************************************
 int Mesh::GetDimFromInpMeshTypeName(string meshtypename) const{
-    if(meshtypename.find("CPS4R")!=string::npos){
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
+        return 2;
+    }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
+        return 2;
+    }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
         return 2;
     }
     else if(meshtypename.find("CPS8R")!=string::npos){
-        return 2;
+        // quad-8
+        return 3;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return 3;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return 3;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return 3;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
+        return 3;
     }
     else{
         return -1;
@@ -161,11 +353,39 @@ int Mesh::GetDimFromInpMeshTypeName(string meshtypename) const{
 }
 //****************************************************
 MeshType Mesh::GetMeshTypeViaAbaqusMeshName(string meshtypename) const{
-    if(meshtypename.find("CPS4R")!=string::npos){
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
+        return MeshType::TRI3;
+    }
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
         return MeshType::QUAD4;
     }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
+        return MeshType::TRI6;
+    }
     else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
         return MeshType::QUAD8;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return MeshType::TET4;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return MeshType::HEX8;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return MeshType::TET10;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
+        return MeshType::HEX20;
     }
     else{
         return MeshType::NULLTYPE;
@@ -173,11 +393,39 @@ MeshType Mesh::GetMeshTypeViaAbaqusMeshName(string meshtypename) const{
 }
 //****************************************************
 MeshType Mesh::GetBCMeshTypeViaAbaqusMeshName(string meshtypename) const{
-    if(meshtypename.find("CPS4R")!=string::npos){
+    // for 2d case
+    if(meshtypename.find("CPS3")!=string::npos){
+        // tri-3 mesh
         return MeshType::EDGE2;
     }
-    else if(meshtypename.find("CPS8R")!=string::npos){
+    else if(meshtypename.find("CPS4R")!=string::npos){
+        // quad-4 mesh
+        return MeshType::EDGE2;
+    }
+    else if(meshtypename.find("CPS6M")!=string::npos){
+        // tri-6 mesh
         return MeshType::EDGE3;
+    }
+    else if(meshtypename.find("CPS8R")!=string::npos){
+        // quad-8
+        return MeshType::EDGE3;
+    }
+    // for 3d case
+    else if(meshtypename.find("C3D4")!=string::npos){
+        // for tet-4
+        return MeshType::TRI3;
+    }
+    else if(meshtypename.find("C3D8R")!=string::npos){
+        // for hex-8 mesh
+        return MeshType::QUAD4;
+    }
+    else if(meshtypename.find("C3D10")!=string::npos){
+         // for tet-10 mesh
+        return MeshType::TRI6;
+    }
+    else if(meshtypename.find("C3D20R")!=string::npos){
+        // for hex-20 mesh
+        return MeshType::QUAD8;
     }
     else{
         return MeshType::NULLTYPE;

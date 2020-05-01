@@ -281,6 +281,8 @@ private:
     int GetElmtSetsNumFromInp(string filename) const;
     int GetAbaqusBCElmtNodesNumFromInp(string meshtypename) const;
     int GetElmtNodesNumFromInpElmtName(string meshtypename) const;
+    int GetSurfaceElmtNodesNumFromInptElmtName(string meshtypename)const;
+    int GetLineElmtNodesNumFromInputElmtName(string meshtypename)const;
 
     MeshType GetMeshTypeViaAbaqusMeshName(string meshtypename) const;
     MeshType GetBCMeshTypeViaAbaqusMeshName(string meshtypename) const;

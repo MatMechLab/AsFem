@@ -52,6 +52,9 @@ bool Mesh::ReadMeshFromAbaqus(){
     }
 
     _BulkMeshTypeName=GetElmtTypeNameFromInp(_AbaqusFileName);
+    int nNodesPerSurfaceElmt=0;
+    int nNodesPerLineElmt=0;
+    vector<vector<int>> Node2ElmtList;
     while(!in.eof()){
         // now we start to read *.msh file
         getline(in,str);
@@ -60,6 +63,7 @@ bool Mesh::ReadMeshFromAbaqus(){
             // read the nodes' coordinates
             // node-id, x, y, z
             _NodeCoords.resize(_nNodes*4,0.0);
+            Node2ElmtList.resize(_nNodes,vector<int>(0));
             int id=1;
             double x,y,z;
 
@@ -98,9 +102,10 @@ bool Mesh::ReadMeshFromAbaqus(){
             tempbbulkelmtid.clear();
 
             int elmtid,phyid,geoid,elmttype,vtktype;
-            int nodes,dim,maxdim,elmtorder;
+            int nodes,dim,maxdim,elmtorder,iInd;
             vector<int> tempconn;
             MeshType meshtype,bcmeshtype;
+            bool IsElmtCoverThisNode=false;
 
             _nNodesPerBulkElmt=-1;
             _nNodesPerLineElmt=0;
@@ -153,7 +158,23 @@ bool Mesh::ReadMeshFromAbaqus(){
                 _ElmtConn[elmtid-1+nBCElmts].resize(nodes+1,0);
                 _ElmtConn[elmtid-1+nBCElmts][0]=nodes;
                 for(int j=0;j<nodes;j++){
-                    _ElmtConn[elmtid-1+nBCElmts][j+1]=int(numbers[j+1]);
+                    iInd=static_cast<int>(numbers[j+1]);
+                    _ElmtConn[elmtid-1+nBCElmts][j+1]=iInd;
+                    IsElmtCoverThisNode=true;
+                    
+                    if(Node2ElmtList[iInd-1].size()<1) IsElmtCoverThisNode=false;
+                    for(int i=0;i<Node2ElmtList[iInd-1].size();i++){
+                        if(Node2ElmtList[iInd-1][i]==e){
+                            IsElmtCoverThisNode=true;
+                            break;
+                        }
+                        else{
+                            IsElmtCoverThisNode=false;
+                        }
+                    }
+                    if(!IsElmtCoverThisNode){
+                        Node2ElmtList[iInd-1].push_back(e);
+                    }
                 }
                 _ElmtDimVec[elmtid-1+nBCElmts]=dim;
                 _ElmtTypeVec[elmtid-1+nBCElmts]=elmttype;
