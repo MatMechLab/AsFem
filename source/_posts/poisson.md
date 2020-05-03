@@ -16,7 +16,7 @@ $$\sigma(\phi)\nabla\phi\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}$$
 $$\phi=\phi_{0}\qquad\mathrm{on}\quad\partial\Omega_{D}$$
 
 By choosing a suitable test function $\delta\phi$, we can have the integration of the equation as follow:
-$$\int_{\Omega}\nabla\cdot(\sigma(\phi)\nabla\phi) dV=\int_{\Omega}F(\phi)\delta\phi dV$$
+$$\int_{\Omega}\nabla\cdot(\sigma(\phi)\nabla\phi)\delta\phi dV=\int_{\Omega}F(\phi)\delta\phi dV$$
 applying the divergence theorem and integrating by parts, one can have the weak form as follow:
 $$\int_{\partial\Omega}\sigma(\phi)\nabla\phi\cdot\vec{n}\delta\phi dS
 -\int_{\Omega}\sigma(\phi)\nabla\phi\nabla\delta\phi dV
@@ -145,4 +145,4 @@ If we run it, the result should look like:
 ![](poisson.jpeg)
 
 
-The complete input file can be found here: /tests/poisson/quad4_linear.i
+The complete input file can be found here: $\mathrm{/tests/poisson/quad4\_linear.i}$
