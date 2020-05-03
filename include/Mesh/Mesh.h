@@ -276,7 +276,7 @@ private:
     int GetElmtOrderViaInpElmtTypeName(string meshtypename)const;
     int GetAbaqusNodesNumFromInp(string filename) const;
     int GetAbaqusElmtsNumFromInp(string filename) const;
-    int GetAbaqusBCElmtsNumFromInp(string filename) const;
+    int GetAbaqusBCElmtsNumFromInp(string filename,int nNodesPerBCElmt) const;
     int GetNodeSetsNumFromInp(string filename) const;
     int GetElmtSetsNumFromInp(string filename) const;
     int GetAbaqusBCElmtNodesNumFromInp(string meshtypename) const;
