@@ -39,11 +39,16 @@ void ElmtSystem::CahnHilliard(const int &isw,const int &nDim,const int &nNodes,
     double F=ScalarMaterials[4];
     double dFdc=ScalarMaterials[5];
     double d2Fdc2=ScalarMaterials[6];
+    double S=ScalarMaterials[7];
+    double dSdC=ScalarMaterials[8];
+    double dSdMu=ScalarMaterials[9];
+
     if(isw==3||isw==6){
         for(int i=1;i<=nNodes;++i){
             //Rc
             rhs(2*i-1)+=gpV[0]*shp.shape_value(i)
-                       +M*(gpGradU[1]*shp.shape_grad(i));
+                       +M*(gpGradU[1]*shp.shape_grad(i))
+                       -S*shp.shape_value(i);
             //Rmu
             rhs(2*i  )+=gpU[1]*shp.shape_value(i)
                        -dFdc*shp.shape_value(i)
@@ -53,9 +58,11 @@ void ElmtSystem::CahnHilliard(const int &isw,const int &nDim,const int &nNodes,
                     // Kc,cdot
                     K(2*i-1,2*j-1)+=shp.shape_value(j)*shp.shape_value(i)*ctan[1];
                     // Kc,cc
-                    K(2*i-1,2*j-1)+=dMdc*shp.shape_value(j)*(gpGradU[1]*shp.shape_grad(i))*ctan[0];
+                    K(2*i-1,2*j-1)+=dMdc*shp.shape_value(j)*(gpGradU[1]*shp.shape_grad(i))*ctan[0]
+                                   -dSdC*shp.shape_value(j)*shp.shape_value(i)*ctan[0];
                     // Kc,mu
-                    K(2*i-1,2*j  )+=M*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[0];
+                    K(2*i-1,2*j  )+=M*(shp.shape_grad(j)*shp.shape_grad(i))*ctan[0]
+                                   -dSdMu*shp.shape_value(j)*shp.shape_value(i)*ctan[0];
 
                     // Kmu,c
                     K(2*i  ,2*j-1)+=-d2Fdc2*shp.shape_value(j)*shp.shape_value(i)*ctan[0]
