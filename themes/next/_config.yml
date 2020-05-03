@@ -121,6 +121,7 @@ menu:
   tags: /tags/ || fa fa-tags
   # categories: /categories/ || fa fa-th
   Documents: /categories/Documents || fa fa-book
+  Examples: /categories/Examples || fa fa-hiking
   # archives: /archives/ || fa fa-archive
   Release: /release/ || fa fa-dragon
   #schedule: /schedule/ || fa fa-calendar
@@ -130,7 +131,7 @@ menu:
 # Enable / Disable menu icons / item badges.
 menu_settings:
   icons: true
-  badges: false
+  badges: true
 
 
 # ---------------------------------------------------------------
@@ -502,15 +503,15 @@ math:
 
   # hexo-renderer-pandoc (or hexo-renderer-kramed) required for full MathJax support.
   mathjax:
-    enable: true
+    enable: false
     # See: https://mhchem.github.io/MathJax-mhchem/
-    mhchem: true
+    mhchem: false
 
   # hexo-renderer-markdown-it-plus (or hexo-renderer-markdown-it with markdown-it-katex plugin) required for full Katex support.
   katex:
-    enable: false
+    enable: true
     # See: https://github.com/KaTeX/KaTeX/tree/master/contrib/copy-tex
-    copy_tex: false
+    copy_tex: true
 
 # Easily enable fast Ajax navigation on your website.
 # Dependencies: https://github.com/theme-next/theme-next-pjax

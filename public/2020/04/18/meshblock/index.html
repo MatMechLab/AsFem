@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"yangbai90.github.io","root":"/AsFem/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Mesh generationFor the mesh generation, the [mesh] block is required.For example, if one wants to generate the 1d Lagrange mesh, you can use: 12345678[mesh]  type&#x3D;asfem  dim&#x3D;1  xmin&#x3D;0.0">
+  <meta name="description" content="Mesh generation For the mesh generation, the [mesh] block is required. For example, if one wants to generate the 1d Lagrange mesh, you can use: 12345678[mesh]  type&#x3D;asfem  dim&#x3D;1  xmin&#x3D;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mesh Block">
 <meta property="og:url" content="https://yangbai90.github.io/AsFem/2020/04/18/meshblock/index.html">
 <meta property="og:site_name" content="AsFem">
-<meta property="og:description" content="Mesh generationFor the mesh generation, the [mesh] block is required.For example, if one wants to generate the 1d Lagrange mesh, you can use: 12345678[mesh]  type&#x3D;asfem  dim&#x3D;1  xmin&#x3D;0.0">
+<meta property="og:description" content="Mesh generation For the mesh generation, the [mesh] block is required. For example, if one wants to generate the 1d Lagrange mesh, you can use: 12345678[mesh]  type&#x3D;asfem  dim&#x3D;1  xmin&#x3D;">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-18T13:49:58.000Z">
-<meta property="article:modified_time" content="2020-04-29T18:10:57.453Z">
+<meta property="article:modified_time" content="2020-05-03T13:56:08.980Z">
 <meta property="article:author" content="Yang Bai">
 <meta property="article:tag" content="Documents">
 <meta property="article:tag" content="Installation">
@@ -128,12 +128,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/AsFem/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+    <a href="/AsFem/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">5</span></a>
 
   </li>
         <li class="menu-item menu-item-documents">
 
     <a href="/AsFem/categories/Documents" rel="section"><i class="fa fa-book fa-fw"></i>Documents</a>
+
+  </li>
+        <li class="menu-item menu-item-examples">
+
+    <a href="/AsFem/categories/Examples" rel="section"><i class="fa fa-hiking fa-fw"></i>Examples</a>
 
   </li>
         <li class="menu-item menu-item-release">
@@ -201,7 +206,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-29 20:10:57" itemprop="dateModified" datetime="2020-04-29T20:10:57+02:00">2020-04-29</time>
+                <time title="Modified: 2020-05-03 15:56:08" itemprop="dateModified" datetime="2020-05-03T15:56:08+02:00">2020-05-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -224,14 +229,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Mesh-generation"><a href="#Mesh-generation" class="headerlink" title="Mesh generation"></a>Mesh generation</h1><p>For the mesh generation, the [mesh] block is required.<br>For example, if one wants to generate the 1d Lagrange mesh, you can use:</p>
+        <h1 id="mesh-generation"><a class="markdownIt-Anchor" href="#mesh-generation"></a> Mesh generation</h1>
+<p>For the mesh generation, the [mesh] block is required.<br />
+For example, if one wants to generate the 1d Lagrange mesh, you can use:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[mesh]</span><br><span class="line">  type&#x3D;asfem</span><br><span class="line">  dim&#x3D;1</span><br><span class="line">  xmin&#x3D;0.0</span><br><span class="line">  xmax&#x3D;1.0</span><br><span class="line">  nx&#x3D;10</span><br><span class="line">  meshtype&#x3D;edge2</span><br><span class="line">[end]</span><br></pre></td></tr></table></figure>
 <p>if one wants to save the generated mesh, then the option ‘savemesh=true’ is required:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[mesh]</span><br><span class="line">  type&#x3D;asfem</span><br><span class="line">  dim&#x3D;1</span><br><span class="line">  xmin&#x3D;0.0</span><br><span class="line">  xmax&#x3D;1.0</span><br><span class="line">  nx&#x3D;10</span><br><span class="line">  meshtype&#x3D;edge2</span><br><span class="line">  savemesh&#x3D;true</span><br><span class="line">[end]</span><br></pre></td></tr></table></figure>
 <p>The mesh will be saved as a <em>.vtu</em> file, which should have the name: your_input_file_name+’_mesh.vtu’(<em>.i</em> is removed from your input file name). For example, if your input file is: <em>test.i</em>, then the mesh file name is: <em>test_mesh.vtu</em>.</p>
 <p>Additionally, AsFem will also print this message in your console:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">**************************************************************</span><br><span class="line">*** Start to read input file ...                           ***</span><br><span class="line">***   start to crate mesh ...                              ***</span><br><span class="line">***     save mesh to                   hex20m1_mesh.vtu    ***</span><br><span class="line">***   mesh generation finished !                           ***</span><br></pre></td></tr></table></figure>
-
 <p>Moreover, if one wants to print out the mesh information in the terminal, one can use the ‘printmesh=true’ option. For example, if we want to print the information of a 1D edge3 type Lagrange mesh, we can use:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[mesh]</span><br><span class="line">  type&#x3D;asfem</span><br><span class="line">  dim&#x3D;1</span><br><span class="line">  xmin&#x3D;0.0</span><br><span class="line">  xmax&#x3D;1.0</span><br><span class="line">  nx&#x3D;5</span><br><span class="line">  meshtype&#x3D;edge4</span><br><span class="line">  savemesh&#x3D;false</span><br><span class="line">  printmesh&#x3D;true</span><br><span class="line">[end]</span><br></pre></td></tr></table></figure>
 <p>then the output should look like:</p>
@@ -248,11 +254,14 @@
 <p>then the unit([0,1] in 1D, [0,1]x[0,1] in 2D, [0,1]x[0,1]x[0,1] in 3D) domain will be used by default.</p>
 <p>Currently, AsFem supports the following kinds of built-in mesh:</p>
 <ul>
-<li><p>1D–&gt; edge2, edge3, edge4</p>
+<li>
+<p>1D–&gt; edge2, edge3, edge4</p>
 </li>
-<li><p>2D–&gt; quad4, quad8, quad9</p>
+<li>
+<p>2D–&gt; quad4, quad8, quad9</p>
 </li>
-<li><p>3D–&gt; hex8, hex20, hex27</p>
+<li>
+<p>3D–&gt; hex8, hex20, hex27</p>
 </li>
 </ul>
 
@@ -277,7 +286,10 @@
     <a href="/AsFem/2020/04/16/input/" rel="prev" title="Input file">
       <i class="fa fa-chevron-left"></i> Input file
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/AsFem/2020/05/03/poisson/" rel="next" title="Poisson equation">
+      Poisson equation <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -336,7 +348,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Mesh-generation"><span class="nav-number">1.</span> <span class="nav-text">Mesh generation</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#mesh-generation"><span class="nav-number">1.</span> <span class="nav-text"> Mesh generation</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -349,19 +361,19 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/AsFem/archives">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/AsFem/categories/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/AsFem/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

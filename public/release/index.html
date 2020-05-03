@@ -20,15 +20,15 @@
     var CONFIG = {"hostname":"yangbai90.github.io","root":"/AsFem/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="All the release can be download from here AsFem-Release 💥 Breaking Changes Shift the whole framework to PETSc to achieve the better nonlinear solver and more efficient parallelization Add support for">
+  <meta name="description" content="All the release can be download from here AsFem-Release  💥 Breaking Changes  Shift the whole framework to PETSc to achieve the better nonlinear solver and more efficient parallelization Add support f">
 <meta property="og:type" content="website">
 <meta property="og:title" content="AsFem Release">
 <meta property="og:url" content="https://yangbai90.github.io/AsFem/release/index.html">
 <meta property="og:site_name" content="AsFem">
-<meta property="og:description" content="All the release can be download from here AsFem-Release 💥 Breaking Changes Shift the whole framework to PETSc to achieve the better nonlinear solver and more efficient parallelization Add support for">
+<meta property="og:description" content="All the release can be download from here AsFem-Release  💥 Breaking Changes  Shift the whole framework to PETSc to achieve the better nonlinear solver and more efficient parallelization Add support f">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2020-04-19T14:20:52.000Z">
-<meta property="article:modified_time" content="2020-04-29T18:10:57.453Z">
+<meta property="article:modified_time" content="2020-05-03T13:56:08.984Z">
 <meta property="article:author" content="Yang Bai">
 <meta property="article:tag" content="FEM">
 <meta property="article:tag" content=" Phase-Field">
@@ -131,12 +131,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/AsFem/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+    <a href="/AsFem/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">5</span></a>
 
   </li>
         <li class="menu-item menu-item-documents">
 
     <a href="/AsFem/categories/Documents" rel="section"><i class="fa fa-book fa-fw"></i>Documents</a>
+
+  </li>
+        <li class="menu-item menu-item-examples">
+
+    <a href="/AsFem/categories/Examples" rel="section"><i class="fa fa-hiking fa-fw"></i>Examples</a>
 
   </li>
         <li class="menu-item menu-item-release">
@@ -193,21 +198,25 @@
       
       <div class="post-body">
           <p>All the release can be download from here <a href="https://github.com/yangbai90/AsFem/releases" target="_blank" rel="noopener">AsFem-Release</a></p>
-<h2 id="💥-Breaking-Changes"><a href="#💥-Breaking-Changes" class="headerlink" title="💥 Breaking Changes"></a>💥 Breaking Changes</h2><ul>
+<h2 id="breaking-changes"><a class="markdownIt-Anchor" href="#breaking-changes"></a> 💥 Breaking Changes</h2>
+<ul>
 <li>Shift the whole framework to <a href="https://www.mcs.anl.gov/petsc/" target="_blank" rel="noopener">PETSc</a> to achieve the better nonlinear solver and more efficient parallelization</li>
 <li>Add support for results ouput with folder choice</li>
 <li>Remove the linear solver from <a href="http://eigen.tuxfamily.org/index.php?title=Main_Page" target="_blank" rel="noopener">Eigen</a></li>
 </ul>
-<h2 id="⭐-Features"><a href="#⭐-Features" class="headerlink" title="⭐ Features"></a>⭐ Features</h2><ul>
+<h2 id="features"><a class="markdownIt-Anchor" href="#features"></a> ⭐ Features</h2>
+<ul>
 <li>Linear/Nonlinear elastic problem analysis</li>
 <li>Phase-field fracture model in 2D/3D</li>
 <li>Dendrite growth model in 2D</li>
 <li>Thermo-mechanical coupling in 2D/3D</li>
 </ul>
-<h2 id="🐞-Bug-Fixes"><a href="#🐞-Bug-Fixes" class="headerlink" title="🐞 Bug Fixes"></a>🐞 Bug Fixes</h2><ul>
+<h2 id="bug-fixes"><a class="markdownIt-Anchor" href="#bug-fixes"></a> 🐞 Bug Fixes</h2>
+<ul>
 <li>Fix the incorrect order of gauss integration when using triangle-3 node from Gmsh</li>
 </ul>
-<h2 id="🛠-Improvements"><a href="#🛠-Improvements" class="headerlink" title="🛠 Improvements"></a>🛠 Improvements</h2><ul>
+<h2 id="improvements"><a class="markdownIt-Anchor" href="#improvements"></a> 🛠 Improvements</h2>
+<ul>
 <li>Better nonlinear equation solvability from SNES in PETSc</li>
 <li>Improved parallelization with mumps solver</li>
 </ul>
@@ -272,7 +281,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#💥-Breaking-Changes"><span class="nav-number">1.</span> <span class="nav-text">💥 Breaking Changes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#⭐-Features"><span class="nav-number">2.</span> <span class="nav-text">⭐ Features</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#🐞-Bug-Fixes"><span class="nav-number">3.</span> <span class="nav-text">🐞 Bug Fixes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#🛠-Improvements"><span class="nav-number">4.</span> <span class="nav-text">🛠 Improvements</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#breaking-changes"><span class="nav-number">1.</span> <span class="nav-text"> 💥 Breaking Changes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#features"><span class="nav-number">2.</span> <span class="nav-text"> ⭐ Features</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bug-fixes"><span class="nav-number">3.</span> <span class="nav-text"> 🐞 Bug Fixes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#improvements"><span class="nav-number">4.</span> <span class="nav-text"> 🛠 Improvements</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -285,19 +294,19 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/AsFem/archives">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/AsFem/categories/">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/AsFem/tags/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
