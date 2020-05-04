@@ -121,7 +121,7 @@ menu:
   tags: /tags/ || fa fa-tags
   # categories: /categories/ || fa fa-th
   Documents: /categories/Documents || fa fa-book
-  Examples: /categories/Examples || fa fa-hiking
+  Examples: /categories/Examples || fa fa-biking
   # archives: /archives/ || fa fa-archive
   Release: /release/ || fa fa-dragon
   #schedule: /schedule/ || fa fa-calendar
@@ -360,7 +360,7 @@ codeblock:
   highlight_theme: normal
   # Add copy button on codeblock
   copy_button:
-    enable: false
+    enable: true
     # Show text copy result.
     show_result: false
     # Available values: default | flat | mac
@@ -503,15 +503,15 @@ math:
 
   # hexo-renderer-pandoc (or hexo-renderer-kramed) required for full MathJax support.
   mathjax:
-    enable: false
+    enable: true
     # See: https://mhchem.github.io/MathJax-mhchem/
     mhchem: false
 
   # hexo-renderer-markdown-it-plus (or hexo-renderer-markdown-it with markdown-it-katex plugin) required for full Katex support.
   katex:
-    enable: true
+    enable: false
     # See: https://github.com/KaTeX/KaTeX/tree/master/contrib/copy-tex
-    copy_tex: true
+    copy_tex: false
 
 # Easily enable fast Ajax navigation on your website.
 # Dependencies: https://github.com/theme-next/theme-next-pjax

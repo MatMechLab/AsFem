@@ -1,5 +1,6 @@
 ---
 title: Input file
+mathjax: false
 date: 2020-04-16 16:30:08
 categories:
 - Documents
@@ -11,7 +12,7 @@ tags:
 # Before we start
 Currently, some available demos can be found here:
 
-https://space.bilibili.com/100272198/channel/detail?cid=90241
+[Demo](https://space.bilibili.com/100272198/channel/detail?cid=90241)
 
 ## Write a simple input file:
 

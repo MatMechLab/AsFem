@@ -10,39 +10,47 @@ tags:
 ---
 
 A classical Poisson equation can be written out as follow:
-$$\nabla\cdot(\sigma(\phi)\nabla\phi)=F(\phi)$$
+$$\begin{equation}
+\nabla\cdot(\sigma(\phi)\nabla\phi)=F(\phi)
+\end{equation}$$
 with the boundary conditions as follows:
-$$\sigma(\phi)\nabla\phi\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}$$
-$$\phi=\phi_{0}\qquad\mathrm{on}\quad\partial\Omega_{D}$$
+$$\begin{align}
+\sigma(\phi)\nabla\phi\cdot\vec{n}&=0\qquad\mathrm{on}\quad\partial\Omega_{N}\\
+\phi&=\phi_{0}\qquad\mathrm{on}\quad\partial\Omega_{D}
+\end{align}$$
+where both the $\sigma(\phi)$ and $F(\phi)$ can be the function of $\phi$. In this scenario, the poisson equation becomes the nonlinear case.
 
 By choosing a suitable test function $\delta\phi$, we can have the integration of the equation as follow:
-$$\int_{\Omega}\nabla\cdot(\sigma(\phi)\nabla\phi)\delta\phi dV=\int_{\Omega}F(\phi)\delta\phi dV$$
+$$\begin{equation}
+\int_{\Omega}\nabla\cdot(\sigma(\phi)\nabla\phi)\delta\phi dV=\int_{\Omega}F(\phi)\delta\phi dV
+\end{equation}$$
 applying the divergence theorem and integrating by parts, one can have the weak form as follow:
-$$\int_{\partial\Omega}\sigma(\phi)\nabla\phi\cdot\vec{n}\delta\phi dS
+$$\begin{equation}
+\int_{\partial\Omega}\sigma(\phi)\nabla\phi\cdot\vec{n}\delta\phi dS
 -\int_{\Omega}\sigma(\phi)\nabla\phi\nabla\delta\phi dV
 -\int_{\Omega}F(\phi)\delta\phi dV=0
-$$
+\end{equation}$$
 
 Then, by applying the boundary conditions, the residual can be stated as:
-$$R_{\phi}^{I}=
+$$\begin{equation}R_{\phi}^{I}=
 \int_{\Omega}\sigma(\phi)\nabla\phi\nabla N^{I}dV
 +\int_{\Omega}F(\phi)N^{I}dV
-$$
+\end{equation}$$
 where the superscript $I$ denotes the i-th node of the current element, and where the subscript $\phi$ represents the related degree of freedom (DoF).
 
 Furthermore, one can have the tangential matrix or the stiffness matrix as follows:
-$$
+$$\begin{equation}
+\begin{aligned}
 K_{\phi\phi}^{IJ}=\frac{\partial R^{I}_{\phi}}{\partial\phi^{J}}
-=\int_{\Omega}\frac{\partial\sigma(\phi)}{\partial\phi}N^{J}\nabla\phi\nabla N^{I}dV\\
-\hspace{2px}+\int_{\Omega}\sigma(\phi)\nabla N^{J}\nabla N^{I}dV
-+\int_{\Omega}\frac{\partial F(\phi)}{\partial\phi}N^{J}N^{I}dV
+&=\int_{\Omega}\frac{\partial\sigma(\phi)}{\partial\phi}N^{J}\nabla\phi\nabla N^{I}dV
++\int_{\Omega}\sigma(\phi)\nabla N^{J}\nabla N^{I}dV\\
+&+\int_{\Omega}\frac{\partial F(\phi)}{\partial\phi}N^{J}N^{I}dV
+\end{aligned}
+\end{equation}
 $$
-<!-- $$
-K_{\phi\phi}^{IJ}=\frac{\partial R^{I}_{\phi}}{\partial\phi^{J}}
-=\int_{\Omega}
-$$ -->
 
-Remember, in order to make the code as simple as possible, the derivative of K is without the "-" sign(according to the mathematical definition of Newton-Raphson, we should obtain the K as: $K=-\partial R/\partial\phi$). However, in AsFem, we ignore the "-" sign to make the programming much easier for our users.
+
+Remember, in order to make our code as simple as possible, the derivative of K is without the "-" sign(according to the mathematical definition of Newton-Raphson, we should obtain the K as: $K=-\partial R/\partial\phi$). However, in AsFem, we ignore the "-" sign to make the programming as easy as possible for our users.
 
 Then the one-to-one mapping between the code and the formula can be written out as follow:
 
@@ -61,6 +69,7 @@ if(isw==3||isw==6){
     }
 }
 ```
+
 the ScalarMaterials used here is calculated from the Materials in AsFem, for the details one is referred to [ConstPoissonMate](https://github.com/yangbai90/AsFem/blob/master/src/MateSystem/ConstPoissonMaterial.cpp)
 ```c++
 // In constpoisson material:
@@ -144,5 +153,4 @@ where 'debug=dep' or 'debug=true' allows AsFem to print out some necessary infor
 If we run it, the result should look like:
 ![](poisson.jpeg)
 
-
-The complete input file can be found here: $\mathrm{/tests/poisson/quad4\_linear.i}$
+The complete input file can be found here: [input](https://github.com/yangbai90/AsFem/blob/master/tests/poisson/quad4_linear.i)
