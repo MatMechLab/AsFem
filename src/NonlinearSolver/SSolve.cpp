@@ -107,7 +107,18 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
                            user->_solution._Hist,user->_solution._HistOld,user->_solution._Proj,
                            A,user->_equationSystem._RHS);
     
-    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
+    if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){
+        user->_bcSystem.SetBCPenaltyFactor(1.0e20);
+    }
+    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e6&&user->_feSystem.GetMaxAMatrixValue()<=1.0e12){
+        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
+    }
+    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e3&&user->_feSystem.GetMaxAMatrixValue()<=1.0e6){
+        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e12);
+    }
+    else{
+        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e16);
+    }
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                         user->_fectrlinfo.t,user->_fectrlinfo.ctan,

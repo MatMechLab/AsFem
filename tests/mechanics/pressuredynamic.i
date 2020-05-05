@@ -47,19 +47,29 @@ name=von hydro sig_xx sig_yy sig_xy
   [P2Ux]
     type=pressure
     dof=ux
-    value=0.5
+    value=2.5*t
     boundary=surface
   [end]
   [P2Uy]
     type=pressure
     dof=uy
-    value=0.5
+    value=2.5*t
     boundary=surface
   [end]
 [end]
 
+
+[timestepping]
+  type=be
+  dt=1.0e-3
+  endtime=0.4
+  adaptive=true
+  dtmax=1.0e-1
+[end]
+
 [job]
-  type=static
+  type=transient
   debug=dep
   projection=true
+  //interval=5
 [end]
