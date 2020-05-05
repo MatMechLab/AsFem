@@ -131,7 +131,7 @@ PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     // PetscPrintf(PETSC_COMM_WORLD,"*** System assemble using time=%14.6e [s] \n",
     // chrono::duration_cast<std::chrono::microseconds>(myend-mystart).count()/1.0e6);
 
-    MatScale(A,-1.0);
+    // MatScale(A,-1.0);
     MatGetSize(B,&i,&i);
     SNESGetMaxNonlinearStepFailures(snes,&i);
 
