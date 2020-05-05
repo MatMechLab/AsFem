@@ -352,6 +352,12 @@ set(src ${src} src/TimeStepping/BackwardEuler.cpp)
 set(src ${src} src/TimeStepping/CrankNicolson.cpp)
 
 #############################################################
+### For postprocess system                                ###
+#############################################################
+set(inc ${inc} include/PPSSystem/PPSSystem.h)
+
+
+#############################################################
 ### For FE Problem(the top level of AsFem)                ###
 #############################################################
 ### For Job Block
