@@ -30,7 +30,8 @@ name=von hydro sig_xx sig_yy sig_zz sig_zy sig_zx sig_xy
 [mates]
   [neohookean]
     type=neohookean
-    params=10.0 0.3
+    params=1.0e2           0.3           0           1.0e-1
+    //     Youngs modulus  Poisson ratio compressive pressure
   [end]
 [end]
 
@@ -55,6 +56,12 @@ name=von hydro sig_xx sig_yy sig_zz sig_zy sig_zx sig_xy
     boundary=back
     value=0.0
   [end]
+  [loadUx]
+    type=dirichlet
+    dof=ux
+    value=1.0e-2*t
+    boundary=right
+  [end]
   [loadUz]
     type=dirichlet
     dof=uz
@@ -66,7 +73,7 @@ name=von hydro sig_xx sig_yy sig_zz sig_zy sig_zx sig_xy
 [timestepping]
   type=be
   dt=1.0e-5
-  endtime=1.0
+  endtime=0.4
   adaptive=true
   dtmax=1.0e-1
 [end]
@@ -75,4 +82,5 @@ name=von hydro sig_xx sig_yy sig_zz sig_zy sig_zx sig_xy
   type=transient
   debug=dep
   projection=true
+  //interval=5
 [end]

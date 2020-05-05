@@ -47,7 +47,7 @@ void MateSystem::SaintVenantMaterial(const int &nDim,const double &t,const doubl
     //*** now we calculate the finite strain
     //*******************************************
     _Rank2Materials[2].SetToZeros();
-    RankTwoTensor F(0.0),I(0.0),C(0.0),E(0.0),gradU(0.0),gradUT(0.0);
+    RankTwoTensor F(0.0),I(0.0),C(0.0),E(0.0);
     
     I.SetToIdentity();
     
@@ -58,16 +58,12 @@ void MateSystem::SaintVenantMaterial(const int &nDim,const double &t,const doubl
         _Rank2Materials[2].SetFromGradU(gpGradU[0],gpGradU[1],gpGradU[2]);
     }
 
-    gradU=_Rank2Materials[2];
-    gradUT=_Rank2Materials[2].Transpose();
-    
    
     F=_Rank2Materials[2]+I;// F=I+U_{i,j}
     C=F.Transpose()*F;//C=F^tF
 
     E=(C-I)*0.5;
 
-    // E=(gradU+gradUT+gradUT*gradU)*0.5;
 
     //******************************
     //*** our finite strain
