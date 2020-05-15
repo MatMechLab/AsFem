@@ -222,7 +222,8 @@ void FESystem::FormFE(const int &isw,const double &t,const double &dt,const doub
                     _R[i-1]+=_localR(i)*_elDofsActiveFlag[i-1]*JxW*_KMatrixFactor;
                     if(isw==6){
                         for(j=1;j<=nDofs;++j){
-                            _K[(i-1)*nDofs+j-1]+=-_localK(i,j)*_elDofsActiveFlag[i-1]*_elDofsActiveFlag[j-1]*JxW*_KMatrixFactor;
+                            // _K[(i-1)*nDofs+j-1]+=-_localK(i,j)*_elDofsActiveFlag[i-1]*_elDofsActiveFlag[j-1]*JxW*_KMatrixFactor;
+                            _K[(i-1)*nDofs+j-1]+=_localK(i,j)*_elDofsActiveFlag[i-1]*_elDofsActiveFlag[j-1]*JxW*_KMatrixFactor;
                             if(abs(_localK(i,j))>_MaxKMatrixValue) _MaxKMatrixValue=abs(_localK(i,j));
                         }
                     }

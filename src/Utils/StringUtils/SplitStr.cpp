@@ -11,10 +11,18 @@
 
 vector<string> SplitStr(string &instr,char symbol)
 {
+    string instr0=instr;
     vector<string> outstr;
     outstr.clear();
 
-    stringstream ss(instr);
+    if(instr0.find_last_of('\n')!=string::npos){
+        instr0.pop_back();
+    }
+    else if(instr0.at(instr0.size()-1)==symbol){
+        instr0.pop_back();
+    }
+
+    stringstream ss(instr0);
     string temp;
     while (getline(ss,temp,symbol)){
         outstr.push_back(temp);
@@ -35,5 +43,9 @@ vector<string> SplitStr(string &instr,char symbol)
         outstr0=outstr;
     }
     outstr=outstr0;
+    for(auto &it:outstr){
+        it.erase(remove(it.begin(),it.end(),symbol),it.end());
+        it.erase(remove(it.begin(),it.end(),'\n'),it.end());
+    }
     return outstr;
 }

@@ -37,7 +37,9 @@ bool IsBracketMatch(ifstream &in,const int &linenum0,int &lastend_linenum);
 
 // for string to number convert
 vector<double> SplitStrNum(string &instr);
+vector<double> SplitStrNum(string &instr,char symbol);
 vector<double> SplitStrNumAfter(string instr,int pos);
+
 
 void GoToLine(ifstream &in,const int &linenum);
 

@@ -40,20 +40,20 @@ public:
     //*****************************************
     //*** some common setting functions
     //*****************************************
-    void SetDim(const PetscInt &ndim) {_nMaxDim=ndim;_nMinDim=ndim-1;}
-    void SetMaxDim(const PetscInt &ndim) {_nMaxDim=ndim;}
-    void SetMinDim(const PetscInt &ndim) {_nMinDim=ndim;}
+    void SetDim(const int &ndim) {_nMaxDim=ndim;_nMinDim=ndim-1;}
+    void SetMaxDim(const int &ndim) {_nMaxDim=ndim;}
+    void SetMinDim(const int &ndim) {_nMinDim=ndim;}
     //*** for element numbers along different axis
-    void SetNx(const PetscInt &nx){_Nx=nx;}
-    void SetNy(const PetscInt &ny){_Ny=ny;}
-    void SetNz(const PetscInt &nz){_Nz=nz;}
+    void SetNx(const int &nx){_Nx=nx;}
+    void SetNy(const int &ny){_Ny=ny;}
+    void SetNz(const int &nz){_Nz=nz;}
     //*** for element geometry settings
-    void SetXmin(const PetscReal &xmin){_Xmin=xmin;}
-    void SetXmax(const PetscReal &xmax){_Xmax=xmax;}
-    void SetYmin(const PetscReal &ymin){_Ymin=ymin;}
-    void SetYmax(const PetscReal &ymax){_Ymax=ymax;}
-    void SetZmin(const PetscReal &zmin){_Zmin=zmin;}
-    void SetZmax(const PetscReal &zmax){_Zmax=zmax;}
+    void SetXmin(const double &xmin){_Xmin=xmin;}
+    void SetXmax(const double &xmax){_Xmax=xmax;}
+    void SetYmin(const double &ymin){_Ymin=ymin;}
+    void SetYmax(const double &ymax){_Ymax=ymax;}
+    void SetZmin(const double &zmin){_Zmin=zmin;}
+    void SetZmax(const double &zmax){_Zmax=zmax;}
     //*** for mesh type setting
     void SetMeshType(MeshType type){_BulkMeshType=type;}
     //*** for save mesh
@@ -85,49 +85,49 @@ public:
     //*** set msh file name for gmsh import
     void SetMshFileName(string filename){_GmshFileName=filename;_AbaqusFileName=filename;}
     //*** set ith element's volume
-    void SetIthElmtVolume(const PetscInt &i,const PetscReal &volume){
+    void SetIthElmtVolume(const int &i,const double &volume){
         _ElmtVolume[i-1]=volume;
     }
     //*** set i-th bulk elmt volume
-    void SetIthBulkElmtVolume(const PetscInt &i,const PetscReal &volume){
+    void SetIthBulkElmtVolume(const int &i,const double &volume){
         _ElmtVolume[i+_nElmts-_nBulkElmts-1]=volume;
     }
     //*** if one set the volume for each element, the you should update the total volume
-    void SetTotalVolume(const PetscReal &volume){_TotalVolume=volume;}
+    void SetTotalVolume(const double &volume){_TotalVolume=volume;}
 
     //*****************************************
     //*** some common getting functions
     //*****************************************
-    inline PetscInt GetDim()const{return _nMaxDim;}
-    inline PetscInt GetMaxDim()const{return _nMaxDim;}
-    inline PetscInt GetMinDim()const{return _nMinDim;}
+    inline int GetDim()const{return _nMaxDim;}
+    inline int GetMaxDim()const{return _nMaxDim;}
+    inline int GetMinDim()const{return _nMinDim;}
     //*** for element numbers
-    inline PetscInt GetNx()const{return _Nx;}
-    inline PetscInt GetNy()const{return _Ny;}
-    inline PetscInt GetNz()const{return _Nz;}
+    inline int GetNx()const{return _Nx;}
+    inline int GetNy()const{return _Ny;}
+    inline int GetNz()const{return _Nz;}
     //*** for geometry
-    inline PetscReal GetXmin()const{return _Xmin;}
-    inline PetscReal GetXmax()const{return _Xmax;}
-    inline PetscReal GetYmin()const{return _Ymin;}
-    inline PetscReal GetYmax()const{return _Ymax;}
-    inline PetscReal GetZmin()const{return _Zmin;}
-    inline PetscReal GetZmax()const{return _Zmax;}
+    inline double GetXmin()const{return _Xmin;}
+    inline double GetXmax()const{return _Xmax;}
+    inline double GetYmin()const{return _Ymin;}
+    inline double GetYmax()const{return _Ymax;}
+    inline double GetZmin()const{return _Zmin;}
+    inline double GetZmax()const{return _Zmax;}
     //*** for mesh type
     inline MeshType GetBulkMeshType()const{return _BulkMeshType;}
     inline MeshType GetSurfaceMeshType()const{return _SurfaceMeshType;}
     inline MeshType GetLineMeshType()const{return _LineMeshType;}
     inline PetscInt GetMeshOrder()const{return _nOrder;}
     //*** for nodes number and element numbers
-    inline PetscInt GetNodesNum()const{return _nNodes;}
-    inline PetscInt GetNodesNumPerBulkElmt()const{return _nNodesPerBulkElmt;}
-    inline PetscInt GetNodesNumPerLineElmt()const{return _nNodesPerLineElmt;}
-    inline PetscInt GetNodesNumPerSurfaceElmt()const{return _nNodesPerSurfaceElmt;}
-    inline PetscInt GetElmtsNum()const{return _nElmts;}
-    inline PetscInt GetBulkElmtsNum()const{return _nBulkElmts;}
-    inline PetscInt GetBCElmtsNum()const{return _nElmts-_nBulkElmts;}
+    inline int GetNodesNum()const{return _nNodes;}
+    inline int GetNodesNumPerBulkElmt()const{return _nNodesPerBulkElmt;}
+    inline int GetNodesNumPerLineElmt()const{return _nNodesPerLineElmt;}
+    inline int GetNodesNumPerSurfaceElmt()const{return _nNodesPerSurfaceElmt;}
+    inline int GetElmtsNum()const{return _nElmts;}
+    inline int GetBulkElmtsNum()const{return _nBulkElmts;}
+    inline int GetBCElmtsNum()const{return _nElmts-_nBulkElmts;}
 
     //*** for bc elements information
-    inline PetscInt GetDimViaPhyName(string bcname)const{
+    inline int GetDimViaPhyName(string bcname)const{
         for(auto it:_PhysicNameToDimList){
             if(it.first==bcname){
                 return it.second;
@@ -135,7 +135,7 @@ public:
         }
         return -1;
     }
-    inline PetscInt GetBCElmtNodesNumViaPhyName(string bcname)const{
+    inline int GetBCElmtNodesNumViaPhyName(string bcname)const{
         for(auto it:_PhysicNameToElmtNodesNumList){
             if(it.first==bcname){
                 return it.second;
@@ -145,27 +145,27 @@ public:
     }
 
     //**** for physical groups
-    inline PetscInt GetPhysicalGroupNum()const{return _nPhysicGroups;}
+    inline int GetPhysicalGroupNum()const{return _nPhysicGroups;}
     //**** for i-th element information
-    inline PetscInt GetIthBulkElmtVTKType(const PetscInt &i)const{
+    inline int GetIthBulkElmtVTKType(const int &i)const{
         return _ElmtVTKCellType[i+GetBCElmtsNum()-1];
     }
-    inline ElmtType GetIthBulkElmtElmtType(const PetscInt &i)const{
+    inline ElmtType GetIthBulkElmtElmtType(const int &i)const{
         return _MeshElmtInfoList[i-1].first;
     }
-    inline MateType GetIthBulkElmtMateType(const PetscInt &i)const{
+    inline MateType GetIthBulkElmtMateType(const int &i)const{
         return _MeshElmtInfoList[i-1].second.first;
     }
-    inline int GetIthBulkElmtMateIndex(const PetscInt &i)const{
+    inline int GetIthBulkElmtMateIndex(const int &i)const{
         return _MeshElmtInfoList[i-1].second.second;
     }
-    inline PetscInt GetIthElmtNodesNum(const PetscInt &i)const{
+    inline int GetIthElmtNodesNum(const int &i)const{
         return _ElmtConn[i-1][0];
     }
-    inline PetscInt GetIthBulkElmtNodesNum(const PetscInt &i)const{
+    inline int GetIthBulkElmtNodesNum(const int &i)const{
         return _ElmtConn[i-1+_nElmts-_nBulkElmts][0];
     }
-    inline PetscInt GetElmtsNumViaPhyName(string phyname)const{
+    inline int GetElmtsNumViaPhyName(string phyname)const{
         for(auto it:_PhysicNameToElmtIndexSet){
             if(it.first==phyname){
                 return PetscInt(it.second.size());
@@ -173,7 +173,7 @@ public:
         }
         return 0;
     }
-    inline PetscInt GetIthElmtIndexViaPhyName(string phyname,const PetscInt &i)const{
+    inline int GetIthElmtIndexViaPhyName(string phyname,const int &i)const{
         for(auto it:_PhysicNameToElmtIndexSet){
             if(it.first==phyname){
                 return it.second[i-1];
@@ -181,7 +181,7 @@ public:
         }
         return 0;
     }
-    inline PetscInt GetIthElmtNodesNumViaPhyName(string phyname,const PetscInt &i)const{
+    inline int GetIthElmtNodesNumViaPhyName(string phyname,const int &i)const{
         for(auto it:_PhysicNameToElmtIndexSet){
             if(it.first==phyname){
                 return GetIthElmtNodesNum(it.second[i-1]);
@@ -190,18 +190,18 @@ public:
         return 0;
     }
     //*** for i-th element connectivity
-    inline void GetIthBulkElmtConn(const PetscInt &i,vector<PetscInt> &elconn)const{
-        for(PetscInt j=1;j<=_ElmtConn[i-1+GetBCElmtsNum()][0];++j){
+    inline void GetIthBulkElmtConn(const int &i,vector<int> &elconn)const{
+        for(int j=1;j<=_ElmtConn[i-1+GetBCElmtsNum()][0];++j){
             elconn[j-1]=_ElmtConn[i-1+GetBCElmtsNum()][j];
         }
     }
-    vector<PetscInt> GetIthBulkElmtDofsIndex(const PetscInt &i)const{
+    vector<int> GetIthBulkElmtDofsIndex(const int &i)const{
         return _BulkElmtDofIndexList[i-1];
     }
-    inline PetscInt GetIthElmtJthConn(const PetscInt &i,const PetscInt &j)const{
+    inline int GetIthElmtJthConn(const int &i,const int &j)const{
         return _ElmtConn[i-1][j];
     }
-    void GetIthElmtNodes(const PetscInt &e,Nodes &nodes)const{
+    void GetIthElmtNodes(const int &e,Nodes &nodes)const{
         for(int i=1;i<=GetIthElmtNodesNum(e);++i){
             nodes(i,0)=GetIthNodeJthCoord(GetIthElmtJthConn(e,i),0);
             nodes(i,1)=GetIthNodeJthCoord(GetIthElmtJthConn(e,i),1);
@@ -209,7 +209,7 @@ public:
             nodes(i,3)=GetIthNodeJthCoord(GetIthElmtJthConn(e,i),3);
         }
     }
-    void GetIthBulkElmtNodes(const PetscInt &e,Nodes &nodes)const{
+    void GetIthBulkElmtNodes(const int &e,Nodes &nodes)const{
         for(int i=1;i<=GetIthBulkElmtNodesNum(e);++i){
             nodes(i,0)=GetIthNodeJthCoord(GetIthBulkElmtJthConn(e,i),0);
             nodes(i,1)=GetIthNodeJthCoord(GetIthBulkElmtJthConn(e,i),1);
@@ -217,25 +217,25 @@ public:
             nodes(i,3)=GetIthNodeJthCoord(GetIthBulkElmtJthConn(e,i),3);
         }
     }
-    inline PetscInt GetIthBulkElmtJthConn(const PetscInt &i,const PetscInt &j)const{
+    inline int GetIthBulkElmtJthConn(const int &i,const int &j)const{
         return _ElmtConn[i-1+_nElmts-_nBulkElmts][j];
     }
-    inline PetscInt GetIthElmtVTKCellType(const PetscInt &i)const{
+    inline int GetIthElmtVTKCellType(const int &i)const{
         return _ElmtVTKCellType[i-1];
     }
-    inline PetscInt GetIthBulkElmtVTKCellType(const PetscInt &i)const{
+    inline int GetIthBulkElmtVTKCellType(const int &i)const{
         return _ElmtVTKCellType[i-1+_nElmts-_nBulkElmts];
     }
 
     //*****************************************************
     //*** get information for nodes and connectivity
     //*****************************************************
-    inline PetscReal GetIthNodeJthCoord(const PetscInt &i,const PetscInt &j)const{
+    inline double GetIthNodeJthCoord(const int &i,const int &j)const{
         return _NodeCoords[(i-1)*4+j];
     }
     //*** for elemental 'volume'
-    inline PetscReal GetTotalVolume()const{return _TotalVolume;}
-    inline PetscReal GetIthElmtVolume(const PetscInt &i)const{
+    inline double GetTotalVolume()const{return _TotalVolume;}
+    inline double GetIthElmtVolume(const int &i)const{
         return _ElmtVolume[i-1];
     }
 
@@ -276,11 +276,13 @@ private:
     int GetElmtOrderViaInpElmtTypeName(string meshtypename)const;
     int GetAbaqusNodesNumFromInp(string filename) const;
     int GetAbaqusElmtsNumFromInp(string filename) const;
-    int GetAbaqusBCElmtsNumFromInp(string filename) const;
+    int GetAbaqusBCElmtsNumFromInp(string filename,int nNodesPerBCElmt) const;
     int GetNodeSetsNumFromInp(string filename) const;
     int GetElmtSetsNumFromInp(string filename) const;
     int GetAbaqusBCElmtNodesNumFromInp(string meshtypename) const;
     int GetElmtNodesNumFromInpElmtName(string meshtypename) const;
+    int GetSurfaceElmtNodesNumFromInptElmtName(string meshtypename)const;
+    int GetLineElmtNodesNumFromInputElmtName(string meshtypename)const;
 
     MeshType GetMeshTypeViaAbaqusMeshName(string meshtypename) const;
     MeshType GetBCMeshTypeViaAbaqusMeshName(string meshtypename) const;
@@ -307,15 +309,15 @@ private:
     bool _IsMeshCreated;
     string _MeshFileName;
     string _GmshFileName,_AbaqusFileName;// for gmsh import
-    vector<PetscInt> _ElmtVTKCellType;PetscInt _BulkElmtVTKCellType;
-    vector<PetscReal> _NodeCoords;// store all the node coornidates
-    vector<vector<PetscInt>> _ElmtConn;// store all the elements' connectivity
-    vector<vector<PetscInt>> _BulkElmtConn;// store the bulk element's connectivity
+    vector<int> _ElmtVTKCellType;PetscInt _BulkElmtVTKCellType;
+    vector<double> _NodeCoords;// store all the node coornidates
+    vector<vector<int>> _ElmtConn;// store all the elements' connectivity
+    vector<vector<int>> _BulkElmtConn;// store the bulk element's connectivity
                                            // if 3D, then surface element conn is not empty
                                            // if 2D, bulk element conn is already the surface element conn
                                            // thus only line element conn is not empty
                                            // if 1D, then only bulk element conn is not empty
-    vector<vector<PetscInt>> _LineElmtConn,_SurfaceElmtConn;
+    vector<vector<int>> _LineElmtConn,_SurfaceElmtConn;
     MeshType _BulkMeshType,_SurfaceMeshType,_LineMeshType;
     bool _IsBuiltInMesh=true,_IsGmshMesh=false,_IsAbaqusMesh=false;
 
@@ -330,7 +332,7 @@ private:
     //*************************************
     //*** For each mesh's uel and umat information
     vector<pair<ElmtType,pair<MateType,int>>> _MeshElmtInfoList;
-    vector<vector<PetscInt>> _BulkElmtDofIndexList;
+    vector<vector<int>> _BulkElmtDofIndexList;
 private:
     //******************************************
     //*** For mesh's geometry information
@@ -348,12 +350,12 @@ private:
     //*** For mesh's physical group management
     //*********************************************
     vector<string> _PhysicGroupNameList;
-    vector<pair<string,PetscInt>> _PhysicNameToIDList;
-    vector<pair<string,PetscInt>> _PhysicNameToDimList;
-    vector<pair<string,PetscInt>> _PhysicNameToElmtNodesNumList;
-    vector<pair<PetscInt,string>> _PhysicIDToNameList;
-    vector<pair<string,vector<PetscInt>>> _PhysicNameToElmtIndexSet;
-    PetscInt _nPhysicGroups;
+    vector<pair<string,int>> _PhysicNameToIDList;
+    vector<pair<string,int>> _PhysicNameToDimList;
+    vector<pair<string,int>> _PhysicNameToElmtNodesNumList;
+    vector<pair<int,string>> _PhysicIDToNameList;
+    vector<pair<string,vector<int>>> _PhysicNameToElmtIndexSet;
+    int _nPhysicGroups;
     string _BulkMeshTypeName;
 
     

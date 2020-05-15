@@ -18,6 +18,9 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
     string bcname;
     int rankne,eStart,eEnd;
 
+    // int eStart,eEnd;
+
+
     for(unsigned int ibc=0;ibc<bclist.size();++ibc){
         bcname=bclist[ibc];
 
@@ -25,13 +28,18 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
         MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
 
         rankne=mesh.GetElmtsNumViaPhyName(bcname)/_size;
-        eStart=_rank*rankne;
-        eEnd=(_rank+1)*rankne;
-        if(_rank==_size-1) eEnd=mesh.GetElmtsNumViaPhyName(bcname);
+        // eStart=_rank*rankne;
+        // eEnd=(_rank+1)*rankne;
+        // if(_rank==_size-1) eEnd=mesh.GetElmtsNumViaPhyName(bcname);
+        if(rankne){}
+        eStart=0;
+        eEnd=mesh.GetElmtsNumViaPhyName(bcname);
 
         _nDim=mesh.GetDimViaPhyName(bcname);
         _nNodesPerBCElmt=mesh.GetBCElmtNodesNumViaPhyName(bcname);
 
+        if(_rank==0){
+            // TODO: make it parallel, the current version is quite stupid!!!
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetIthElmtIndexViaPhyName(bcname,e+1);
             _normals=0.0;
@@ -85,7 +93,7 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                         }
                         else if(DofIndex==2){
                             // for Uy
-                            // cout<<"Uy="<<bcvalue*_normals(1)<<endl;
+                            // cout<<"Uy="<<bcvalue*_normals(2)<<endl;
                             value=fe._shp_line.shape_value(i)*bcvalue*_normals(2)*_JxW;
                             VecSetValue(RHS,iInd,value,ADD_VALUES);
                         }
@@ -146,5 +154,9 @@ void BCSystem::ApplyPressureBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,
                 }
             }
         }
+
+        }//----------->end if
+        // VecAssemblyBegin(RHS);
+        // VecAssemblyEnd(RHS);
     }
 }

@@ -14,6 +14,8 @@
 #include <iomanip>
 #include <vector>
 
+#include "Eigen/Eigen"
+
 using namespace std;
 
 
@@ -58,6 +60,32 @@ public:
 
     void setZero(){
         for(int i=0;i<_MN;++i) _vals[i]=0.0;
+    }
+    inline MatrixXd Inverse()const{
+        Eigen::MatrixXd Mat(_M,_N),MatInv(_M,_N);
+        MatrixXd temp(_M,_N);
+
+        for(int i=1;i<=_M;i++){
+            for(int j=1;j<=_N;j++){
+                Mat.coeffRef(i-1,j-1)=(*this)(i,j);
+            }
+        }
+        MatInv=Mat.inverse();
+        for(int i=1;i<=_M;i++){
+            for(int j=1;j<=_N;j++){
+                temp(i,j)=MatInv.coeff(i-1,j-1);
+            }
+        }
+        return temp;
+    }
+    inline double Det()const{
+        Eigen::MatrixXd Mat(_M,_N);
+        for(int i=1;i<=_M;i++){
+            for(int j=1;j<=_N;j++){
+                Mat.coeffRef(i-1,j-1)=(*this)(i,j);
+            }
+        }
+        return Mat.determinant();
     }
 
 private:

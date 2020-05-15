@@ -2,7 +2,7 @@
 
 [mesh]
   type=abaqus
-  file=pk.inp
+  file=doublenotch.inp
 [end]
 
 
@@ -54,7 +54,7 @@ name=ux uy d
   [fixUy]
     type=dirichlet
     dof=uy
-    boundary=bottom left right top
+    boundary=bottom top
     value=0.0
   [end]
   [loadUx]
