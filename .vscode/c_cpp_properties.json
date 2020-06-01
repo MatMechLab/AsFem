@@ -5,13 +5,14 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
-                "/home/by/Programs/petsc/3.12.3/include",
-                "/home/by/Programs/gcc/9.2.0/include",
-                "/home/by/Programs/gcc/9.2.0/include/c++/9.2.0",
-                "/home/by/Programs/mpich/3.3.2/include"
+                "/home/by/Programs/petsc/3.12.5/include",
+                "/home/by/Programs/mpich/3.3.2/include",
+                "/usr/include/c++/9",
+                "/usr/include/x86_64-linux-gnu",
+                "/usr/include/x86_64-linux-gnu/c++/9"
             ],
             "defines": [],
-            "compilerPath": "/home/by/Programs/gcc/9.2.0/bin/g++",
+            "compilerPath": "/usr/bin/g++",
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64",
