@@ -6,9 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 ###############################################
 ### Set your PETSc path here                ###
 ###############################################
-set(PETSC_DIR "/home/by/Programs/petsc/3.13.0-opt")
+set(PETSC_DIR "/home/by/Programs/petsc/3.12.5")
 set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
-set(Eigen "/home/by/Programs/Eigen-dev")
+set(Eigen "/home/by/Programs/eigen-3.3.7")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
@@ -28,7 +28,7 @@ include_directories("${Eigen}")
 ###############################################
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
 ### for gcc 9, you must add this!!!
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-copy")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=deprecated-copy")
 
 
 ###############################################
