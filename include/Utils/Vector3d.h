@@ -18,6 +18,7 @@ using namespace std;
 
 class Vector3d{
 public:
+    Vector3d()=delete;
     Vector3d(const double val=0.0){
         _vals[0]=val;_vals[1]=val;_vals[2]=val;
     }
