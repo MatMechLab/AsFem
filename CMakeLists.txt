@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 ###############################################
 set(PETSC_DIR "/home/by/Programs/petsc/3.12.5")
 set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
-set(Eigen "/home/by/Programs/eigen-3.3.7")
+set(Eigen "/home/by/Programs/eigen")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
