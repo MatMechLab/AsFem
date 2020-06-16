@@ -26,7 +26,9 @@ class RankFourTensor;
 
 class RankTwoTensor{
 public:
+    RankTwoTensor();
     RankTwoTensor(const double &val);
+    RankTwoTensor(const RankTwoTensor &a);
     enum InitMethod{
         InitZero,
         InitIdentity
@@ -91,6 +93,7 @@ public:
         for(int i=0;i<_N2;++i) _vals[i]=a._vals[i];
         return *this;
     }
+
     //***********************
     //*** for + operator
     //***********************
@@ -211,7 +214,7 @@ public:
         for(int i=0;i<_N2;++i) _vals[i]*=a;
         return *this;
     }
-    inline RankTwoTensor& operator*=(const RankTwoTensor &a){
+    RankTwoTensor& operator*=(const RankTwoTensor &a){
         RankTwoTensor temp=(*this)*a;
         (*this)=temp;
         return *this;

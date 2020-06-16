@@ -29,7 +29,9 @@ class RankTwoTensor;
 class RankFourTensor
 {
 public:
+    RankFourTensor();
     RankFourTensor(const double &val);
+    RankFourTensor(const RankFourTensor &a);
     enum InitMethod{
         InitZero,
         InitIdentity,
@@ -84,6 +86,7 @@ public:
         for(int i=0;i<_N4;++i) _vals[i]=a._vals[i];
         return *this;
     }
+    
     //************
     //*** +
     //************

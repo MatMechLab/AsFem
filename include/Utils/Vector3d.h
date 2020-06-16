@@ -18,8 +18,10 @@ using namespace std;
 
 class Vector3d{
 public:
-    Vector3d()=delete;
-    Vector3d(const double val=0.0){
+    Vector3d(){
+        _vals[0]=0.0;_vals[1]=0.0;_vals[2]=0.0;
+    }
+    Vector3d(const double val){
         _vals[0]=val;_vals[1]=val;_vals[2]=val;
     }
     inline double& operator()(const int &i){
@@ -41,10 +43,7 @@ public:
         _vals[0]=val;_vals[1]=val;_vals[2]=val;
         return *this;
     }
-    inline Vector3d& operator=(const Vector3d &a){
-        _vals[0]=a._vals[0];_vals[1]=a._vals[1];_vals[2]=a._vals[2];
-        return *this;
-    }
+    Vector3d& operator=(const Vector3d &a)=default;
     //***********************************
     //*** for +
     //***********************************
