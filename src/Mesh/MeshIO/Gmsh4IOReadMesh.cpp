@@ -6,27 +6,17 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.06.26
+//+++ Purpose: implement the mesh import for msh(ver=2) file format
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_MESHTYPE_H
-#define ASFEM_MESHTYPE_H
+#include "Mesh/Gmsh4IO.h"
 
-enum class MeshType{
-    NULLTYPE,
-    POINT,
-    EDGE2,
-    EDGE3,
-    EDGE4,
-    EDGE5,
-    TRI3,
-    TRI6,
-    QUAD4,
-    QUAD8,
-    QUAD9,
-    TET4,
-    TET10,
-    HEX8,
-    HEX20,
-    HEX27
-};
-
-#endif // ASFEM_MESHTYPE_H
+bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
+    if(mesh.GetDim()){
+        return true;
+    }
+    return false;
+}
