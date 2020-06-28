@@ -15,6 +15,7 @@
 // #include "FEProblem/FEProblem.h"
 // #include "Mesh/Mesh.h"
 // #include "Mesh/MeshIO.h"
+#include "Utils/MessagePrinter.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -33,6 +34,9 @@ int main(int args,char *argv[]){
 
     // Mesh mesh;
     // mesh.
+
+    MessagePrinter::PrintTxt("Hello");
+    MessagePrinter::PrintTxt("Welcome to use AsFem, a simple finite element method program");
 
     
     ierr=PetscFinalize();CHKERRQ(ierr);

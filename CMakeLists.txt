@@ -62,8 +62,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(inc include/Welcome.h)
 set(src src/main.cpp)
 
-
-
+#############################################################
+### For String utils                                      ###
+#############################################################
+set(inc ${inc} include/Utils/MessagePrinter.h)
+set(src ${src} src/Utils/MessagePrinter.cpp)
 
 #############################################################
 ### For Mesh class                                        ###
