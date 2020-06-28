@@ -14,7 +14,7 @@
 
 // #include "FEProblem/FEProblem.h"
 // #include "Mesh/Mesh.h"
-#include "Mesh/MeshIO.h"
+// #include "Mesh/MeshIO.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -34,15 +34,7 @@ int main(int args,char *argv[]){
     // Mesh mesh;
     // mesh.
 
-    Mesh mesh;
-    MeshIO meshio;
-
-    meshio.SetMeshFileName("Hello.msh");
-
-    cout<<"Get mesh filename="<<meshio.GetMeshFileName()<<endl;
-
-    meshio.ReadMeshFromFile(mesh);
-
+    
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;
 }

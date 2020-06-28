@@ -75,9 +75,7 @@ set(src ${src} include/Mesh/Gmsh4IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh4IOReadMesh.cpp src/Mesh/MeshIO/Gmsh4IOGetFuns.cpp)
 set(src ${src} include/Mesh/MeshIO.h src/Mesh/MeshIO/MeshIO.cpp src/Mesh/MeshIO/MeshIOJudgeFun.cpp)
 
-set(inc ${inc} include/Mesh/Mesh.h include/Mesh/MeshType.h)
-set(inc ${inc} include/Mesh/Nodes.h)
-
+set(inc ${inc} include/Mesh/MeshType.h include/Mesh/Nodes.h)
 
 
 ##################################################
