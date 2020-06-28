@@ -63,9 +63,9 @@ void MeshIO::SetMeshFileName(string filename){
         _MeshIOType=MeshIOType::ABAQUS;
     }
     else{
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: can\'t read mesh file(=%20s)          !!!   ***\n",filename.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"***        unsupported mesh file type                           !!!   ***\n");
-        Msg_AsFem_Exit();
+        // PetscPrintf(PETSC_COMM_WORLD,"*** Error: can\'t read mesh file(=%20s)          !!!   ***\n",filename.c_str());
+        // PetscPrintf(PETSC_COMM_WORLD,"***        unsupported mesh file type                           !!!   ***\n");
+        // Msg_AsFem_Exit();
     }
 }
 string MeshIO::GetMeshFileName()const{
