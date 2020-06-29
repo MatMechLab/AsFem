@@ -20,6 +20,9 @@
 #include <iomanip>
 #include <fstream>
 #include <string>
+#include <cstdio>
+#include <vector>
+#include <algorithm>
 
 #include "Mesh/Mesh.h"
 

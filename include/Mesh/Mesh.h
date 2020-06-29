@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "Mesh/BulkMesh.h"
+#include "Mesh/LagrangeMesh.h"
 
-class Mesh:public BulkMesh{
+class Mesh:public LagrangeMesh{
 public:
     Mesh();
 

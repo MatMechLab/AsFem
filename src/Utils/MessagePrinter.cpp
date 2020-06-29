@@ -19,6 +19,12 @@
 MessagePrinter::MessagePrinter(){
 }
 
+void MessagePrinter::AsFem_Exit(){
+    PrintStars();
+    PrintTxt("AsFem exit due to some errors");
+    PrintStars();
+}
+
 //*********************************************
 void MessagePrinter::PrintStars(){
     for(int i=0;i<_nWords;i++){
@@ -143,4 +149,91 @@ vector<string> MessagePrinter::SplitStr2Vec(string str){
         }
     }
     return strvec;
+}
+
+//**************************************************
+//*** for error message print
+//**************************************************
+vector<string> MessagePrinter::SplitErrorStr2Vec(string str){
+    // string _Head="*** Error:";
+    string _Head="***       ";
+    string _End=" !!! ***";
+    int i1=static_cast<int>(_Head.size());
+    int i2=static_cast<int>(_End.size());
+    int i3=static_cast<int>(str.size());
+    vector<string> strvec;
+    strvec.clear();
+    if(i3<=_nWords-i1-i2){
+        strvec.push_back(str);
+    }
+    else{
+        strvec.clear();
+        string substr;
+        substr.clear();
+        int count=0;
+        int nWords=_nWords-i1-i2;
+        for(int i=0;i<static_cast<int>(str.length());i++){
+            substr.push_back(str.at(i));
+            count+=1;
+            if(static_cast<int>(substr.size())==nWords){
+                strvec.push_back(substr);
+                substr.clear();
+                if(count==static_cast<int>(str.length())-1){
+                    break;
+                }
+            }
+            else{
+                if(count==static_cast<int>(str.length())-1){
+                    strvec.push_back(substr);
+                    break;
+                }
+            }
+        }
+    }
+    return strvec;
+}
+//****************************************************
+void MessagePrinter::PrintErrorTxt(string str){
+    string _Head ="***       ";
+    string _Head1="*** Error:";
+    string _End=" !!! ***";
+    int i1=static_cast<int>(_Head1.size());
+    int i2=static_cast<int>(_End.size());
+    int i3=static_cast<int>(str.size());
+    if(i3<=_nWords-i1-i2){
+        PrintStars();
+        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
+        for(int i=0;i<_nWords-i1-i2-i3;i++){
+            PetscPrintf(PETSC_COMM_WORLD," ");
+        }
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+        PrintStars();
+    }
+    else{
+        string substr1,substr2;
+        vector<string> strvec;
+        substr1=str.substr(0,_nWords-i1-i2);
+        substr2=str.substr(_nWords-i1-i2);
+        // for the first line
+        PrintStars();
+        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+        // for the later lines
+        MessagePrinter printer;
+        strvec=printer.SplitErrorStr2Vec(substr2);
+        i1=static_cast<int>(_Head.size());
+        for(const auto &it:strvec){
+            // cout<<"str("<<it.size()<<")="<<it<<endl;
+            PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
+            PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
+            i3=static_cast<int>(it.size());
+            for(int i=0;i<_nWords-i1-i2-i3;i++){
+                PetscPrintf(PETSC_COMM_WORLD," ");
+            }
+            PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+        }
+        PrintStars();
+    }
 }

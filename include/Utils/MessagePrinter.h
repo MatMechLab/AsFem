@@ -33,11 +33,15 @@ public:
     static void PrintTxt(string str);
     static void PrintShortTxt(string str);
     static void PrintLongTxt(string str);
+    static void PrintErrorTxt(string str);
     
     static void PrintWelcomeTxt(string str);
     static void PrintStars();
 
+    static void AsFem_Exit();
+
 private:
-    static const int _nWords=75;
+    static const int _nWords=77;
     vector<string> SplitStr2Vec(string str);
+    vector<string> SplitErrorStr2Vec(string str);
 };

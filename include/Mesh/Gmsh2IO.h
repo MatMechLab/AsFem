@@ -17,6 +17,8 @@
 #include "Mesh/MeshIOBase.h"
 #include "Mesh/MeshType.h"
 
+#include "Utils/MessagePrinter.h"
+
 class Gmsh2IO:public MeshIOBase{
 public:
     Gmsh2IO(){
@@ -32,6 +34,7 @@ private:
     int GetElmtNodesNumFromGmshElmtType(const int &elmttype) const;
     int GetElmtDimFromGmshElmtType(const int &elmttype) const;
     int GetElmtOrderFromGmshElmtType(const int &elmttype)const;
+    int GetElmtVTKCellTypeFromGmshElmtType(const int &elmttype)const;
     MeshType GetElmtMeshTypeFromGmshElmtType(const int &elmttype)const;
     string GetElmtTypeNameFromGmshElmtType(const int &elmttype)const;
 
@@ -39,5 +42,20 @@ private:
     int GetSubElmtDimFromGmshElmtType(const int &elmttype) const;
     int GetSubElmtOrderFromGmshElmtType(const int &elmttype)const;
     MeshType GetSubElmtMeshTypeFromGmshElmtType(const int &elmttype)const;
+
+
+    ifstream _in;
+
+    int _nMaxDim=-1,_nMinDim=4;
+    int _nPhysicGroups=0;
+    int _nNodes=0,_nElmts=0;
+    int _nBulkElmts=0,_nSurfaceElmts=0,_nLineElmts=0;
+    
+    double _Xmax,_Xmin,_Ymax,_Ymin,_Zmax,_Zmin;
+
+    int _nNodesPerBulkElmt=-1;
+    int _nNodesPerLineElmt=0;
+    int _nNodesPerSurfaceElmt=0;
+    int _nOrder=1;
 
 };

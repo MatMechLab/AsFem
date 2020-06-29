@@ -40,6 +40,7 @@ int main(int args,char *argv[]){
 
     MessagePrinter::PrintLongTxt("You need to instantiate an object in order to call its member functions. The member functions need an object to operate on; they can't just be used on their own. The main() function could, for example, look like this");
 
+    MessagePrinter::PrintErrorTxt("I have to format std::string with sprintf and send it into file stream. How can I do this?");
     
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

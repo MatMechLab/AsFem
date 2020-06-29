@@ -25,17 +25,19 @@
 #include<cmath>
 #include<set>
 
+#include "Utils/MessagePrinter.h"
+
 #include "Mesh/MeshType.h"
 
 
 using namespace std;
 
 
-class BulkMesh{
+class LagrangeMesh{
 public:
-    BulkMesh();
+    LagrangeMesh();
 
-    void CreateMesh();
+    bool CreateLagrangeMesh();
     void SaveMesh();
     //************************************************************
     //*** for the basic settings
@@ -43,10 +45,19 @@ public:
     void SetDim(const int &ndim) {_nMaxDim=ndim;_nMinDim=ndim-1;}
     void SetMaxDim(const int &ndim) {_nMaxDim=ndim;}
     void SetMinDim(const int &ndim) {_nMinDim=ndim;}
-    //*** for element numbers along different axis
+    void SetMeshOrder(const int &p){_nOrder=p;}
+    //*** for element numbers 
     void SetNx(const int &nx){_Nx=nx;}
     void SetNy(const int &ny){_Ny=ny;}
     void SetNz(const int &nz){_Nz=nz;}
+    void SetNodesNum(const int &n){_nNodes=n;}
+    void SetNodesNumPerBulkElmt(const int &n){_nNodesPerBulkElmt=n;}
+    void SetNodesNumPerSurfaceElmt(const int &n){_nNodesPerSurfaceElmt=n;}
+    void SetNodesNumPerLineElmt(const int &n){_nNodesPerLineElmt=n;}
+    void SetElmtsNum(const int &n){_nElmts=n;}
+    void SetBulkElmtsNum(const int &n){_nBulkElmts=n;}
+    void SetSurfaceElmtsNum(const int &n){_nSurfaceElmts=n;}
+    void SetLineElmtsNum(const int &n){_nLineElmts=n;}
     //*** for element geometry settings
     void SetXmin(const double &xmin){_Xmin=xmin;}
     void SetXmax(const double &xmax){_Xmax=xmax;}
@@ -55,7 +66,35 @@ public:
     void SetZmin(const double &zmin){_Zmin=zmin;}
     void SetZmax(const double &zmax){_Zmax=zmax;}
     //*** for mesh type setting
-    void SetMeshType(MeshType type){_BulkMeshType=type;}
+    void SetMeshType(const MeshType &type){_BulkMeshType=type;}
+    void SetSurfaceMeshType(const MeshType &type){_SurfaceMeshType=type;}
+    void SetLineMeshType(const MeshType &type){_LineMeshType=type;}
+    //*** for elmt volume settings
+    void SetIthElmtVolume(const int &i,const double &volume){_ElmtVolume[i-1]=volume;}
+    void SetIthBulkElmtVolume(const int &i,const double &volume){_ElmtVolume[i+_nElmts-_nBulkElmts-1]=volume;}
+    //*** for physical group settings
+    void SetPhysicalGroupNums(const int &n){_nPhysicalGroups=n;}
+    //************************************************************
+    //*** for advanced getting functions (allow value modify externally!)
+    //************************************************************
+    vector<double>&      GetNodeCoordsPtr(){return _NodeCoords;}
+    vector<vector<int>>& GetElmtConnPtr(){return _ElmtConn;}
+    vector<double>&      GetElmtVolumePtr(){return _ElmtVolume;}
+
+    vector<int>&         GetElmtVTKCellTypeListPtr(){return _ElmtVTKCellTypeList;}
+    vector<int>&         GetElmtPhyIDListPtr(){return _ElmtPhyIDList;}
+    vector<int>&         GetElmtDimListPtr(){return _ElmtDimList;}
+    vector<MeshType>&    GetElmtMeshTypeListPtr(){return _ElmtMeshTypeList;}
+    //*** for physical groups
+    vector<string>&                   GetPhysicalGroupNameListPtr(){return _PhysicalGroupNameList;}
+    vector<int>&                      GetPhysicalGroupIDListPtr(){return _PhysicalGroupIDList;}
+    vector<int>&                      GetPhysicalGroupDimListPtr(){return _PhysicalGroupDimList;}
+    vector<pair<int,string>>&         GetPhysicalGroupID2NameListPtr(){return _PhysicalGroupID2NameList;}
+    vector<pair<string,int>>&         GetPhysicalGroupName2IDListPtr(){return _PhysicalGroupName2IDList;}
+    vector<pair<string,int>>&         GetPhysicalGroupName2NodesNumPerElmtListPtr(){return _PhysicalGroupName2NodesNumPerElmtList;}
+    vector<pair<string,vector<int>>>& GetPhysicalName2ElmtIDsListPtr(){return _PhysicalName2ElmtIDsList;}
+    vector<pair<string,vector<int>>>& GetPhysicalName2NodeIDsListPtr(){return _PhysicalName2NodeIDsList;}
+
 
     //************************************************************
     //*** for the basic getting functions
@@ -65,6 +104,9 @@ public:
     inline int GetBulkMeshMinDim()const{return _nMinDim;}
     //*** for nodes num of the bulk mesh
     inline int GetBulkMeshNodesNum()const{return _nNodes;}
+    inline int GetBulkMeshNodesNumPerBulkElmt(){return _nNodesPerBulkElmt;}
+    inline int GetBulkMeshNodesNumPerSurfaceElmt(){return _nNodesPerSurfaceElmt;}
+    inline int GetBulkMeshNodesNumPerLineElmt(){return _nNodesPerLineElmt;}
     //*** for elmts num of the bulk mesh
     inline int GetNx()const{return _Nx;}
     inline int GetNy()const{return _Ny;}
@@ -101,8 +143,12 @@ public:
         return coords;
     }
     //*** for elmt connectivity information
+    inline int  GetIthElmtDim(const int &i)const{return _ElmtDimList[i-1];}
+    inline int  GetIthElmtPhyID(const int &i)const{return _ElmtPhyIDList[i-1];}
+    inline int  GetIthElmtVTKCellType(const int &i)const{return _ElmtVTKCellTypeList[i-1];}
     inline int  GetIthElmtNodesNum(const int &i)const{return _ElmtConn[i-1][0];}
     inline int  GetIthElmtJthNodeID(const int &i,const int &j)const{return _ElmtConn[i-1][j];}
+    inline int  GetIthBulkElmtJthNodeID(const int &i,const int &j)const{return _ElmtConn[i+_nElmts-_nBulkElmts-1][j];}
     inline void GetIthElmtNodeIDs(const int &i,vector<int> &elConn)const{
         for(int j=1;j<=_ElmtConn[i-1][0];j++) elConn[j-1]=_ElmtConn[i-1][j];
     }
@@ -148,11 +194,18 @@ public:
     void PrintBulkMesh()const;
     void PrintBulkMeshDetails()const;
 
+private:
+    bool Create1DLagrangeMesh();
+    bool Create2DLagrangeMesh();
+    bool Create3DLagrangeMesh();
+
 protected:
     //************************************************************
     //*** for the basic information of our mesh
     //************************************************************
+    bool _IsMeshCreated=false;
     int _nNodes,_nElmts;
+    int _nNodesPerBulkElmt,_nNodesPerSurfaceElmt,_nNodesPerLineElmt;
     int _nBulkElmts,_nSurfaceElmts,_nLineElmts;
     int _nMaxDim,_nMinDim;
     int _Nx,_Ny,_Nz;
@@ -163,6 +216,13 @@ protected:
     vector<vector<int>> _ElmtConn;  // store all the element(bulk+surface+line+node elements)
     vector<double>      _ElmtVolume;// it could be: volume(3D), area(2D) or length(1D)
 
+    vector<int>         _ElmtVTKCellTypeList;
+    vector<int>         _ElmtPhyIDList;
+    vector<int>         _ElmtDimList;
+    vector<MeshType>    _ElmtMeshTypeList;
+    int                 _BulkElmtVTKCellType;
+    string              _BulkMeshTypeName;
+    double              _TotalVolume;
 
     //************************************************************
     //*** for the basic physical group information
@@ -171,6 +231,7 @@ protected:
     vector<string>                   _PhysicalGroupNameList;
     vector<int>                      _PhysicalGroupIDList;
     vector<int>                      _PhysicalGroupDimList;
+    vector<pair<string,int>>         _PhysicalGroupName2DimList;
     vector<pair<int,string>>         _PhysicalGroupID2NameList;
     vector<pair<string,int>>         _PhysicalGroupName2IDList;
     vector<pair<string,int>>         _PhysicalGroupName2NodesNumPerElmtList;

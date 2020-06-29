@@ -80,8 +80,11 @@ set(src ${src} include/Mesh/MeshIO.h src/Mesh/MeshIO/MeshIO.cpp src/Mesh/MeshIO/
 ### define the basic mesh type and geometry
 set(inc ${inc} include/Mesh/MeshType.h include/Mesh/Nodes.h)
 ### for the bulk mesh class
-set(inc ${inc} include/Mesh/BulkMesh.h)
-set(src ${src} src/Mesh/BulkMesh.cpp)
+set(inc ${inc} include/Mesh/LagrangeMesh.h)
+set(src ${src} src/Mesh/LagrangeMesh.cpp src/Mesh/CreateLagrangeMesh.cpp)
+set(src ${src} src/Mesh/Create1DLagrangeMesh.cpp)
+set(src ${src} src/Mesh/Create2DLagrangeMesh.cpp)
+set(src ${src} src/Mesh/Create3DLagrangeMesh.cpp)
 ### for the final mesh class
 set(inc ${inc} include/Mesh/Mesh.h)
 

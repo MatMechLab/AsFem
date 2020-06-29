@@ -17,10 +17,12 @@
 //+++          call the meshio class
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "Mesh/BulkMesh.h"
+#include "Mesh/LagrangeMesh.h"
 
-BulkMesh::BulkMesh(){
+LagrangeMesh::LagrangeMesh(){
+    _IsMeshCreated=false;
     _nNodes=0;_nElmts=0;
+    _nNodesPerBulkElmt=0;_nNodesPerSurfaceElmt=0;_nNodesPerLineElmt=0;
     _nBulkElmts=0;_nSurfaceElmts=0;_nLineElmts=0;
     _nMaxDim=0;_nMinDim=0;
     _Nx=0;_Ny=0;_Nz=0;
@@ -33,6 +35,10 @@ BulkMesh::BulkMesh(){
     _ElmtConn.clear();  // store all the element(bulk+surface+line+node elements)
     _ElmtVolume.clear();// it could be: volume(3D), area(2D) or length(1D)
 
+    _ElmtVTKCellTypeList.clear();
+    _ElmtPhyIDList.clear();
+    _ElmtDimList.clear();
+    _ElmtMeshTypeList.clear();
 
     //************************************************************
     //*** for the basic physical group information
