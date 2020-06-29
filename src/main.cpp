@@ -38,6 +38,8 @@ int main(int args,char *argv[]){
     MessagePrinter::PrintTxt("Hello");
     MessagePrinter::PrintTxt("Welcome to use AsFem, a simple finite element method program");
 
+    MessagePrinter::PrintLongTxt("You need to instantiate an object in order to call its member functions. The member functions need an object to operate on; they can't just be used on their own. The main() function could, for example, look like this");
+
     
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

@@ -19,6 +19,7 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <vector>
 
 #include "petsc.h"
 
@@ -30,9 +31,13 @@ public:
     MessagePrinter();
 
     static void PrintTxt(string str);
+    static void PrintShortTxt(string str);
+    static void PrintLongTxt(string str);
     
     static void PrintWelcomeTxt(string str);
+    static void PrintStars();
 
 private:
     static const int _nWords=75;
+    vector<string> SplitStr2Vec(string str);
 };
