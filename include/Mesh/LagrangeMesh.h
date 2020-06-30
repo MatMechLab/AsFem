@@ -22,9 +22,14 @@
 #include<iostream>
 #include<iomanip>
 #include<vector>
+#include<cstdio>
 #include<cmath>
 #include<set>
+#include<numeric>
+#include<algorithm>
+#include<fstream>
 
+#include "petsc.h"
 #include "Utils/MessagePrinter.h"
 
 #include "Mesh/MeshType.h"
@@ -38,7 +43,7 @@ public:
     LagrangeMesh();
 
     bool CreateLagrangeMesh();
-    void SaveMesh();
+    void SaveLagrangeMesh(string inputfilename="");
     //************************************************************
     //*** for the basic settings
     //************************************************************
@@ -146,7 +151,9 @@ public:
     inline int  GetIthElmtDim(const int &i)const{return _ElmtDimList[i-1];}
     inline int  GetIthElmtPhyID(const int &i)const{return _ElmtPhyIDList[i-1];}
     inline int  GetIthElmtVTKCellType(const int &i)const{return _ElmtVTKCellTypeList[i-1];}
+    inline int  GetIthBulkElmtVTKCellType(const int &i)const{return _ElmtVTKCellTypeList[i+_nElmts-_nBulkElmts-1];}
     inline int  GetIthElmtNodesNum(const int &i)const{return _ElmtConn[i-1][0];}
+    inline int  GetIthBulkElmtNodesNum(const int &i)const{return _ElmtConn[i+_nElmts-_nBulkElmts-1][0];}
     inline int  GetIthElmtJthNodeID(const int &i,const int &j)const{return _ElmtConn[i-1][j];}
     inline int  GetIthBulkElmtJthNodeID(const int &i,const int &j)const{return _ElmtConn[i+_nElmts-_nBulkElmts-1][j];}
     inline void GetIthElmtNodeIDs(const int &i,vector<int> &elConn)const{
@@ -186,7 +193,38 @@ public:
         }
         return -1;
     }
-
+    inline vector<int> GetElmtIDsViaPhysicalName(string phyname)const{
+        for(const auto &it:_PhysicalName2ElmtIDsList){
+            if(it.first==phyname){
+                return it.second;
+            }
+        }
+        return vector<int>(0);
+    }
+    inline int GetElmtsNumViaPhysicalName(string phyname)const{
+        for(const auto &it:_PhysicalName2ElmtIDsList){
+            if(it.first==phyname){
+                return static_cast<int>(it.second.size());
+            }
+        }
+        return 0;
+    }
+    inline vector<int> GetNodeIDsViaPhysicalName(string phyname)const{
+        for(const auto &it:_PhysicalName2NodeIDsList){
+            if(it.first==phyname){
+                return it.second;
+            }
+        }
+        return vector<int>(0);
+    }
+    inline int GetNodeIDsNumViaPhysicalName(string phyname)const{
+        for(const auto &it:_PhysicalName2NodeIDsList){
+            if(it.first==phyname){
+                return static_cast<int>(it.second.size());
+            }
+        }
+        return 0;
+    }
 
     //************************************************************
     //*** for mesh information printer

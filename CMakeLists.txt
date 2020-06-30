@@ -85,6 +85,9 @@ set(src ${src} src/Mesh/LagrangeMesh.cpp src/Mesh/CreateLagrangeMesh.cpp)
 set(src ${src} src/Mesh/Create1DLagrangeMesh.cpp)
 set(src ${src} src/Mesh/Create2DLagrangeMesh.cpp)
 set(src ${src} src/Mesh/Create3DLagrangeMesh.cpp)
+set(src ${src} src/Mesh/SaveLagrangeMesh.cpp)
+set(src ${src} src/Mesh/LagrangeMeshPrintInfo.cpp)
+
 ### for the final mesh class
 set(inc ${inc} include/Mesh/Mesh.h)
 

@@ -53,6 +53,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
         dy=(_Ymax-_Ymin)/(_Ny);
         _nBulkElmts=_Nx*_Ny;
         _nElmts=_nBulkElmts+2*(_Nx+_Ny);
+        _nSurfaceElmts=0;
+        _nLineElmts=2*(_Nx+_Ny);
         _nNodes=(_Nx+1)*(_Ny+1);
         _nNodesPerBulkElmt=4;
         _nNodesPerLineElmt=2;
@@ -110,6 +112,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
 
         _nBulkElmts=_Nx*_Ny;
         _nElmts=_nBulkElmts+2*(_Nx+_Ny);
+        _nLineElmts=2*(_Nx+_Ny);
+        _nSurfaceElmts=0;
         _nNodes=(2*_Nx+1)*(2*_Ny+1)-_nBulkElmts;
         _nNodesPerBulkElmt=8;
         _nNodesPerLineElmt=2;
@@ -123,7 +127,6 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
         _nNodesPerLineElmt=3;
 
         _BulkElmtVTKCellType=23;
-
 
 
         // Create node
@@ -197,6 +200,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
 
         _nBulkElmts=_Nx*_Ny;
         _nElmts=_nBulkElmts+2*(_Nx+_Ny);
+        _nLineElmts=2*(_Nx+_Ny);
+        _nSurfaceElmts=0;
         _nNodes=(2*_Nx+1)*(2*_Ny+1);
         _nNodesPerBulkElmt=9;
         nNodesPerBCElmt=3;
@@ -209,7 +214,7 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
 
         _BulkElmtVTKCellType=28;
 
-        _NodeCoords.resize(_nNodes*4,0.0);
+        _NodeCoords.resize(_nNodes*3,0.0);
         for(j=1;j<=2*_Ny+1;j++){
             for(i=1;i<=2*_Nx+1;i++){
                 k=(j-1)*(2*_Nx+1)+i;
@@ -269,13 +274,26 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
     _PhysicalGroupNameList.push_back("top");
     _PhysicalGroupNameList.push_back("alldomain");
 
+    _PhysicalGroupDimList.clear();
+    _PhysicalGroupDimList.push_back(1);
+    _PhysicalGroupDimList.push_back(1);
+    _PhysicalGroupDimList.push_back(1);
+    _PhysicalGroupDimList.push_back(1);
+    _PhysicalGroupDimList.push_back(2);
+
+    _PhysicalGroupIDList.clear();
+    _PhysicalGroupIDList.push_back(1);
+    _PhysicalGroupIDList.push_back(2);
+    _PhysicalGroupIDList.push_back(3);
+    _PhysicalGroupIDList.push_back(4);
+    _PhysicalGroupIDList.push_back(5);
 
     //******************************
     _PhysicalGroupName2IDList.clear();
-    _PhysicalGroupName2IDList.push_back(make_pair("left",1));
-    _PhysicalGroupName2IDList.push_back(make_pair("right",2));
-    _PhysicalGroupName2IDList.push_back(make_pair("bottom",3));
-    _PhysicalGroupName2IDList.push_back(make_pair("top",4));
+    _PhysicalGroupName2IDList.push_back(make_pair("left",     1));
+    _PhysicalGroupName2IDList.push_back(make_pair("right",    2));
+    _PhysicalGroupName2IDList.push_back(make_pair("bottom",   3));
+    _PhysicalGroupName2IDList.push_back(make_pair("top",      4));
     _PhysicalGroupName2IDList.push_back(make_pair("alldomain",5));
 
     _PhysicalGroupID2NameList.clear();
@@ -287,14 +305,13 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
 
     // now re-loop all the boundary element to store them into different bc vectors
     vector<int> left,right,bottom,top;
+    vector<int> leftnodeids,rightnodeids,bottomnodeids,topnodeids,allnodeids;
 
-    _PhysicalGroupName2NodesNumPerElmtList.clear();
-
-    _PhysicalName2ElmtIDsList.clear();
 
     int nBCElmts=0;
     // for leftside
     left.clear();
+    leftnodeids.clear();
     i=1;
     for(j=1;j<=_Ny;j++){
         e=(j-1)*_Nx+i;
@@ -305,6 +322,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
             _ElmtVTKCellTypeList[nBCElmts]=3;
+            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
+            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
@@ -312,13 +331,21 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,8));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
             _ElmtVTKCellTypeList[nBCElmts]=4;
+
+            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
+            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,8));
+            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
         }
         nBCElmts+=1;
         left.push_back(nBCElmts);
     }
+    // remove the duplicate elements in leftnodeids
+    sort(leftnodeids.begin(),leftnodeids.end());
+    leftnodeids.erase( unique(leftnodeids.begin(),leftnodeids.end()), leftnodeids.end());
     
     // For right side
     right.clear();
+    rightnodeids.clear();
     i=_Nx;
     for(j=1;j<=_Ny;j++){
         _ElmtConn[nBCElmts].clear();
@@ -329,6 +356,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
             _ElmtVTKCellTypeList[nBCElmts]=3;
+            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
+            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
@@ -336,12 +365,19 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,6));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
             _ElmtVTKCellTypeList[nBCElmts]=4;
+            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
+            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,6));
+            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
         }
         nBCElmts+=1;
         right.push_back(nBCElmts);
     }
+    sort(rightnodeids.begin(),rightnodeids.end());
+    rightnodeids.erase( unique(rightnodeids.begin(),rightnodeids.end()), rightnodeids.end());
+
     // For bottom edge
     bottom.clear();
+    bottomnodeids.clear();
     j=1;
     for(i=1;i<=_Nx;i++){
         e=(j-1)*_Nx+i;
@@ -352,6 +388,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
             _ElmtVTKCellTypeList[nBCElmts]=3;
+            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
+            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
@@ -359,12 +397,19 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,5));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
             _ElmtVTKCellTypeList[nBCElmts]=4;
+            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
+            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,5));
+            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
         }
         nBCElmts+=1;
         bottom.push_back(nBCElmts);
     }
+    sort(bottomnodeids.begin(),bottomnodeids.end());
+    bottomnodeids.erase( unique(bottomnodeids.begin(),bottomnodeids.end()), bottomnodeids.end());
+
     // For top edge
     top.clear();
+    topnodeids.clear();
     j=_Ny;
     for(i=1;i<=_Nx;i++){
         e=(j-1)*_Nx+i;
@@ -375,6 +420,8 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
             _ElmtVTKCellTypeList[nBCElmts]=3;
+            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
+            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
@@ -382,11 +429,20 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,7));
             _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
             _ElmtVTKCellTypeList[nBCElmts]=4;
+            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
+            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,7));
+            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
         }
         nBCElmts+=1;
         top.push_back(nBCElmts);
     }
-
+    sort(topnodeids.begin(),topnodeids.end());
+    topnodeids.erase( unique(topnodeids.begin(),topnodeids.end()), topnodeids.end());
+    // for all the nodeids
+    allnodeids.resize(_nNodes,0);
+    iota(allnodeids.begin(),allnodeids.end(),1);
+    
+    // add elemental set
     _PhysicalName2ElmtIDsList.clear();
     _PhysicalName2ElmtIDsList.push_back(make_pair("left",left));
     _PhysicalName2ElmtIDsList.push_back(make_pair("right",right));
@@ -394,12 +450,20 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
     _PhysicalName2ElmtIDsList.push_back(make_pair("top",top));
     _PhysicalName2ElmtIDsList.push_back(make_pair("alldomain",tempconn));
 
+    // add nodal sets
+    _PhysicalName2NodeIDsList.clear();
+    _PhysicalName2NodeIDsList.push_back(make_pair("left",leftnodeids));
+    _PhysicalName2NodeIDsList.push_back(make_pair("right",rightnodeids));
+    _PhysicalName2NodeIDsList.push_back(make_pair("bottom",bottomnodeids));
+    _PhysicalName2NodeIDsList.push_back(make_pair("top",topnodeids));
+    _PhysicalName2NodeIDsList.push_back(make_pair("alldomain",allnodeids));
+
     //*********************************
     _PhysicalGroupName2DimList.clear();
-    _PhysicalGroupName2DimList.push_back(make_pair("left",1));
-    _PhysicalGroupName2DimList.push_back(make_pair("right",1));
-    _PhysicalGroupName2DimList.push_back(make_pair("bottom",1));
-    _PhysicalGroupName2DimList.push_back(make_pair("top",1));
+    _PhysicalGroupName2DimList.push_back(make_pair("left",     1));
+    _PhysicalGroupName2DimList.push_back(make_pair("right",    1));
+    _PhysicalGroupName2DimList.push_back(make_pair("bottom",   1));
+    _PhysicalGroupName2DimList.push_back(make_pair("top",      1));
     _PhysicalGroupName2DimList.push_back(make_pair("alldomain",2));
 
     _PhysicalGroupName2NodesNumPerElmtList.clear();

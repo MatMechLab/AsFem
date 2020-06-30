@@ -94,7 +94,7 @@ bool LagrangeMesh::Create1DLagrangeMesh(){
     _ElmtConn[1].push_back(1);
     _ElmtConn[1].push_back(_nNodes);
 
-    vector<PetscInt> left,right;
+    vector<int> left,right;
     left.clear();left.push_back(1);// element id index
     right.clear();right.push_back(2);//element id index, "right" is the second element in global array
 
@@ -115,15 +115,37 @@ bool LagrangeMesh::Create1DLagrangeMesh(){
     }
     _PhysicalName2ElmtIDsList.push_back(make_pair("alldomain",tempconn));
 
+    //*** generate the nodeset physical information
+    vector<int> leftnodeids,rightnodeids,allnodeids;
+    leftnodeids.clear();leftnodeids.push_back(1);
+    rightnodeids.clear();rightnodeids.push_back(_nNodes);
+    allnodeids.resize(_nNodes,0);
+    iota(allnodeids.begin(),allnodeids.end(),1);
+    
+    _PhysicalName2NodeIDsList.clear();
+    _PhysicalName2NodeIDsList.push_back(make_pair("left",leftnodeids));
+    _PhysicalName2NodeIDsList.push_back(make_pair("right",rightnodeids));
+    _PhysicalName2NodeIDsList.push_back(make_pair("alldomain",allnodeids));
 
+    _nPhysicalGroups=3;
     _PhysicalGroupNameList.clear();
     _PhysicalGroupNameList.push_back("left");
     _PhysicalGroupNameList.push_back("right");
     _PhysicalGroupNameList.push_back("alldomain");
 
+    _PhysicalGroupDimList.clear();
+    _PhysicalGroupDimList.push_back(0);
+    _PhysicalGroupDimList.push_back(0);
+    _PhysicalGroupDimList.push_back(1);
+
+    _PhysicalGroupIDList.clear();
+    _PhysicalGroupIDList.push_back(1);
+    _PhysicalGroupIDList.push_back(2);
+    _PhysicalGroupIDList.push_back(3);
+
     _PhysicalGroupName2IDList.clear();
-    _PhysicalGroupName2IDList.push_back(make_pair("left",1));
-    _PhysicalGroupName2IDList.push_back(make_pair("right",2));
+    _PhysicalGroupName2IDList.push_back(make_pair("left",     1));
+    _PhysicalGroupName2IDList.push_back(make_pair("right",    2));
     _PhysicalGroupName2IDList.push_back(make_pair("alldomain",3));
 
     _PhysicalGroupID2NameList.clear();
@@ -131,20 +153,13 @@ bool LagrangeMesh::Create1DLagrangeMesh(){
     _PhysicalGroupID2NameList.push_back(make_pair(2,"right"));
     _PhysicalGroupID2NameList.push_back(make_pair(3,"alldomain"));
 
-    _nPhysicalGroups=3;
 
-    _PhysicalGroupDimList.clear();
-    _PhysicalGroupDimList.push_back(1);
-    _PhysicalGroupDimList.push_back(1);
-    _PhysicalGroupDimList.push_back(2);
-
-
-    _PhysicalGroupName2DimList.push_back(make_pair("left",0));
-    _PhysicalGroupName2DimList.push_back(make_pair("right",0));
+    _PhysicalGroupName2DimList.push_back(make_pair("left",     0));
+    _PhysicalGroupName2DimList.push_back(make_pair("right",    0));
     _PhysicalGroupName2DimList.push_back(make_pair("alldomain",1));
 
     _PhysicalGroupName2NodesNumPerElmtList.clear();
-    _PhysicalGroupName2NodesNumPerElmtList.push_back(make_pair("left",1));
+    _PhysicalGroupName2NodesNumPerElmtList.push_back(make_pair("left", 1));
     _PhysicalGroupName2NodesNumPerElmtList.push_back(make_pair("right",1));
     _PhysicalGroupName2NodesNumPerElmtList.push_back(make_pair("alldomain",_nNodesPerBulkElmt));
 

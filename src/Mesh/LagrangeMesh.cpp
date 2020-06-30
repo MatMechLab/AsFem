@@ -27,7 +27,7 @@ LagrangeMesh::LagrangeMesh(){
     _nMaxDim=0;_nMinDim=0;
     _Nx=0;_Ny=0;_Nz=0;
     _Xmax=0.0;_Xmin=0.0;_Ymax=0.0;_Ymin=0.0;_Zmin=0.0;_Zmax=0.0;
-    _nOrder=-1;
+    _nOrder=1;
     _BulkMeshType=MeshType::QUAD4;
     _SurfaceMeshType=MeshType::QUAD4;
     _LineMeshType=MeshType::EDGE2;
@@ -39,6 +39,9 @@ LagrangeMesh::LagrangeMesh(){
     _ElmtPhyIDList.clear();
     _ElmtDimList.clear();
     _ElmtMeshTypeList.clear();
+    _BulkElmtVTKCellType=0;
+    _BulkMeshTypeName="quad4";
+    _TotalVolume=0.0;
 
     //************************************************************
     //*** for the basic physical group information
@@ -47,6 +50,7 @@ LagrangeMesh::LagrangeMesh(){
     _PhysicalGroupNameList.clear();
     _PhysicalGroupIDList.clear();
     _PhysicalGroupDimList.clear();
+    _PhysicalGroupName2DimList.clear();
     _PhysicalGroupID2NameList.clear();
     _PhysicalGroupName2IDList.clear();
     _PhysicalGroupName2NodesNumPerElmtList.clear();
