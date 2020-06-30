@@ -67,7 +67,7 @@ void LagrangeMesh::SaveLagrangeMesh(string inputfilename){
         //***************************************
         meshout<<"<Cells>\n";
         meshout<<"<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
-        for(e=1;e<=GetBulkMeshElmtsNum();++e){
+        for(e=1;e<=GetBulkMeshBulkElmtsNum();++e){
             for(j=1;j<=GetIthBulkElmtNodesNum(e);++j){
                 meshout<<GetIthBulkElmtJthNodeID(e,j)-1<<" ";
             }
@@ -77,14 +77,14 @@ void LagrangeMesh::SaveLagrangeMesh(string inputfilename){
         // for offset
         meshout<<"<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
         int offset=0;
-        for(e=1;e<=GetBulkMeshElmtsNum();++e){
+        for(e=1;e<=GetBulkMeshBulkElmtsNum();++e){
             offset+=GetIthBulkElmtNodesNum(e);
             meshout<<offset<<"\n";
         }
         meshout<<"</DataArray>\n";
         // For connectivity
         meshout<<"<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
-        for(e=1;e<=GetBulkMeshElmtsNum();++e){
+        for(e=1;e<=GetBulkMeshBulkElmtsNum();++e){
             meshout<<GetIthBulkElmtVTKCellType(e)<<"\n";
         }
         meshout<<"</DataArray>\n";

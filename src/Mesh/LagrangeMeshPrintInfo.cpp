@@ -15,10 +15,83 @@
 
 #include "Mesh/LagrangeMesh.h"
 
-void LagrangeMesh::PrintBulkMesh()const{
+void LagrangeMesh::PrintMeshInfo()const{
+    char buff[70];
+    MessagePrinter::PrintDashLine();
+    MessagePrinter::PrintNormalTxt("Mesh information summary:");
     
+    snprintf(buff,70,"  nodes=%9d, elmts=%9d, nodesperbulkelmt=%3d",GetBulkMeshNodesNum(),GetBulkMeshElmtsNum(),GetBulkMeshNodesNumPerBulkElmt());
+    MessagePrinter::PrintNormalTxt(string(buff));
+
+    snprintf(buff,70,"  max dim=%2d, min dim=%2d, phygroup=%4d, meshtype=%6s, order=%1d",
+                     GetBulkMeshDim(),GetBulkMeshMinDim(),GetPhysicalGroupNum(),GetBulkMeshBulkElmtTypeName().c_str(),GetBulkMeshOrder());
+    MessagePrinter::PrintNormalTxt(string(buff));
+
+    MessagePrinter::PrintNormalTxt("  physical id                    phsical Name             elmts");
+
+    int phyid,n;
+    string phyname;
+    for(int i=0;i<GetPhysicalGroupNum();i++){
+        phyid=GetIthPhysicalID(i+1);
+        phyname=GetIthPhysicalName(i+1);
+        n=GetElmtsNumViaPhysicalName(phyname);
+        snprintf(buff,70,"  %6d      %30s          %8d",phyid,phyname.c_str(),n);
+        MessagePrinter::PrintNormalTxt(string(buff));
+    }
+    MessagePrinter::PrintDashLine();
 }
 //*********************************
-void LagrangeMesh::PrintBulkMeshDetails()const{
+void LagrangeMesh::PrintMeshInfoDetails()const{
+    char buff[70];
+    MessagePrinter::PrintDashLine();
+    MessagePrinter::PrintNormalTxt("Mesh information summary:");
+    
+    snprintf(buff,70,"  nodes=%9d, elmts=%9d, nodesperbulkelmt=%3d",GetBulkMeshNodesNum(),GetBulkMeshElmtsNum(),GetBulkMeshNodesNumPerBulkElmt());
+    MessagePrinter::PrintNormalTxt(string(buff));
 
+    snprintf(buff,70,"  max dim=%2d, min dim=%2d, phygroup=%4d, meshtype=%6s, order=%1d",
+                     GetBulkMeshDim(),GetBulkMeshMinDim(),GetPhysicalGroupNum(),GetBulkMeshBulkElmtTypeName().c_str(),GetBulkMeshOrder());
+    MessagePrinter::PrintNormalTxt(string(buff));
+
+    MessagePrinter::PrintNormalTxt("  physical id                    phsical Name             elmts");
+
+    int phyid,n;
+    string phyname;
+    for(int i=0;i<GetPhysicalGroupNum();i++){
+        phyid=GetIthPhysicalID(i+1);
+        phyname=GetIthPhysicalName(i+1);
+        n=GetElmtsNumViaPhysicalName(phyname);
+        snprintf(buff,70,"  %6d      %30s          %8d",phyid,phyname.c_str(),n);
+        MessagePrinter::PrintNormalTxt(string(buff));
+    }
+
+    MessagePrinter::PrintNormalTxt("  Physical group information (ID and element ID) ");
+    for(const auto &it:_PhysicalName2ElmtIDsList){
+        for(int e=0;e<static_cast<int>(it.second.size());e++){
+            snprintf(buff,70,"  phyname=%25s, element id=%9d",it.first.c_str(),it.second[e]);
+            MessagePrinter::PrintNormalTxt(string(buff));
+        }
+    }
+
+    char shortbuff[10],middlebuff[21];
+    string str;
+    MessagePrinter::PrintNormalTxt("  element connectivity information(element id: node index)");
+    for(int e=1;e<=GetBulkMeshElmtsNum();++e){
+        str.clear();
+        snprintf(middlebuff,21,"  elmt id=%9d",e);
+        str+=middlebuff;
+        for(PetscInt i=1;i<=GetIthElmtNodesNum(e);++i){
+            snprintf(shortbuff,10,"%8d",GetIthElmtJthNodeID(e,i));
+            str+=shortbuff;
+        }
+        MessagePrinter::PrintNormalTxt(str);
+    }
+
+    MessagePrinter::PrintNormalTxt("node coornidates (node id, x, y, and z)");
+    for(int i=1;i<=GetBulkMeshNodesNum();++i){
+        snprintf(buff,70,"  %9d:%13.4e,%13.4e,%13.4e",i,GetIthNodeJthCoord(i,1),GetIthNodeJthCoord(i,2),GetIthNodeJthCoord(i,3));
+        MessagePrinter::PrintNormalTxt(string(buff));
+    }
+
+    MessagePrinter::PrintDashLine();
 }

@@ -8,7 +8,7 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.06.28
+//+++ Date   : 2020.06.30
 //+++ Purpose: Define the final mesh class, so, all the lagrange
 //+++          mesh, interface mesh, as well as the IGA mesh class
 //+++          should be inherited here
@@ -16,25 +16,9 @@
 //+++          be inherited here
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#pragma once
+#include "Mesh/Mesh.h"
 
-#include "Mesh/LagrangeMesh.h"
-
-class Mesh:public LagrangeMesh{
-public:
-    Mesh();
-
-    //************************************************************
-    //*** for the basic getting
-    //************************************************************
-    int GetDim() const{return GetBulkMeshDim();}
-
-
-    void PrintMeshInfo()const{
-        LagrangeMesh::PrintMeshInfo();
-    }
-
-private:
-    bool _HasMeshCreated=false;
-
-};
+Mesh::Mesh()
+:LagrangeMesh(){
+    
+}

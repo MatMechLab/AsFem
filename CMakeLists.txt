@@ -65,6 +65,12 @@ set(src src/main.cpp)
 #############################################################
 ### For String utils                                      ###
 #############################################################
+set(inc ${inc} include/Utils/StringUtils.h)
+set(src ${src} src/Utils/StringUtils.cpp)
+
+#############################################################
+### For message printer utils                             ###
+#############################################################
 set(inc ${inc} include/Utils/MessagePrinter.h)
 set(src ${src} src/Utils/MessagePrinter.cpp)
 
@@ -90,6 +96,7 @@ set(src ${src} src/Mesh/LagrangeMeshPrintInfo.cpp)
 
 ### for the final mesh class
 set(inc ${inc} include/Mesh/Mesh.h)
+set(src ${src} src/Mesh/Mesh.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

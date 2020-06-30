@@ -22,7 +22,7 @@ bool LagrangeMesh::CreateLagrangeMesh(){
     if(GetBulkMeshDim()==1){
         return Create1DLagrangeMesh();
     }
-    else if(GetBulkMeshDim()){
+    else if(GetBulkMeshDim()==2){
         return Create2DLagrangeMesh();
     }
     else if(GetBulkMeshDim()==3){

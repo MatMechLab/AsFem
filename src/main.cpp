@@ -16,6 +16,7 @@
 // #include "Mesh/Mesh.h"
 // #include "Mesh/MeshIO.h"
 #include "Utils/MessagePrinter.h"
+#include "Mesh/Mesh.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -42,7 +43,23 @@ int main(int args,char *argv[]){
 
     MessagePrinter::PrintErrorTxt("I have to format std::string with sprintf and send it into file stream. How can I do this?");
     
-    MessagePrinter::PrintDashLine();
+    // MessagePrinter::PrintDashLine();
+
+    Mesh mesh;
+
+    mesh.SetDim(3);
+    mesh.SetNx(5);
+    mesh.SetNy(4);
+    mesh.SetNz(3);
+    mesh.SetXmax(1.0);
+    mesh.SetYmax(1.0);
+    mesh.SetZmax(1.0);
+    mesh.SetMeshType(MeshType::HEX27);
+    mesh.CreateLagrangeMesh();
+
+    mesh.SaveLagrangeMesh();
+    mesh.PrintMeshInfo();
+    mesh.PrintMeshInfoDetails();
 
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

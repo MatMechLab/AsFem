@@ -109,9 +109,9 @@ public:
     inline int GetBulkMeshMinDim()const{return _nMinDim;}
     //*** for nodes num of the bulk mesh
     inline int GetBulkMeshNodesNum()const{return _nNodes;}
-    inline int GetBulkMeshNodesNumPerBulkElmt(){return _nNodesPerBulkElmt;}
-    inline int GetBulkMeshNodesNumPerSurfaceElmt(){return _nNodesPerSurfaceElmt;}
-    inline int GetBulkMeshNodesNumPerLineElmt(){return _nNodesPerLineElmt;}
+    inline int GetBulkMeshNodesNumPerBulkElmt()const{return _nNodesPerBulkElmt;}
+    inline int GetBulkMeshNodesNumPerSurfaceElmt()const{return _nNodesPerSurfaceElmt;}
+    inline int GetBulkMeshNodesNumPerLineElmt()const{return _nNodesPerLineElmt;}
     //*** for elmts num of the bulk mesh
     inline int GetNx()const{return _Nx;}
     inline int GetNy()const{return _Ny;}
@@ -126,6 +126,7 @@ public:
     inline MeshType GetBulkMeshBulkElmtType()const{return _BulkMeshType;}
     inline MeshType GetBulkMeshSurfaceElmtType()const{return _SurfaceMeshType;}
     inline MeshType GetBulkMeshLineElmtType()const{return _LineMeshType;}
+    inline string   GetBulkMeshBulkElmtTypeName()const{return _BulkMeshTypeName;}
     //*** for node's coordinate
     inline double GetIthNodeJthCoord(const int &i,const int &j)const{return _NodeCoords[(i-1)*3+j-1];}
     inline void   GetIthNodeCoords(const int &i,double (&coords)[4])const{
@@ -229,8 +230,8 @@ public:
     //************************************************************
     //*** for mesh information printer
     //************************************************************
-    void PrintBulkMesh()const;
-    void PrintBulkMeshDetails()const;
+    void PrintMeshInfo()const;
+    void PrintMeshInfoDetails()const;
 
 private:
     bool Create1DLagrangeMesh();
