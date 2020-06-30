@@ -42,6 +42,8 @@ int main(int args,char *argv[]){
 
     MessagePrinter::PrintErrorTxt("I have to format std::string with sprintf and send it into file stream. How can I do this?");
     
+    MessagePrinter::PrintDashLine();
+
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;
 }

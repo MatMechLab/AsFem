@@ -39,6 +39,7 @@ public:
     
     static void PrintWelcomeTxt(string str);
     static void PrintStars();
+    static void PrintDashLine();
 
     static void AsFem_Exit();
 

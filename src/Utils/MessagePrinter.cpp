@@ -25,6 +25,13 @@ void MessagePrinter::AsFem_Exit(){
     PrintStars();
 }
 
+void MessagePrinter::PrintDashLine(){
+    PetscPrintf(PETSC_COMM_WORLD,"***");
+    for(int i=0;i<_nWords-6;i++){
+        PetscPrintf(PETSC_COMM_WORLD,"-");
+    }
+    PetscPrintf(PETSC_COMM_WORLD,"***\n");
+}
 //*********************************************
 void MessagePrinter::PrintStars(){
     for(int i=0;i<_nWords;i++){
