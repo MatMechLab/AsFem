@@ -34,6 +34,8 @@ public:
     static void PrintShortTxt(string str);
     static void PrintLongTxt(string str);
     static void PrintErrorTxt(string str);
+
+    static void PrintNormalTxt(string str);
     
     static void PrintWelcomeTxt(string str);
     static void PrintStars();
@@ -44,4 +46,5 @@ private:
     static const int _nWords=77;
     vector<string> SplitStr2Vec(string str);
     vector<string> SplitErrorStr2Vec(string str);
+    vector<string> SplitNormalStr2Vec(string str);
 };
