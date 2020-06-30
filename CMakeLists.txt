@@ -75,6 +75,13 @@ set(inc ${inc} include/Utils/MessagePrinter.h)
 set(src ${src} src/Utils/MessagePrinter.cpp)
 
 #############################################################
+### For inputystem                                        ###
+#############################################################
+set(inc ${inc} include/InputSystem/InputSystem.h)
+set(src ${src} src/InputSystem/InputSystem.cpp src/InputSystem/ReadInputFile.cpp)
+set(src ${src} src/InputSystem/ReadMeshBlock.cpp)
+
+#############################################################
 ### For Mesh class                                        ###
 #############################################################
 ### For mesh io class
