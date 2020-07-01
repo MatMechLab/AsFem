@@ -58,3 +58,51 @@ LagrangeMesh::LagrangeMesh(){
     _PhysicalName2NodeIDsList.clear();
     
 }
+
+//**********************************
+void LagrangeMesh::SetMeshTypeName(string meshname){
+    if(meshname.find("edge2")!=string::npos){
+        _BulkMeshTypeName="edge2";
+        _BulkMeshType=MeshType::EDGE2;
+    }
+    else if(meshname.find("edge3")!=string::npos){
+        _BulkMeshTypeName="edge3";
+        _BulkMeshType=MeshType::EDGE3;
+    }
+    else if(meshname.find("edge4")!=string::npos){
+        _BulkMeshTypeName="edge4";
+        _BulkMeshType=MeshType::EDGE4;
+    }
+    else if(meshname.find("edge5")!=string::npos){
+        _BulkMeshTypeName="edge5";
+        _BulkMeshType=MeshType::EDGE5;
+    }
+    else if(meshname.find("quad4")!=string::npos){
+        _BulkMeshTypeName="quad4";
+        _BulkMeshType=MeshType::QUAD4;
+    }
+    else if(meshname.find("quad8")!=string::npos){
+        _BulkMeshTypeName="quad8";
+        _BulkMeshType=MeshType::QUAD8;
+    }
+    else if(meshname.find("quad9")!=string::npos){
+        _BulkMeshTypeName="quad9";
+        _BulkMeshType=MeshType::QUAD9;
+    }
+    else if(meshname.find("hex8")!=string::npos){
+        _BulkMeshTypeName="hex8";
+        _BulkMeshType=MeshType::HEX8;
+    }
+    else if(meshname.find("hex20")!=string::npos){
+        _BulkMeshTypeName="hex20";
+        _BulkMeshType=MeshType::HEX20;
+    }
+    else if(meshname.find("hex27")!=string::npos){
+        _BulkMeshTypeName="hex27";
+        _BulkMeshType=MeshType::HEX27;
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported mesh type setting");
+        MessagePrinter::AsFem_Exit();
+    }
+}

@@ -28,11 +28,12 @@ public:
     //*** for the basic getting
     //************************************************************
     int GetDim() const{return GetBulkMeshDim();}
+    bool CreateMesh(){return LagrangeMesh::CreateLagrangeMesh();}
+    void SaveMesh(string filename="")const{LagrangeMesh::SaveLagrangeMesh(filename);}
 
 
-    void PrintMeshInfo()const{
-        LagrangeMesh::PrintMeshInfo();
-    }
+    void PrintMeshInfo()const{LagrangeMesh::PrintMeshInfo();}
+    void PrintMeshDetailInfo()const{LagrangeMesh::PrintMeshInfoDetails();}
 
 private:
     bool _HasMeshCreated=false;

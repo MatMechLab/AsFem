@@ -15,7 +15,7 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::ReadInputFile(Mesh &mesh){
+bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh){
     // mesh block format:
     // 1. built-in mesh
     // [mesh]
@@ -51,7 +51,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
     bool HasNx=false,HasNy=false,HasNz=false;
     bool IsBuiltIn=false;
     bool IsSaveMesh=false;
-    string meshtype;
+    string meshtypename;
     bool HasType=false;
     bool IsPrint=false,IsDepPrint=false;
     char buff[55];
@@ -258,7 +258,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                     MessagePrinter::AsFem_Exit();
                 }
                 else{
-                    meshtype=str.substr(9,str.length());
+                    meshtypename=str.substr(9,str.length());
                 }
             }
             else if(str.find("savemesh=")!=string::npos||
@@ -354,7 +354,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                 MessagePrinter::AsFem_Exit();
             }
 
-            if(meshtype!="edge2"&&meshtype!="edge3"&&meshtype!="edge4"){
+            if(meshtypename!="edge2"&&meshtypename!="edge3"&&meshtypename!="edge4"){
                 MessagePrinter::PrintErrorTxt("unsupported 1d mesh type in the [mesh] block, meshtype=edge2,edge3,edge4 is expected");
                 MessagePrinter::AsFem_Exit();
             }
@@ -363,46 +363,44 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
             mesh.SetNx(nx);
             mesh.SetXmin(xmin);
             mesh.SetXmax(xmax);
-            mesh.SetMeshType(meshtype);
-            mesh.SetMeshMode(true);
+            mesh.SetMeshTypeName(meshtypename);
         }
         else if(dim==2){
             if(!HasNx){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: nx should be given for dim=2 case           !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("nx should be given for dim=2 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasNy){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: ny should be given for dim=2 case           !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("ny should be given for dim=2 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasXmin&&xmin!=0.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: xmin=val should be given for dim=1 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("xmin=val should be given for dim=1 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasXmax&&xmax!=1.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: xmax=val should be given for dim=1 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("xmax=val should be given for dim=1 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasYmin&&ymin!=0.0) {
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: ymin=val should be given for dim=1 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("ymin=val should be given for dim=1 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasYmax&&ymax!=1.0){
-                cout<<"*** Error: ymax=val should be given for dim=2 case !!!     ***"<<endl;
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("ymax=val should be given for dim=2 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(HasNz){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: for dim=2 case, you only need nx,ny         !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("for dim=2 case, you only need nx and ny");
+                MessagePrinter::AsFem_Exit();
             }
             if(HasZmin||HasZmax){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: for dim=2 case, you only need xmin, xmax, ymin, ymax   !!! ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("for dim=2 case, you only need xmin/xmax and ymin/ymax");
+                MessagePrinter::AsFem_Exit();
             }
-            if(meshtype!="quad4"&&meshtype!="quad8"&&meshtype!="quad9"){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported 2d mesh type in [mesh] block    !!!            ***\n");
-                PetscPrintf(PETSC_COMM_WORLD,"***        meshtype=quad4,quad8,quad9 is expected      !!!            ***\n");
-                Msg_AsFem_Exit();
+            if(meshtypename!="quad4"&&meshtypename!="quad8"&&meshtypename!="quad9"){
+                MessagePrinter::PrintErrorTxt("unsupported 2d mesh type in the [mesh] block, meshtype=quad4,quad8,quad9 is expected");
+                MessagePrinter::AsFem_Exit();
             }
             IsSuccess=true;
             mesh.SetDim(dim);
@@ -412,51 +410,49 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
             mesh.SetXmax(xmax);
             mesh.SetYmin(ymin);
             mesh.SetYmax(ymax);
-            mesh.SetMeshType(meshtype);
-            mesh.SetMeshMode(true);
+            mesh.SetMeshTypeName(meshtypename);
         }
         else if(dim==3){
             if(!HasNx){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: nx should be given for dim=3 case           !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("nx should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasNy){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: ny should be given for dim=3 case           !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("nx should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasNy){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: nz should be given for dim=3 case           !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("nz should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasXmin&&xmin!=0.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: xmin=val should be given for dim=3 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("xmin=val should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasXmax&&xmax!=1.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: xmax=val should be given for dim=3 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("xmax=val should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasYmin&&ymin!=0.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: ymin=val should be given for dim=3 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("ymin=val should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasYmax&&ymax!=1.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: ymax=val should be given for dim=3 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("ymax=val should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasZmin&&zmin!=0.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: zmin=val should be given for dim=3 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("zmin=val should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
             if(!HasZmax&&zmax!=1.0){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: zmax=val should be given for dim=3 case     !!!            ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("zmax=val should be given for dim=3 case");
+                MessagePrinter::AsFem_Exit();
             }
 
-            if(meshtype!="hex8"&&meshtype!="hex20"&&meshtype!="hex27"){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported 3d mesh type in [mesh] block    !!!            ***\n");
-                PetscPrintf(PETSC_COMM_WORLD,"***        meshtype=hex8,hex20,hex27 is expected       !!!            ***\n");
-                Msg_AsFem_Exit();
+            if(meshtypename!="hex8"&&meshtypename!="hex20"&&meshtypename!="hex27"){
+                MessagePrinter::PrintErrorTxt("unsupported 3d mesh type in the [mesh] block, meshtype=hex8,hex20,hex27 is expected");
+                MessagePrinter::AsFem_Exit();
             }
             IsSuccess=true;
             mesh.SetDim(dim);
@@ -469,12 +465,10 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
             mesh.SetYmax(ymax);
             mesh.SetZmin(zmin);
             mesh.SetZmax(zmax);
-            mesh.SetMeshType(meshtype);
-            mesh.SetMeshMode(true);
+            mesh.SetMeshTypeName(meshtypename);
         }
         IsBuiltIn=true;
-        mesh.SetMeshMode(IsBuiltIn);
-        IsSuccess=true;
+        IsSuccess=false;
     }
     else if(str.find("type=gmsh")!=string::npos||
             str.find("type=Gmsh")!=string::npos||
@@ -483,8 +477,6 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
         IsBuiltIn=false;
         getline(in,str);linenum+=1;
         str=StringUtils::StrToLower(str);
-        mesh.SetMeshMode(IsBuiltIn);
-        mesh.SetMeshGmshMode(true);
         bool HasFileName=false;
         while(str.find("[end]")==string::npos&&
               str.find("[END]")==string::npos){
@@ -500,10 +492,12 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                    str.compare(str.length()-4,4,".Msh")==0||
                    str.compare(str.length()-4,4,".MSH")==0){
                     string filename=str.substr(5,str.length());
-                    mesh.SetMshFileName(filename);
-                    IsSuccess=true;
+                    _meshio.SetMeshFileName(filename);
                     HasFileName=true;
-                    mesh.SetMeshMode(false);
+                    MessagePrinter::PrintNormalTxt("   start to import mesh ...");
+                    IsSuccess=_meshio.ReadMeshFromFile(mesh);
+                    MessagePrinter::PrintNormalTxt("   import mesh finished   !");
+                    // mesh.SetMeshMode(false);
                 }
             }
             else if(str.find("savemesh=")!=string::npos||
@@ -524,10 +518,10 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                     IsSaveMesh=false;
                 }
                 else{
-                    Msg_Input_LineError(linenum);
-                    PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported option in savemesh= in [mesh]   !!!            ***\n");
-                    PetscPrintf(PETSC_COMM_WORLD,"***        savemesh=true[false] is expected            !!!            ***\n");
-                    Msg_AsFem_Exit();
+                    snprintf(buff,55,"line-%d has some errors",linenum);
+                    MessagePrinter::PrintErrorTxt(string(buff));
+                    MessagePrinter::PrintErrorTxt("unsupported option in savemesh= in the [mesh], savemesh=true[false] is expected");
+                    MessagePrinter::AsFem_Exit();
                 }
             }
             else if(str.find("printmesh=")!=string::npos||
@@ -553,9 +547,10 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                     IsPrint=true;IsDepPrint=true;
                 }
                 else{
-                    Msg_Input_LineError(linenum);
-                    PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported option in printmesh= in [mesh] block     !!!   ***\n");
-                    Msg_AsFem_Exit();
+                    snprintf(buff,55,"line-%d has some errors",linenum);
+                    MessagePrinter::PrintErrorTxt(string(buff));
+                    MessagePrinter::PrintErrorTxt("unsupported option in printmesh= in the [mesh] block, printmesh=true[false] is expected");
+                    MessagePrinter::AsFem_Exit();
                 }
             }
             else if(str.find("[end]")!=string::npos||
@@ -563,21 +558,25 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                 break;
             }
             else if(str.find("[]")!=string::npos){
-                Msg_Input_LineError(linenum);
-                Msg_Input_BlockBracketNotComplete();
-                Msg_AsFem_Exit();
+                snprintf(buff,55,"line-%d has some errors",linenum);
+                MessagePrinter::PrintErrorTxt(string(buff));
+                MessagePrinter::PrintErrorTxt("bracket pair is not complete in the [mesh] block");
+                MessagePrinter::AsFem_Exit();
             }
             else{
-                Msg_Input_LineError(linenum);
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: unknown option in [mesh] block                         !!! ***\n");
-                Msg_AsFem_Exit();
+                snprintf(buff,55,"line-%d has some errors",linenum);
+                MessagePrinter::PrintErrorTxt(string(buff));
+                MessagePrinter::PrintErrorTxt("unknown option in the [mesh] block");
+                MessagePrinter::AsFem_Exit();
             }
             getline(in,str);linenum+=1;
         }
         if(!HasFileName){
             IsSuccess=false;
-            PetscPrintf(PETSC_COMM_WORLD,"*** Error: file=correct file name should be given in [mesh] block !!! ***\n");
-            Msg_AsFem_Exit();
+            snprintf(buff,55,"line-%d has some errors",linenum);
+            MessagePrinter::PrintErrorTxt(string(buff));
+            MessagePrinter::PrintErrorTxt("file=correct file name should be given in the [mesh] block");
+            MessagePrinter::AsFem_Exit();
         }
     }
     else if(str.find("type=abaqus")!=string::npos||
@@ -587,15 +586,13 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
         IsBuiltIn=false;
         getline(in,str);linenum+=1;
         str=StringUtils::StrToLower(str);
-        mesh.SetMeshMode(IsBuiltIn);
-        mesh.SetMeshAbaqusMode(true);
         bool HasFileName=false;
         while(str.find("[end]")==string::npos&&
               str.find("[END]")==string::npos){
             str=StringUtils::RemoveStrSpace(str);
             if(StringUtils::IsCommentLine(str)||str.length()<1){
                 getline(in,str);linenum+=1;
-                str=StrToLower(str);
+                str=StringUtils::StrToLower(str);
                 continue;
             }
             if(str.find("file=")!=string::npos||
@@ -604,10 +601,11 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                    str.compare(str.length()-4,4,".Inp")==0||
                    str.compare(str.length()-4,4,".INP")==0){
                     string filename=str.substr(5,str.length());
-                    mesh.SetMshFileName(filename);
-                    IsSuccess=true;
+                    _meshio.SetMeshFileName(filename);
+                    MessagePrinter::PrintNormalTxt("   start to import mesh ...");
+                    IsSuccess=_meshio.ReadMeshFromFile(mesh);
+                    MessagePrinter::PrintNormalTxt("   import mesh finished   !");
                     HasFileName=true;
-                    mesh.SetMeshMode(false);
                 }
             }
             else if(str.find("savemesh=")!=string::npos||
@@ -628,10 +626,11 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                     IsSaveMesh=false;
                 }
                 else{
-                    Msg_Input_LineError(linenum);
-                    PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported option in savemesh= in [mesh]   !!!            ***\n");
-                    PetscPrintf(PETSC_COMM_WORLD,"***        savemesh=true[false] is expected            !!!            ***\n");
-                    Msg_AsFem_Exit();
+                    IsSuccess=false;
+                    snprintf(buff,55,"line-%d has some errors",linenum);
+                    MessagePrinter::PrintErrorTxt(string(buff));
+                    MessagePrinter::PrintErrorTxt("unsupported option in savemesh= in the [mesh] block, savemesh=true[false] is expected");
+                    MessagePrinter::AsFem_Exit();
                 }
             }
             else if(str.find("printmesh=")!=string::npos||
@@ -657,9 +656,10 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                     IsPrint=true;IsDepPrint=true;
                 }
                 else{
-                    Msg_Input_LineError(linenum);
-                    PetscPrintf(PETSC_COMM_WORLD,"*** Error: unsupported option in printmesh= in [mesh] block     !!!   ***\n");
-                    Msg_AsFem_Exit();
+                    snprintf(buff,55,"line-%d has some errors",linenum);
+                    MessagePrinter::PrintErrorTxt(string(buff));
+                    MessagePrinter::PrintErrorTxt("unsupported option in printmesh= in the [mesh] block, printmesh=true[false] is expected");
+                    MessagePrinter::AsFem_Exit();
                 }
             }
             else if(str.find("[end]")!=string::npos||
@@ -667,46 +667,50 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                 break;
             }
             else if(str.find("[]")!=string::npos){
-                Msg_Input_LineError(linenum);
-                Msg_Input_BlockBracketNotComplete();
-                Msg_AsFem_Exit();
+                snprintf(buff,55,"line-%d has some errors",linenum);
+                MessagePrinter::PrintErrorTxt(string(buff));
+                MessagePrinter::PrintErrorTxt("block bracket pair is not complete in the [mesh] block");
+                MessagePrinter::AsFem_Exit();
             }
             else{
-                Msg_Input_LineError(linenum);
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: unknown option in [mesh] block                         !!! ***\n");
-                Msg_AsFem_Exit();
+                snprintf(buff,55,"line-%d has some errors",linenum);
+                MessagePrinter::PrintErrorTxt(string(buff));
+                MessagePrinter::PrintErrorTxt("unknown option in the [mesh] block");
+                MessagePrinter::AsFem_Exit();
             }
             getline(in,str);linenum+=1;
         }
         if(!HasFileName){
             IsSuccess=false;
-            PetscPrintf(PETSC_COMM_WORLD,"*** Error: file=correct file name should be given in [mesh] block !!! ***\n");
-            Msg_AsFem_Exit();
+            MessagePrinter::PrintErrorTxt("file=correct file name should be given in the [mesh] block");
+            MessagePrinter::AsFem_Exit();
         }
     }
 
 
     string substr=_InputFileName.substr(0,_InputFileName.find_first_of('.'))+"_mesh.vtu";
     _MeshFileName=substr;
-    mesh.SetMeshFileName(substr);
 
     if(!HasType){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: no type= found in [mesh] block              !!!            ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        type=asfem[gmsh] should be given            !!!            ***\n");   
-        Msg_AsFem_Exit();
+        MessagePrinter::PrintErrorTxt("no type= found in the [mesh] block, type=asfem[gmsh] should be given");
+        MessagePrinter::AsFem_Exit();
     }
 
     
-    PetscPrintf(PETSC_COMM_WORLD,"***   start to create mesh ...                                        ***\n");     
-    if(!mesh.CreateMesh()){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: create mesh failed !!! please check your input file  !!!   ***\n");
-        Msg_AsFem_Exit();
+    if(IsBuiltIn){
+        MessagePrinter::PrintNormalTxt("   start to create mesh ...");
+        if(!mesh.CreateMesh()){
+            MessagePrinter::PrintErrorTxt("create mesh failed !!! please check your input file");
+            MessagePrinter::AsFem_Exit();
+        }
+        IsSuccess=true;
+        MessagePrinter::PrintNormalTxt("   mesh generation finished !");
     }
     if(IsSaveMesh){
-        mesh.SaveMesh();
-        PetscPrintf(PETSC_COMM_WORLD,"***     save mesh to [%45s]! ***\n",substr.c_str());    
+        mesh.SaveLagrangeMesh(_MeshFileName);
+        snprintf(buff,55,"save mesh to [%39s]",substr.c_str());
+        MessagePrinter::PrintNormalTxt(string(buff));   
     }
-    PetscPrintf(PETSC_COMM_WORLD,"***   mesh generation finished !                                      ***\n");     
     if(IsPrint){
         if(IsDepPrint){
             mesh.PrintMeshDetailInfo();

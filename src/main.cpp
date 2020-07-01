@@ -15,7 +15,7 @@
 // #include "FEProblem/FEProblem.h"
 // #include "Mesh/Mesh.h"
 // #include "Mesh/MeshIO.h"
-#include "Utils/MessagePrinter.h"
+#include "InputSystem/InputSystem.h"
 #include "Mesh/Mesh.h"
 
 int main(int args,char *argv[]){
@@ -31,35 +31,10 @@ int main(int args,char *argv[]){
     
     // FEProblem feProblem(args,argv);
 
-    // feProblem.RunFEProblem();
-
-    // Mesh mesh;
-    // mesh.
-
-    MessagePrinter::PrintTxt("Hello");
-    MessagePrinter::PrintTxt("Welcome to use AsFem, a simple finite element method program");
-
-    MessagePrinter::PrintLongTxt("You need to instantiate an object in order to call its member functions. The member functions need an object to operate on; they can't just be used on their own. The main() function could, for example, look like this");
-
-    MessagePrinter::PrintErrorTxt("I have to format std::string with sprintf and send it into file stream. How can I do this?");
-    
-    // MessagePrinter::PrintDashLine();
-
     Mesh mesh;
-
-    mesh.SetDim(3);
-    mesh.SetNx(5);
-    mesh.SetNy(4);
-    mesh.SetNz(3);
-    mesh.SetXmax(1.0);
-    mesh.SetYmax(1.0);
-    mesh.SetZmax(1.0);
-    mesh.SetMeshType(MeshType::HEX27);
-    mesh.CreateLagrangeMesh();
-
-    mesh.SaveLagrangeMesh();
-    mesh.PrintMeshInfo();
-    mesh.PrintMeshInfoDetails();
+    InputSystem inputSystem(args,argv);
+    inputSystem.ReadInputFile(mesh);
+    
 
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

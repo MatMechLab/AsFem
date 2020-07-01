@@ -23,6 +23,7 @@ void MessagePrinter::AsFem_Exit(){
     PrintStars();
     PrintTxt("AsFem exit due to some errors");
     PrintStars();
+    PetscEnd();
 }
 
 void MessagePrinter::PrintDashLine(){

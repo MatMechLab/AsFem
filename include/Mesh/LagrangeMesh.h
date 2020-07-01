@@ -43,7 +43,7 @@ public:
     LagrangeMesh();
 
     bool CreateLagrangeMesh();
-    void SaveLagrangeMesh(string inputfilename="");
+    void SaveLagrangeMesh(string inputfilename="") const;
     //************************************************************
     //*** for the basic settings
     //************************************************************
@@ -71,6 +71,7 @@ public:
     void SetZmin(const double &zmin){_Zmin=zmin;}
     void SetZmax(const double &zmax){_Zmax=zmax;}
     //*** for mesh type setting
+    void SetMeshTypeName(string meshname);
     void SetMeshType(const MeshType &type){_BulkMeshType=type;}
     void SetSurfaceMeshType(const MeshType &type){_SurfaceMeshType=type;}
     void SetLineMeshType(const MeshType &type){_LineMeshType=type;}

@@ -16,7 +16,7 @@
 
 #include "Mesh/LagrangeMesh.h"
 
-void LagrangeMesh::SaveLagrangeMesh(string inputfilename){
+void LagrangeMesh::SaveLagrangeMesh(string inputfilename) const{
     PetscMPIInt rank;
     MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
     if(rank==0){
