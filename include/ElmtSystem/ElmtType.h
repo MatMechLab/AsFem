@@ -9,17 +9,24 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2020.07.01
-//+++ Purpose: Implement general dofhandler for AsFem
-//+++          This class can handle both the bulk and interface DoFs
+//+++ Purpose: Define the basic element type in AsFem
+//+++          The elements can be classified into two groups:
+//+++             1. built-in elements,i.e. mechanics,cahnhilliard...
+//+++             2. user-defined-elements(uel),i.e. user1,user2...
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include "DofHandler/BulkDofHandler.h"
 
-class DofHandler:public BulkDofHandler{
-public:
-    DofHandler();
-
-    void PrintDofInfo()const{BulkDofHandler::PrintDofInfo();}
+enum class ElmtType{
+    NULLELMT,
+    POISSON,
+    MECHANIC,
+    CAHNHILLIARD,
+    MECHCAHNHILLIARD,
+    DIFFUSION,
+    THERMALCONDUCT,
+    THERMALMECHANICS,
+    DIFFUSIONMECHANICS,
+    ALLANCAHN
 };

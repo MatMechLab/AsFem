@@ -80,6 +80,7 @@ set(src ${src} src/Utils/MessagePrinter.cpp)
 set(inc ${inc} include/InputSystem/InputSystem.h)
 set(src ${src} src/InputSystem/InputSystem.cpp src/InputSystem/ReadInputFile.cpp)
 set(src ${src} src/InputSystem/ReadMeshBlock.cpp)
+set(src ${src} src/InputSystem/ReadDofsBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###
@@ -111,6 +112,17 @@ set(src ${src} src/Mesh/Mesh.cpp)
 #############################################################
 set(inc ${inc} include/DofHandler/BulkDofHandler.h)
 set(src ${src} src/DofHandler/BulkDofHandler.cpp)
+### for final dof class
+set(inc ${inc} include/DofHandler/DofHandler.h)
+set(src ${src} src/DofHandler/DofHandler.cpp)
+
+
+#############################################################
+### For Elelement system in AsFem                         ###
+#############################################################
+set(inc ${inc} include/ElmtSystem/ElmtType.h)
+set(inc ${inc} include/ElmtSystem/ElmtBlock.h)
+set(inc ${inc} include/ElmtSystem/ElmtSystem.h)
 
 
 ##################################################

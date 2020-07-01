@@ -14,12 +14,13 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::ReadInputFile(Mesh &mesh){
+bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler){
     ifstream in;
     string str;
     int linenum=0;
 
     bool HasMeshBlock=false;
+    bool HasDofsBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -44,6 +45,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
     linenum=0;
 
     HasMeshBlock=false;
+    HasDofsBlock=false;
     while(!in.eof()){
         getline(in,str);linenum+=1;
         str=StringUtils::RemoveStrSpace(str);
@@ -63,10 +65,28 @@ bool InputSystem::ReadInputFile(Mesh &mesh){
                 HasMeshBlock=false;
             }
         }
+        else if(str.find("[dofs]")!=string::npos){
+            if(!StringUtils::IsBracketMatch(in,linenum)){
+                MessagePrinter::PrintErrorTxt("[dofs]/[end] bracket pair dosen\'t match");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+            if(ReadDofsBlock(in,str,linenum,dofHandler)){
+                HasDofsBlock=true;
+            }
+            else{
+                HasDofsBlock=false;
+            }
+        }
     }
 
     if(!HasMeshBlock){
-        MessagePrinter::PrintErrorTxt("no [mesh] block is found, for fem analysis, mesh is required");
+        MessagePrinter::PrintErrorTxt("no [mesh] block is found, for FEM analysis, mesh is required");
+        MessagePrinter::AsFem_Exit();
+    }
+
+    if(!HasDofsBlock){
+        MessagePrinter::PrintErrorTxt("no [dofs] block is found, for FEM analysis, dofs is required");
         MessagePrinter::AsFem_Exit();
     }
 

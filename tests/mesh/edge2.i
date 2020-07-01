@@ -8,3 +8,7 @@
   printmesh=true
   savemesh=true
 [end]
+
+[dofs]
+name=u v
+[end]

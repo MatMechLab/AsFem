@@ -13,13 +13,10 @@
 //+++          This class can handle both the bulk and interface DoFs
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#pragma once
+#include "DofHandler/DofHandler.h"
 
-#include "DofHandler/BulkDofHandler.h"
+DofHandler::DofHandler()
+:BulkDofHandler(){
 
-class DofHandler:public BulkDofHandler{
-public:
-    DofHandler();
+}
 
-    void PrintDofInfo()const{BulkDofHandler::PrintDofInfo();}
-};

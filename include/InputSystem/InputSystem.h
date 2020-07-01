@@ -32,6 +32,7 @@
 
 #include "Mesh/Mesh.h"
 #include "Mesh/MeshIO.h"
+#include "DofHandler/DofHandler.h"
 
 
 class InputSystem{
@@ -40,14 +41,14 @@ public:
     InputSystem();
     void InitInputSystem(int args,char *argv[]);
 
-    bool ReadInputFile(Mesh &mesh);
+    bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler);
 
 private:
     //******************************************************
     //*** functions for reading each block
     //******************************************************
     bool ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh);
-
+    bool ReadDofsBlock(ifstream &in,string str,int &linenum,DofHandler &dofHandler);
 
     //******************************************************
     //*** private variables

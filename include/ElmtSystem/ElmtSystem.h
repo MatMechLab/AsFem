@@ -9,17 +9,26 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2020.07.01
-//+++ Purpose: Implement general dofhandler for AsFem
-//+++          This class can handle both the bulk and interface DoFs
+//+++ Purpose: Define the element system in AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include "DofHandler/BulkDofHandler.h"
+#include <iostream>
+#include <iomanip>
 
-class DofHandler:public BulkDofHandler{
+#include "ElmtSystem/ElmtType.h"
+#include "ElmtSystem/ElmtBlock.h"
+
+using namespace std;
+
+class ElmtSystem{
 public:
-    DofHandler();
+    ElmtSystem();
 
-    void PrintDofInfo()const{BulkDofHandler::PrintDofInfo();}
+    void AddElmtBlock2List(ElmtBlock &elmtBlock);
+
+private:
+    int _nElmtBlocks;
+    vector<ElmtBlock> _ElmtBlockList;
 };

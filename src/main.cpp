@@ -32,8 +32,10 @@ int main(int args,char *argv[]){
     // FEProblem feProblem(args,argv);
 
     Mesh mesh;
+    DofHandler dofHandler;
     InputSystem inputSystem(args,argv);
-    inputSystem.ReadInputFile(mesh);
+    inputSystem.ReadInputFile(mesh,dofHandler);
+    dofHandler.PrintDofInfo();
     
 
     ierr=PetscFinalize();CHKERRQ(ierr);

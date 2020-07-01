@@ -55,3 +55,18 @@ void BulkDofHandler::AddDofNameFromStrVec(vector<string> &namelist){
     }
     _nDofsPerNode=i;
 }
+//**************************************************
+void BulkDofHandler::PrintDofInfo()const{
+    char buff[50];
+    MessagePrinter::PrintNormalTxt("Degrees of freedom (DoFs) information summary");
+    snprintf(buff,50,"  each node has %2d dofs (max)",GetDofsNumPerNode());
+    MessagePrinter::PrintNormalTxt(string(buff));
+
+    MessagePrinter::PrintNormalTxt("  DoFs id                                 DoFs name");
+    char longbuff[67];
+    for(auto &it:_DofID2NameList){
+        snprintf(longbuff,67,"  %2d                       %20s",it.first,it.second.c_str());
+        MessagePrinter::PrintNormalTxt(string(longbuff));
+    }
+    MessagePrinter::PrintDashLine();
+}
