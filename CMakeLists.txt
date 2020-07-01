@@ -105,6 +105,14 @@ set(src ${src} src/Mesh/LagrangeMeshPrintInfo.cpp)
 set(inc ${inc} include/Mesh/Mesh.h)
 set(src ${src} src/Mesh/Mesh.cpp)
 
+
+#############################################################
+### For DofHandler class                                  ###
+#############################################################
+set(inc ${inc} include/DofHandler/BulkDofHandler.h)
+set(src ${src} src/DofHandler/BulkDofHandler.cpp)
+
+
 ##################################################
 add_executable(asfem ${inc} ${src})
 
