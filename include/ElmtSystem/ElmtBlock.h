@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "ElmtSystem/ElmtType.h"
+#include "MateSystem/MateType.h"
 
 using namespace std;
 class ElmtBlock{

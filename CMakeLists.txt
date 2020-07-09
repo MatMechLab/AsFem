@@ -118,11 +118,16 @@ set(src ${src} src/DofHandler/DofHandler.cpp)
 
 
 #############################################################
-### For Elelement system in AsFem                         ###
+### For Element system in AsFem                         ###
 #############################################################
 set(inc ${inc} include/ElmtSystem/ElmtType.h)
 set(inc ${inc} include/ElmtSystem/ElmtBlock.h)
 set(inc ${inc} include/ElmtSystem/ElmtSystem.h)
+
+#############################################################
+### For Materials system in AsFem                         ###
+#############################################################
+set(inc ${inc} include/MateSystem/MateType.h)
 
 
 ##################################################
