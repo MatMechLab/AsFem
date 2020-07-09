@@ -16,10 +16,9 @@
 
 #include <iomanip>
 #include <string>
+#include <vector>
 
 #include "ElmtSystem/ElmtType.h"
-
-using namespace std;
 
 using namespace std;
 class ElmtBlock{
@@ -31,6 +30,7 @@ public:
         _MateBlockName.clear();
         _DomainName="alldomain";
         _ElmtType=ElmtType::NULLELMT;
+        _MateType=MateType::NULLMATE;
     }
 
     vector<int>    _DofsIDList;
@@ -39,13 +39,15 @@ public:
     string         _MateBlockName;
     string         _DomainName;
     ElmtType       _ElmtType=ElmtType::NULLELMT;
+    MateType       _MateType=MateType::NULLMATE;
     
     void Init(){
         _DofsIDList.clear();
         _DofsNameList.clear();
-        _nDofs.clear();
+        _nDofs=0;
         _MateBlockName.clear();
         _DomainName="alldomain";
         _ElmtType=ElmtType::NULLELMT;
+        _MateType=MateType::NULLMATE;
     }
 };
