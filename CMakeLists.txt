@@ -131,7 +131,7 @@ set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
 ### For Materials system in AsFem                         ###
 #############################################################
 set(inc ${inc} include/MateSystem/MateType.h)
-
+set(inc ${inc} include/MateSystem/MateBlock.h)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
