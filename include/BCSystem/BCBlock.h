@@ -35,6 +35,7 @@ public:
         _DofID=-1;
         _BCValue=0.0;
         _BoundaryNameList.clear();
+        _IsTimeDependent=false;
     }
 
     string         _BCBlockName;
@@ -44,6 +45,7 @@ public:
     int            _DofID;
     double         _BCValue;
     vector<string> _BoundaryNameList;// it could be either an element set or a node set
+    bool           _IsTimeDependent;
 
     void Init(){
         _BCBlockName.clear();
@@ -53,6 +55,7 @@ public:
         _DofID=-1;
         _BCValue=0.0;
         _BoundaryNameList.clear();
+        _IsTimeDependent=false;
     }
     
 };
