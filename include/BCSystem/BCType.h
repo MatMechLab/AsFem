@@ -16,6 +16,7 @@
 #pragma once
 
 enum class BCType{
+    NULLBC,
     DIRICHLETBC,
     NEUMANNBC,
     NODALDIRICHLETBC,
