@@ -142,6 +142,8 @@ set(src ${src} src/MateSystem/MateSystem.cpp)
 #############################################################
 set(inc ${inc} include/BCSystem/BCType.h)
 set(inc ${inc} include/BCSystem/BCBlock.h)
+set(inc ${inc} include/BCSystem/BCSystem.h)
+set(src ${src} src/BCSystem/BCSystem.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
