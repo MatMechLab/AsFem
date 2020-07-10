@@ -35,6 +35,7 @@
 #include "DofHandler/DofHandler.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "MateSystem/MateSystem.h"
+#include "BCSystem/BCSystem.h"
 
 
 class InputSystem{
@@ -43,7 +44,8 @@ public:
     InputSystem();
     void InitInputSystem(int args,char *argv[]);
 
-    bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem,MateSystem &mateSystem);
+    bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem,MateSystem &mateSystem,
+                       BCSystem &bcSystem);
 
 private:
     //******************************************************
@@ -53,6 +55,11 @@ private:
     bool ReadDofsBlock(ifstream &in,string str,int &linenum,DofHandler &dofHandler);
     bool ReadElmtBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ElmtSystem &elmtSystem,DofHandler &dofHandler);
     bool ReadMateBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,MateSystem &mateSystem);
+
+    //******************************************************
+    //*** functions for reading bcs and ics
+    //******************************************************
+    bool ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,BCSystem &bcSystem,DofHandler &dofHandler);
 
     //******************************************************
     //*** private variables
