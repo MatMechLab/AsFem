@@ -136,6 +136,12 @@ set(inc ${inc} include/MateSystem/MateBlock.h)
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
 
+
+#############################################################
+### For Boundary condition system in AsFem                ###
+#############################################################
+set(inc ${inc} include/BCSystem/BCType.h)
+
 ##################################################
 add_executable(asfem ${inc} ${src})
 
