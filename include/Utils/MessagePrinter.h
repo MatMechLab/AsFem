@@ -34,6 +34,7 @@ public:
     static void PrintShortTxt(string str);
     static void PrintLongTxt(string str);
     static void PrintErrorTxt(string str,bool flag=true);
+    static void PrintWarningTxt(string str,bool flag=true);
 
     static void PrintNormalTxt(string str);
     

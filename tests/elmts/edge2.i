@@ -23,3 +23,14 @@ name=u v
     dofs=u v
   [end]
 [end]
+
+[mates]
+  [mate1]
+    type=constpoisson
+    params=1.0
+  [end]
+  [mate2]
+    type=constpoisson
+    params=1.0
+  [end]
+[end]

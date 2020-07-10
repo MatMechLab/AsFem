@@ -14,7 +14,10 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem){
+bool InputSystem::ReadInputFile(Mesh &mesh,
+                                DofHandler &dofHandler,
+                                ElmtSystem &elmtSystem,
+                                MateSystem &mateSystem){
     ifstream in;
     string str;
     int linenum=0;
@@ -22,6 +25,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &el
     bool HasMeshBlock=false;
     bool HasDofsBlock=false;
     bool HasElmtBlock=false;
+    bool HasMateBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -48,6 +52,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &el
     HasMeshBlock=false;
     HasDofsBlock=false;
     HasElmtBlock=false;
+    HasMateBlock=false;
     while(!in.eof()){
         getline(in,str);linenum+=1;
         str=StringUtils::RemoveStrSpace(str);
@@ -56,7 +61,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &el
 
         if(str.find("[mesh]")!=string::npos){
             if(!StringUtils::IsBracketMatch(in,linenum)){
-                MessagePrinter::PrintErrorTxt("[mesh]/[end] bracket pair dosen\'t match");
+                MessagePrinter::PrintErrorTxt("[mesh]/[end] bracket pair dosen\'t match, please check your input file");
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
@@ -69,7 +74,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &el
         }
         else if(str.find("[dofs]")!=string::npos){
             if(!StringUtils::IsBracketMatch(in,linenum)){
-                MessagePrinter::PrintErrorTxt("[dofs]/[end] bracket pair dosen\'t match");
+                MessagePrinter::PrintErrorTxt("[dofs]/[end] bracket pair dosen\'t match, please check your input file");
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
@@ -96,6 +101,23 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &el
             }
             else{
                 MessagePrinter::PrintErrorTxt("[elmts]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if(str.find("[mates]")!=string::npos){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadMateBlock(in,str,lastendlinenum,linenum,mateSystem)){
+                    HasMateBlock=true;
+                }
+                else{
+                    HasMateBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[mates]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
         }
@@ -115,6 +137,12 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &el
         if(!_IsReadOnly){
             MessagePrinter::PrintErrorTxt("no [elmts] block is found, for FEM analysis, elmts are required");
             MessagePrinter::AsFem_Exit();
+        }
+    }
+
+    if(!HasMateBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [mates] block is found, the default material values will be used by the [elmts]");
         }
     }
 

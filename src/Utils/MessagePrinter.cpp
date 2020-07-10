@@ -245,6 +245,51 @@ void MessagePrinter::PrintErrorTxt(string str,bool flag){
         if(flag) PrintStars();
     }
 }
+//************************************************
+void MessagePrinter::PrintWarningTxt(string str,bool flag){
+    string _Head ="***         ";
+    string _Head1="*** Warning:";
+    string _End=" !!! ***";
+    int i1=static_cast<int>(_Head1.size());
+    int i2=static_cast<int>(_End.size());
+    int i3=static_cast<int>(str.size());
+    if(i3<=_nWords-i1-i2){
+        if(flag) PrintStars();
+        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
+        for(int i=0;i<_nWords-i1-i2-i3;i++){
+            PetscPrintf(PETSC_COMM_WORLD," ");
+        }
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+        if(flag) PrintStars();
+    }
+    else{
+        string substr1,substr2;
+        vector<string> strvec;
+        substr1=str.substr(0,_nWords-i1-i2);
+        substr2=str.substr(_nWords-i1-i2);
+        // for the first line
+        if(flag) PrintStars();
+        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+        // for the later lines
+        MessagePrinter printer;
+        strvec=printer.SplitErrorStr2Vec(substr2);
+        i1=static_cast<int>(_Head.size());
+        for(const auto &it:strvec){
+            // cout<<"str("<<it.size()<<")="<<it<<endl;
+            PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
+            PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
+            i3=static_cast<int>(it.size());
+            for(int i=0;i<_nWords-i1-i2-i3;i++){
+                PetscPrintf(PETSC_COMM_WORLD," ");
+            }
+            PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+        }
+        if(flag) PrintStars();
+    }
+}
 //**********************************************
 vector<string> MessagePrinter::SplitNormalStr2Vec(string str){
     // string _Head="*** Error:";

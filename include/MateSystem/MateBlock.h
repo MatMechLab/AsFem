@@ -34,10 +34,10 @@ public:
         _Parameters.clear();
     }
 
-    string      _MateBlockName;
-    string      _MateTypeName;
-    MateType    _MateType;
-    vector<int> _Parameters;
+    string         _MateBlockName;
+    string         _MateTypeName;
+    MateType       _MateType;
+    vector<double> _Parameters;
 
     void Init(){
         _MateBlockName.clear();
