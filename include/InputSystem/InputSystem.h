@@ -33,6 +33,7 @@
 #include "Mesh/Mesh.h"
 #include "Mesh/MeshIO.h"
 #include "DofHandler/DofHandler.h"
+#include "ElmtSystem/ElmtSystem.h"
 
 
 class InputSystem{
@@ -41,7 +42,7 @@ public:
     InputSystem();
     void InitInputSystem(int args,char *argv[]);
 
-    bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler);
+    bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem);
 
 private:
     //******************************************************
@@ -49,6 +50,7 @@ private:
     //******************************************************
     bool ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh);
     bool ReadDofsBlock(ifstream &in,string str,int &linenum,DofHandler &dofHandler);
+    bool ReadElmtBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ElmtSystem &elmtSystem,DofHandler &dofHandler);
 
     //******************************************************
     //*** private variables

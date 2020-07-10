@@ -14,13 +14,14 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler){
+bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem){
     ifstream in;
     string str;
     int linenum=0;
 
     bool HasMeshBlock=false;
     bool HasDofsBlock=false;
+    bool HasElmtBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -46,6 +47,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler){
 
     HasMeshBlock=false;
     HasDofsBlock=false;
+    HasElmtBlock=false;
     while(!in.eof()){
         getline(in,str);linenum+=1;
         str=StringUtils::RemoveStrSpace(str);
@@ -78,6 +80,25 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler){
                 HasDofsBlock=false;
             }
         }
+        else if(str.find("[elmts]")!=string::npos&&str.find("[ielmts]")==string::npos){
+            if(!HasDofsBlock){
+                MessagePrinter::PrintErrorTxt("[elmts] block requires the [dofs] block, you should define the [dofs] block first, then given the [elmts] block");
+                return false;
+            }
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadElmtBlock(in,str,lastendlinenum,linenum,elmtSystem,dofHandler)){
+                    HasElmtBlock=true;
+                }
+                else{
+                    HasElmtBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[elmts]/[end] bracket pair is not match, please check your input file");
+                return false;
+            }
+        }
     }
 
     if(!HasMeshBlock){
@@ -86,8 +107,15 @@ bool InputSystem::ReadInputFile(Mesh &mesh,DofHandler &dofHandler){
     }
 
     if(!HasDofsBlock){
-        MessagePrinter::PrintErrorTxt("no [dofs] block is found, for FEM analysis, dofs is required");
+        MessagePrinter::PrintErrorTxt("no [dofs] block is found, for FEM analysis, dofs are required");
         MessagePrinter::AsFem_Exit();
+    }
+
+    if(!HasElmtBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintErrorTxt("no [elmts] block is found, for FEM analysis, elmts are required");
+            MessagePrinter::AsFem_Exit();
+        }
     }
 
     return true;

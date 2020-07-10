@@ -40,6 +40,15 @@ public:
     inline int    GetDofsNumPerNode()const{return _nDofsPerNode;}
     inline int    GetDofsNum()const{return _nDofs;}
     inline int    GetActiveDofsNum()const{return _nActiveDofs;}
+    
+    int         GetDofIDviaDofName(string dofname)const;
+    vector<int> GetDofsIndexFromNameVec(vector<string> namelist)const;
+
+    //*********************************************
+    //*** for some basic check functions
+    //*********************************************
+    bool IsValidDofName(string dofname)const;
+    bool IsValidDofNameVec(vector<string> namelist)const;
 
     void PrintDofInfo()const;
 

@@ -201,7 +201,7 @@ vector<string> MessagePrinter::SplitErrorStr2Vec(string str){
     return strvec;
 }
 //****************************************************
-void MessagePrinter::PrintErrorTxt(string str){
+void MessagePrinter::PrintErrorTxt(string str,bool flag){
     string _Head ="***       ";
     string _Head1="*** Error:";
     string _End=" !!! ***";
@@ -209,14 +209,14 @@ void MessagePrinter::PrintErrorTxt(string str){
     int i2=static_cast<int>(_End.size());
     int i3=static_cast<int>(str.size());
     if(i3<=_nWords-i1-i2){
-        PrintStars();
+        if(flag) PrintStars();
         PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
         for(int i=0;i<_nWords-i1-i2-i3;i++){
             PetscPrintf(PETSC_COMM_WORLD," ");
         }
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        PrintStars();
+        if(flag) PrintStars();
     }
     else{
         string substr1,substr2;
@@ -224,7 +224,7 @@ void MessagePrinter::PrintErrorTxt(string str){
         substr1=str.substr(0,_nWords-i1-i2);
         substr2=str.substr(_nWords-i1-i2);
         // for the first line
-        PrintStars();
+        if(flag) PrintStars();
         PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
@@ -242,7 +242,7 @@ void MessagePrinter::PrintErrorTxt(string str){
             }
             PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
         }
-        PrintStars();
+        if(flag) PrintStars();
     }
 }
 //**********************************************
@@ -322,4 +322,22 @@ void MessagePrinter::PrintNormalTxt(string str){
             PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
         }
     }
+}
+//******************************************
+void MessagePrinter::PrintErrorInLineNumber(const int &linenumber){
+    string _Head="*** Error:";
+    string _End =" ***";
+    char buff[35];
+    string str;
+    int i1=static_cast<int>(_Head.size());
+    int i2=static_cast<int>(_End.size());
+    snprintf(buff,35," error detected in line-%d",linenumber);
+    str=buff;
+    int i3=static_cast<int>(str.size());
+    PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
+    PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
+    for(int i=0;i<_nWords-i1-i2-i3;i++){
+        PetscPrintf(PETSC_COMM_WORLD," ");
+    }
+    PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
 }

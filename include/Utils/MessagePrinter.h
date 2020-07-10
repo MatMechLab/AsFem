@@ -33,13 +33,18 @@ public:
     static void PrintTxt(string str);
     static void PrintShortTxt(string str);
     static void PrintLongTxt(string str);
-    static void PrintErrorTxt(string str);
+    static void PrintErrorTxt(string str,bool flag=true);
 
     static void PrintNormalTxt(string str);
     
     static void PrintWelcomeTxt(string str);
     static void PrintStars();
     static void PrintDashLine();
+
+    //***********************************
+    //*** for input file read
+    //***********************************
+    static void PrintErrorInLineNumber(const int &linenumber);
 
     static void AsFem_Exit();
 

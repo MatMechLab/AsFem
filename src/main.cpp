@@ -33,8 +33,9 @@ int main(int args,char *argv[]){
 
     Mesh mesh;
     DofHandler dofHandler;
+    ElmtSystem elmtSystem;
     InputSystem inputSystem(args,argv);
-    inputSystem.ReadInputFile(mesh,dofHandler);
+    inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem);
     dofHandler.PrintDofInfo();
     
 

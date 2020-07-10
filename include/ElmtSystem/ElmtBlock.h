@@ -28,6 +28,8 @@ public:
         _DofsIDList.clear();
         _DofsNameList.clear();
         _nDofs=0;
+        _ElmtBlockName.clear();
+        _ElmtTypeName.clear();
         _MateBlockName.clear();
         _DomainName="alldomain";
         _ElmtType=ElmtType::NULLELMT;
@@ -37,6 +39,8 @@ public:
     vector<int>    _DofsIDList;
     vector<string> _DofsNameList;
     int            _nDofs;
+    string         _ElmtBlockName;
+    string         _ElmtTypeName;
     string         _MateBlockName;
     string         _DomainName;
     ElmtType       _ElmtType=ElmtType::NULLELMT;
@@ -46,6 +50,8 @@ public:
         _DofsIDList.clear();
         _DofsNameList.clear();
         _nDofs=0;
+        _ElmtBlockName.clear();
+        _ElmtTypeName.clear();
         _MateBlockName.clear();
         _DomainName="alldomain";
         _ElmtType=ElmtType::NULLELMT;

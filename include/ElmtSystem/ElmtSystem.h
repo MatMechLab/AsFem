@@ -17,6 +17,8 @@
 #include <iostream>
 #include <iomanip>
 
+#include "Utils/MessagePrinter.h"
+
 #include "ElmtSystem/ElmtType.h"
 #include "ElmtSystem/ElmtBlock.h"
 
