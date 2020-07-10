@@ -132,6 +132,8 @@ set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
 #############################################################
 set(inc ${inc} include/MateSystem/MateType.h)
 set(inc ${inc} include/MateSystem/MateBlock.h)
+set(inc ${inc} include/MateSystem/MateSystem.h)
+set(src ${src} src/MateSystem/MateSystem.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
