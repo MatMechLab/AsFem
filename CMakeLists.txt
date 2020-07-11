@@ -151,7 +151,8 @@ set(src ${src} src/BCSystem/BCSystem.cpp)
 #############################################################
 set(inc ${inc} include/ICSystem/ICType.h)
 set(inc ${inc} include/ICSystem/ICBlock.h)
-
+set(inc ${inc} include/ICSystem/ICSystem.h)
+set(src ${src} src/ICSystem/ICSystem.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
