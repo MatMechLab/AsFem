@@ -150,6 +150,7 @@ set(src ${src} src/BCSystem/BCSystem.cpp)
 ### For Initial condition system in AsFem                 ###
 #############################################################
 set(inc ${inc} include/ICSystem/ICType.h)
+set(inc ${inc} include/ICSystem/ICBlock.h)
 
 
 ##################################################
