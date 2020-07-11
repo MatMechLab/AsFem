@@ -18,7 +18,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 DofHandler &dofHandler,
                                 ElmtSystem &elmtSystem,
                                 MateSystem &mateSystem,
-                                BCSystem &bcSystem){
+                                BCSystem &bcSystem,
+                                ICSystem &icSystem){
     ifstream in;
     string str;
     int linenum=0;
@@ -28,6 +29,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasElmtBlock=false;
     bool HasMateBlock=false;
     bool HasBCBlock=false;
+    bool HasICBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -56,6 +58,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasElmtBlock=false;
     HasMateBlock=false;
     HasBCBlock=false;
+    HasICBlock=false;
+
     while(!in.eof()){
         getline(in,str);linenum+=1;
         str=StringUtils::RemoveStrSpace(str);
@@ -145,6 +149,28 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if(str.find("[ics]")!=string::npos){
+            if(!HasDofsBlock){
+                MessagePrinter::PrintErrorTxt("[ics] block requires the [dofs] block, you should define the [dofs] block before the [ics] block");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadICBlock(in,str,lastendlinenum,linenum,icSystem,dofHandler)){
+                    HasICBlock=true;
+                }
+                else{
+                    HasICBlock=false;
+                    MessagePrinter::AsFem_Exit();
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[ics]/[end] bracket pair is not match");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
     }
 
     if(!HasMeshBlock){
@@ -166,13 +192,19 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
 
     if(!HasMateBlock){
         if(!_IsReadOnly){
-            MessagePrinter::PrintWarningTxt("no [mates] block is found, the default material values will be used by the [elmts]");
+            MessagePrinter::PrintWarningTxt("no [mates] block is found, the default material values will be used by the [elmts]",false);
         }
     }
 
     if(!HasBCBlock){
         if(!_IsReadOnly){
-            MessagePrinter::PrintWarningTxt("no [bcs] block is found, no any boundary conditions will be used by AsFem");
+            MessagePrinter::PrintWarningTxt("no [bcs] block is found, no any boundary conditions will be used by AsFem",false);
+        }
+    }
+
+    if(!HasICBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [ics] block is found, no any initial conditions will be used by AsFem",false);
         }
     }
 

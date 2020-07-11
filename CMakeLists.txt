@@ -84,6 +84,7 @@ set(src ${src} src/InputSystem/ReadDofsBlock.cpp)
 set(src ${src} src/InputSystem/ReadElmtBlock.cpp)
 set(src ${src} src/InputSystem/ReadMateBlock.cpp)
 set(src ${src} src/InputSystem/ReadBCBlock.cpp)
+set(src ${src} src/InputSystem/ReadICBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###

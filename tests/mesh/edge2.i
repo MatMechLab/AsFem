@@ -12,3 +12,10 @@
 [dofs]
 name=u v
 [end]
+
+[elmts]
+  [elmt1]
+    type=poisson
+    dofs=u v
+  [end]
+[end]

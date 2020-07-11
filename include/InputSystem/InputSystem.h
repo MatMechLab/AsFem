@@ -36,6 +36,7 @@
 #include "ElmtSystem/ElmtSystem.h"
 #include "MateSystem/MateSystem.h"
 #include "BCSystem/BCSystem.h"
+#include "ICSystem/ICSystem.h"
 
 
 class InputSystem{
@@ -45,7 +46,7 @@ public:
     void InitInputSystem(int args,char *argv[]);
 
     bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem,MateSystem &mateSystem,
-                       BCSystem &bcSystem);
+                       BCSystem &bcSystem,ICSystem &icSystem);
 
 private:
     //******************************************************
@@ -60,6 +61,7 @@ private:
     //*** functions for reading bcs and ics
     //******************************************************
     bool ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,BCSystem &bcSystem,DofHandler &dofHandler);
+    bool ReadICBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ICSystem &icSystem,DofHandler &dofHandler);
 
     //******************************************************
     //*** private variables
