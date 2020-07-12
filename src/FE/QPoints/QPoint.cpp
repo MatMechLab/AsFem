@@ -51,3 +51,7 @@ void QPoint::CreateQpoints(MeshType meshtype){
         QPointGaussLobatto::CreateQpoints(meshtype);
     }
 }
+void QPoint::Init(){
+    QPointGaussLegendre::Init();
+    QPointGaussLobatto::Init();
+}

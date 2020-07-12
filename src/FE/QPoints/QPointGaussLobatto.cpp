@@ -35,3 +35,13 @@ QPointGaussLobatto::QPointGaussLobatto(int dim,int order)
     _HasDim=true;
     _HasOrder=true;
 }
+
+void QPointGaussLobatto::Init(){
+    _nQpOrder=1;_nQpPoints=1;_nDim=1;
+    _QpCoords.clear();
+    _QpType=QPointType::GAUSSLOBATTO;
+
+    _HasSettings=true;
+    _HasDim=false;
+    _HasOrder=false;
+}

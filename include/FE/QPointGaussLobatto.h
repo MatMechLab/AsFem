@@ -26,6 +26,7 @@ public:
     void SetDim(int dim) {_nDim=dim;_HasDim=true;}
     void SetQPointOrder(int order) {_nQpOrder=order;_HasOrder=true;}
     void SetQPointType(QPointType qptype) {_QpType=qptype;_HasSettings=true;}
+    void Init();
     //************************************************
     //*** for basic gettings
     //************************************************

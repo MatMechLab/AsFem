@@ -35,3 +35,13 @@ QPointGaussLegendre::QPointGaussLegendre(int dim,int order)
     _HasDim=true;
     _HasOrder=true;
 }
+
+void QPointGaussLegendre::Init(){
+    _nQpOrder=1;_nQpPoints=1;_nDim=1;
+    _QpCoords.clear();
+    _QpType=QPointType::GAUSSLEGENDRE;
+
+    _HasSettings=true;
+    _HasDim=false;
+    _HasOrder=false;
+}

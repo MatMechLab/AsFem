@@ -33,6 +33,7 @@ public:
     void SetQPointType(QPointType qptype) {
         _QpType=qptype;_HasSettings=true;
     }
+    void Init();
     //************************************************
     //*** for basic gettings
     //************************************************

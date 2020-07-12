@@ -34,6 +34,7 @@ public:
     //************************************************
     //*** for basic settings
     //************************************************
+    void Init();
     void SetDim(int dim){QPointGaussLegendre::SetDim(dim);QPointGaussLobatto::SetDim(dim);}
     void SetQPointOrder(int order){QPointGaussLegendre::SetQPointOrder(order);QPointGaussLobatto::SetDim(order);}
     void SetQPointType(QPointType qptype){

@@ -170,6 +170,10 @@ set(src ${src} src/FE/QPoints/CreateGaussLobattoPoint.cpp)
 set(inc ${inc} include/FE/QPoint.h)
 set(src ${src} src/FE/QPoints/QPoint.cpp)
 set(src ${src} src/FE/QPoints/PrintQPointInfo.cpp)
+#############################################################
+### for FE
+#########################
+set(inc ${inc} include/FE/FE.h)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
