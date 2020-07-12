@@ -23,6 +23,8 @@
 
 #include "petsc.h"
 
+#include "Utils/MessagePrinter.h"
+
 using namespace std;
 
 class SolutionSystem{
@@ -52,6 +54,9 @@ public:
     string GetIthProjName(const int &i)const{return _ProjectionNameList[i-1];}
     vector<string> GetProjNameVec()const{return _ProjectionNameList;}
     bool IsProjection()const{return _IsProjection;}
+
+
+    void PrintProjectionInfo()const;
 
 public:
     Vec _Unew,_Utemp;

@@ -21,6 +21,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 BCSystem &bcSystem,
                                 ICSystem &icSystem,
                                 FE &fe,
+                                SolutionSystem &solutionSystem,
                                 OutputSystem &outputSystem){
     ifstream in;
     string str;
@@ -34,6 +35,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasICBlock=false;
     bool HasQPointBlock=false;
     bool HasOutputBlock=false;
+    bool HasProjectionBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -65,6 +67,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasICBlock=false;
     HasQPointBlock=false;
     HasOutputBlock=false;
+    HasProjectionBlock=false;
 
     while(!in.eof()){
         getline(in,str);linenum+=1;
@@ -213,6 +216,22 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if((str.find("[projection]")!=string::npos)&&str.length()==12){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadProjectionBlock(in,str,linenum,solutionSystem)){
+                    HasProjectionBlock=true;
+                }
+                else{
+                    HasProjectionBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[projection]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
     }
 
     if(!HasMeshBlock){
@@ -263,6 +282,17 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     else{
         fe.SetDim(mesh.GetDim());
         fe.CreateQPoints(mesh);
+    }
+
+
+    if(!HasProjectionBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [projection] block is found, the default projection name will be used by AsFem",false);
+        }
+        solutionSystem.PrintProjectionInfo();
+    }
+    else{
+        solutionSystem.PrintProjectionInfo();
     }
 
     if(!HasOutputBlock){

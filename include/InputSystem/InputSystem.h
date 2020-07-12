@@ -38,6 +38,7 @@
 #include "BCSystem/BCSystem.h"
 #include "ICSystem/ICSystem.h"
 #include "FE/FE.h"
+#include "SolutionSystem/SolutionSystem.h"
 #include "OutputSystem/OutputSystem.h"
 
 
@@ -50,6 +51,7 @@ public:
     bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem,MateSystem &mateSystem,
                        BCSystem &bcSystem,ICSystem &icSystem,
                        FE &fe,
+                       SolutionSystem &solutionSystem,
                        OutputSystem &outputSystem);
 
 private:
@@ -76,6 +78,11 @@ private:
     //*** functions for reading [qpoint]
     //******************************************************
     bool ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSystem &outputSystem);
+
+    //******************************************************
+    //*** functions for reading [projection]
+    //******************************************************
+    bool ReadProjectionBlock(ifstream &in,string str,int &linenum,SolutionSystem &solutionSystem);
 
     //******************************************************
     //*** private variables

@@ -28,3 +28,15 @@ SolutionSystem::SolutionSystem(){
     _HasProjNameList=false;
     _HasDofNameList=false;
 }
+
+void SolutionSystem::PrintProjectionInfo()const{
+    if(_ProjectionNameList.size()<1) return;
+    MessagePrinter::PrintNormalTxt("Projection information summary:");
+    string msg;
+    msg="projected variables: ";
+    for(const auto it:_ProjectionNameList){
+        msg+=it+" ";
+    }
+    MessagePrinter::PrintNormalTxt(msg);
+    MessagePrinter::PrintDashLine();
+}

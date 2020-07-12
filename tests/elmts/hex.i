@@ -27,3 +27,7 @@ name=disp_x disp_y
   order=4
   bcorder=2
 [end]
+
+[projection]
+name=name1 name2
+[end]
