@@ -187,6 +187,14 @@ set(src ${src} src/SolutionSystem/SolutionSystem.cpp)
 set(src ${src} src/SolutionSystem/InitSolution.cpp)
 
 #############################################################
+### For nonlinear solver system in AsFem                  ###
+#############################################################
+set(inc ${inc} include/NonlinearSolver/NonlinearSolverType.h)
+set(inc ${inc} include/NonlinearSolver/NonlinearSolverBlock.h)
+set(inc ${inc} include/NonlinearSolver/NonlinearSolver.h)
+set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
+
+#############################################################
 ### For output system in AsFem                            ###
 #############################################################
 set(inc ${inc} include/OutputSystem/OutputType.h)
