@@ -22,7 +22,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 ICSystem &icSystem,
                                 FE &fe,
                                 SolutionSystem &solutionSystem,
-                                OutputSystem &outputSystem){
+                                OutputSystem &outputSystem,
+                                NonlinearSolver &nonlinearSolver){
     ifstream in;
     string str;
     int linenum=0;
@@ -36,6 +37,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasQPointBlock=false;
     bool HasOutputBlock=false;
     bool HasProjectionBlock=false;
+    bool HasNonlinearSolverBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -68,6 +70,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasQPointBlock=false;
     HasOutputBlock=false;
     HasProjectionBlock=false;
+    HasNonlinearSolverBlock=false;
 
     while(!in.eof()){
         getline(in,str);linenum+=1;
@@ -232,6 +235,27 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if((str.find("[nonlinearsolver]")!=string::npos)&&str.length()==17){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadNonlinearSolverBlock(in,str,linenum,nonlinearSolver)){
+                    HasNonlinearSolverBlock=true;
+                }
+                else{
+                    HasNonlinearSolverBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[nonlinearsolver]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if(str.find("[]")!=string::npos){
+            MessagePrinter::PrintErrorInLineNumber(linenum);
+            MessagePrinter::PrintErrorTxt("the bracket pair is not complete in your input file, you should check it",false);
+            MessagePrinter::AsFem_Exit();
+        }
     }
 
     if(!HasMeshBlock){
@@ -300,6 +324,12 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
             MessagePrinter::PrintWarningTxt("no [output] block is found, default output options will be used by AsFem",false);
         }
         outputSystem.Init();
+    }
+
+    if(!HasNonlinearSolverBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [nonlinearsolver] block is found, default output options will be used by AsFem",false);
+        }
     }
 
     return true;

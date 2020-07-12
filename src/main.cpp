@@ -20,6 +20,7 @@
 #include "FE/FE.h"
 #include "OutputSystem/OutputSystem.h"
 #include "SolutionSystem/SolutionSystem.h"
+#include "NonlinearSolver/NonlinearSolver.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -43,8 +44,10 @@ int main(int args,char *argv[]){
     FE fe;
     OutputSystem outputSystem;
     SolutionSystem solutionSystem;
+    NonlinearSolver nonlinearSolver;
     InputSystem inputSystem(args,argv);
-    inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem,fe,solutionSystem,outputSystem);
+    inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem,fe,
+    solutionSystem,outputSystem,nonlinearSolver);
     dofHandler.PrintDofInfo();
 
     fe.PrintFEInfo();

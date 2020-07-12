@@ -39,6 +39,7 @@
 #include "ICSystem/ICSystem.h"
 #include "FE/FE.h"
 #include "SolutionSystem/SolutionSystem.h"
+#include "NonlinearSolver/NonlinearSolver.h"
 #include "OutputSystem/OutputSystem.h"
 
 
@@ -52,7 +53,8 @@ public:
                        BCSystem &bcSystem,ICSystem &icSystem,
                        FE &fe,
                        SolutionSystem &solutionSystem,
-                       OutputSystem &outputSystem);
+                       OutputSystem &outputSystem,
+                       NonlinearSolver &nonlinearSolver);
 
 private:
     //******************************************************
@@ -84,6 +86,12 @@ private:
     //******************************************************
     bool ReadProjectionBlock(ifstream &in,string str,int &linenum,SolutionSystem &solutionSystem);
 
+    //******************************************************
+    //*** functions for reading [nonlinearsolver]
+    //******************************************************
+    bool ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,NonlinearSolver &nonlinearSolver);
+
+    
     //******************************************************
     //*** private variables
     //******************************************************

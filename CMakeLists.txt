@@ -88,6 +88,7 @@ set(src ${src} src/InputSystem/ReadICBlock.cpp)
 set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
 set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
+set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###
