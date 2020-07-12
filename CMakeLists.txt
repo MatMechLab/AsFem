@@ -86,6 +86,7 @@ set(src ${src} src/InputSystem/ReadMateBlock.cpp)
 set(src ${src} src/InputSystem/ReadBCBlock.cpp)
 set(src ${src} src/InputSystem/ReadICBlock.cpp)
 set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
+set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###

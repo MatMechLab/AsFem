@@ -20,7 +20,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 MateSystem &mateSystem,
                                 BCSystem &bcSystem,
                                 ICSystem &icSystem,
-                                FE &fe){
+                                FE &fe,
+                                OutputSystem &outputSystem){
     ifstream in;
     string str;
     int linenum=0;
@@ -32,6 +33,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasBCBlock=false;
     bool HasICBlock=false;
     bool HasQPointBlock=false;
+    bool HasOutputBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -62,6 +64,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasBCBlock=false;
     HasICBlock=false;
     HasQPointBlock=false;
+    HasOutputBlock=false;
 
     while(!in.eof()){
         getline(in,str);linenum+=1;
@@ -189,8 +192,23 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 }
             }
             else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [qpoint]/[end] bracket pair is not match             !!!   ***\n");
                 MessagePrinter::PrintErrorTxt("[qpoint]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if((str.find("[output]")!=string::npos)&&str.length()==8){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadOutputBlock(in,str,linenum,outputSystem)){
+                    HasOutputBlock=true;
+                }
+                else{
+                    HasOutputBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[output]/[end] bracket pair is not match, please check your input file");
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
@@ -245,6 +263,13 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     else{
         fe.SetDim(mesh.GetDim());
         fe.CreateQPoints(mesh);
+    }
+
+    if(!HasOutputBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [output] block is found, default output options will be used by AsFem",false);
+        }
+        outputSystem.Init();
     }
 
     return true;

@@ -18,6 +18,7 @@
 #include "InputSystem/InputSystem.h"
 #include "Mesh/Mesh.h"
 #include "FE/FE.h"
+#include "OutputSystem/OutputSystem.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -39,8 +40,9 @@ int main(int args,char *argv[]){
     BCSystem bcSystem;
     ICSystem icSystem;
     FE fe;
+    OutputSystem outputSystem;
     InputSystem inputSystem(args,argv);
-    inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem,fe);
+    inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem,fe,outputSystem);
     dofHandler.PrintDofInfo();
 
     fe.PrintFEInfo();

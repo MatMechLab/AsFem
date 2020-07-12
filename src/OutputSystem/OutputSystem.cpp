@@ -20,12 +20,20 @@
 OutputSystem::OutputSystem(){
     _Interval=1;
     _OutputType=OutputType::VTU;
-    _OutputTypeName.clear();
+    _OutputTypeName="vtu";
+    _OutputFolderName.clear();
 }
 
+void OutputSystem::Init(){
+    _Interval=1;
+    _OutputType=OutputType::VTU;
+    _OutputTypeName="vtu";
+    _OutputFolderName.clear();
+}
 
 void OutputSystem::InitFromOutputBlock(OutputBlock &outputblock){
     _Interval=outputblock._Interval;
     _OutputType=outputblock._OutputType;
     _OutputTypeName=outputblock._OutputFormatName;
+    _OutputFolderName=outputblock._OutputFolderName;
 }

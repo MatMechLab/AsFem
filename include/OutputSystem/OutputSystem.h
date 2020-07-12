@@ -30,10 +30,12 @@ class OutputSystem{
 public:
     OutputSystem();
 
+    void Init();
     void InitFromOutputBlock(OutputBlock &outputblock);
 
 private:
     int _Interval;
     OutputType _OutputType;
     string _OutputTypeName;
+    string _OutputFolderName;
 };

@@ -27,16 +27,19 @@ public:
     OutputBlock(){
         _Interval=1;
         _OutputFormatName="vtu";
+        _OutputFolderName.clear();
         _OutputType=OutputType::VTU;
     }
 
     int            _Interval;
     string         _OutputFormatName;
+    string         _OutputFolderName;
     OutputType     _OutputType;
 
     void Init(){
         _Interval=1;
         _OutputFormatName="vtu";
+        _OutputFolderName.clear();
         _OutputType=OutputType::VTU;
     }
 
