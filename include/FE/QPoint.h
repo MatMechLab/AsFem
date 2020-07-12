@@ -36,7 +36,7 @@ public:
     //************************************************
     void Init();
     void SetDim(int dim){QPointGaussLegendre::SetDim(dim);QPointGaussLobatto::SetDim(dim);}
-    void SetQPointOrder(int order){QPointGaussLegendre::SetQPointOrder(order);QPointGaussLobatto::SetDim(order);}
+    void SetQPointOrder(int order){QPointGaussLegendre::SetQPointOrder(order);QPointGaussLobatto::SetQPointOrder(order);}
     void SetQPointType(QPointType qptype){
         QPointGaussLegendre::SetQPointType(qptype);QPointGaussLobatto::SetQPointType(qptype);
         _CurrentQPType=qptype;

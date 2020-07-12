@@ -19,7 +19,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 ElmtSystem &elmtSystem,
                                 MateSystem &mateSystem,
                                 BCSystem &bcSystem,
-                                ICSystem &icSystem){
+                                ICSystem &icSystem,
+                                FE &fe){
     ifstream in;
     string str;
     int linenum=0;
@@ -30,6 +31,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasMateBlock=false;
     bool HasBCBlock=false;
     bool HasICBlock=false;
+    bool HasQPointBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -59,6 +61,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasMateBlock=false;
     HasBCBlock=false;
     HasICBlock=false;
+    HasQPointBlock=false;
 
     while(!in.eof()){
         getline(in,str);linenum+=1;
@@ -144,7 +147,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 }
             }
             else{
-                MessagePrinter::PrintErrorTxt("[bcs]/[end] bracket pair is not match");
+                MessagePrinter::PrintErrorTxt("[bcs]/[end] bracket pair is not match, please check your input file");
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
@@ -166,7 +169,28 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 }
             }
             else{
-                MessagePrinter::PrintErrorTxt("[ics]/[end] bracket pair is not match");
+                MessagePrinter::PrintErrorTxt("[ics]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if(str.find("[qpoint]")!=string::npos){
+            if(!HasMeshBlock){
+                MessagePrinter::PrintErrorTxt("[qpoint] block requires the [mesh] block, you should define the [mesh] block first, then given the [qpoint] block");
+                return false;
+            }
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadQPointBlock(in,str,linenum,fe)){
+                    HasQPointBlock=true;
+                }
+                else{
+                    HasQPointBlock=false;
+                }
+            }
+            else{
+                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [qpoint]/[end] bracket pair is not match             !!!   ***\n");
+                MessagePrinter::PrintErrorTxt("[qpoint]/[end] bracket pair is not match, please check your input file");
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
@@ -206,6 +230,21 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         if(!_IsReadOnly){
             MessagePrinter::PrintWarningTxt("no [ics] block is found, no any initial conditions will be used by AsFem",false);
         }
+    }
+
+    if(!HasQPointBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [qpoint] block is found, default gauss-legendre integration options will be used by AsFem",false);
+        }
+        fe.SetDim(mesh.GetDim());
+        fe.SetQPointType(QPointType::GAUSSLEGENDRE);
+        fe.SetBulkQpOrder(mesh.GetBulkMeshOrder()+1);
+        fe.SetBCQpOrder(mesh.GetBulkMeshOrder()+1);
+        fe.CreateQPoints(mesh);
+    }
+    else{
+        fe.SetDim(mesh.GetDim());
+        fe.CreateQPoints(mesh);
     }
 
     return true;

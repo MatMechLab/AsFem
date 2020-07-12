@@ -21,3 +21,9 @@ name=disp_x disp_y
     dofs=disp_x disp_y
   [end]
 [end]
+
+[qpoint]
+  type=gauss
+  order=4
+  bcorder=2
+[end]

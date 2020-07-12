@@ -85,6 +85,7 @@ set(src ${src} src/InputSystem/ReadElmtBlock.cpp)
 set(src ${src} src/InputSystem/ReadMateBlock.cpp)
 set(src ${src} src/InputSystem/ReadBCBlock.cpp)
 set(src ${src} src/InputSystem/ReadICBlock.cpp)
+set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###
@@ -174,6 +175,7 @@ set(src ${src} src/FE/QPoints/PrintQPointInfo.cpp)
 ### for FE
 #########################
 set(inc ${inc} include/FE/FE.h)
+set(src ${src} src/FE/FE.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

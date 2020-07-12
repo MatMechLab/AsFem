@@ -18,13 +18,41 @@
 #pragma once
 
 
+#include "Mesh/Mesh.h"
 #include "FE/QPoint.h"
 
+class Mesh;
 
-class FE:public QPoint{
+class FE{
 public:
     FE();
 
+    void SetDim(int dim){_nDim=dim;_HasDimSet=true;}
+    //***********************************************
+    //*** for QPoint
+    //***********************************************
+    void SetQPointType(QPointType qptype);
+    void SetBulkQpOrder(int order);
+    void SetBCQpOrder(int order);
+    void CreateQPoints(Mesh &mesh);
+
+
+    //***********************************************
+    //*** for get functions
+    //***********************************************
+    inline int GetDim()const{return _nDim;}
+
+    QPoint& GetBulkQPointPtr(){return _BulkQPoint;}
+    QPoint& GetLineQPointPtr(){return _LineQPoint;}
+    QPoint& GetSurfaceQPointPtr(){return _SurfaceQPoint;}
+
+
+    void PrintFEInfo()const;
+
 private:
+    int _nDim;
+    bool _HasDimSet=false;
+    QPoint _BulkQPoint,_LineQPoint,_SurfaceQPoint;
+    int _nBulkQpOrder,_nBCQpOrder;
     
 };

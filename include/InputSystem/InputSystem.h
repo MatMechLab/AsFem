@@ -37,6 +37,7 @@
 #include "MateSystem/MateSystem.h"
 #include "BCSystem/BCSystem.h"
 #include "ICSystem/ICSystem.h"
+#include "FE/FE.h"
 
 
 class InputSystem{
@@ -46,7 +47,8 @@ public:
     void InitInputSystem(int args,char *argv[]);
 
     bool ReadInputFile(Mesh &mesh,DofHandler &dofHandler,ElmtSystem &elmtSystem,MateSystem &mateSystem,
-                       BCSystem &bcSystem,ICSystem &icSystem);
+                       BCSystem &bcSystem,ICSystem &icSystem,
+                       FE &fe);
 
 private:
     //******************************************************
@@ -62,6 +64,11 @@ private:
     //******************************************************
     bool ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,BCSystem &bcSystem,DofHandler &dofHandler);
     bool ReadICBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ICSystem &icSystem,DofHandler &dofHandler);
+
+    //******************************************************
+    //*** functions for reading [qpoint]
+    //******************************************************
+    bool ReadQPointBlock(ifstream &in,string str,int &linenum,FE &fe);
 
     //******************************************************
     //*** private variables
