@@ -177,6 +177,14 @@ set(src ${src} src/FE/QPoints/PrintQPointInfo.cpp)
 set(inc ${inc} include/FE/FE.h)
 set(src ${src} src/FE/FE.cpp)
 
+#############################################################
+### For output system in AsFem                            ###
+#############################################################
+set(inc ${inc} include/OutputSystem/OutputType.h)
+set(inc ${inc} include/OutputSystem/OutputBlock.h)
+set(inc ${inc} include/OutputSystem/OutputSystem.h)
+set(src ${src} src/OutputSystem/OutputSystem.cpp)
+
 ##################################################
 add_executable(asfem ${inc} ${src})
 
