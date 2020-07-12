@@ -179,12 +179,21 @@ set(inc ${inc} include/FE/FE.h)
 set(src ${src} src/FE/FE.cpp)
 
 #############################################################
+### For solution system in AsFem                          ###
+#############################################################
+set(inc ${inc} include/SolutionSystem/SolutionSystem.h)
+set(src ${src} src/SolutionSystem/SolutionSystem.cpp)
+set(src ${src} src/SolutionSystem/InitSolution.cpp)
+
+#############################################################
 ### For output system in AsFem                            ###
 #############################################################
 set(inc ${inc} include/OutputSystem/OutputType.h)
 set(inc ${inc} include/OutputSystem/OutputBlock.h)
 set(inc ${inc} include/OutputSystem/OutputSystem.h)
 set(src ${src} src/OutputSystem/OutputSystem.cpp)
+
+
 
 ##################################################
 add_executable(asfem ${inc} ${src})
