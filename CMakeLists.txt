@@ -155,6 +155,22 @@ set(inc ${inc} include/ICSystem/ICBlock.h)
 set(inc ${inc} include/ICSystem/ICSystem.h)
 set(src ${src} src/ICSystem/ICSystem.cpp)
 
+#############################################################
+### For FE space and the related functions in AsFem       ###
+#############################################################
+### for gauss-point
+#########################
+set(inc ${inc} include/FE/QPointType.h include/FE/QPointBase.h)
+set(inc ${inc} include/FE/QPointGaussLegendre.h)
+set(src ${src} src/FE/QPoints/QPointGaussLegendre.cpp)
+set(src ${src} src/FE/QPoints/CreateGaussLegendrePoint.cpp)
+set(inc ${inc} include/FE/QPointGaussLobatto.h)
+set(src ${src} src/FE/QPoints/QPointGaussLobatto.cpp)
+set(src ${src} src/FE/QPoints/CreateGaussLobattoPoint.cpp)
+set(inc ${inc} include/FE/QPoint.h)
+set(src ${src} src/FE/QPoints/QPoint.cpp)
+set(src ${src} src/FE/QPoints/PrintQPointInfo.cpp)
+
 ##################################################
 add_executable(asfem ${inc} ${src})
 

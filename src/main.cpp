@@ -17,6 +17,7 @@
 // #include "Mesh/MeshIO.h"
 #include "InputSystem/InputSystem.h"
 #include "Mesh/Mesh.h"
+#include "FE/QPoint.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -41,6 +42,13 @@ int main(int args,char *argv[]){
     inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem);
     dofHandler.PrintDofInfo();
     
+    QPoint qpoint;
+    qpoint.SetDim(mesh.GetDim());
+    qpoint.SetQPointOrder(4);
+    qpoint.SetQPointType(QPointType::GAUSSLEGENDRE);
+    qpoint.CreateQpoints(mesh.GetBulkMeshBulkElmtType());
+    qpoint.PrintQPointInfo();
+    qpoint.PrintQPointDetailInfo();
 
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;
