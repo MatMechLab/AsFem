@@ -83,6 +83,12 @@ set(src ${src} src/Utils/MessagePrinter.cpp)
 #############################################################
 set(inc ${inc} include/Utils/Vector3d.h)
 set(src ${src} src/Utils/MathUtils/Vector3d.cpp)
+### for rank-2 tensor
+set(inc ${inc} include/Utils/RankTwoTensor.h)
+set(src ${src} src/Utils/MathUtils/RankTwoTensor.cpp)
+### for rank-4 tensor
+set(inc ${inc} include/Utils/RankFourTensor.h)
+set(src ${src} src/Utils/MathUtils/RankFourTensor.cpp)
 
 #############################################################
 ### For inputystem                                        ###

@@ -21,16 +21,19 @@
 
 #include "petsc.h"
 
+
+//*****************************************
+//*** for AsFem's own header files
+//*****************************************
+
+
 using namespace std;
 
 
-class RankTwoTensor;
 
 class Vector3d{
 public:
-    Vector3d(const double val=0.0){
-        _vals[0]=val;_vals[1]=val;_vals[2]=val;
-    }
+    Vector3d(const double &val);
     inline double& operator()(const int &i){
         return _vals[i-1];
     }
@@ -167,11 +170,6 @@ public:
     inline void Print()const{
         PetscPrintf(PETSC_COMM_WORLD,"%14.6e ,%14.6e ,%14.6e\n",_vals[0],_vals[1],_vals[2]);
     }
-
-    //************************************************
-    //*** for higher order operator like tensor
-    //************************************************
-    RankTwoTensor CrossDot(const Vector3d &a) const;
 private:
     double _vals[3];
 };
