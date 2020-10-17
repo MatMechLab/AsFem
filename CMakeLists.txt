@@ -79,6 +79,12 @@ set(inc ${inc} include/Utils/MessagePrinter.h)
 set(src ${src} src/Utils/MessagePrinter.cpp)
 
 #############################################################
+### For mathematic utils (vector and tensors, etc...)     ###
+#############################################################
+set(inc ${inc} include/Utils/Vector3d.h)
+set(src ${src} src/Utils/MathUtils/Vector3d.cpp)
+
+#############################################################
 ### For inputystem                                        ###
 #############################################################
 set(inc ${inc} include/InputSystem/InputSystem.h)

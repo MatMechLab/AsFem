@@ -22,10 +22,12 @@
 #include "SolutionSystem/SolutionSystem.h"
 #include "NonlinearSolver/NonlinearSolver.h"
 
+#include "Utils/Vector3d.h"
+
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
-
+    
     const PetscInt Year=2020;
     const PetscInt Month=3;
     const PetscInt Day=25;
