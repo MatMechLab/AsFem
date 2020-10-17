@@ -5,10 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 ###############################################
 ### Set your Eigen/PETSc/MPI path here      ###
+### The only things to modify is the        ###
+### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
 set(PETSC_DIR "/home/by/Programs/petsc/3.13.5")
 set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
-set(Eigen "/home/by/Programs/eigen")
 
 ###############################################
 ### For your PETSc library file  (edit)     ###
@@ -21,8 +22,11 @@ link_libraries("${PETSC_DIR}/lib/libpetsc.so")
 include_directories("${MPI_DIR}/include")
 link_libraries("${MPI_DIR}/lib/libmpi.so")
 
-# For Eigen
-include_directories("${Eigen}")
+###############################################
+# For Eigen                                 ###
+###############################################
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/eigen")
+#set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/external/eigen" PROPERTIES HEADER_FILE_ONLY TRUE)
 
 ###############################################
 ### For debug mode                          ###
