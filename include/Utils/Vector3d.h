@@ -30,10 +30,11 @@
 using namespace std;
 
 
-
 class Vector3d{
 public:
+    Vector3d();
     Vector3d(const double &val);
+    Vector3d(const Vector3d &a);
     inline double& operator()(const int &i){
         return _vals[i-1];
     }
@@ -57,6 +58,7 @@ public:
         _vals[0]=val;_vals[1]=val;_vals[2]=val;
         return *this;
     }
+    Vector3d& operator=(const Vector3d &a)=default;
     //*** for +
     inline Vector3d operator+(const double &val){
         Vector3d temp(0.0);

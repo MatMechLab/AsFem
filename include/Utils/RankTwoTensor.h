@@ -33,13 +33,15 @@ class RankFourTensor;
 
 class RankTwoTensor{
 public:
+    RankTwoTensor();
     RankTwoTensor(const double &val);
+    RankTwoTensor(const RankTwoTensor &a);
+    
     enum InitMethod{
         InitZero,
         InitIdentity,
         InitRandom
     };
-
     RankTwoTensor(const InitMethod &method);
     // this is quite helpful for deformation gradient calculation
     RankTwoTensor(const Vector3d &r1,
@@ -98,10 +100,10 @@ public:
         for(int i=0;i<_N2;++i) _vals[i]=a;
         return *this;
     }
-    // inline RankTwoTensor& operator=(const RankTwoTensor &a){
-    //     for(int i=0;i<_N2;++i) _vals[i]=a._vals[i];
-    //     return *this;
-    // }
+    inline RankTwoTensor& operator=(const RankTwoTensor &a){
+        for(int i=0;i<_N2;++i) _vals[i]=a._vals[i];
+        return *this;
+    }
     //*** for + operator
     inline RankTwoTensor operator+(const double &a) const{
         RankTwoTensor temp(0.0);
@@ -367,7 +369,7 @@ public:
     }
 
 private:
-    int _N=3;
-    int _N2=9;
+    const int _N=3;
+    const int _N2=9;
     double _vals[9];
 };

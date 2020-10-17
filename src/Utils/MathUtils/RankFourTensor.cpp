@@ -17,9 +17,17 @@
 
 
 // for the constructor in different purpose
+RankFourTensor::RankFourTensor()
+:_N(3),_N2(3*3),_N4(3*3*3*3){
+    for(int i=0;i<_N4;++i) _vals[i]=0.0;
+}
 RankFourTensor::RankFourTensor(const double &val)
 :_N(3),_N2(3*3),_N4(3*3*3*3){
     for(int i=0;i<_N4;++i) _vals[i]=val;
+}
+RankFourTensor::RankFourTensor(const RankFourTensor &a)
+:_N(3),_N2(3*3),_N4(3*3*3*3){
+    for(int i=0;i<_N4;++i) _vals[i]=a._vals[i];
 }
 //*********************
 RankFourTensor::RankFourTensor(const InitMethod &method)
