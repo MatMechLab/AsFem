@@ -35,17 +35,10 @@ class ElmtSystem:public BulkElmtSystem{
 public:
     ElmtSystem();
 
-    void AddBulkElmtBlock2List(ElmtBlock &elmtBlock);
-
     //*******************************************
     //*** some getting funs
     //*******************************************
-    ElmtBlock& GetIthBulkElmtBlock(const int &i){
-        return BulkElmtSystem::_ElmtBlockList[i-1];
-    }
-    ElmtBlock  GetIthBulkElmtBlock(const int &i)const{
-        return BulkElmtSystem::_ElmtBlockList[i-1];
-    }
+    
 
     void RunBulkElmtLibs(const BulkElmtCalcType &calctype,const ElmtType &elmtytype,
                         const int &nDim,const int &nNodes,
@@ -61,7 +54,5 @@ public:
                         vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
                         MatrixXd &localK,VectorXd &localR);
 
-private:
-    int _nBulkElmtBlocks;
-    int _nInterfaceElmtBlocks;
+
 };

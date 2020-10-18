@@ -242,6 +242,7 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         if(StringUtils::IsUniqueStrVec(strtmp)){
                             elmtBlock._DofsNameList=StringUtils::SplitStr(substr,' ');
                             elmtBlock._DofsIDList=dofHandler.GetDofsIndexFromNameVec(elmtBlock._DofsNameList);
+                            elmtBlock._nDofs=static_cast<int>(elmtBlock._DofsIDList.size());
                             HasDofs=true;
                         }
                         else{
@@ -300,7 +301,7 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                     elmtBlock._MateBlockName="";
                 }
                 if(!HasBlock) elmtBlock._DomainName="alldomain";
-                elmtSystem.AddElmtBlock2List(elmtBlock);
+                elmtSystem.AddBulkElmtBlock2List(elmtBlock);
             }
             else{
                 msg="information in [elmts] sub block is not complete, information is missing in ["+elmtBlock._ElmtBlockName+"]";

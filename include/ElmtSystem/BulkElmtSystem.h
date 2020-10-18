@@ -27,6 +27,7 @@ class BulkElmtSystem{
 public:
     BulkElmtSystem();
 
+    void InitBulkElmtSystem();
 
     enum BulkElmtCalcType{
         ComputeResidual,
@@ -36,12 +37,15 @@ public:
         ComputeProjectionValue
     };
 
-    void AddElmtBlock2List(ElmtBlock &elmtBlock);
-    ElmtBlock GetIthElmtBlock(const int &i)const{
-        return _ElmtBlockList[i-1];
+    void AddBulkElmtBlock2List(ElmtBlock &elmtBlock);
+    ElmtBlock GetIthBulkElmtBlock(const int &i)const{
+        return _BulkElmtBlockList[i-1];
+    }
+    inline int GetBulkElmtBlockNums()const{
+        return _nBulkElmtBlocks;
     }
 
 protected:
-    int _nElmtBlocks;
-    vector<ElmtBlock> _ElmtBlockList;
+    int _nBulkElmtBlocks;
+    vector<ElmtBlock> _BulkElmtBlockList;
 };

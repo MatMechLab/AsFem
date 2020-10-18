@@ -15,21 +15,26 @@
 #include "ElmtSystem/BulkElmtSystem.h"
 
 BulkElmtSystem::BulkElmtSystem(){
-    _nElmtBlocks=0;
-    _ElmtBlockList.clear();
+    _nBulkElmtBlocks=0;
+    _BulkElmtBlockList.clear();
+}
+
+void BulkElmtSystem::InitBulkElmtSystem(){
+    _nBulkElmtBlocks=0;
+    _BulkElmtBlockList.clear();
 }
 
 //***********************************
-void BulkElmtSystem::AddElmtBlock2List(ElmtBlock &elmtBlock){
+void BulkElmtSystem::AddBulkElmtBlock2List(ElmtBlock &elmtBlock){
     string msg;
-    if(_ElmtBlockList.size()<1){
-        _ElmtBlockList.push_back(elmtBlock);
-        _nElmtBlocks=1;
+    if(_BulkElmtBlockList.size()<1){
+        _BulkElmtBlockList.push_back(elmtBlock);
+        _nBulkElmtBlocks=1;
     }
     else{
         bool IsBlockNameUnique,IsTypeAndDomainUnique;
         IsBlockNameUnique=true;
-        for(const auto &it:_ElmtBlockList){
+        for(const auto &it:_BulkElmtBlockList){
             if(it._ElmtBlockName==elmtBlock._ElmtBlockName){
                 IsBlockNameUnique=false;
                 break;
@@ -38,7 +43,7 @@ void BulkElmtSystem::AddElmtBlock2List(ElmtBlock &elmtBlock){
         if(IsBlockNameUnique){
             // now the block name is unique, then we need to check the type and domain
             IsTypeAndDomainUnique=true;
-            for(const auto &it:_ElmtBlockList){
+            for(const auto &it:_BulkElmtBlockList){
                 if(it._ElmtType==elmtBlock._ElmtType&&
                    it._DomainName==elmtBlock._DomainName){
                     IsTypeAndDomainUnique=false;
@@ -46,8 +51,8 @@ void BulkElmtSystem::AddElmtBlock2List(ElmtBlock &elmtBlock){
                 }
             }
             if(IsTypeAndDomainUnique){
-                _ElmtBlockList.push_back(elmtBlock);
-                _nElmtBlocks+=1;
+                _BulkElmtBlockList.push_back(elmtBlock);
+                _nBulkElmtBlocks+=1;
             }
             else{
                 msg="duplicated elmt type and domain settings in the [elmts] block, the unique 'type=' and 'domain=' should be given";

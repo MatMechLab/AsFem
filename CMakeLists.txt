@@ -143,6 +143,7 @@ set(inc ${inc} include/DofHandler/BulkDofHandler.h)
 set(src ${src} src/DofHandler/BulkDofHandler.cpp)
 set(src ${src} src/DofHandler/BulkDofHandlerFuns.cpp)
 set(src ${src} src/DofHandler/BulkDofHandlerGetFuns.cpp)
+set(src ${src} src/DofHandler/BulkDofHandlerCreateMap.cpp)
 ### for final dof class
 set(inc ${inc} include/DofHandler/DofHandler.h)
 set(src ${src} src/DofHandler/DofHandler.cpp)

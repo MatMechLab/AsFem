@@ -17,18 +17,28 @@
 
 
 BulkDofHandler::BulkDofHandler(){
-    _nElmts=0;_nNodes=0;_nBulkElmts=0;
+    _nElmts=0.0;_nNodes=0.0;_nBulkElmts=0;
     _nDofsPerNode=0;
     _nDofs=0;_nActiveDofs=0;
-    _HasDofMap=false;
-    _HasSetDofName=false;
+    _nNodesPerBulkElmt=0;
+    _nMaxDim=0;_nMinDim=0;
+    _nMaxDofsPerElmt=0;
+    _HasDofMap=false;_HasSetDofName=false;
+
     _DofIDList.clear();
     _DofNameList.clear();
     _DofID2NameList.clear();
     _DofName2IDList.clear();
 
-    vector<vector<int>> _NodeDofsMap;
-    vector<vector<int>> _ElmtDofsMap;
+    _DofIDList.clear();
+    _DofNameList.clear();
+    _DofID2NameList.clear();
+    _DofName2IDList.clear();
+
+    _NodeDofsMap.clear();
+    _ElmtDofsMap.clear();
+
+    _ElmtElmtMateTypePairList.clear();
 }
 
 void BulkDofHandler::AddDofNameFromStrVec(vector<string> &namelist){

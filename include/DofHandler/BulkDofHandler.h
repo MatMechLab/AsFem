@@ -23,12 +23,14 @@
 
 #include "Utils/MessagePrinter.h"
 #include "Mesh/Mesh.h"
+#include "BCSystem/BCSystem.h"
 #include "ElmtSystem/ElmtSystem.h"
 
 using namespace std;
 
 class Mesh;
 class ElmtSystem;
+class BCSystem;
 
 class BulkDofHandler{
 public:
@@ -36,7 +38,7 @@ public:
 
     void AddDofNameFromStrVec(vector<string> &namelist);
 
-    void CreateDofsMap(Mesh &mesh,ElmtSystem &elmtSystem);
+    void CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem);
 
     inline string GetIthDofName(const int &i)const{return _DofNameList[i-1];}
     inline int    GetIthDofID(const int &i)const{return _DofIDList[i-1];}
@@ -75,6 +77,9 @@ protected:
     int _nElmts,_nNodes,_nBulkElmts;
     int _nDofsPerNode;
     int _nDofs,_nActiveDofs;
+    int _nNodesPerBulkElmt;
+    int _nMaxDim,_nMinDim;
+    int _nMaxDofsPerElmt;
     bool _HasDofMap,_HasSetDofName;
     vector<int>              _DofIDList;
     vector<string>           _DofNameList;
@@ -82,6 +87,7 @@ protected:
     vector<pair<string,int>> _DofName2IDList;
 
     vector<vector<int>> _NodeDofsMap;
+    vector<vector<double>> _NodalDofFlag;
     vector<vector<int>> _ElmtDofsMap;
 
     vector<pair<ElmtType,MateType>> _ElmtElmtMateTypePairList;

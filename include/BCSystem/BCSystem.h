@@ -38,6 +38,9 @@ public:
     BCSystem();
     void AddBCBlock2List(BCBlock &bcblock);
 
+    inline int GetBCBlockNums()const{return _nBCBlocks;}
+    inline BCBlock GetIthBCBlock(const int &i)const{return _BCBlockList[i-1];}
+
 private:
     int _nBCBlocks;
     vector<BCBlock> _BCBlockList;

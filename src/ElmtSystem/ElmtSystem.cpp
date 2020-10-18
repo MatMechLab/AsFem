@@ -15,12 +15,5 @@
 #include "ElmtSystem/ElmtSystem.h"
 
 ElmtSystem::ElmtSystem(){
-    _nElmtBlocks=0;
-    _ElmtBlockList.clear();
-}
-
-//***********************************
-void ElmtSystem::AddBulkElmtBlock2List(ElmtBlock &elmtBlock){
-    BulkElmtSystem::AddElmtBlock2List(elmtBlock);
-    _nBulkElmtBlocks=BulkElmtSystem::_nElmtBlocks;
+    InitBulkElmtSystem();
 }
