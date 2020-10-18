@@ -8,19 +8,19 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.10
-//+++ Purpose: Define the element system in AsFem
+//+++ Date   : 2020.07.18
+//+++ Purpose: Define the basic calculation job in element system
+//+++          the action like compute residual and compute jacobian
+//+++          should be list here
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "ElmtSystem/ElmtSystem.h"
+#pragma once
 
-ElmtSystem::ElmtSystem(){
-    _nElmtBlocks=0;
-    _ElmtBlockList.clear();
-}
+enum class BulkElmtCalcType{
+    ComputeResidual,
+    ComputeJacobian,
+    ComputeProjectionValues,
+    InitHistoryValues,
+    UpdateHistoryValues
+};
 
-//***********************************
-void ElmtSystem::AddBulkElmtBlock2List(ElmtBlock &elmtBlock){
-    BulkElmtSystem::AddElmtBlock2List(elmtBlock);
-    _nBulkElmtBlocks=BulkElmtSystem::_nElmtBlocks;
-}

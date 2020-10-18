@@ -27,6 +27,15 @@ class BulkElmtSystem{
 public:
     BulkElmtSystem();
 
+
+    enum BulkElmtCalcType{
+        ComputeResidual,
+        ComputeJacobian,
+        InitHistoryValue,
+        UpdateHistoryValue,
+        ComputeProjectionValue
+    };
+
     void AddElmtBlock2List(ElmtBlock &elmtBlock);
     ElmtBlock GetIthElmtBlock(const int &i)const{
         return _ElmtBlockList[i-1];
