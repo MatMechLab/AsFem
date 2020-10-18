@@ -89,6 +89,11 @@ set(src ${src} src/Utils/MathUtils/RankTwoTensor.cpp)
 ### for rank-4 tensor
 set(inc ${inc} include/Utils/RankFourTensor.h)
 set(src ${src} src/Utils/MathUtils/RankFourTensor.cpp)
+### for MatrixXd and VectorXd
+set(inc ${inc} include/Utils/VectorXd.h)
+set(src ${src} src/Utils/MathUtils/VectorXd.cpp)
+set(inc ${inc} include/Utils/MatrixXd.h)
+set(src ${src} src/Utils/MathUtils/MatrixXd.cpp)
 
 #############################################################
 ### For inputystem                                        ###

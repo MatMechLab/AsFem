@@ -24,6 +24,8 @@
 #include "ElmtSystem/BulkElmtSystem.h"
 
 #include "Utils/Vector3d.h"
+#include "Utils/VectorXd.h"
+#include "Utils/MatrixXd.h"
 #include "Utils/RankTwoTensor.h"
 #include "Utils/RankFourTensor.h"
 
@@ -51,7 +53,7 @@ public:
                         const Vector3d &gpCoords,
                         const vector<double> &gpU,const vector<double> &gpV,
                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                        const ShapeFun &shp,
+                        // const ShapeFun &shp,
                         const vector<double> &ScalarMaterials,
                         const vector<Vector3d> &VectorMaterials,
                         const vector<RankTwoTensor> &Rank2Materials,
