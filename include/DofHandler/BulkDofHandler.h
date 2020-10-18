@@ -22,10 +22,13 @@
 #include <algorithm>
 
 #include "Utils/MessagePrinter.h"
-
+#include "Mesh/Mesh.h"
+#include "ElmtSystem/ElmtSystem.h"
 
 using namespace std;
 
+class Mesh;
+class ElmtSystem;
 
 class BulkDofHandler{
 public:
@@ -33,7 +36,7 @@ public:
 
     void AddDofNameFromStrVec(vector<string> &namelist);
 
-    void CreateDofsMap();
+    void CreateDofsMap(Mesh &mesh,ElmtSystem &elmtSystem);
 
     inline string GetIthDofName(const int &i)const{return _DofNameList[i-1];}
     inline int    GetIthDofID(const int &i)const{return _DofIDList[i-1];}
@@ -49,6 +52,19 @@ public:
     //*********************************************
     bool IsValidDofName(string dofname)const;
     bool IsValidDofNameVec(vector<string> namelist)const;
+
+    //*********************************************
+    //*** for some basic getting functions
+    //*********************************************
+    inline pair<ElmtType,MateType> GetIthElmtElmtMateTypePair(const int &e)const{
+        return _ElmtElmtMateTypePairList[e-1];
+    }
+    inline ElmtType GetIthElmtElmtType(const int &e)const{
+        return _ElmtElmtMateTypePairList[e-1].first;
+    }
+    inline MateType GetIthElmtMateType(const int &e)const{
+        return _ElmtElmtMateTypePairList[e-1].second;
+    }
 
     void PrintDofInfo()const;
 
@@ -67,5 +83,7 @@ protected:
 
     vector<vector<int>> _NodeDofsMap;
     vector<vector<int>> _ElmtDofsMap;
+
+    vector<pair<ElmtType,MateType>> _ElmtElmtMateTypePairList;
 
 };

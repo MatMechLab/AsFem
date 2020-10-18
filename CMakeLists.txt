@@ -149,6 +149,9 @@ set(inc ${inc} include/ElmtSystem/ElmtType.h)
 set(inc ${inc} include/ElmtSystem/ElmtBlock.h)
 set(inc ${inc} include/ElmtSystem/ElmtSystem.h)
 set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
+# for bulk element system
+set(inc ${inc} include/ElmtSystem/BulkElmtSystem.h)
+set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###

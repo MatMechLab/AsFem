@@ -8,10 +8,9 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.01
-//+++ Purpose: Define the element system in AsFem
+//+++ Date   : 2020.10.18
+//+++ Purpose: Define the bulk element system in AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 #pragma once
 
 #include <iostream>
@@ -21,20 +20,19 @@
 
 #include "ElmtSystem/ElmtType.h"
 #include "ElmtSystem/ElmtBlock.h"
-#include "ElmtSystem/BulkElmtSystem.h"
 
 using namespace std;
 
-class ElmtSystem:public BulkElmtSystem{
+class BulkElmtSystem{
 public:
-    ElmtSystem();
+    BulkElmtSystem();
 
     void AddElmtBlock2List(ElmtBlock &elmtBlock);
-    ElmtBlock GetIthBulkElmtBlock(const int &i)const{
-        return BulkElmtSystem::_ElmtBlockList[i-1];
+    ElmtBlock GetIthElmtBlock(const int &i)const{
+        return _ElmtBlockList[i-1];
     }
 
-private:
-    int _nBulkElmtBlocks;
-    int _nInterfaceElmtBlocks;
+protected:
+    int _nElmtBlocks;
+    vector<ElmtBlock> _ElmtBlockList;
 };
