@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include",
                 "${workspaceFolder}/external/eigen",
-                "/home/by/Programs/petsc/3.13.5/include",
+                "/home/by/Programs/petsc/3.13.6/include",
                 "/home/by/Programs/mpich/3.3.2/include"
             ],
             "defines": [],
