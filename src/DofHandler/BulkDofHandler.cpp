@@ -85,13 +85,17 @@ void BulkDofHandler::PrintDofInfo()const{
 void BulkDofHandler::PrintDofDetailInfo()const{
     PrintDofInfo();
     string str;
+    char buff[14];
     MessagePrinter::PrintNormalTxt("Degrees of freedom (DoFs) information summary in details");
     for(int e=0;e<_nBulkElmts;e++){
-        PetscPrintf(PETSC_COMM_WORLD,"*** e=%8d:",e+1);
+        str.clear();
+        sprintf(buff,"e=%8d:",e+1);
+        str+=string(buff);
         for(auto it:_ElmtDofsMap[e]){
-            PetscPrintf(PETSC_COMM_WORLD,"%8d ",it);
+            sprintf(buff,"%8d ",it);
+            str+=string(buff);
         }
-        PetscPrintf(PETSC_COMM_WORLD,"\n");
+        MessagePrinter::PrintLongTxt(str);
     }
     MessagePrinter::PrintDashLine();
 }

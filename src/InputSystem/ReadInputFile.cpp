@@ -328,9 +328,11 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
 
     if(!HasNonlinearSolverBlock){
         if(!_IsReadOnly){
-            MessagePrinter::PrintWarningTxt("no [nonlinearsolver] block is found, default output options will be used by AsFem",false);
+            MessagePrinter::PrintWarningTxt("no [nonlinearsolver] block is found, default newton-raphson with line search solver options will be used by AsFem",false);
         }
     }
+
+    MessagePrinter::PrintDashLine();
 
     return true;
 }
