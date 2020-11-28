@@ -18,6 +18,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <map>
 #include <string>
 #include <algorithm>
 
@@ -69,6 +70,7 @@ public:
     }
 
     void PrintDofInfo()const;
+    void PrintDofDetailInfo()const;
 
 protected:
     //*************************************************
@@ -87,9 +89,13 @@ protected:
     vector<pair<string,int>> _DofName2IDList;
 
     vector<vector<int>> _NodeDofsMap;
-    vector<vector<double>> _NodalDofFlag;
+    vector<vector<double>> _NodalDofFlag,_ElmtDofFlag;
     vector<vector<int>> _ElmtDofsMap;
 
     vector<pair<ElmtType,MateType>> _ElmtElmtMateTypePairList;
+
+    // for the length of non-zero element per row
+    vector<int> _RowNNZ;
+    int _RowMaxNNZ; // the max non-zero elements of all the rows
 
 };

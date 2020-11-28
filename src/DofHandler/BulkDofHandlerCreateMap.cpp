@@ -28,6 +28,8 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
     _NodalDofFlag.resize(_nNodes,vector<double>(_nDofsPerNode,0.0));// for dirichlet bc is  : 0
                                                                     // for neumann bc is    : 1
                                                                     // for robin/other bc is: 2
+    _ElmtDofFlag.resize(_nBulkElmts,vector<double>(_nMaxDofsPerElmt,0.0));
+
     _NodeDofsMap.resize(_nNodes,vector<int>(_nDofsPerNode,0));
     _ElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,0));
 
@@ -37,7 +39,7 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
     _nActiveDofs=0;
 
     
-    int iblock,i,j,iInd,ndofs;
+    int iblock,e,i,ii,j,k,iInd,jInd,ndofs;
     string domainname;
     vector<int> dofindex;
 
@@ -46,11 +48,11 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
 
 
 
-    //*** firstly, we check whether all the domain has assigned an [elmt] block
+    //*** firstly, we check whether all the domain has been assigned an [elmt] block
     bool DomainHasElmtBlock=false;
     for(i=1;i<=mesh.GetPhysicalGroupNum();i++){
         DomainHasElmtBlock=false;
-        if(mesh.GetIthPhysicalDim(i)==_nMaxDim){
+        if(mesh.GetIthPhysicalDim(i)==_nMaxDim){// only check the bulk elmts
             DomainHasElmtBlock=false;
             for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
                 if(mesh.GetIthPhysicalName(i)==elmtSystem.GetIthBulkElmtBlock(j)._DomainName){
@@ -73,15 +75,16 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
 
     for(iblock=1;iblock<=elmtSystem.GetBulkElmtBlockNums();iblock++){
         domainname=elmtSystem.GetIthBulkElmtBlock(iblock)._DomainName;
-        dofindex=elmtSystem.GetIthBulkElmtBlock(iblock)._DofsIDList;
-        ndofs=elmtSystem.GetIthBulkElmtBlock(iblock)._nDofs;
+        dofindex=elmtSystem.GetIthBulkElmtBlock(iblock)._DofsIDList; // the dof index could be discontinue case, i.e. 1,2,4 !!!
+        ndofs=elmtSystem.GetIthBulkElmtBlock(iblock)._nDofs; // the total dofs of current elmt block
         for(auto e:mesh.GetElmtIDsViaPhysicalName(domainname)){
             // now we are in the elmt id vector
             for(i=1;i<=mesh.GetIthElmtNodesNum(e);i++){
                 iInd=mesh.GetIthElmtJthNodeID(e,i);
                 for(j=1;j<=ndofs;j++){
-                    _NodeDofsMap[iInd-1][j-1]=1;
-                    _NodalDofFlag[iInd-1][j-1]=1.0;
+                    jInd=dofindex[j-1];
+                    _NodeDofsMap[iInd-1][jInd-1]=1;
+                    _NodalDofFlag[iInd-1][jInd-1]=1.0;
                 }
             }
         }
@@ -127,4 +130,38 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         }
     }
 
+    // now we remove all the empty space of some vectors
+    _RowNNZ.resize(_nActiveDofs,0);
+    _RowMaxNNZ=0;
+    for(e=1;e<=_nBulkElmts;e++){
+        for(j=1;j<=mesh.GetIthBulkElmtNodesNum(e);j++){
+            iInd=mesh.GetIthBulkElmtJthNodeID(e,j);
+            for(k=1;k<=_nDofsPerNode;k++){
+                ii=(j-1)*_nDofsPerNode+k-1;
+
+                if(_NodalDofFlag[iInd-1][k-1]>0.0){
+                    _ElmtDofsMap[e-1][ii]=_NodeDofsMap[iInd-1][k-1];
+                    _RowNNZ[_NodeDofsMap[iInd-1][k-1]-1]+=_nMaxDofsPerElmt;
+
+                    if(_RowNNZ[_NodeDofsMap[iInd-1][k-1]-1]>_RowMaxNNZ){
+                        _RowMaxNNZ=_RowNNZ[_NodeDofsMap[iInd-1][k-1]-1];
+                    }
+
+                    _ElmtDofFlag[e-1][ii]=1.0;
+                }
+            }
+        }
+        // remove the zero element space
+        _ElmtDofFlag[e-1].erase(
+            remove(_ElmtDofFlag[e-1].begin(),_ElmtDofFlag[e-1].end(),0.0),
+            _ElmtDofFlag[e-1].end()
+        );
+        _ElmtDofFlag[e-1].shrink_to_fit();
+
+        _ElmtDofsMap[e-1].erase(
+            remove(_ElmtDofsMap[e-1].begin(),_ElmtDofsMap[e-1].end(),0),
+            _ElmtDofsMap[e-1].end()
+        );
+        _ElmtDofsMap[e-1].shrink_to_fit();
+    }
 }

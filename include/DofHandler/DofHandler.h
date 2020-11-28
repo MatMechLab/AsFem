@@ -21,5 +21,6 @@ class DofHandler:public BulkDofHandler{
 public:
     DofHandler();
 
-    void PrintDofInfo()const{BulkDofHandler::PrintDofInfo();}
+    void PrintAllDofInfo()const{BulkDofHandler::PrintDofInfo();}
+    void PrintInterfaceDofInfo()const;
 };

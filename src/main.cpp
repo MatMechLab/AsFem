@@ -50,7 +50,9 @@ int main(int args,char *argv[]){
     InputSystem inputSystem(args,argv);
     inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem,fe,
     solutionSystem,outputSystem,nonlinearSolver);
-    dofHandler.PrintDofInfo();
+    dofHandler.CreateBulkDofsMap(mesh,bcSystem,elmtSystem);
+    dofHandler.PrintAllDofInfo();
+    dofHandler.PrintDofDetailInfo();
 
     fe.PrintFEInfo();
     
