@@ -23,6 +23,7 @@
 #include "NonlinearSolver/NonlinearSolver.h"
 
 #include "Utils/Vector3d.h"
+#include "FE/ShapeFun.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -53,6 +54,9 @@ int main(int args,char *argv[]){
     dofHandler.CreateBulkDofsMap(mesh,bcSystem,elmtSystem);
     dofHandler.PrintAllDofInfo();
     dofHandler.PrintDofDetailInfo();
+
+    ShapeFun myshape(mesh.GetBulkMeshDim(),mesh.GetBulkMeshBulkElmtType());
+    myshape.PreCalc();
 
     fe.PrintFEInfo();
     

@@ -41,7 +41,7 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
     _nActiveDofs=0;
 
     
-    int iblock,e,i,ii,j,k,iInd,jInd,ndofs;
+    int iblock,e,ee,i,ii,j,k,iInd,jInd,ndofs;
     string domainname;
     vector<int> dofindex;
 
@@ -83,10 +83,12 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         ndofs=elmtSystem.GetIthBulkElmtBlock(iblock)._nDofs; // the total dofs of current elmt block
         elmttype=elmtSystem.GetIthBulkElmtBlock(iblock)._ElmtType;
         matetype=elmtSystem.GetIthBulkElmtBlock(iblock)._MateType;
+        cout<<"domain="<<domainname<<endl;
         for(auto e:mesh.GetElmtIDsViaPhysicalName(domainname)){
             // now we are in the elmt id vector
-            _ElmtElmtMateTypePairList[e-1].first=elmttype;
-            _ElmtElmtMateTypePairList[e-1].second=matetype;
+            ee=e-(mesh.GetBulkMeshElmtsNum()-mesh.GetBulkMeshBulkElmtsNum());
+            _ElmtElmtMateTypePairList[ee-1].first=elmttype;
+            _ElmtElmtMateTypePairList[ee-1].second=matetype;
             for(i=1;i<=mesh.GetIthElmtNodesNum(e);i++){
                 iInd=mesh.GetIthElmtJthNodeID(e,i);
                 for(j=1;j<=ndofs;j++){

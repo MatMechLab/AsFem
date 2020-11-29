@@ -3,7 +3,7 @@
 [mesh]
   type=asfem
   dim=1
-  nx=100
+  nx=10
   meshtype=edge2
   printmesh=true
   savemesh=true

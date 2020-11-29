@@ -203,7 +203,15 @@ set(src ${src} src/FE/QPoints/PrintQPointInfo.cpp)
 #########################
 set(inc ${inc} include/FE/FE.h)
 set(src ${src} src/FE/FE.cpp)
-
+### for shape functions
+set(inc ${inc} include/FE/LagrangeShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/LagrangeShapeFun.cpp)
+set(src ${src} src/FE/ShapeFuns/LagrangeShapeFunCalc.cpp)
+set(src ${src} src/FE/ShapeFuns/Compute1DLagrangeShapeFun.cpp)
+set(src ${src} src/FE/ShapeFuns/Compute2DLagrangeShapeFun.cpp)
+set(src ${src} src/FE/ShapeFuns/Compute3DLagrangeShapeFun.cpp)
+set(inc ${inc} include/FE/ShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/ShapeFun.cpp)
 #############################################################
 ### For solution system in AsFem                          ###
 #############################################################
