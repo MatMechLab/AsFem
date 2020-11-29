@@ -157,6 +157,9 @@ set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
 # for bulk element system
 set(inc ${inc} include/ElmtSystem/BulkElmtSystem.h)
 set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
+set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
+### for laplace operator
+set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###

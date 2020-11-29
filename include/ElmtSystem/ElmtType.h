@@ -20,6 +20,7 @@
 
 enum class ElmtType{
     NULLELMT,
+    LAPLACEELMT,
     POISSONELMT,
     MECHANICSELMT,
     CAHNHILLIARDELMT,
