@@ -8,19 +8,17 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.18
-//+++ Purpose: Define the basic calculation job in element system
-//+++          the action like compute residual and compute jacobian
-//+++          should be list here
+//+++ Date   : 2020.11.29
+//+++ Purpose: Define some commonly used calculation type in FEM
+//+++          calculation, i.e. compute residual, compute jacobian
+//+++          projection from gauss point to nodal point
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#pragma once
 
-enum class BulkElmtCalcType{
+enum class FECalcType{
     ComputeResidual,
     ComputeJacobian,
-    ComputeProjectionValues,
-    InitHistoryValues,
-    UpdateHistoryValues
+    Projection,
+    InitHistoryVariable,
+    UpdateHistoryVariable
 };
-

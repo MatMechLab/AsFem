@@ -18,8 +18,15 @@
 
 #include "Utils/MessagePrinter.h"
 
-#include "ElmtSystem/ElmtType.h"
 #include "ElmtSystem/ElmtBlock.h"
+#include "ElmtSystem/ElmtType.h"
+#include "FESystem/FECalcType.h"
+
+#include "Utils/Vector3d.h"
+#include "Utils/VectorXd.h"
+#include "Utils/MatrixXd.h"
+#include "Utils/RankTwoTensor.h"
+#include "Utils/RankFourTensor.h"
 
 using namespace std;
 
@@ -29,13 +36,6 @@ public:
 
     void InitBulkElmtSystem();
 
-    enum BulkElmtCalcType{
-        ComputeResidual,
-        ComputeJacobian,
-        InitHistoryValue,
-        UpdateHistoryValue,
-        ComputeProjectionValue
-    };
 
     void AddBulkElmtBlock2List(ElmtBlock &elmtBlock);
     ElmtBlock GetIthBulkElmtBlock(const int &i)const{
@@ -44,6 +44,21 @@ public:
     inline int GetBulkElmtBlockNums()const{
         return _nBulkElmtBlocks;
     }
+
+
+    void RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
+                        const int &nDim,const int &nNodes,
+                        const double &t,const double &dt,const double (&ctan)[2],
+                        const Vector3d &gpCoords,
+                        const vector<double> &gpU,const vector<double> &gpV,
+                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                        // const ShapeFun &shp,
+                        const vector<double> &ScalarMaterials,
+                        const vector<Vector3d> &VectorMaterials,
+                        const vector<RankTwoTensor> &Rank2Materials,
+                        const vector<RankFourTensor> &Rank4Materials,
+                        vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                        MatrixXd &localK,VectorXd &localR);
 
 protected:
     int _nBulkElmtBlocks;

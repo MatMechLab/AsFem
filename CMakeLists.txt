@@ -227,7 +227,10 @@ set(inc ${inc} include/OutputSystem/OutputBlock.h)
 set(inc ${inc} include/OutputSystem/OutputSystem.h)
 set(src ${src} src/OutputSystem/OutputSystem.cpp)
 
-
+#############################################################
+### For FE system in AsFem                                ###
+#############################################################
+set(inc ${inc} include/FESystem/FECalcType.h)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

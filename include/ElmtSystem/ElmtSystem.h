@@ -19,15 +19,10 @@
 
 #include "Utils/MessagePrinter.h"
 
-#include "ElmtSystem/ElmtType.h"
+
 #include "ElmtSystem/ElmtBlock.h"
 #include "ElmtSystem/BulkElmtSystem.h"
 
-#include "Utils/Vector3d.h"
-#include "Utils/VectorXd.h"
-#include "Utils/MatrixXd.h"
-#include "Utils/RankTwoTensor.h"
-#include "Utils/RankFourTensor.h"
 
 using namespace std;
 
@@ -38,21 +33,6 @@ public:
     //*******************************************
     //*** some getting funs
     //*******************************************
-    
-
-    void RunBulkElmtLibs(const BulkElmtCalcType &calctype,const ElmtType &elmtytype,
-                        const int &nDim,const int &nNodes,
-                        const double &t,const double &dt,const double (&ctan)[2],
-                        const Vector3d &gpCoords,
-                        const vector<double> &gpU,const vector<double> &gpV,
-                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                        // const ShapeFun &shp,
-                        const vector<double> &ScalarMaterials,
-                        const vector<Vector3d> &VectorMaterials,
-                        const vector<RankTwoTensor> &Rank2Materials,
-                        const vector<RankFourTensor> &Rank4Materials,
-                        vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
-                        MatrixXd &localK,VectorXd &localR);
 
 
 };
