@@ -63,4 +63,21 @@ public:
 protected:
     int _nBulkElmtBlocks;
     vector<ElmtBlock> _BulkElmtBlockList;
+
+    //****************************************************************************
+    //*** For AsFem's built-in elements and User-Defined-Elements (UEL)
+    //*** One can implement his own model here
+    //****************************************************************************
+    void PoissonElmt(const int &nDim,const int &nNodes,
+                    const double &t,const double &dt,const double (&ctan)[2],
+                    const Vector3d &gpCoords,
+                    const vector<double> &gpU,const vector<double> &gpV,
+                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                    // const ShapeFun &shp,
+                    const vector<double> &ScalarMaterials,
+                    const vector<Vector3d> &VectorMaterials,
+                    const vector<RankTwoTensor> &Rank2Materials,
+                    const vector<RankFourTensor> &Rank4Materials,
+                    vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                    MatrixXd &localK,VectorXd &localR);
 };
