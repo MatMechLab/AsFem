@@ -257,7 +257,7 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                     mateBlock._Parameters.clear();
                     mateBlock._Parameters.push_back(1.0);
                 }
-                mateSystem.AddMateBlock2List(mateBlock);
+                mateSystem.AddBulkMateBlock2List(mateBlock);
                 HasMateBlock=true;
             }
             else{

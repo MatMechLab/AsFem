@@ -16,31 +16,15 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <cmath>
 
 
 //**********************************
 //*** For AsFem's own header file
 //**********************************
-#include "Utils/MessagePrinter.h"
+#include "MateSystem/BulkMateSystem.h"
 
-#include "MateSystem/MateBlock.h"
-
-class MateSystem{
+class MateSystem:public BulkMateSystem{
 public:
     MateSystem();
 
-    void AddMateBlock2List(MateBlock &mateblock);
-    //********************************************
-    //*** for some basic getting functions
-    //********************************************
-    inline int GetMateBlockNums()const{return _nMateBlocks;}
-
-
-
-private:
-    int _nMateBlocks;
-    vector<MateBlock> _MateBlockList;
 };

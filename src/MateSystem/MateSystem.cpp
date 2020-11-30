@@ -17,32 +17,10 @@
 #include "MateSystem/MateSystem.h"
 
 MateSystem::MateSystem(){
-    _nMateBlocks=0;
-    _MateBlockList.clear();
-}
-
-void MateSystem::AddMateBlock2List(MateBlock &mateblock){
-    string msg;
-    if(_MateBlockList.size()<1){
-        _MateBlockList.push_back(mateblock);
-        _nMateBlocks=1;
-    }
-    else{
-        bool NotInList=true;
-        for(unsigned int i=0;i<_MateBlockList.size();i++){
-            if(_MateBlockList[i]._MateBlockName==mateblock._MateBlockName){
-                NotInList=false;
-                break;
-            }
-        }
-        if(NotInList){
-            _MateBlockList.push_back(mateblock);
-            _nMateBlocks=int(_MateBlockList.size());
-        }
-        else{
-            msg="duplicated ["+mateblock._MateBlockName+"] in the [mates] sub block";
-            MessagePrinter::PrintErrorTxt(msg);
-            MessagePrinter::AsFem_Exit();
-        }
-    }
+    _nBulkMateBlocks=0;
+    _BulkMateBlockList.clear();
+    _ScalarMaterials.clear();
+    _VectorMaterials.clear();
+    _Rank2Materials.clear();
+    _Rank4Materials.clear();
 }
