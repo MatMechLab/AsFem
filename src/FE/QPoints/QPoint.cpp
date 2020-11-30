@@ -23,6 +23,7 @@
 
 QPoint::QPoint()
 :QPointGaussLegendre(),QPointGaussLobatto(){
+    _CurrentQPType=QPointType::GAUSSLEGENDRE;
 }
 QPoint::QPoint(int dim,int order)
 :QPointGaussLegendre(),QPointGaussLobatto(){
@@ -52,6 +53,14 @@ void QPoint::CreateQpoints(MeshType meshtype){
     }
 }
 void QPoint::Init(){
-    QPointGaussLegendre::Init();
-    QPointGaussLobatto::Init();
+    if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+        QPointGaussLegendre::Init();
+    }
+    else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+        QPointGaussLobatto::Init();
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported gauss point type in QPoint initializing, please check your input file or your code");
+        MessagePrinter::AsFem_Exit();
+    }
 }
