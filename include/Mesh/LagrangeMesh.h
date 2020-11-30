@@ -33,7 +33,7 @@
 #include "Utils/MessagePrinter.h"
 
 #include "Mesh/MeshType.h"
-
+#include "Mesh/Nodes.h"
 
 using namespace std;
 
@@ -149,6 +149,14 @@ public:
         coords[3]=_NodeCoords[(i-1)*3+3-1];
         return coords;
     }
+    inline void GetIthBulkElmtNodes(const int &e,Nodes &nodes)const{
+        for(int i=1;i<=GetIthBulkElmtNodesNum(e);i++){
+            nodes(i,0)=0.0;
+            nodes(i,1)=GetIthNodeJthCoord(GetIthBulkElmtJthNodeID(e,i),1);
+            nodes(i,2)=GetIthNodeJthCoord(GetIthBulkElmtJthNodeID(e,i),2);
+            nodes(i,2)=GetIthNodeJthCoord(GetIthBulkElmtJthNodeID(e,i),2);
+        }
+    }
     //*** for elmt connectivity information
     inline int  GetIthElmtDim(const int &i)const{return _ElmtDimList[i-1];}
     inline int  GetIthElmtPhyID(const int &i)const{return _ElmtPhyIDList[i-1];}
@@ -165,6 +173,11 @@ public:
         vector<int> temp(_ElmtConn[i-1][0],0);
         for(int j=1;j<=_ElmtConn[i-1][0];j++) temp[j-1]=_ElmtConn[i-1][j];
         return temp;
+    }
+    inline void GetIthBulkElmtConn(const int &e,vector<int> &conn)const{
+        for(int i=1;i<=GetIthBulkElmtNodesNum(e);i++){
+            conn[i-1]=GetIthBulkElmtJthNodeID(e,i);
+        }
     }
     //*** for physical group information
     inline int GetPhysicalGroupNum()const{return _nPhysicalGroups;}
