@@ -8,14 +8,14 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.11.29
-//+++ Purpose: implement the residual and jacobian for Laplace
-//+++          operator in FEM calculation
+//+++ Date   : 2020.11.30
+//+++ Purpose: implement the residual and jacobian for body source
+//+++          contribution to our system equation
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "ElmtSystem/BulkElmtSystem.h"
 
-void BulkElmtSystem::LaplaceElmt(const FECalcType &calctype,
+void BulkElmtSystem::BodySourceElmt(const FECalcType &calctype,
                 const int &nDim,const int &nNodes,
                 const double &t,const double &dt,const double (&ctan)[2],
                 const Vector3d &gpCoords,
@@ -40,10 +40,10 @@ void BulkElmtSystem::LaplaceElmt(const FECalcType &calctype,
     
     switch (calctype){
     case FECalcType::ComputeResidual:
-        localR(1)=gpGradU[0]*grad_test;
+        localR(1)=ScalarMaterials[0]*test;
         break;
     case FECalcType::ComputeJacobian:
-        localK(1,1)=grad_trial*grad_test;
+        localK(1,1)=0.0;
         break;
     case FECalcType::InitHistoryVariable:
         gpHist[0]=0.0;

@@ -26,7 +26,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                         const vector<Vector3d> &VectorMaterials,
                         const vector<RankTwoTensor> &Rank2Materials,
                         const vector<RankFourTensor> &Rank4Materials,
-                        vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                        vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                         MatrixXd &localK,VectorXd &localR){
     switch (elmtytype)
     {

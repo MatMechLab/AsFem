@@ -160,6 +160,8 @@ set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 ### for laplace operator
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
+### for body source term
+set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###

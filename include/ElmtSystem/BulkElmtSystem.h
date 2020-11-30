@@ -58,7 +58,7 @@ public:
                         const vector<Vector3d> &VectorMaterials,
                         const vector<RankTwoTensor> &Rank2Materials,
                         const vector<RankFourTensor> &Rank4Materials,
-                        vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                        vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                         MatrixXd &localK,VectorXd &localR);
 
 protected:
@@ -71,6 +71,7 @@ protected:
     //*** For AsFem's built-in elements and User-Defined-Elements (UEL)
     //*** One can implement his own model here
     //****************************************************************************
+    //*** the laplace means: \int(\nabla U*\nabla test)dV
     void LaplaceElmt(const FECalcType &calctype,
                 const int &nDim,const int &nNodes,
                 const double &t,const double &dt,const double (&ctan)[2],
@@ -83,7 +84,22 @@ protected:
                 const vector<Vector3d> &VectorMaterials,
                 const vector<RankTwoTensor> &Rank2Materials,
                 const vector<RankFourTensor> &Rank4Materials,
-                vector<double> &gpHist,const vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                MatrixXd &localK,VectorXd &localR);
+    //*** the body source means  int(f*test)dV
+    void BodySourceElmt(const FECalcType &calctype,
+                const int &nDim,const int &nNodes,
+                const double &t,const double &dt,const double (&ctan)[2],
+                const Vector3d &gpCoords,
+                const vector<double> &gpU,const vector<double> &gpV,
+                const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                const double &test,const double &trial,
+                const Vector3d &grad_test,const Vector3d &grad_trial,
+                const vector<double> &ScalarMaterials,
+                const vector<Vector3d> &VectorMaterials,
+                const vector<RankTwoTensor> &Rank2Materials,
+                const vector<RankFourTensor> &Rank4Materials,
+                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
 
 };
