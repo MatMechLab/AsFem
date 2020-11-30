@@ -63,7 +63,7 @@ public:
     inline double GetBulkVolume() const {return _BulkVolumes;}
 
     // for FEM simulation related functions
-    void FormFE(const int &isw,const double &t,const double &dt,const double (&ctan)[2],
+    void FormBulkFE(const FECalcType &calctype,const double &t,const double &dt,const double (&ctan)[2],
                 Mesh &mesh,DofHandler &dofHandler,FE &fe,
                 ElmtSystem &elmtSystem,MateSystem &mateSystem,
                 const Vec &U,const Vec &V,

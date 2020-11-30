@@ -33,7 +33,7 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
     _NodeDofsMap.resize(_nNodes,vector<int>(_nDofsPerNode,0));
     _ElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,0));
 
-    _ElmtElmtMateTypePairList.resize(_nBulkElmts,make_pair(ElmtType::NULLELMT,MateType::NULLMATE));
+    _ElmtElmtMateTypePairList.resize(_nBulkElmts,vector<make_pair(ElmtType::NULLELMT,MateType::NULLMATE)>(0));
 
 
     _nDofs=_nNodes*_nDofsPerNode;
@@ -87,8 +87,7 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         for(auto e:mesh.GetElmtIDsViaPhysicalName(domainname)){
             // now we are in the elmt id vector
             ee=e-(mesh.GetBulkMeshElmtsNum()-mesh.GetBulkMeshBulkElmtsNum());
-            _ElmtElmtMateTypePairList[ee-1].first=elmttype;
-            _ElmtElmtMateTypePairList[ee-1].second=matetype;
+            _ElmtElmtMateTypePairList[ee-1].push_back(make_pair(elmttype,matetype));
             for(i=1;i<=mesh.GetIthElmtNodesNum(e);i++){
                 iInd=mesh.GetIthElmtJthNodeID(e,i);
                 for(j=1;j<=ndofs;j++){

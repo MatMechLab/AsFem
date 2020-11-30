@@ -59,15 +59,15 @@ public:
     //*********************************************
     //*** for some basic getting functions
     //*********************************************
-    inline pair<ElmtType,MateType> GetIthElmtElmtMateTypePair(const int &e)const{
+    inline vector<pair<ElmtType,MateType>> GetIthElmtElmtMateTypePair(const int &e)const{
         return _ElmtElmtMateTypePairList[e-1];
     }
-    inline ElmtType GetIthElmtElmtType(const int &e)const{
-        return _ElmtElmtMateTypePairList[e-1].first;
-    }
-    inline MateType GetIthElmtMateType(const int &e)const{
-        return _ElmtElmtMateTypePairList[e-1].second;
-    }
+    // inline ElmtType GetIthElmtElmtType(const int &e)const{
+    //     return _ElmtElmtMateTypePairList[e-1].first;
+    // }
+    // inline MateType GetIthElmtMateType(const int &e)const{
+    //     return _ElmtElmtMateTypePairList[e-1].second;
+    // }
 
     void PrintDofInfo()const;
     void PrintDofDetailInfo()const;
@@ -92,7 +92,7 @@ protected:
     vector<vector<double>> _NodalDofFlag,_ElmtDofFlag;
     vector<vector<int>> _ElmtDofsMap;
 
-    vector<pair<ElmtType,MateType>> _ElmtElmtMateTypePairList;
+    vector<vector<pair<ElmtType,MateType>>> _ElmtElmtMateTypePairList;
 
     // for the length of non-zero element per row
     vector<int> _RowNNZ;
