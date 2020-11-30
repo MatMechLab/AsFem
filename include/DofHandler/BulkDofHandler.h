@@ -46,7 +46,7 @@ public:
     inline int    GetDofsNumPerNode()const{return _nDofsPerNode;}
     inline int    GetDofsNum()const{return _nDofs;}
     inline int    GetActiveDofsNum()const{return _nActiveDofs;}
-    
+    inline int    GetMaxDofsNumPerBulkElmt()const{return _nMaxDofsPerElmt;}
     int         GetDofIDviaDofName(string dofname)const;
     vector<int> GetDofsIndexFromNameVec(vector<string> namelist)const;
 

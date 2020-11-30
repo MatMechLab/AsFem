@@ -248,6 +248,8 @@ set(src ${src} src/OutputSystem/OutputSystem.cpp)
 ### For FE system in AsFem                                ###
 #############################################################
 set(inc ${inc} include/FESystem/FECalcType.h)
+set(inc ${inc} include/FESystem/FESystem.h)
+set(src ${src} src/FESystem/FESystem.cpp src/FESystem/InitBulkFESystem.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
