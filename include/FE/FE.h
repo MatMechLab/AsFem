@@ -20,14 +20,16 @@
 
 #include "Mesh/Mesh.h"
 #include "FE/QPoint.h"
+#include "FE/ShapeFun.h"
 
 class Mesh;
 
 class FE{
 public:
     FE();
-
     void SetDim(int dim){_nDim=dim;_HasDimSet=true;}
+    void SetMinDim(int dim){_nMinDim=dim;}
+    void InitFE(Mesh &mesh);
     //***********************************************
     //*** for QPoint
     //***********************************************
@@ -35,24 +37,38 @@ public:
     void SetBulkQpOrder(int order);
     void SetBCQpOrder(int order);
     void CreateQPoints(Mesh &mesh);
+    //***********************************************
+    //*** for shape functions
+    //***********************************************
+    void CreateShapeFuns(Mesh &mesh);
 
 
     //***********************************************
     //*** for get functions
     //***********************************************
     inline int GetDim()const{return _nDim;}
+    inline int GetMinDim()const{return _nMinDim;}
 
     QPoint& GetBulkQPointPtr(){return _BulkQPoint;}
     QPoint& GetLineQPointPtr(){return _LineQPoint;}
     QPoint& GetSurfaceQPointPtr(){return _SurfaceQPoint;}
 
+    ShapeFun& GetBulkShpPtr(){return _BulkShp;}
+    ShapeFun& GetSurfaceShpPtr(){return _SurfaceShp;}
+    ShapeFun& GetLineShpPtr(){return _LineShp;}
+
 
     void PrintFEInfo()const;
 
-private:
-    int _nDim;
-    bool _HasDimSet=false;
+public:
     QPoint _BulkQPoint,_LineQPoint,_SurfaceQPoint;
+    ShapeFun _BulkShp,_LineShp,_SurfaceShp;
+    Nodes _BulkNodes,_SurfaceNodes,_LineNodes;
+
+private:
+    int _nDim,_nMinDim;
+    bool _HasDimSet=false;
+    bool _IsInit=false;
     int _nBulkQpOrder,_nBCQpOrder;
     
 };

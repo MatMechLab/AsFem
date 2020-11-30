@@ -63,7 +63,7 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
         _gpProj.push_back(0.0);
     }
 
-    _nGPoints=fe._qp_bulk.GetQpPointsNum();
+    _nGPoints=fe._BulkQPoint.GetQpPointsNum();
     
     
     _localK=MatrixXd(dofHandler.GetMaxDofsNumPerBulkElmt(),dofHandler.GetMaxDofsNumPerBulkElmt());
@@ -80,27 +80,27 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
     double w,xi,eta,zeta,DetJac,JxW;
     int nDim=mesh.GetDim();
     _KMatrixFactor=1.0e16;
-    int einc=int(1.0*mesh.GetBCElmtsNum()/10);
+    int einc=int(1.0*mesh.GetBulkMeshBulkElmtsNum()/10);
     if(einc<1) einc=1;
-    for(e=1;e<=mesh.GetBulkElmtsNum();e+=einc){
+    for(e=1;e<=mesh.GetBulkMeshBulkElmtsNum();e+=einc){
         mesh.GetIthBulkElmtNodes(e,_elNodes);
         mesh.GetIthBulkElmtConn(e,_elConn);
-        for(gpInd=1;gpInd<=fe._qp_bulk.GetQpPointsNum();++gpInd){
-            w=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,0);
-            xi=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,1);
+        for(gpInd=1;gpInd<=fe._BulkQPoint.GetQpPointsNum();++gpInd){
+            w=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,0);
+            xi=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,1);
             if(nDim==1){
-                fe._shp_bulk.Calc(xi,_elNodes,true);
+                fe._BulkShp.Calc(xi,_elNodes,true);
             }
             else if(nDim==2){
-                eta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,2);
-                fe._shp_bulk.Calc(xi,eta,_elNodes,true);
+                eta=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,2);
+                fe._BulkShp.Calc(xi,eta,_elNodes,true);
             }
             else if(nDim==3){
-                eta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,2);
-                zeta=fe._qp_bulk.GetIthQpPointJthCoord(gpInd,3);
-                fe._shp_bulk.Calc(xi,eta,zeta,_elNodes,true);
+                eta=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,2);
+                zeta=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,3);
+                fe._BulkShp.Calc(xi,eta,zeta,_elNodes,true);
             }
-            DetJac=fe._shp_bulk.GetDetJac();
+            DetJac=fe._BulkShp.GetDetJac();
             // JxW=1.0e3*DetJac*w; // it seems this is too small, it may lead the SNES solver failed
             //JxW=1.0e6*DetJac*w;
             JxW=DetJac*w;

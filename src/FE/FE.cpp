@@ -18,9 +18,12 @@
 #include "FE/FE.h"
 
 FE::FE(){
-    _nDim=1;
+    _nDim=1;_nMinDim=0;
     _HasDimSet=false;
-    _BulkQPoint.Init();_LineQPoint.Init();_SurfaceQPoint.Init();
+    _IsInit=false;
+    _BulkQPoint.SetQPointType(QPointType::GAUSSLEGENDRE);
+    _SurfaceQPoint.SetQPointType(QPointType::GAUSSLEGENDRE);
+    _LineQPoint.SetQPointType(QPointType::GAUSSLEGENDRE);
     _nBulkQpOrder=1;_nBCQpOrder=1;
 }
 //**********************************************
@@ -40,6 +43,7 @@ void FE::SetBCQpOrder(int order){
     _LineQPoint.SetQPointOrder(order);
     _SurfaceQPoint.SetQPointOrder(order);
 }
+//******************************************************
 void FE::CreateQPoints(Mesh &mesh){
     if(_HasDimSet){
         if(GetDim()==1){
@@ -68,6 +72,39 @@ void FE::CreateQPoints(Mesh &mesh){
         MessagePrinter::PrintErrorTxt("can\'t create qpoints for FE space, the dim has not been given yet");
         MessagePrinter::AsFem_Exit();
     }
+}
+//**************************************************************************
+//*** for shape function related functions
+//**************************************************************************
+void FE::CreateShapeFuns(Mesh &mesh){
+    SetDim(mesh.GetBulkMeshDim());
+    SetMinDim(mesh.GetBulkMeshMinDim());
+
+    _BulkShp=ShapeFun(mesh.GetBulkMeshDim(),mesh.GetBulkMeshBulkElmtType());
+    _BulkShp.PreCalc();
+
+    _BulkNodes=Nodes(mesh.GetBulkMeshNodesNumPerBulkElmt());
+    if(GetDim()==3){
+        _SurfaceShp=ShapeFun(2,mesh.GetBulkMeshSurfaceElmtType());
+        _SurfaceShp.PreCalc();
+
+        _LineShp=ShapeFun(1,mesh.GetBulkMeshLineElmtType());
+        _LineShp.PreCalc();
+
+        _SurfaceNodes=Nodes(mesh.GetBulkMeshNodesNumPerSurfaceElmt());
+        _LineNodes=Nodes(mesh.GetBulkMeshNodesNumPerLineElmt());
+    }
+    else if(GetDim()==2){
+        _LineShp=ShapeFun(1,mesh.GetBulkMeshLineElmtType());
+        _LineShp.PreCalc();
+
+        _LineNodes=Nodes(mesh.GetBulkMeshNodesNumPerLineElmt());
+    }
+}
+//**************************************************************************
+void FE::InitFE(Mesh &mesh){
+    CreateQPoints(mesh);
+    CreateShapeFuns(mesh);
 }
 //*******************************************
 void FE::PrintFEInfo()const{
