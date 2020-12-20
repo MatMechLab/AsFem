@@ -30,6 +30,8 @@
 //**********************************
 #include "Utils/MessagePrinter.h"
 #include "MateSystem/MateBlock.h"
+#include "MateSystem/MateType.h"
+#include "MateSystem/MateTypeDefine.h"
 
 #include "Utils/Vector3d.h"
 #include "Utils/RankTwoTensor.h"
@@ -45,9 +47,21 @@ public:
     //********************************************
     inline int GetMateBlockNums()const{return _nBulkMateBlocks;}
     inline MateBlock GetIthMateBlock(const int &i)const{return _BulkMateBlockList[i-1];}
+    inline vector<MateBlock> GetMateBlockVec()const{return _BulkMateBlockList;}
 
 
-
+    inline ScalarMateType& GetScalarMatePtr(){
+        return _ScalarMaterials;
+    }
+    inline VectorMateType& GetVectorMatePtr(){
+        return _VectorMaterials;
+    }
+    inline Rank2MateType& GetRank2MatePtr(){
+        return _Rank2Materials;
+    }
+    inline Rank4MateType& GetRank4MatePtr(){
+        return _Rank4Materials;
+    }
     //***************************************************************************
     //*** For AsFem's built-in materials and User-Defined-Materials (UMAT)    ***
     //***************************************************************************
@@ -60,6 +74,7 @@ public:
 
 
     void PrintBulkMateSystemInfo()const;
+
 
 protected:
     int _nBulkMateBlocks;
@@ -76,10 +91,10 @@ protected:
     //***  3) Rank-2 tensor type materials, i.e. stresses and strains
     //***  4) Rank-4 tensor type materials, i.e. elasticity tensor
     //****************************************************************************
-    map<string,double>         _ScalarMaterials;
-    map<string,Vector3d>       _VectorMaterials;
-    map<string,RankTwoTensor>  _Rank2Materials;
-    map<string,RankFourTensor> _Rank4Materials;
+    ScalarMateType _ScalarMaterials;
+    VectorMateType _VectorMaterials;
+    Rank2MateType  _Rank2Materials;
+    Rank4MateType  _Rank4Materials;
 
 
 protected:

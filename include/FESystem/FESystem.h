@@ -87,8 +87,8 @@ public:
 
 private:
     double _BulkVolumes=0.0;
-    MatrixXd _localK;    //used in uel
-    VectorXd _localR;    //used in uel
+    MatrixXd _localK;    //used in uel, the size is the maximum dofs per node
+    VectorXd _localR;    //used in uel, the size is the maximum dofs per node
     vector<double> _K,_R;//used in assemble
     
     
@@ -103,6 +103,11 @@ private:
     Vector3d _gpCoord;
     int _nHist,_nProj,_nGPoints;
     double _MaxKMatrixValue=-1.0e3,_KMatrixFactor=0.1;
+
+    ElmtType elmttype;
+    MateType matetype;
+    vector<int> localDofIndex;
+    int mateindex;
 
 private:
     //************************************

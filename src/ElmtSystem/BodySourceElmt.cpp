@@ -23,15 +23,15 @@ void BulkElmtSystem::BodySourceElmt(const FECalcType &calctype,
                 const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                 const double &test,const double &trial,
                 const Vector3d &grad_test,const Vector3d &grad_trial,
-                const vector<double> &ScalarMaterials,
-                const vector<Vector3d> &VectorMaterials,
-                const vector<RankTwoTensor> &Rank2Materials,
-                const vector<RankFourTensor> &Rank4Materials,
+                const ScalarMateType &ScalarMaterials,
+                const VectorMateType &VectorMaterials,
+                const Rank2MateType &Rank2Materials,
+                const Rank4MateType &Rank4Materials,
                 vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                 MatrixXd &localK,VectorXd &localR){
     //*******************************************************
     //*** to get rid of the warning for unused variables  ***
-    //*** for normal users, you dont need to do this       ***
+    //*** for normal users, you dont need to do this      ***
     //*******************************************************
     if(nDim||nNodes||t||dt||ctan[0]||gpCoords(1)||gpU.size()||gpV.size()||
        gpGradU.size()||gpGradV.size()||test||trial||grad_test(1)||grad_trial(1)||
@@ -40,7 +40,14 @@ void BulkElmtSystem::BodySourceElmt(const FECalcType &calctype,
     
     switch (calctype){
     case FECalcType::ComputeResidual:
-        localR(1)=ScalarMaterials[0]*test;
+        try{
+            localR(1)=ScalarMaterials.at("force")*test;
+        }
+        catch(const std::exception& e){
+            MessagePrinter::PrintErrorTxt("the scalar quantity named 'force' cant be found, please check your material definition");
+            std::cerr << e.what() << '\n';
+            MessagePrinter::AsFem_Exit();
+        }
         break;
     case FECalcType::ComputeJacobian:
         localK(1,1)=0.0;

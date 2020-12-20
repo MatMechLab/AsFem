@@ -34,6 +34,7 @@ public:
         _DomainName="alldomain";
         _ElmtType=ElmtType::NULLELMT;
         _MateType=MateType::NULLMATE;
+        _MateIndex=0;
     }
 
     vector<int>    _DofsIDList;
@@ -45,6 +46,7 @@ public:
     string         _DomainName;
     ElmtType       _ElmtType=ElmtType::NULLELMT;
     MateType       _MateType=MateType::NULLMATE;
+    int            _MateIndex=0;
     
     void Init(){
         _DofsIDList.clear();
@@ -56,5 +58,6 @@ public:
         _DomainName="alldomain";
         _ElmtType=ElmtType::NULLELMT;
         _MateType=MateType::NULLMATE;
+        _MateIndex=0;
     }
 };

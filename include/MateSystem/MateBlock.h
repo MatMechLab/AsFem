@@ -32,17 +32,20 @@ public:
         _MateTypeName.clear();
         _MateType=MateType::NULLMATE;
         _Parameters.clear();
+        _MateBlockIndex=0;
     }
 
     string         _MateBlockName;
     string         _MateTypeName;
     MateType       _MateType;
     vector<double> _Parameters;
+    int            _MateBlockIndex;
 
     void Init(){
         _MateBlockName.clear();
         _MateTypeName.clear();
         _MateType=MateType::NULLMATE;
         _Parameters.clear();
+        _MateBlockIndex=0;
     }
 };

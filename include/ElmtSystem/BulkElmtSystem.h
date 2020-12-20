@@ -21,6 +21,7 @@
 #include "ElmtSystem/ElmtBlock.h"
 #include "ElmtSystem/ElmtType.h"
 #include "FESystem/FECalcType.h"
+#include "MateSystem/MateSystem.h"
 
 #include "Utils/Vector3d.h"
 #include "Utils/VectorXd.h"
@@ -30,12 +31,14 @@
 
 using namespace std;
 
+class MateSystem;
+
 class BulkElmtSystem{
 public:
     BulkElmtSystem();
 
     void InitBulkElmtSystem();
-
+    void InitBulkElmtMateInfo(MateSystem &matesystem);
 
     void AddBulkElmtBlock2List(ElmtBlock &elmtBlock);
     ElmtBlock GetIthBulkElmtBlock(const int &i)const{
@@ -54,10 +57,10 @@ public:
                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                         const double &test,const double &trial,
                         const Vector3d &grad_test,const Vector3d &grad_trial,
-                        const vector<double> &ScalarMaterials,
-                        const vector<Vector3d> &VectorMaterials,
-                        const vector<RankTwoTensor> &Rank2Materials,
-                        const vector<RankFourTensor> &Rank4Materials,
+                        const ScalarMateType &ScalarMaterials,
+                        const VectorMateType &VectorMaterials,
+                        const Rank2MateType &Rank2Materials,
+                        const Rank4MateType &Rank4Materials,
                         vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                         MatrixXd &localK,VectorXd &localR);
 
@@ -80,10 +83,10 @@ protected:
                 const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                 const double &test,const double &trial,
                 const Vector3d &grad_test,const Vector3d &grad_trial,
-                const vector<double> &ScalarMaterials,
-                const vector<Vector3d> &VectorMaterials,
-                const vector<RankTwoTensor> &Rank2Materials,
-                const vector<RankFourTensor> &Rank4Materials,
+                const ScalarMateType &ScalarMaterials,
+                const VectorMateType &VectorMaterials,
+                const Rank2MateType &Rank2Materials,
+                const Rank4MateType &Rank4Materials,
                 vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
     //*** the body source means  int(f*test)dV
@@ -95,10 +98,10 @@ protected:
                 const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                 const double &test,const double &trial,
                 const Vector3d &grad_test,const Vector3d &grad_trial,
-                const vector<double> &ScalarMaterials,
-                const vector<Vector3d> &VectorMaterials,
-                const vector<RankTwoTensor> &Rank2Materials,
-                const vector<RankFourTensor> &Rank4Materials,
+                const ScalarMateType &ScalarMaterials,
+                const VectorMateType &VectorMaterials,
+                const Rank2MateType &Rank2Materials,
+                const Rank4MateType &Rank4Materials,
                 vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
 

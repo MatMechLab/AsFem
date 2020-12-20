@@ -29,6 +29,7 @@ BulkMateSystem::BulkMateSystem(){
 void BulkMateSystem::AddBulkMateBlock2List(MateBlock &mateblock){
     string msg;
     if(_BulkMateBlockList.size()<1){
+        mateblock._MateBlockIndex=1;
         _BulkMateBlockList.push_back(mateblock);
         _nBulkMateBlocks=1;
     }
@@ -41,8 +42,9 @@ void BulkMateSystem::AddBulkMateBlock2List(MateBlock &mateblock){
             }
         }
         if(NotInList){
+            _nBulkMateBlocks+=1;
+            mateblock._MateBlockIndex=_nBulkMateBlocks;
             _BulkMateBlockList.push_back(mateblock);
-            _nBulkMateBlocks=static_cast<int>(_BulkMateBlockList.size());
         }
         else{
             msg="duplicated ["+mateblock._MateBlockName+"] in the [mates] sub block";

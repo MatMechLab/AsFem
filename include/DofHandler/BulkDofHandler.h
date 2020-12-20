@@ -50,6 +50,24 @@ public:
     int         GetDofIDviaDofName(string dofname)const;
     vector<int> GetDofsIndexFromNameVec(vector<string> namelist)const;
 
+    inline void GetIthBulkElmtDofIndex(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
+        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_ElmtDofsMap[e-1][i];
+            elDofsActiveFlag[i]=_ElmtDofFlag[e-1][i];
+        }
+    }
+
+    inline int GetIthBulkElmtDofsNum(const int &e)const{
+        return static_cast<int>(_ElmtDofFlag[e-1].size());
+    }
+
+    inline vector<int> GetIthBulkElmtJthKernelDofIndex(const int &i,const int &j)const{
+        return _ElmtLocalDofIndex[i-1][j-1];
+    }
+    inline int GetIthBulkElmtJthKernelMateIndex(const int &i,const int &j)const{
+        return _ElmtElmtMateIndexList[i-1][j-1];
+    }
+
     //*********************************************
     //*** for some basic check functions
     //*********************************************
@@ -59,15 +77,29 @@ public:
     //*********************************************
     //*** for some basic getting functions
     //*********************************************
+    inline ElmtType GetIthElmtJthKernelElmtType(const int &i,const int &j)const{
+        return _ElmtElmtMateTypePairList[i-1][j-1].first;
+    }
     inline vector<pair<ElmtType,MateType>> GetIthElmtElmtMateTypePair(const int &e)const{
         return _ElmtElmtMateTypePairList[e-1];
     }
-    // inline ElmtType GetIthElmtElmtType(const int &e)const{
-    //     return _ElmtElmtMateTypePairList[e-1].first;
-    // }
-    // inline MateType GetIthElmtMateType(const int &e)const{
-    //     return _ElmtElmtMateTypePairList[e-1].second;
-    // }
+    inline vector<ElmtType> GetIthElmtElmtTypeVec(const int &e)const{
+        vector<ElmtType> temp;temp.clear();
+        for(auto it:_ElmtElmtMateTypePairList[e-1]){
+            temp.push_back(it.first);
+        }
+        return temp;
+    }
+    inline MateType GetIthElmtJthKernelMateType(const int &i,const int &j)const{
+        return _ElmtElmtMateTypePairList[i-1][j-1].second;
+    }
+    inline vector<MateType> GetIthElmtMateTypeVec(const int &e)const{
+        vector<MateType> temp;temp.clear();
+        for(auto it:_ElmtElmtMateTypePairList[e-1]){
+            temp.push_back(it.second);
+        }
+        return temp;
+    }
 
     void PrintDofInfo()const;
     void PrintDofDetailInfo()const;
@@ -93,6 +125,8 @@ protected:
     vector<vector<int>> _ElmtDofsMap;
 
     vector<vector<pair<ElmtType,MateType>>> _ElmtElmtMateTypePairList;
+    vector<vector<int>> _ElmtElmtMateIndexList; 
+    vector<vector<vector<int>>> _ElmtLocalDofIndex;
 
     // for the length of non-zero element per row
     vector<int> _RowNNZ;

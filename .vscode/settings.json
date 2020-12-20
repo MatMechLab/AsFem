@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "iosfwd": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "iostream": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }

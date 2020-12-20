@@ -23,7 +23,31 @@ void BulkElmtSystem::InitBulkElmtSystem(){
     _nBulkElmtBlocks=0;
     _BulkElmtBlockList.clear();
 }
-
+void BulkElmtSystem::InitBulkElmtMateInfo(MateSystem &matesystem){
+    for(auto it:matesystem.GetMateBlockVec()){
+        for(int i=0;i<_nBulkElmtBlocks;i++){
+            if(_BulkElmtBlockList[i]._MateBlockName==it._MateBlockName){
+                _BulkElmtBlockList[i]._MateType=it._MateType;
+                _BulkElmtBlockList[i]._MateIndex=it._MateBlockIndex;
+            }
+        }
+    }
+    bool HasFound;
+    for(int i=0;i<_nBulkElmtBlocks;i++){
+        HasFound=false;
+        for(auto it:matesystem.GetMateBlockVec()){
+            if(_BulkElmtBlockList[i]._MateBlockName==it._MateBlockName){
+                _BulkElmtBlockList[i]._MateType=it._MateType;
+                _BulkElmtBlockList[i]._MateIndex=it._MateBlockIndex;
+                HasFound=true;
+            }
+        }
+        if(!HasFound){
+            _BulkElmtBlockList[i]._MateType=MateType::NULLMATE;
+            _BulkElmtBlockList[i]._MateIndex=0;
+        }
+    }
+}
 //***********************************
 void BulkElmtSystem::AddBulkElmtBlock2List(ElmtBlock &elmtBlock){
     string msg;

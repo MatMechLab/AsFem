@@ -167,6 +167,7 @@ set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
 ### For Materials system in AsFem                         ###
 #############################################################
 set(inc ${inc} include/MateSystem/MateType.h)
+set(inc ${inc} include/MateSystem/MateTypeDefine.h)
 set(inc ${inc} include/MateSystem/MateBlock.h)
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
