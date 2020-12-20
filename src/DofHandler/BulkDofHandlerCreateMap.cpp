@@ -33,7 +33,12 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
     _NodeDofsMap.resize(_nNodes,vector<int>(_nDofsPerNode,0));
     _ElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,0));
 
-    _ElmtElmtMateTypePairList.resize(_nBulkElmts,vector<make_pair(ElmtType::NULLELMT,MateType::NULLMATE)>(0));
+    vector<pair<ElmtType,MateType>> temp;
+    temp.clear();
+    _ElmtElmtMateTypePairList.resize(_nBulkElmts,temp);
+    for(auto &it:_ElmtElmtMateTypePairList){
+        it.clear();
+    }
 
 
     _nDofs=_nNodes*_nDofsPerNode;
