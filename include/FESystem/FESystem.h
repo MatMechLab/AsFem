@@ -78,6 +78,28 @@ private:
     void AssembleLocalToGlobal(const int &isw,const int &ndofs,vector<int> &elDofs,
                                vector<double> &localK,vector<double> &localR,
                                Mat &AMATRIX,Vec &RHS);
+
+    //*********************************************************
+    //*** assemble residual to local and global one
+    //*********************************************************
+    void AssembleSubResidualToLocalResidual(const int &ndofspernode,const int &dofs,const int &iInd,
+                                            const VectorXd &subR,VectorXd &localR);
+    void AccumulateLocalResidual(const int &dofs,const vector<double> &dofsactiveflag,const double &JxW,
+                                 const VectorXd &localR,vector<double> &sumR);
+    void AssembleLocalResidualToGlobalResidual(const int &ndofs,const vector<int> &dofindex,
+                                            const vector<double> &residual,Vec &rhs);
+
+    //*********************************************************
+    //*** assemble jacobian to local and global one
+    //*********************************************************
+    void AssembleSubJacobianToLocalJacobian(const int &ndofspernode,const int &dofs,
+                                            const int &iInd,const int &jInd,
+                                            const MatrixXd &subK,MatrixXd &localK);
+    void AccumulateLocalJacobian(const int &dofs,const vector<double> &dofsactiveflag,const double &JxW,
+                                 const MatrixXd &localK,vector<double> &sumK);
+    void AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vector<int> &dofindex,
+                                            const vector<double> &jacobian,Mat &K);
+
     
 
 public:
@@ -87,8 +109,10 @@ public:
 
 private:
     double _BulkVolumes=0.0;
-    MatrixXd _localK;    //used in uel, the size is the maximum dofs per node
-    VectorXd _localR;    //used in uel, the size is the maximum dofs per node
+    MatrixXd _localK;    //used in uel, the size is the maximum dofs per element
+    VectorXd _localR;    //used in uel, the size is the maximum dofs per element
+    MatrixXd _subK; // used in each sub element, the size is the maximum dofs per node
+    VectorXd _subR; // used in each sub element, the size is the maximum dofs per node
     vector<double> _K,_R;//used in assemble
     
     

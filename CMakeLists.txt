@@ -252,6 +252,7 @@ set(inc ${inc} include/FESystem/FECalcType.h)
 set(inc ${inc} include/FESystem/FESystem.h)
 set(src ${src} src/FESystem/FESystem.cpp src/FESystem/InitBulkFESystem.cpp)
 set(src ${src} src/FESystem/FormBulkFE.cpp)
+set(src ${src} src/FESystem/FEAssemble.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

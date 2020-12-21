@@ -71,12 +71,13 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     int eEnd=(_rank+1)*rankne;
     if(_rank==_size-1) eEnd=mesh.GetBulkMeshBulkElmtsNum();
 
-    PetscInt nDofs,nNodes,nDofsPerNode,e;
+    PetscInt nDofs,nNodes,nDofsPerNode,nDofsPerSubElmt,e;
     PetscInt i,j,jj;
     PetscInt nDim,gpInd;
     PetscReal xi,eta,zeta,w,JxW,DetJac,elVolume;
     nDim=mesh.GetDim();
 
+    _BulkVolumes=0.0;
     for(int ee=eStart;ee<eEnd;++ee){
         e=ee+1;
         mesh.GetIthBulkElmtNodes(e,_elNodes);
@@ -89,20 +90,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         
         VecGetValues(_Useq,nDofs,_elDofs.data(),_elU.data());
         VecGetValues(_Vseq,nDofs,_elDofs.data(),_elV.data());
-
-        // get current element's uel ID and material ID
-        // iuel=mesh.GetIthBulkElmtElmtID(e);
-        // imate=mesh.GetIthBulkElmtMateID(e);
-        // mateindex=mesh.GetIthBulkElmtMateIDIndex(e);
-
-        // iuel=mesh.GetIthBulkElmtElmtType(e);
-        // iumate=mesh.GetIthBulkElmtMateType(e);
-        // mateindex=mesh.GetIthBulkElmtMateIndex(e);
-        
-
-        // if(iumate==MateType::LinearThermalMechanicsMate){
-        //     cout<<"work, mateindex="<<mateindex<<endl;
-        // }
 
         
         if(calctype==FECalcType::ComputeResidual){
@@ -153,6 +140,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 _gpCoord(2)+=_elNodes(i,2)*fe._BulkShp.shape_value(i);
                 _gpCoord(3)+=_elNodes(i,3)*fe._BulkShp.shape_value(i);
             }
+
+            _localK.setZero();_localR.setZero();
             // now we do the loop for local element, *local element could have multiple contributions according
             // to your model, i.e. one element can be assigned by multiple [elmt] block in your input file !!!
             for(int ielmt=1;ielmt<=static_cast<int>(dofHandler.GetIthElmtElmtMateTypePair(e).size());ielmt++){
@@ -160,6 +149,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 matetype=dofHandler.GetIthElmtJthKernelMateType(e,ielmt);
                 localDofIndex=dofHandler.GetIthBulkElmtJthKernelDofIndex(e,ielmt);
                 mateindex=dofHandler.GetIthBulkElmtJthKernelMateIndex(e,ielmt);
+                nDofsPerSubElmt=static_cast<int>(localDofIndex.size());
                 // now we calculate the local dofs and their derivatives
                 // *this is only the local one, which means, i.e., if current element use dofs=u v
                 // then we only calculate u v and their derivatives on each gauss point,
@@ -167,30 +157,30 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 // u v w and their derivatives, and so on!!!
                 // In short, here we dont offer the localK and localR for the whole element, instead, the quantities
                 // of a single gauss point according to each sub [elmt] block
-                for(j=1;j<=static_cast<int>(localDofIndex.size());j++){
-                    _gpU[j-1]=0.0;_gpV[j-1]=0.0;
-                    _gpGradU[j-1](1)=0.0;_gpGradU[j-1](2)=0.0;_gpGradU[j-1](3)=0.0;
-                    _gpGradV[j-1](1)=0.0;_gpGradV[j-1](2)=0.0;_gpGradV[j-1](3)=0.0;
+                for(j=1;j<=nDofsPerSubElmt;j++){
+                    _gpU[j]=0.0;_gpV[j]=0.0;
+                    _gpGradU[j](1)=0.0;_gpGradU[j](2)=0.0;_gpGradU[j](3)=0.0;
+                    _gpGradV[j](1)=0.0;_gpGradV[j](2)=0.0;_gpGradV[j](3)=0.0;
                     jj=localDofIndex[j-1];
                     for(i=1;i<=nNodes;++i){
-                        _gpU[j-1]+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_value(i);
-                        _gpV[j-1]+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_value(i);
+                        _gpU[j]+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_value(i);
+                        _gpV[j]+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_value(i);
 
-                        _gpGradU[j-1](1)+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(1);
-                        _gpGradU[j-1](2)+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(2);
-                        _gpGradU[j-1](3)+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(3);
+                        _gpGradU[j](1)+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(1);
+                        _gpGradU[j](2)+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(2);
+                        _gpGradU[j](3)+=_elU[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(3);
 
-                        _gpGradV[j-1](1)+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(1);
-                        _gpGradV[j-1](2)+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(2);
-                        _gpGradV[j-1](3)+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(3);
+                        _gpGradV[j](1)+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(1);
+                        _gpGradV[j](2)+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(2);
+                        _gpGradV[j](3)+=_elV[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(3);
                     }
                 }
 
                 if(calctype==FECalcType::ComputeResidual){
-                    _localR.setZero();
+                    _subR.setZero();
                 }
                 else if(calctype==FECalcType::ComputeJacobian){
-                    _localK.setZero();
+                    _subK.setZero();
                 }
 
                 //*****************************************************
@@ -211,7 +201,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetVectorMatePtr(),
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
-                            _gpHist,_gpHistOld,_gpProj,_localK,_localR);
+                            _gpHist,_gpHistOld,_gpProj,_subK,_subR);
+                        AssembleSubResidualToLocalResidual(nDofsPerNode,nDofsPerSubElmt,i,_subR,_localR);
                     }
                 }
                 else if(calctype==FECalcType::ComputeJacobian){
@@ -225,23 +216,18 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetVectorMatePtr(),
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
-                            _gpHist,_gpHistOld,_gpProj,_localK,_localR);
+                            _gpHist,_gpHistOld,_gpProj,_subK,_subR);
+                            AssembleSubJacobianToLocalJacobian(nDofsPerNode,nDofsPerSubElmt,i,j,_subK,_localK);
                         }
                     }
                 }
             }//=====> end-of-sub-element-loop
-            // if(isw==3||isw==6){
-            //     // accumulate the local contribution
-            //     for(i=1;i<=nDofs;++i){
-            //         _R[i-1]+=_localR(i)*_elDofsActiveFlag[i-1]*JxW*_KMatrixFactor;
-            //         if(isw==6){
-            //             for(j=1;j<=nDofs;++j){
-            //                 _K[(i-1)*nDofs+j-1]+=_localK(i,j)*_elDofsActiveFlag[i-1]*_elDofsActiveFlag[j-1]*JxW*_KMatrixFactor;
-            //                 if(abs(_localK(i,j))>_MaxKMatrixValue) _MaxKMatrixValue=abs(_localK(i,j));
-            //             }
-            //         }
-            //     }
-            // }
+            if(calctype==FECalcType::ComputeResidual){
+                AccumulateLocalResidual(nDofs,_elDofsActiveFlag,JxW,_localR,_R);
+            }
+            else if(calctype==FECalcType::ComputeJacobian){
+                AccumulateLocalJacobian(nDofs,_elDofsActiveFlag,JxW,_localK,_K);
+            }
             // else if(isw==9){
             //     Projection(nNodes,Proj,_gpProj,fe._shp_bulk,JxW);
             // }
@@ -251,20 +237,15 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             // }
         }//----->end of gauss point loop
         mesh.SetIthBulkElmtVolume(e,elVolume);
+        _BulkVolumes+=elVolume;
 
         
-        // if(calctype==FECalcType::ComputeResidual||
-        //    calctype==FECalcType::ComputeJacobian){
-        //     // for(i=1;i<=nDofs;++i){
-        //     //     for(j=1;j<=nDofs;++j){
-        //     //         PetscPrintf(PETSC_COMM_WORLD,"%14.6e ",_K[(i-1)*nDofs+j-1]);
-        //     //     }
-        //     //     PetscPrintf(PETSC_COMM_WORLD,"\n");
-        //     // }
-        //     // PetscPrintf(PETSC_COMM_WORLD,"\n\n");
-        //     // assemble local to global contribution
-        //     AssembleLocalToGlobal(isw,nDofs,_elDofs,_K,_R,AMATRIX,RHS);
-        // }
+        if(calctype==FECalcType::ComputeResidual){
+            AssembleLocalResidualToGlobalResidual(nDofs,_elDofs,_R,RHS);
+        }
+        else if(calctype==FECalcType::ComputeJacobian){
+            AssembleLocalJacobianToGlobalJacobian(nDofs,_elDofs,_K,AMATRIX);
+        }
     }//------>end of element loop
 
     // if(calctype==FECalcType::ComputeResidual||

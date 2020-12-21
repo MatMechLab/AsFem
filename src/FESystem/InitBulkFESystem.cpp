@@ -36,11 +36,11 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
         _elV.push_back(0.0);
     }
 
-    _gpU.reserve(dofHandler.GetDofsNumPerNode());
-    _gpV.reserve(dofHandler.GetDofsNumPerNode());
-    _gpGradU.reserve(dofHandler.GetDofsNumPerNode());
-    _gpGradV.reserve(dofHandler.GetDofsNumPerNode());
-    for(int i=0;i<dofHandler.GetDofsNumPerNode();++i){
+    _gpU.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpV.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpGradU.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpGradV.reserve(dofHandler.GetDofsNumPerNode()+1);
+    for(int i=0;i<dofHandler.GetDofsNumPerNode()+1;++i){
         _gpU.push_back(0.0);
         _gpV.push_back(0.0);
         _gpGradU.push_back(Vector3d(0.0));
@@ -69,10 +69,14 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
     _localK=MatrixXd(dofHandler.GetMaxDofsNumPerBulkElmt(),dofHandler.GetMaxDofsNumPerBulkElmt());
     _localR=VectorXd(dofHandler.GetMaxDofsNumPerBulkElmt());
 
+    _subK=MatrixXd(dofHandler.GetDofsNumPerNode(),dofHandler.GetDofsNumPerNode());
+    _subR=VectorXd(dofHandler.GetDofsNumPerNode());
+
     _K.resize(dofHandler.GetMaxDofsNumPerBulkElmt()*dofHandler.GetMaxDofsNumPerBulkElmt(),0.0);
     _R.resize(dofHandler.GetMaxDofsNumPerBulkElmt(),0.0);
 
     _localK.setZero();_localR.setZero();
+    _subK.setZero();_subR.setZero();
 
     // set the factor to Ax=F system(this factor should be mesh dependent)
     // in order to get the most suitable one, we try to use 10 elements from the bulk
@@ -82,6 +86,7 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
     _KMatrixFactor=1.0e16;
     int einc=int(1.0*mesh.GetBulkMeshBulkElmtsNum()/10);
     if(einc<1) einc=1;
+    _BulkVolumes=0.0;
     for(e=1;e<=mesh.GetBulkMeshBulkElmtsNum();e+=einc){
         mesh.GetIthBulkElmtNodes(e,_elNodes);
         mesh.GetIthBulkElmtConn(e,_elConn);
