@@ -72,13 +72,6 @@ public:
     
     
 private:
-    void Projection(const int &nNodes,Vec &Proj,const vector<double> &elProj,ShapeFun &shp,const double &DetJac);
-    void AssembleLocalHistToGlobal(const int &elmtid,const int &gpInd,const vector<double> &gpHist,Vec &Hist);
-    
-    void AssembleLocalToGlobal(const int &isw,const int &ndofs,vector<int> &elDofs,
-                               vector<double> &localK,vector<double> &localR,
-                               Mat &AMATRIX,Vec &RHS);
-
     //*********************************************************
     //*** assemble residual to local and global one
     //*********************************************************
@@ -99,6 +92,20 @@ private:
                                  const MatrixXd &localK,vector<double> &sumK);
     void AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vector<int> &dofindex,
                                             const vector<double> &jacobian,Mat &K);
+
+    //*********************************************************
+    //*** for projection
+    //*********************************************************
+    void AssembleLocalProjectionToGlobal(const int &iInd,const int &nproj,const double &detjac,const double &test,const vector<double> &projvec,Vec &ProjVec);
+    void Projection(const int &nTotalNodes,const int &nproj,Vec &ProjVec);
+
+
+    void AssembleLocalHistToGlobal(const int &elmtid,const int &gpInd,const vector<double> &gpHist,Vec &Hist);
+    
+    void AssembleLocalToGlobal(const int &isw,const int &ndofs,vector<int> &elDofs,
+                               vector<double> &localK,vector<double> &localR,
+                               Mat &AMATRIX,Vec &RHS);
+
 
     
 

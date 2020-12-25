@@ -62,6 +62,7 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
     for(int i=0;i<20;++i){
         _gpProj.push_back(0.0);
     }
+    
 
     _nGPoints=fe._BulkQPoint.GetQpPointsNum();
     
