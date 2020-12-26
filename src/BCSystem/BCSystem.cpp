@@ -21,6 +21,18 @@
 BCSystem::BCSystem(){
     _nBCBlocks=0;
     _BCBlockList.clear();
+
+    _PenaltyFactor=1.0e15;
+    _nBCDim=0;_nBulkDim=0;_nNodesPerBCElmt=0;
+    _xi=0.0;_eta=0.0;_JxW=0.0;
+    
+    _xs[0][0]=0.0;_xs[0][1]=0.0;_xs[0][2]=0.0;
+    _xs[1][0]=0.0;_xs[1][1]=0.0;_xs[1][2]=0.0;
+    _xs[2][0]=0.0;_xs[2][1]=0.0;_xs[2][2]=0.0;
+
+    _dist=0.0;
+
+    _normals=0.0;
 }
 
 //************************************
@@ -48,4 +60,22 @@ void BCSystem::AddBCBlock2List(BCBlock &bcblock){
             MessagePrinter::AsFem_Exit();
         }
     }
+}
+
+void BCSystem::InitBCSystem(Mesh &mesh){
+    _PenaltyFactor=1.0e15;
+    _nBCDim=0;
+    _nBulkDim=mesh.GetBulkMeshDim();
+    _nNodesPerBCElmt=mesh.GetBulkMeshNodesNumPerBulkElmt();
+    _elNodes.InitNodes(mesh.GetBulkMeshNodesNumPerBulkElmt());
+
+    _xi=0.0;_eta=0.0;_JxW=0.0;
+    
+    _xs[0][0]=0.0;_xs[0][1]=0.0;_xs[0][2]=0.0;
+    _xs[1][0]=0.0;_xs[1][1]=0.0;_xs[1][2]=0.0;
+    _xs[2][0]=0.0;_xs[2][1]=0.0;_xs[2][2]=0.0;
+
+    _dist=0.0;
+
+    _normals=0.0;
 }
