@@ -184,6 +184,9 @@ set(inc ${inc} include/BCSystem/BCType.h)
 set(inc ${inc} include/BCSystem/BCBlock.h)
 set(inc ${inc} include/BCSystem/BCSystem.h)
 set(src ${src} src/BCSystem/BCSystem.cpp)
+set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
+set(src ${src} src/BCSystem/ApplyBC.cpp)
+set(src ${src} src/BCSystem/ApplyDirichletBC.cpp)
 
 #############################################################
 ### For Initial condition system in AsFem                 ###

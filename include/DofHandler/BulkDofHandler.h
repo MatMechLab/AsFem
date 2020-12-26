@@ -75,6 +75,10 @@ public:
         return _ElmtElmtMateIndexList[i-1][j-1];
     }
 
+    inline int GetIthNodeJthDofIndex(const int &i,const int &j)const{
+        return _NodeDofsMap[i-1][j-1];
+    }
+
     //*********************************************
     //*** for some basic check functions
     //*********************************************

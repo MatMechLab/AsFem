@@ -169,6 +169,22 @@ public:
     inline void GetIthElmtNodeIDs(const int &i,vector<int> &elConn)const{
         for(int j=1;j<=_ElmtConn[i-1][0];j++) elConn[j-1]=_ElmtConn[i-1][j];
     }
+    inline int GetBulkMeshIthElmtIDViaPhyName(string phyname,const int &id)const{
+        for(const auto &it:_PhysicalName2ElmtIDsList){
+            if(it.first==phyname){
+                return it.second[id-1];
+            }
+        }
+    }
+    inline int GetBulkMeshIthElmtNodesNumViaPhyName(const string phyname,const int &id)const{
+        int e;
+        for(const auto &it:_PhysicalName2ElmtIDsList){
+            if(it.first==phyname){
+                e=it.second[id-1];
+                return static_cast<int>(_ElmtConn[e-1].size()-1);
+            }
+        }
+    }
     inline vector<int> GetIthElmtNodeIDs(const int &i)const{
         vector<int> temp(_ElmtConn[i-1][0],0);
         for(int j=1;j<=_ElmtConn[i-1][0];j++) temp[j-1]=_ElmtConn[i-1][j];
@@ -184,6 +200,14 @@ public:
     inline int GetIthPhysicalID(const int &i)const{return _PhysicalGroupIDList[i-1];}
     inline int GetIthPhysicalDim(const int &i)const{return _PhysicalGroupDimList[i-1];}
     inline string GetIthPhysicalName(const int &i)const{return _PhysicalGroupNameList[i-1];}
+    inline int GetDimViaPhyName(string phyname)const{
+        for(int i=0;i<static_cast<int>(_PhysicalGroupNameList.size());i++){
+            if(_PhysicalGroupNameList[i]==phyname){
+                return _PhysicalGroupDimList[i];
+            }
+        }
+        return -1;
+    }
     inline string GetPhysicalNameViaID(const int &phyid)const{
         for(const auto &it:_PhysicalGroupID2NameList){
             if(it.first==phyid){

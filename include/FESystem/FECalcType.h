@@ -14,6 +14,7 @@
 //+++          projection from gauss point to nodal point
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+#pragma once
 
 enum class FECalcType{
     ComputeResidual,

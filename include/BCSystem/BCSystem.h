@@ -35,6 +35,7 @@
 #include "Mesh/Mesh.h"
 // #include "DofHandler/DofHandler.h" // this line must be comment out to get rid of circular include issue from DofHandler class !!!
 #include "FE/FE.h"
+#include "FESystem/FECalcType.h"
 
 #include "Utils/Vector3d.h"
 
@@ -62,7 +63,7 @@ public:
     //**************************************************************
     //*** Apply boundary conditions
     //**************************************************************
-    void ApplyBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const double &t,const double (&ctan)[2],Vec &U,Mat &A,Vec &RHS);
+    void ApplyBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[2],Vec &U,Mat &AMATRIX,Vec &RHS);
     void ApplyInitialBC(Mesh &mesh,DofHandler &dofHandler,const double &t,Vec &U);
 
     void PrintBCSystemInfo()const;
@@ -78,7 +79,7 @@ private:
     //**************************************************************
     //*** for different boundary conditions
     //**************************************************************
-    void ApplyDirichletBC(Mesh &mesh,DofHandler &dofHandler,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
+    void ApplyDirichletBC(Mesh &mesh,DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
     void ApplyNeumannBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
 
 
