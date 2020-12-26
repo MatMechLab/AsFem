@@ -47,7 +47,7 @@ typedef struct{
     ElmtSystem _elmtSystem;
     MateSystem _mateSystem;
     SolutionSystem _solutionSystem;
-    // EquationSystem _equationSystem;
+    EquationSystem _equationSystem;
     FE _fe;
     FESystem _feSystem;
     // FeCtrlInfo _fectrlinfo;

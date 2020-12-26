@@ -233,8 +233,8 @@ set(src ${src} src/SolutionSystem/InitSolution.cpp)
 ### For equation system in AsFem                          ###
 #############################################################
 set(inc ${inc} include/EquationSystem/EquationSystem.h)
-set(inc ${src} src/EquationSystem/EquationSystem.cpp)
-set(inc ${src} src/EquationSystem/CreateSparsityPattern.cpp)
+set(src ${src} src/EquationSystem/EquationSystem.cpp)
+set(src ${src} src/EquationSystem/CreateSparsityPattern.cpp)
 
 #############################################################
 ### For nonlinear solver system in AsFem                  ###
