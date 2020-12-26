@@ -41,4 +41,9 @@ void NonlinearSolver::Init(NonlinearSolverBlock nonlinearsolverblock){
     _SolverType=nonlinearsolverblock._SolverType;
     _SolverName=nonlinearsolverblock._SolverTypeName;
     _PCTypeName=nonlinearsolverblock._PCTypeName;
+
+    //**************************************************
+    //*** create our SNES solver
+    //**************************************************
+    SNESCreate(PETSC_COMM_WORLD,&_snes);
 }

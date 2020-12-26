@@ -24,12 +24,58 @@
 
 #include "petsc.h"
 
+#include "Mesh/Mesh.h"
+#include "DofHandler/DofHandler.h"
+#include "BCSystem/BCSystem.h"
+#include "ICSystem/ICSystem.h"
+#include "ElmtSystem/ElmtSystem.h"
+#include "MateSystem/MateSystem.h"
+#include "SolutionSystem/SolutionSystem.h"
+#include "FE/FE.h"
+#include "FESystem/FESystem.h"
 #include "NonlinearSolver/NonlinearSolverBlock.h"
+
+
+//*******************************************************************
+
+typedef struct{
+    Mesh _mesh;
+    DofHandler _dofHandler;
+    BCSystem _bcSystem;
+    ICSystem _icSystem;
+    ElmtSystem _elmtSystem;
+    MateSystem _mateSystem;
+    SolutionSystem _solution;
+    EquationSystem _equationSystem;
+    FE _fe;
+    FESystem _feSystem;
+    FeCtrlInfo _fectrlinfo;
+} AppCtx;
+
+typedef struct{
+    PetscReal rnorm,rnorm0;
+    PetscReal dunorm,dunorm0;
+    PetscReal enorm,enorm0;
+    PetscInt iters;
+    bool IsDepDebug;
+} MonitorCtx;
+
+extern PetscErrorCode MyMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx);
+extern PetscErrorCode MyConvergent(SNES snes,PetscInt iters,PetscReal xnorm,PetscReal snorm,PetscReal fnorm,SNESConvergedReason *reason, void *cctx);
+
+//************************************************************************
+//*** the core part for our jacobian and residual calculation
+//************************************************************************
+extern PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx);
+extern PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx);
+
+
 
 class NonlinearSolver{
 public:
     NonlinearSolver();
     void Init(NonlinearSolverBlock nonlinearsolverblock);
+    void SetupNonLinearSolver();
 
 private:
     //*********************************************
@@ -46,4 +92,16 @@ private:
     NonlinearSolverType _SolverType;
     string _SolverName;
     string _PCTypeName;
+
+    //*********************************************
+    //*** For nonlinear solver's related components
+    //*********************************************
+    KSP _ksp;
+    PC  _pc;
+    SNES _snes;
+    SNESLineSearch _sneslinesearch;
+    SNESConvergedReason _snesreason;
+    AppCtx _appctx;
+    MonitorCtx _monctx;
+
 };
