@@ -108,8 +108,8 @@ public:
         return temp;
     }
 
-    void PrintDofInfo()const;
-    void PrintDofDetailInfo()const;
+    void PrintBulkDofInfo()const;
+    void PrintBulkDofDetailInfo()const;
 
 protected:
     //*************************************************

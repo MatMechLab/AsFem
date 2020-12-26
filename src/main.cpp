@@ -53,7 +53,7 @@ int main(int args,char *argv[]){
     solutionSystem,outputSystem,nonlinearSolver);
     dofHandler.CreateBulkDofsMap(mesh,bcSystem,elmtSystem);
     dofHandler.PrintAllDofInfo();
-    dofHandler.PrintDofDetailInfo();
+    dofHandler.PrintBulkDofDetailInfo();
 
     ShapeFun myshape(mesh.GetBulkMeshDim(),mesh.GetBulkMeshBulkElmtType());
     myshape.PreCalc();

@@ -17,10 +17,12 @@
 
 #include "DofHandler/BulkDofHandler.h"
 
+
+
 class DofHandler:public BulkDofHandler{
 public:
     DofHandler();
 
-    void PrintAllDofInfo()const{BulkDofHandler::PrintDofInfo();}
+    void PrintAllDofInfo()const{PrintBulkDofInfo();}
     void PrintInterfaceDofInfo()const;
 };

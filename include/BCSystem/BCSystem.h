@@ -33,7 +33,7 @@
 
 #include "Mesh/Nodes.h"
 #include "Mesh/Mesh.h"
-#include "DofHandler/DofHandler.h"
+// #include "DofHandler/DofHandler.h" // this line must be comment out to get rid of circular include issue from DofHandler class !!!
 #include "FE/FE.h"
 
 #include "Utils/Vector3d.h"
@@ -41,7 +41,7 @@
 using namespace std;
 
 class Mesh;
-// class DofHandler;
+class DofHandler;
 
 class BCSystem{
 public:
