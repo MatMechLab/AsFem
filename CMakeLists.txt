@@ -262,6 +262,11 @@ set(src ${src} src/FESystem/FormBulkFE.cpp)
 set(src ${src} src/FESystem/FEAssemble.cpp)
 set(src ${src} src/FESystem/FEProjection.cpp)
 
+#############################################################
+### For FE system in AsFem                                ###
+#############################################################
+set(inc ${inc} include/FEProblem/FEControlInfo.h)
+
 ##################################################
 add_executable(asfem ${inc} ${src})
 

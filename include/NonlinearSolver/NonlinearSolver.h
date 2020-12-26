@@ -35,6 +35,7 @@
 #include "FESystem/FESystem.h"
 #include "EquationSystem/EquationSystem.h"
 #include "NonlinearSolver/NonlinearSolverBlock.h"
+#include "FEProblem/FEControlInfo.h"
 
 
 //*******************************************************************
@@ -50,7 +51,7 @@ typedef struct{
     EquationSystem _equationSystem;
     FE _fe;
     FESystem _feSystem;
-    // FeCtrlInfo _fectrlinfo;
+    FEControlInfo _fectrlinfo;
 } AppCtx;
 
 typedef struct{
