@@ -32,6 +32,12 @@ RankTwoTensor::RankTwoTensor(const double &val)
         _vals[i]=val;
     }
 }
+RankTwoTensor::RankTwoTensor(const RankTwoTensor &a)
+:_N(3),_N2(3*3){
+    for(int i=0;i<_N2;++i){
+        _vals[i]=a._vals[i];
+    }
+}
 //***
 RankTwoTensor::RankTwoTensor(const InitMethod &method)
 :_N(3),_N2(3*3){

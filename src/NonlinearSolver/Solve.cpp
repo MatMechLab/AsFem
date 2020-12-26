@@ -194,7 +194,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_SNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"Convergent for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
