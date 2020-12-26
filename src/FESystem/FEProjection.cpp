@@ -34,26 +34,45 @@ void FESystem::AssembleLocalProjectionToGlobal(const int &iInd,const int &nproj,
 void FESystem::Projection(const int &nTotalNodes,const int &nproj,Vec &ProjVec){
     int i,j,iInd;
     double value,weight,newvalue;
+    VecAssemblyBegin(ProjVec);
+    VecAssemblyEnd(ProjVec);
+    Vec ProjCopy;
+    VecDuplicate(ProjVec,&ProjCopy);
     VecScatterCreateToAll(ProjVec,&_scatterproj,&_ProjSeq);
     VecScatterBegin(_scatterproj,ProjVec,_ProjSeq,INSERT_VALUES,SCATTER_FORWARD);
     VecScatterEnd(_scatterproj,ProjVec,_ProjSeq,INSERT_VALUES,SCATTER_FORWARD);
-    for(i=1;i<=nTotalNodes;i++){
+
+    VecSet(ProjCopy,0.0);
+
+    MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
+    MPI_Comm_size(PETSC_COMM_WORLD,&_size);
+
+    int rankne=nTotalNodes/_size;
+    int eStart=_rank*rankne;
+    int eEnd=(_rank+1)*rankne;
+    if(_rank==_size-1) eEnd=nTotalNodes;
+
+    for(int ee=eStart;ee<eEnd;++ee){
+        i=ee+1;
         iInd=(i-1)*(1+nproj)+0;
         VecGetValues(_ProjSeq,1,&iInd,&weight);
         for(j=1;j<=nproj;j++){
             iInd=(i-1)*nproj+j;
             VecGetValues(_ProjSeq,1,&iInd,&value);
+            VecSetValue(ProjCopy,iInd,value,ADD_VALUES);
             if(abs(value/weight)>1.0e-14){
                 newvalue=value/weight;
             }
             else{
                 newvalue=1.0e-14;
             }
-            VecSetValue(ProjVec,iInd,newvalue,INSERT_VALUES);
+            VecSetValue(ProjCopy,iInd,newvalue,ADD_VALUES);
         }
     }
-    VecAssemblyBegin(ProjVec);
-    VecAssemblyEnd(ProjVec);
+    VecAssemblyBegin(ProjCopy);
+    VecAssemblyEnd(ProjCopy);
+
+    VecCopy(ProjCopy,ProjVec);
     
     VecScatterDestroy(&_scatterproj);
     VecDestroy(&_ProjSeq);
