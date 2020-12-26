@@ -46,4 +46,57 @@ void NonlinearSolver::Init(NonlinearSolverBlock nonlinearsolverblock){
     //*** create our SNES solver
     //**************************************************
     SNESCreate(PETSC_COMM_WORLD,&_snes);
+
+    //**************************************************
+    //*** init KSP
+    //**************************************************
+    SNESGetKSP(_snes,&_ksp);
+    KSPGMRESSetRestart(_ksp,1300);
+    KSPGetPC(_ksp,&_pc);
+    #ifdef HASMUMPS
+    PCSetType(_pc,PCLU);
+    KSPSetType(_ksp,KSPPREONLY);
+    PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
+    #endif
+
+    PCFactorSetReuseOrdering(_pc,PETSC_TRUE);
+
+    //**************************************************
+    //*** allow user setting ksp from command line
+    //**************************************************
+    KSPSetFromOptions(_ksp);
+
+    //**************************************************
+    //*** some basic settings for SNES
+    //**************************************************
+    SNESSetTolerances(_snes,_RAbsTol,_RRelTol,_STol,_MaxIters,-1);
+    SNESSetDivergenceTolerance(_snes,-1);
+
+    //**************************************************
+    //*** for different type of nonlinear methods
+    //**************************************************
+    SNESSetType(_snes,SNESNEWTONLS);// our default method
+    if(_SolverType==NonlinearSolverType::NEWTON||_SolverType==NonlinearSolverType::NEWTONLS){
+        SNESSetType(_snes,SNESNEWTONLS);
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONTR){
+        SNESSetType(_snes,SNESNEWTONTR);
+    }
+    else if(_SolverType==NonlinearSolverType::BFGS){
+        SNESSetType(_snes,SNESQN);
+    }
+    else if(_SolverType==NonlinearSolverType::BROYDEN){
+        SNESSetType(_snes,SNESQN);
+        SNESQNSetType(_snes,SNES_QN_BROYDEN);
+    }
+    else if(_SolverType==NonlinearSolverType::BADBROYDEN){
+        SNESSetType(_snes,SNESQN);
+        SNESQNSetType(_snes,SNES_QN_BADBROYDEN);
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONCG){
+        SNESSetType(_snes,SNESNCG);
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONGMRES){
+        SNESSetType(_snes,SNESNGMRES);
+    }
 }

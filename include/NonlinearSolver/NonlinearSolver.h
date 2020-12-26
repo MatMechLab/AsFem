@@ -76,7 +76,7 @@ class NonlinearSolver{
 public:
     NonlinearSolver();
     void Init(NonlinearSolverBlock nonlinearsolverblock);
-    void SetupNonLinearSolver();
+    bool Solve();
 
 private:
     //*********************************************
