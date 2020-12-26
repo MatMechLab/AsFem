@@ -33,6 +33,7 @@
 #include "SolutionSystem/SolutionSystem.h"
 #include "FE/FE.h"
 #include "FESystem/FESystem.h"
+#include "EquationSystem/EquationSystem.h"
 #include "NonlinearSolver/NonlinearSolverBlock.h"
 
 
@@ -45,11 +46,11 @@ typedef struct{
     ICSystem _icSystem;
     ElmtSystem _elmtSystem;
     MateSystem _mateSystem;
-    SolutionSystem _solution;
-    EquationSystem _equationSystem;
+    SolutionSystem _solutionSystem;
+    // EquationSystem _equationSystem;
     FE _fe;
     FESystem _feSystem;
-    FeCtrlInfo _fectrlinfo;
+    // FeCtrlInfo _fectrlinfo;
 } AppCtx;
 
 typedef struct{

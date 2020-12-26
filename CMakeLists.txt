@@ -148,7 +148,7 @@ set(inc ${inc} include/DofHandler/DofHandler.h)
 set(src ${src} src/DofHandler/DofHandler.cpp)
 
 #############################################################
-### For Element system in AsFem                         ###
+### For Element system in AsFem                           ###
 #############################################################
 set(inc ${inc} include/ElmtSystem/ElmtType.h)
 set(inc ${inc} include/ElmtSystem/ElmtBlock.h)
@@ -228,6 +228,13 @@ set(src ${src} src/FE/ShapeFuns/ShapeFun.cpp)
 set(inc ${inc} include/SolutionSystem/SolutionSystem.h)
 set(src ${src} src/SolutionSystem/SolutionSystem.cpp)
 set(src ${src} src/SolutionSystem/InitSolution.cpp)
+
+#############################################################
+### For equation system in AsFem                          ###
+#############################################################
+set(inc ${inc} include/EquationSystem/EquationSystem.h)
+set(inc ${src} src/EquationSystem/EquationSystem.cpp)
+set(inc ${src} src/EquationSystem/CreateSparsityPattern.cpp)
 
 #############################################################
 ### For nonlinear solver system in AsFem                  ###

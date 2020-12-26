@@ -47,6 +47,7 @@ public:
     inline int    GetDofsNum()const{return _nDofs;}
     inline int    GetActiveDofsNum()const{return _nActiveDofs;}
     inline int    GetMaxDofsNumPerBulkElmt()const{return _nMaxDofsPerElmt;}
+    inline int    GetBulkElmtNums()const{return _nBulkElmts;}
     int         GetDofIDviaDofName(string dofname)const;
     vector<int> GetDofsIndexFromNameVec(vector<string> namelist)const;
 
@@ -57,8 +58,14 @@ public:
         }
     }
 
+    inline void GetIthBulkElmtDofIndex(const int &e,int (&elDofs)[27])const{
+        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_ElmtDofsMap[e-1][i];
+        }
+    }
+
     inline int GetIthBulkElmtDofsNum(const int &e)const{
-        return static_cast<int>(_ElmtDofFlag[e-1].size());
+        return static_cast<int>(_ElmtDofsMap[e-1].size());
     }
 
     inline vector<int> GetIthBulkElmtJthKernelDofIndex(const int &i,const int &j)const{
