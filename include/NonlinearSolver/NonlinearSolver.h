@@ -24,6 +24,8 @@
 
 #include "petsc.h"
 
+#include "Utils/MessagePrinter.h"
+
 #include "Mesh/Mesh.h"
 #include "DofHandler/DofHandler.h"
 #include "BCSystem/BCSystem.h"
@@ -68,8 +70,8 @@ extern PetscErrorCode MyConvergent(SNES snes,PetscInt iters,PetscReal xnorm,Pets
 //************************************************************************
 //*** the core part for our jacobian and residual calculation
 //************************************************************************
-extern PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx);
-extern PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx);
+extern PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx);
+extern PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx);
 
 
 
@@ -77,7 +79,12 @@ class NonlinearSolver{
 public:
     NonlinearSolver();
     void Init(NonlinearSolverBlock nonlinearsolverblock);
-    bool Solve();
+    bool Solve(Mesh &mesh,DofHandler &dofHandler,
+            ElmtSystem &elmtSystem,MateSystem &mateSystem,
+            BCSystem &bcSystem,ICSystem &icSystem,
+            SolutionSystem &solutionSystem,EquationSystem &equationSystem,
+            FE &fe,FESystem &feSystem,
+            FEControlInfo &fectrlinfo);
 
 private:
     //*********************************************

@@ -243,6 +243,7 @@ set(inc ${inc} include/NonlinearSolver/NonlinearSolverType.h)
 set(inc ${inc} include/NonlinearSolver/NonlinearSolverBlock.h)
 set(inc ${inc} include/NonlinearSolver/NonlinearSolver.h)
 set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
+set(src ${src} src/NonlinearSolver/Solve.cpp)
 
 #############################################################
 ### For output system in AsFem                            ###
