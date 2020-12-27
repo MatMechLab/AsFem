@@ -359,11 +359,11 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                 MessagePrinter::AsFem_Exit();
             }
             IsSuccess=true;
-            mesh.SetDim(dim);
-            mesh.SetNx(nx);
-            mesh.SetXmin(xmin);
-            mesh.SetXmax(xmax);
-            mesh.SetMeshTypeName(meshtypename);
+            mesh.SetBulkMeshDim(dim);
+            mesh.SetBulkMeshNx(nx);
+            mesh.SetBulkMeshXmin(xmin);
+            mesh.SetBulkMeshXmax(xmax);
+            mesh.SetBulkMeshMeshTypeName(meshtypename);
         }
         else if(dim==2){
             if(!HasNx){
@@ -403,14 +403,14 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                 MessagePrinter::AsFem_Exit();
             }
             IsSuccess=true;
-            mesh.SetDim(dim);
-            mesh.SetNx(nx);
-            mesh.SetNy(ny);
-            mesh.SetXmin(xmin);
-            mesh.SetXmax(xmax);
-            mesh.SetYmin(ymin);
-            mesh.SetYmax(ymax);
-            mesh.SetMeshTypeName(meshtypename);
+            mesh.SetBulkMeshDim(dim);
+            mesh.SetBulkMeshNx(nx);
+            mesh.SetBulkMeshNy(ny);
+            mesh.SetBulkMeshXmin(xmin);
+            mesh.SetBulkMeshXmax(xmax);
+            mesh.SetBulkMeshYmin(ymin);
+            mesh.SetBulkMeshYmax(ymax);
+            mesh.SetBulkMeshMeshTypeName(meshtypename);
         }
         else if(dim==3){
             if(!HasNx){
@@ -455,17 +455,17 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                 MessagePrinter::AsFem_Exit();
             }
             IsSuccess=true;
-            mesh.SetDim(dim);
-            mesh.SetNx(nx);
-            mesh.SetNy(ny);
-            mesh.SetNz(nz);
-            mesh.SetXmin(xmin);
-            mesh.SetXmax(xmax);
-            mesh.SetYmin(ymin);
-            mesh.SetYmax(ymax);
-            mesh.SetZmin(zmin);
-            mesh.SetZmax(zmax);
-            mesh.SetMeshTypeName(meshtypename);
+            mesh.SetBulkMeshDim(dim);
+            mesh.SetBulkMeshNx(nx);
+            mesh.SetBulkMeshNy(ny);
+            mesh.SetBulkMeshNz(nz);
+            mesh.SetBulkMeshXmin(xmin);
+            mesh.SetBulkMeshXmax(xmax);
+            mesh.SetBulkMeshYmin(ymin);
+            mesh.SetBulkMeshYmax(ymax);
+            mesh.SetBulkMeshZmin(zmin);
+            mesh.SetBulkMeshZmax(zmax);
+            mesh.SetBulkMeshMeshTypeName(meshtypename);
         }
         IsBuiltIn=true;
         IsSuccess=false;

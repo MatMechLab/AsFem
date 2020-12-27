@@ -56,15 +56,15 @@ void BCSystem::ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,cons
         if(it._BCType==BCType::DIRICHLETBC){
             for(unsigned int ibc=0;ibc<bclist.size();++ibc){
                 bcname=bclist[ibc];
-                rankne=mesh.GetElmtsNumViaPhysicalName(bcname)/_size;
+                rankne=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname)/_size;
                 eStart=_rank*rankne;
                 eEnd=(_rank+1)*rankne;
-                if(_rank==_size-1) eEnd=mesh.GetElmtsNumViaPhysicalName(bcname);
+                if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
                 for(e=eStart;e<eEnd;++e){
                     ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
                     // cout<<"bcname="<<bcname<<", bcvalue="<<bcvalue<<", e="<<ee<<":"<<endl;
                     for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,e+1);++i){
-                        j=mesh.GetIthElmtJthNodeID(ee,i);
+                        j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
                         VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
                         // cout<<iInd+1<<" ";

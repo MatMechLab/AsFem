@@ -32,8 +32,8 @@ public:
     void SaveMesh(string filename="")const{LagrangeMesh::SaveLagrangeMesh(filename);}
 
 
-    void PrintMeshInfo()const{LagrangeMesh::PrintMeshInfo();}
-    void PrintMeshDetailInfo()const{LagrangeMesh::PrintMeshInfoDetails();}
+    void PrintMeshInfo()const{PrintBulkMeshInfo();}
+    void PrintMeshDetailInfo()const{PrintBulkMeshInfoDetails();}
 
 private:
     bool _HasMeshCreated=false;

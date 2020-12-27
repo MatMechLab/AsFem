@@ -14,8 +14,8 @@
 
 #include "FESystem/FESystem.h"
 
-void FESystem::InitBulkFESystem(Mesh &mesh,
-                            DofHandler &dofHandler,
+void FESystem::InitBulkFESystem(const Mesh &mesh,
+                            const DofHandler &dofHandler,
                             FE &fe,
                             SolutionSystem &solution){
 
@@ -89,8 +89,8 @@ void FESystem::InitBulkFESystem(Mesh &mesh,
     if(einc<1) einc=1;
     _BulkVolumes=0.0;
     for(e=1;e<=mesh.GetBulkMeshBulkElmtsNum();e+=einc){
-        mesh.GetIthBulkElmtNodes(e,_elNodes);
-        mesh.GetIthBulkElmtConn(e,_elConn);
+        mesh.GetBulkMeshIthBulkElmtNodes(e,_elNodes);
+        mesh.GetBulkMeshIthBulkElmtConn(e,_elConn);
         for(gpInd=1;gpInd<=fe._BulkQPoint.GetQpPointsNum();++gpInd){
             w=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,0);
             xi=fe._BulkQPoint.GetIthQpPointJthCoord(gpInd,1);

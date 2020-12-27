@@ -27,16 +27,16 @@ void BCSystem::ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,co
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
 
     for(auto bcname:bcnamelist){
-        rankne=mesh.GetElmtsNumViaPhysicalName(bcname)/_size;
+        rankne=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname)/_size;
         eStart=_rank*rankne;
         eEnd=(_rank+1)*rankne;
-        if(_rank==_size-1) eEnd=mesh.GetElmtsNumViaPhysicalName(bcname);
+        if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
 
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
             // cout<<"bcname="<<_bcname<<", bcvalue="<<_bcvalue<<", e="<<ee<<":";
             for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,ee);++i){
-                j=mesh.GetIthElmtJthNodeID(ee,i);
+                j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                 iInd=dofHandler.GetIthNodeJthDofIndex(j,dofindex)-1;
                 if(calctype==FECalcType::ComputeResidual) {
                     VecSetValues(RHS,1,&iInd,&fix,INSERT_VALUES);

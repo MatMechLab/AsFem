@@ -60,7 +60,7 @@ LagrangeMesh::LagrangeMesh(){
 }
 
 //**********************************
-void LagrangeMesh::SetMeshTypeName(string meshname){
+void LagrangeMesh::SetBulkMeshMeshTypeName(string meshname){
     if(meshname.find("edge2")!=string::npos){
         _BulkMeshTypeName="edge2";
         _BulkMeshType=MeshType::EDGE2;

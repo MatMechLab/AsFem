@@ -14,7 +14,7 @@
 
 #include "DofHandler/BulkDofHandler.h"
 
-void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem){
+void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem){
     _nMinDim=mesh.GetBulkMeshMinDim();
     _nMaxDim=mesh.GetBulkMeshDim();
 
@@ -59,12 +59,12 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
 
     //*** firstly, we check whether all the domain has been assigned an [elmt] block
     bool DomainHasElmtBlock=false;
-    for(i=1;i<=mesh.GetPhysicalGroupNum();i++){
+    for(i=1;i<=mesh.GetBulkMeshPhysicalGroupNum();i++){
         DomainHasElmtBlock=false;
-        if(mesh.GetIthPhysicalDim(i)==_nMaxDim){// only check the bulk elmts
+        if(mesh.GetBulkMeshIthPhysicalDim(i)==_nMaxDim){// only check the bulk elmts
             DomainHasElmtBlock=false;
             for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
-                if(mesh.GetIthPhysicalName(i)==elmtSystem.GetIthBulkElmtBlock(j)._DomainName){
+                if(mesh.GetBulkMeshIthPhysicalName(i)==elmtSystem.GetIthBulkElmtBlock(j)._DomainName){
                     DomainHasElmtBlock=true;
                     break;
                 }
@@ -75,7 +75,7 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         }
     }
     if(!DomainHasElmtBlock){
-        snprintf(buff,50,"domain %s has no elmt block assigned!",mesh.GetIthPhysicalName(i).c_str());
+        snprintf(buff,50,"domain %s has no elmt block assigned!",mesh.GetBulkMeshIthPhysicalName(i).c_str());
         str=buff;
         MessagePrinter::PrintErrorTxt(str);
         MessagePrinter::PrintErrorTxt("please check your input file carefully, all the domain should be assigned at least one [elmt] block!");
@@ -92,14 +92,14 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         elmttype=elmtSystem.GetIthBulkElmtBlock(iblock)._ElmtType;
         matetype=elmtSystem.GetIthBulkElmtBlock(iblock)._MateType;
         mateindex=elmtSystem.GetIthBulkElmtBlock(iblock)._MateIndex;
-        for(auto e:mesh.GetElmtIDsViaPhysicalName(domainname)){
+        for(auto e:mesh.GetBulkMeshElmtIDsViaPhysicalName(domainname)){
             // now we are in the elmt id vector
             ee=e-(mesh.GetBulkMeshElmtsNum()-mesh.GetBulkMeshBulkElmtsNum());
             _ElmtElmtMateTypePairList[ee-1].push_back(make_pair(elmttype,matetype));
             _ElmtLocalDofIndex[ee-1].push_back(dofindex);
             _ElmtElmtMateIndexList[ee-1].push_back(mateindex);
-            for(i=1;i<=mesh.GetIthElmtNodesNum(e);i++){
-                iInd=mesh.GetIthElmtJthNodeID(e,i);
+            for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(e);i++){
+                iInd=mesh.GetBulkMeshIthElmtJthNodeID(e,i);
                 for(j=1;j<=ndofs;j++){
                     jInd=dofindex[j-1];
                     _NodeDofsMap[iInd-1][jInd-1]=1;
@@ -128,10 +128,10 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         j=bcBlock._DofID;
         if(bcBlock._BCType==BCType::DIRICHLETBC){
             for(auto bc:bcBlock._BoundaryNameList){
-                for(auto e:mesh.GetElmtIDsViaPhysicalName(bc)){
+                for(auto e:mesh.GetBulkMeshElmtIDsViaPhysicalName(bc)){
                     // now we are in the elmt id vector
-                    for(i=1;i<=mesh.GetIthElmtNodesNum(e);i++){
-                        iInd=mesh.GetIthElmtJthNodeID(e,i);
+                    for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(e);i++){
+                        iInd=mesh.GetBulkMeshIthElmtJthNodeID(e,i);
                         _NodalDofFlag[iInd-1][j-1]=0.0;
                     }
                 }
@@ -139,7 +139,7 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
         }
         else if(bcBlock._BCType==BCType::NODALDIRICHLETBC){
             for(auto bc:bcBlock._BoundaryNameList){
-                for(auto i:mesh.GetNodeIDsViaPhysicalName(bc)){
+                for(auto i:mesh.GetBulkMeshNodeIDsViaPhysicalName(bc)){
                     _NodalDofFlag[i-1][j-1]=0.0;
                 }
             }
@@ -153,8 +153,8 @@ void BulkDofHandler::CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem 
     _RowNNZ.resize(_nActiveDofs,0);
     _RowMaxNNZ=0;
     for(e=1;e<=_nBulkElmts;e++){
-        for(j=1;j<=mesh.GetIthBulkElmtNodesNum(e);j++){
-            iInd=mesh.GetIthBulkElmtJthNodeID(e,j);
+        for(j=1;j<=mesh.GetBulkMeshIthBulkElmtNodesNum(e);j++){
+            iInd=mesh.GetBulkMeshIthBulkElmtJthNodeID(e,j);
             for(k=1;k<=_nDofsPerNode;k++){
                 ii=(j-1)*_nDofsPerNode+k-1;
 

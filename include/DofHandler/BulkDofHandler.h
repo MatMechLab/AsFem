@@ -39,7 +39,7 @@ public:
 
     void AddDofNameFromStrVec(vector<string> &namelist);
 
-    void CreateBulkDofsMap(Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem);
+    void CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem);
 
     inline string GetIthDofName(const int &i)const{return _DofNameList[i-1];}
     inline int    GetIthDofID(const int &i)const{return _DofIDList[i-1];}

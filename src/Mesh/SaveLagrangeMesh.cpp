@@ -56,9 +56,9 @@ void LagrangeMesh::SaveLagrangeMesh(string inputfilename) const{
         // print out node coordinates
         meshout<<scientific<<setprecision(6);
         for(i=1;i<=GetBulkMeshNodesNum();++i){
-            meshout<<GetIthNodeJthCoord(i,1)<<" ";
-            meshout<<GetIthNodeJthCoord(i,2)<<" ";
-            meshout<<GetIthNodeJthCoord(i,3)<<"\n";
+            meshout<<GetBulkMeshIthNodeJthCoord(i,1)<<" ";
+            meshout<<GetBulkMeshIthNodeJthCoord(i,2)<<" ";
+            meshout<<GetBulkMeshIthNodeJthCoord(i,3)<<"\n";
         }
         meshout<<"</DataArray>\n";
         meshout<<"</Points>\n";
@@ -68,8 +68,8 @@ void LagrangeMesh::SaveLagrangeMesh(string inputfilename) const{
         meshout<<"<Cells>\n";
         meshout<<"<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
         for(e=1;e<=GetBulkMeshBulkElmtsNum();++e){
-            for(j=1;j<=GetIthBulkElmtNodesNum(e);++j){
-                meshout<<GetIthBulkElmtJthNodeID(e,j)-1<<" ";
+            for(j=1;j<=GetBulkMeshIthBulkElmtNodesNum(e);++j){
+                meshout<<GetBulkMeshIthBulkElmtJthNodeID(e,j)-1<<" ";
             }
             meshout<<"\n";
         }
@@ -78,14 +78,14 @@ void LagrangeMesh::SaveLagrangeMesh(string inputfilename) const{
         meshout<<"<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
         int offset=0;
         for(e=1;e<=GetBulkMeshBulkElmtsNum();++e){
-            offset+=GetIthBulkElmtNodesNum(e);
+            offset+=GetBulkMeshIthBulkElmtNodesNum(e);
             meshout<<offset<<"\n";
         }
         meshout<<"</DataArray>\n";
         // For connectivity
         meshout<<"<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
         for(e=1;e<=GetBulkMeshBulkElmtsNum();++e){
-            meshout<<GetIthBulkElmtVTKCellType(e)<<"\n";
+            meshout<<GetBulkMeshIthBulkElmtVTKCellType(e)<<"\n";
         }
         meshout<<"</DataArray>\n";
         meshout<<"</Cells>\n";

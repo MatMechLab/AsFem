@@ -319,22 +319,22 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
         if(nNodesPerBCElmt==2){
             // quad4 case
             _ElmtConn[nBCElmts].push_back(2);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
             _ElmtVTKCellTypeList[nBCElmts]=3;
-            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
-            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
+            leftnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
+            leftnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,8));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,8));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
             _ElmtVTKCellTypeList[nBCElmts]=4;
 
-            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
-            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,8));
-            leftnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
+            leftnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
+            leftnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,8));
+            leftnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
         }
         nBCElmts+=1;
         left.push_back(nBCElmts);
@@ -353,21 +353,21 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
         if(nNodesPerBCElmt==2){
             // quad4 case
             _ElmtConn[nBCElmts].push_back(2);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
             _ElmtVTKCellTypeList[nBCElmts]=3;
-            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
-            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
+            rightnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
+            rightnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,6));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,6));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
             _ElmtVTKCellTypeList[nBCElmts]=4;
-            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
-            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,6));
-            rightnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
+            rightnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
+            rightnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,6));
+            rightnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
         }
         nBCElmts+=1;
         right.push_back(nBCElmts);
@@ -385,21 +385,21 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
         if(nNodesPerBCElmt==2){
             // quad4 case
             _ElmtConn[nBCElmts].push_back(2);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
             _ElmtVTKCellTypeList[nBCElmts]=3;
-            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
-            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
+            bottomnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
+            bottomnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,1));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,5));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,2));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,5));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
             _ElmtVTKCellTypeList[nBCElmts]=4;
-            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,1));
-            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,5));
-            bottomnodeids.push_back(GetIthBulkElmtJthNodeID(e,2));
+            bottomnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,1));
+            bottomnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,5));
+            bottomnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,2));
         }
         nBCElmts+=1;
         bottom.push_back(nBCElmts);
@@ -417,21 +417,21 @@ bool LagrangeMesh::Create2DLagrangeMesh(){
         if(nNodesPerBCElmt==2){
             // quad4 case
             _ElmtConn[nBCElmts].push_back(2);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
             _ElmtVTKCellTypeList[nBCElmts]=3;
-            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
-            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
+            topnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
+            topnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
         }
         else{
             _ElmtConn[nBCElmts].push_back(3);
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,3));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,7));
-            _ElmtConn[nBCElmts].push_back(GetIthBulkElmtJthNodeID(e,4));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,7));
+            _ElmtConn[nBCElmts].push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
             _ElmtVTKCellTypeList[nBCElmts]=4;
-            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,3));
-            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,7));
-            topnodeids.push_back(GetIthBulkElmtJthNodeID(e,4));
+            topnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,3));
+            topnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,7));
+            topnodeids.push_back(GetBulkMeshIthBulkElmtJthNodeID(e,4));
         }
         nBCElmts+=1;
         top.push_back(nBCElmts);

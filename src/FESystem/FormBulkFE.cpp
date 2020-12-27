@@ -16,7 +16,7 @@
 #include "FESystem/FESystem.h"
 
 void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const double &dt,const double (&ctan)[2],
-                Mesh &mesh,DofHandler &dofHandler,FE &fe,
+                Mesh &mesh,const DofHandler &dofHandler,FE &fe,
                 ElmtSystem &elmtSystem,MateSystem &mateSystem,
                 const Vec &U,const Vec &V,
                 Vec &Hist,const Vec &HistOld,Vec &Proj,
@@ -80,12 +80,12 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     _BulkVolumes=0.0;
     for(int ee=eStart;ee<eEnd;++ee){
         e=ee+1;
-        mesh.GetIthBulkElmtNodes(e,_elNodes);
-        mesh.GetIthBulkElmtConn(e,_elConn);
+        mesh.GetBulkMeshIthBulkElmtNodes(e,_elNodes);
+        mesh.GetBulkMeshIthBulkElmtConn(e,_elConn);
         // dofHandler.GetIthElmtDofIndex(e,_elDofs);
         dofHandler.GetIthBulkElmtDofIndex(e,_elDofs,_elDofsActiveFlag);
         nDofs=dofHandler.GetIthBulkElmtDofsNum(e);
-        nNodes=mesh.GetIthBulkElmtNodesNum(e);
+        nNodes=mesh.GetBulkMeshIthBulkElmtNodesNum(e);
         nDofsPerNode=nDofs/nNodes;
         
         VecGetValues(_Useq,nDofs,_elDofs.data(),_elU.data());
@@ -252,7 +252,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 AccumulateLocalJacobian(nDofs,_elDofsActiveFlag,JxW,_localK,_K);
             }
         }//----->end of gauss point loop
-        mesh.SetIthBulkElmtVolume(e,elVolume);
+        mesh.SetBulkMeshIthBulkElmtVolume(e,elVolume);
         _BulkVolumes+=elVolume;
 
         
