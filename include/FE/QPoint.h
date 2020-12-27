@@ -91,6 +91,7 @@ public:
         else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
             return QPointGaussLobatto::GetIthQpPointJthCoord(i,j);
         }
+        return QPointGaussLegendre::GetIthQpPointJthCoord(i,j);
     }
 
     inline double GetIthQpPointJthCoord(int i,int j)const{

@@ -49,7 +49,7 @@ public:
     BCSystem();
     void AddBCBlock2List(BCBlock &bcblock);
 
-    void InitBCSystem(Mesh &mesh);
+    void InitBCSystem(const Mesh &mesh);
 
     inline int GetBCBlockNums()const{return _nBCBlocks;}
     inline BCBlock GetIthBCBlock(const int &i)const{return _BCBlockList[i-1];}
@@ -63,8 +63,8 @@ public:
     //**************************************************************
     //*** Apply boundary conditions
     //**************************************************************
-    void ApplyBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[2],Vec &U,Mat &AMATRIX,Vec &RHS);
-    void ApplyInitialBC(Mesh &mesh,DofHandler &dofHandler,const double &t,Vec &U);
+    void ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[2],Vec &U,Mat &AMATRIX,Vec &RHS);
+    void ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,const double &t,Vec &U);
 
     void PrintBCSystemInfo()const;
 
@@ -79,8 +79,8 @@ private:
     //**************************************************************
     //*** for different boundary conditions
     //**************************************************************
-    void ApplyDirichletBC(Mesh &mesh,DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
-    void ApplyNeumannBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
+    void ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
+    void ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
 
 
 private:
@@ -89,7 +89,7 @@ private:
 
 private:
     double _PenaltyFactor;
-    int _nBCDim,_nBulkDim,_nNodesPerBCElmt;
+    int _nBCDim,_nDim,_nBulkDim,_nNodesPerBCElmt;
     PetscMPIInt _rank,_size;
 
     //*******************************

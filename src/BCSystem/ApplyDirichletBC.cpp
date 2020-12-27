@@ -15,8 +15,9 @@
 
 
 #include "BCSystem/BCSystem.h"
+#include "DofHandler/DofHandler.h"
 
-void BCSystem::ApplyDirichletBC(Mesh &mesh,DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS){
+void BCSystem::ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS){
     PetscInt i,j,e,ee;
     PetscInt iInd;
     const PetscScalar fix=0.0;

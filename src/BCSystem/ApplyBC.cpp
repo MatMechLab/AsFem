@@ -14,11 +14,13 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "BCSystem/BCSystem.h"
+#include "DofHandler/DofHandler.h"
 
-void BCSystem::ApplyBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[2],Vec &U,Mat &AMATRIX,Vec &RHS){
+void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[2],Vec &U,Mat &AMATRIX,Vec &RHS){
     double bcvalue;
     vector<string> bcnamelist;
     int DofIndex;
+    if(ctan[0]){}
     for(auto it:_BCBlockList){
         bcvalue=it._BCValue;
         if(it._IsTimeDependent) bcvalue=it._BCValue*t;
@@ -29,13 +31,13 @@ void BCSystem::ApplyBC(Mesh &mesh,DofHandler &dofHandler,FE &fe,const FECalcType
         }
         else if(it._BCType==BCType::NEUMANNBC){
             if(calctype==FECalcType::ComputeResidual){
-                ApplyNeumannBC();
+                ApplyNeumannBC(mesh,dofHandler,fe,DofIndex,bcvalue,bcnamelist,RHS);
             }
         }
     }
 }
 //****************************************************
-void BCSystem::ApplyInitialBC(Mesh &mesh,DofHandler &dofHandler,const double &t,Vec &U){
+void BCSystem::ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,const double &t,Vec &U){
     PetscReal bcvalue;
     vector<string> bclist;
     string bcname;
@@ -50,19 +52,19 @@ void BCSystem::ApplyInitialBC(Mesh &mesh,DofHandler &dofHandler,const double &t,
         bcvalue=it._BCValue;
         if(it._IsTimeDependent) bcvalue=t*it._BCValue;
         bclist=it._BoundaryNameList;
-        DofIndex=it._DofIndex;
-        if(it._BCType==BCType::DirichletBC){
+        DofIndex=it._DofID;
+        if(it._BCType==BCType::DIRICHLETBC){
             for(unsigned int ibc=0;ibc<bclist.size();++ibc){
                 bcname=bclist[ibc];
-                rankne=mesh.GetElmtsNumViaPhyName(bcname)/_size;
+                rankne=mesh.GetElmtsNumViaPhysicalName(bcname)/_size;
                 eStart=_rank*rankne;
                 eEnd=(_rank+1)*rankne;
-                if(_rank==_size-1) eEnd=mesh.GetElmtsNumViaPhyName(bcname);
+                if(_rank==_size-1) eEnd=mesh.GetElmtsNumViaPhysicalName(bcname);
                 for(e=eStart;e<eEnd;++e){
-                    ee=mesh.GetIthElmtIndexViaPhyName(bcname,e+1);
+                    ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
                     // cout<<"bcname="<<bcname<<", bcvalue="<<bcvalue<<", e="<<ee<<":"<<endl;
-                    for(i=1;i<=mesh.GetIthElmtNodesNumViaPhyName(bcname,e+1);++i){
-                        j=mesh.GetIthElmtJthConn(ee,i);
+                    for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,e+1);++i){
+                        j=mesh.GetIthElmtJthNodeID(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
                         VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
                         // cout<<iInd+1<<" ";

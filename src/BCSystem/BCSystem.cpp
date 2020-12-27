@@ -62,7 +62,7 @@ void BCSystem::AddBCBlock2List(BCBlock &bcblock){
     }
 }
 
-void BCSystem::InitBCSystem(Mesh &mesh){
+void BCSystem::InitBCSystem(const Mesh &mesh){
     _PenaltyFactor=1.0e15;
     _nBCDim=0;
     _nBulkDim=mesh.GetBulkMeshDim();

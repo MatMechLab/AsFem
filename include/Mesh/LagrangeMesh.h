@@ -175,6 +175,7 @@ public:
                 return it.second[id-1];
             }
         }
+        return -1;
     }
     inline int GetBulkMeshIthElmtNodesNumViaPhyName(const string phyname,const int &id)const{
         int e;
@@ -184,6 +185,7 @@ public:
                 return static_cast<int>(_ElmtConn[e-1].size()-1);
             }
         }
+        return 0;
     }
     inline vector<int> GetIthElmtNodeIDs(const int &i)const{
         vector<int> temp(_ElmtConn[i-1][0],0);
