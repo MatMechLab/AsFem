@@ -272,9 +272,13 @@ set(src ${src} src/FESystem/FEAssemble.cpp)
 set(src ${src} src/FESystem/FEProjection.cpp)
 
 #############################################################
-### For FE system in AsFem                                ###
+### For FEProblem in AsFem  (top level)                   ###
 #############################################################
 set(inc ${inc} include/FEProblem/FEControlInfo.h)
+set(inc ${inc} include/FEProblem/FEProblem.h)
+set(src ${src} src/FEProblem/FEProblem.cpp)
+set(src ${src} src/FEProblem/PreRun.cpp)
+set(src ${src} src/FEProblem/Run.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

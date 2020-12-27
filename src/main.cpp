@@ -12,18 +12,8 @@
 
 #include "Welcome.h"
 
-// #include "FEProblem/FEProblem.h"
-// #include "Mesh/Mesh.h"
-// #include "Mesh/MeshIO.h"
-#include "InputSystem/InputSystem.h"
-#include "Mesh/Mesh.h"
-#include "FE/FE.h"
-#include "OutputSystem/OutputSystem.h"
-#include "SolutionSystem/SolutionSystem.h"
-#include "NonlinearSolver/NonlinearSolver.h"
+#include "FEProblem/FEProblem.h"
 
-#include "Utils/Vector3d.h"
-#include "FE/ShapeFun.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
@@ -36,29 +26,10 @@ int main(int args,char *argv[]){
 
     Welcome(Year,Month,Day,Version);
     
-    // FEProblem feProblem(args,argv);
+    FEProblem feProblem;
+    feProblem.InitFEProblem(args,argv);
+    feProblem.Run();
 
-    Mesh mesh;
-    DofHandler dofHandler;
-    ElmtSystem elmtSystem;
-    MateSystem mateSystem;
-    BCSystem bcSystem;
-    ICSystem icSystem;
-    FE fe;
-    OutputSystem outputSystem;
-    SolutionSystem solutionSystem;
-    NonlinearSolver nonlinearSolver;
-    InputSystem inputSystem(args,argv);
-    inputSystem.ReadInputFile(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,icSystem,fe,
-    solutionSystem,outputSystem,nonlinearSolver);
-    dofHandler.CreateBulkDofsMap(mesh,bcSystem,elmtSystem);
-    dofHandler.PrintAllDofInfo();
-    dofHandler.PrintBulkDofDetailInfo();
-
-    ShapeFun myshape(mesh.GetBulkMeshDim(),mesh.GetBulkMeshBulkElmtType());
-    myshape.PreCalc();
-
-    fe.PrintFEInfo();
     
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;
