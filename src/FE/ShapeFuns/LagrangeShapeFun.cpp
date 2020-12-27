@@ -58,7 +58,7 @@ LagrangeShapeFun::LagrangeShapeFun(int dim,MeshType meshtype){
     _Jac[2][0]=0.0;_Jac[2][1]=0.0;_Jac[2][2]=0.0;
     _values.clear();
     _nValues=0;
-    _HasDim=false;_HasOrder=false;_HasMeshType=false;
+    _HasDim=true;_HasOrder=false;_HasMeshType=true;
 
     _shape_value.clear();
     _shape_grad.clear();
