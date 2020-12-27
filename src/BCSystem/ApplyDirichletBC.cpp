@@ -34,7 +34,6 @@ void BCSystem::ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,co
 
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
-            // cout<<"bcname="<<_bcname<<", bcvalue="<<_bcvalue<<", e="<<ee<<":";
             for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,ee);++i){
                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                 iInd=dofHandler.GetIthNodeJthDofIndex(j,dofindex)-1;

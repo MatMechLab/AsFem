@@ -82,6 +82,23 @@ private:
     void ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
     void ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
 
+    //**************************************************************
+    //*** for other general boundary conditions
+    //**************************************************************
+    void RunBCLibs(const BCType bctype,const FECalcType &calctype,
+                const Vector3d &normals,const double &gpU,const Vector3d &gpGradU,
+                const double &bcvalue,
+                const double &test,const double &trial,
+                const Vector3d &grad_test,const Vector3d &grad_trial,
+                double &localK,double &localR);
+
+    void User1BC(const FECalcType &calctype,
+                const Vector3d &normals,const double &gpU,const Vector3d &gpGradU,
+                const double &bcvalue,
+                const double &test,const double &trial,
+                const Vector3d &grad_test,const Vector3d &grad_trial,
+                double &localK,double &localR);
+
 
 private:
     int _nBCBlocks;
@@ -99,7 +116,9 @@ private:
     Nodes _elNodes;
     double _xs[3][3],_dist;
 
-    Vector3d _normals;
+    Vector3d _normals,_gpGradU,_gpCoord;
+    double _gpU;
+    double _localR,_localK;
     Vec _Useq;
     VecScatter _scatteru;
 

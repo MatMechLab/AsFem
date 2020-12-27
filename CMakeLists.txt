@@ -188,6 +188,8 @@ set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
 set(src ${src} src/BCSystem/ApplyBC.cpp)
 set(src ${src} src/BCSystem/ApplyDirichletBC.cpp)
 set(src ${src} src/BCSystem/ApplyNeumannBC.cpp)
+set(src ${src} src/BCSystem/RunBCLibs.cpp)
+set(src ${src} src/BCSystem/User1BC.cpp)
 
 #############################################################
 ### For Initial condition system in AsFem                 ###

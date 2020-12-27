@@ -150,6 +150,14 @@ public:
         coords[3]=_NodeCoords[(i-1)*3+3-1];
         return coords;
     }
+    inline void GetBulkMeshIthElmtNodes(const int &e,Nodes &nodes)const{
+        for(int i=1;i<=GetBulkMeshIthElmtNodesNum(e);i++){
+            nodes(i,0)=0.0;
+            nodes(i,1)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),1);
+            nodes(i,2)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),2);
+            nodes(i,2)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),2);
+        }
+    }
     inline void GetBulkMeshIthBulkElmtNodes(const int &e,Nodes &nodes)const{
         for(int i=1;i<=GetBulkMeshIthBulkElmtNodesNum(e);i++){
             nodes(i,0)=0.0;

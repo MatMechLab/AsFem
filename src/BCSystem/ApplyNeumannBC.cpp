@@ -36,27 +36,10 @@ void BCSystem::ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &
         if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
 
         _nDim=mesh.GetBulkMeshDimViaPhyName(bcname);
-        // _nNodesPerBCElmt=mesh.GetBCElmtNodesNumViaPhyName(bcname);
-
-        // cout<<"nDim="<<_nDim
-        //     <<" ,bcname="<<bcname
-        //     <<", bcvalue="<<bcvalue
-        //     <<",eEnd="<<eEnd
-        //     <<",nNodesPerBCElmt="<<_nNodesPerBCElmt
-        //     <<endl;
+        _nNodesPerBCElmt=mesh.GetBulkMeshNodesNumPerElmtViaPhysicalName(bcname);
 
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
-            // cout<<"bcname="<<bcname<<", bcvalue="<<bcvalue<<", e="<<ee<<":eEnd="<<eEnd<<endl;
-            // for(i=1;i<=mesh.GetIthElmtNodesNumViaPhyName(bcname,e+1);++i){
-            //     j=mesh.GetIthElmtJthConn(ee,i);
-            //     iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
-            //     VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
-            //     VecSetValues(RHS,1,&iInd,&fix,INSERT_VALUES);
-            //     MatSetValues(K,1,&iInd,1,&iInd,&_PenaltyFactor,INSERT_VALUES);
-            //     // cout<<iInd+1<<" ";
-            // }
-            // cout<<endl;
             if(_nDim==0){
                 // for point case,(bulk dim=1, bc dim=0)
                 for(i=1;i<=_nNodesPerBCElmt;++i){
@@ -67,27 +50,22 @@ void BCSystem::ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &
             }
             else if(_nDim==1){
                 // for line case (bulk dim>=2, bc dim=1)
-                mesh.GetBulkMeshIthBulkElmtNodes(ee,_elNodes);
-                // cout<<"e="<<ee<<":";
+                mesh.GetBulkMeshIthElmtNodes(ee,_elNodes);
                 for(gpInd=1;gpInd<=fe._LineQPoint.GetQpPointsNum();++gpInd){
                     _xi=fe._LineQPoint(gpInd,1);
                     fe._LineShp.Calc(_xi,_elNodes,true);
                     _JxW=fe._LineShp.GetDetJac()*fe._LineQPoint(gpInd,0);
-                    // cout<<"gp="<<gpInd<<", xi="<<_xi<<", w="<<fe._qp_line(gpInd,0)<<",J="<<fe._shp_line.GetDetJac()<<endl;
                     for(i=1;i<=_nNodesPerBCElmt;++i){
                         j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                         iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
                         value=fe._LineShp.shape_value(i)*bcvalue*_JxW;
                         VecSetValue(RHS,iInd,value,ADD_VALUES);
-                        // cout<<"\tiInd="<<iInd<<",x="<<_elNodes(i,1)<<",y="<<_elNodes(i,2)<<",";
-                        // cout<<"j="<<j<<", gp value="<<value<<", shp=";
-                        // cout<<fe._shp_line.shape_value(i)<<endl;
                     }
                 }
             }
             else if(_nDim==2){
                 // for surface case (bulk dim=3, bc dim=2)
-                mesh.GetBulkMeshIthBulkElmtNodes(ee,_elNodes);
+                mesh.GetBulkMeshIthElmtNodes(ee,_elNodes);
                 for(gpInd=1;gpInd<=fe._SurfaceQPoint.GetQpPointsNum();++gpInd){
                     _xi=fe._SurfaceQPoint(gpInd,1);
                     _eta=fe._SurfaceQPoint(gpInd,2);
