@@ -323,7 +323,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         if(!_IsReadOnly){
             MessagePrinter::PrintWarningTxt("no [output] block is found, default output options will be used by AsFem",false);
         }
-        outputSystem.Init();
+        outputSystem.Init(_InputFileName);
     }
 
     if(!HasNonlinearSolverBlock){

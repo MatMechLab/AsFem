@@ -105,6 +105,7 @@ bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSys
     }
     HasType=true;
     outputSystem.InitFromOutputBlock(outputblock);
+    outputSystem.SetInputFileName(_InputFileName);
 
     return HasType;
 }

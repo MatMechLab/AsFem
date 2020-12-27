@@ -21,14 +21,20 @@ OutputSystem::OutputSystem(){
     _Interval=1;
     _OutputType=OutputType::VTU;
     _OutputTypeName="vtu";
-    _OutputFolderName.clear();
+    _OutputFolderName.clear();    
+    _OutputFileName.clear();
+    _InputFileName.clear();
+    _CSVFieldNameList.clear();
 }
 
-void OutputSystem::Init(){
+void OutputSystem::Init(string inputfilename){
     _Interval=1;
     _OutputType=OutputType::VTU;
     _OutputTypeName="vtu";
-    _OutputFolderName.clear();
+    _OutputFolderName.clear();    
+    _OutputFileName.clear();
+    _InputFileName=inputfilename;
+    _CSVFieldNameList.clear();
 }
 
 void OutputSystem::InitFromOutputBlock(OutputBlock &outputblock){
