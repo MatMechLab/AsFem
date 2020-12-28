@@ -53,7 +53,7 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
     bool IsSaveMesh=false;
     string meshtypename;
     bool HasType=false;
-    bool IsPrint=false,IsDepPrint=false;
+    bool IsPrint=true,IsDepPrint=false;
     char buff[55];
 
     // now str should contain "[mesh]"
@@ -494,9 +494,9 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                     string filename=str.substr(5,str.length());
                     _meshio.SetMeshFileName(filename);
                     HasFileName=true;
-                    MessagePrinter::PrintNormalTxt("   start to import mesh ...");
+                    MessagePrinter::PrintNormalTxt("Start to import mesh from gmsh ...");
                     IsSuccess=_meshio.ReadMeshFromFile(mesh);
-                    MessagePrinter::PrintNormalTxt("   import mesh finished   !");
+                    MessagePrinter::PrintNormalTxt("Import mesh finished !");
                     // mesh.SetMeshMode(false);
                 }
             }
@@ -602,9 +602,9 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                    str.compare(str.length()-4,4,".INP")==0){
                     string filename=str.substr(5,str.length());
                     _meshio.SetMeshFileName(filename);
-                    MessagePrinter::PrintNormalTxt("   start to import mesh ...");
+                    MessagePrinter::PrintNormalTxt("Start to import mesh from abaqus ...");
                     IsSuccess=_meshio.ReadMeshFromFile(mesh);
-                    MessagePrinter::PrintNormalTxt("   import mesh finished   !");
+                    MessagePrinter::PrintNormalTxt("Import mesh finished !");
                     HasFileName=true;
                 }
             }
@@ -698,27 +698,29 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
 
     
     if(IsBuiltIn){
-        MessagePrinter::PrintNormalTxt("   start to create mesh ...");
+        MessagePrinter::PrintNormalTxt("Start to create mesh ...");
         if(!mesh.CreateMesh()){
             MessagePrinter::PrintErrorTxt("create mesh failed !!! please check your input file");
             MessagePrinter::AsFem_Exit();
         }
         IsSuccess=true;
-        MessagePrinter::PrintNormalTxt("   mesh generation finished !");
+        MessagePrinter::PrintNormalTxt("Mesh generation finished !");
     }
     if(IsSaveMesh){
         mesh.SaveLagrangeMesh(_MeshFileName);
-        snprintf(buff,55,"save mesh to [%39s]",substr.c_str());
+        snprintf(buff,55,"Save mesh to [%39s]",substr.c_str());
         MessagePrinter::PrintNormalTxt(string(buff));   
     }
     if(IsPrint){
         if(IsDepPrint){
             mesh.PrintMeshDetailInfo();
         }
-        else{
-            mesh.PrintMeshInfo();
-        }
+        // else{
+        //     mesh.PrintMeshInfo();
+        // }
     }
+
+    MessagePrinter::PrintDashLine();
 
     return IsSuccess;
 }

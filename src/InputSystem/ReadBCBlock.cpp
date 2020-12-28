@@ -282,7 +282,7 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                 bcSystem.AddBCBlock2List(bcblock);
             }
             else{
-                msg="information is not complete in [mates] sub block, some information is missing in ["+bcblock._BCBlockName+"]";
+                msg="information is not complete in [bcs] sub block, some information is missing in ["+bcblock._BCBlockName+"]";
                 MessagePrinter::PrintErrorTxt(msg,false);
                 if(!HasElmt){
                     msg="no type found in ["+bcblock._BCBlockName+"] sub block, 'type=' must be given in each [bcs] sub block";

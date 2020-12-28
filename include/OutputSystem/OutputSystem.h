@@ -41,7 +41,7 @@ public:
     //*** basic settings
     //************************************************************
     inline void SetInputFileName(string inputfilename){_InputFileName=inputfilename;}
-
+    void SetOutputType(OutputType outputtype);
     //************************************************************
     //*** basic getting functions
     //************************************************************

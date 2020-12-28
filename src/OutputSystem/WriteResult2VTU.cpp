@@ -61,7 +61,7 @@ void OutputSystem::WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler
         _VTUFile << "<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
         for (e = 1; e <= mesh.GetBulkMeshBulkElmtsNum(); ++e){
             for (j = 1; j <= mesh.GetBulkMeshIthBulkElmtNodesNum(e); ++j){
-                _VTUFile << mesh.GetBulkMeshIthElmtJthNodeID(e, j) - 1 << " ";
+                _VTUFile << mesh.GetBulkMeshIthBulkElmtJthNodeID(e, j) - 1 << " ";
             }
             _VTUFile << "\n";
         }

@@ -88,6 +88,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 HasMeshBlock=true;
             }
             else{
+                MessagePrinter::PrintErrorTxt("some errors detected in the [mesh] block, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 HasMeshBlock=false;
             }
         }
@@ -101,6 +103,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 HasDofsBlock=true;
             }
             else{
+                MessagePrinter::PrintErrorTxt("some errors detected in the [dofs] block, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 HasDofsBlock=false;
             }
         }
@@ -115,6 +119,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasElmtBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [elmts] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasElmtBlock=false;
                 }
             }
@@ -131,6 +137,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasMateBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [mates] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasMateBlock=false;
                 }
             }
@@ -152,6 +160,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasBCBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [bcs] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasBCBlock=false;
                 }
             }
@@ -173,6 +183,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasICBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [ics] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasICBlock=false;
                     MessagePrinter::AsFem_Exit();
                 }
@@ -194,6 +206,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasQPointBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [qpoint] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasQPointBlock=false;
                 }
             }
@@ -210,6 +224,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasOutputBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [output] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasOutputBlock=false;
                 }
             }
@@ -226,6 +242,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasProjectionBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [projection] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasProjectionBlock=false;
                 }
             }
@@ -242,6 +260,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                     HasNonlinearSolverBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [nonlinearsolver] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasNonlinearSolverBlock=false;
                 }
             }
@@ -324,12 +344,16 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
             MessagePrinter::PrintWarningTxt("no [output] block is found, default output options will be used by AsFem",false);
         }
         outputSystem.Init(_InputFileName);
+        outputSystem.SetOutputType(OutputType::VTU);
     }
 
     if(!HasNonlinearSolverBlock){
         if(!_IsReadOnly){
             MessagePrinter::PrintWarningTxt("no [nonlinearsolver] block is found, default newton-raphson with line search solver options will be used by AsFem",false);
         }
+        NonlinearSolverBlock nonlinearSolverBlock;
+        nonlinearSolverBlock.Init();
+        nonlinearSolver.Init(nonlinearSolverBlock);
     }
 
     MessagePrinter::PrintDashLine();

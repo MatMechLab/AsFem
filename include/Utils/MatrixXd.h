@@ -71,13 +71,21 @@ public:
         return *this;
     }
     inline MatrixXd& operator=(const MatrixXd &a){
-        if(_M!=a.GetM()&&_N!=a.GetN()){
-            MessagePrinter::PrintErrorTxt("a=b cant be applied for two matrix with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==0&&_N==0){
+            _M=a.GetM();_N=a.GetN();
+            _MN=_M*_N;_vals.resize(_MN,0.0);
             for(int i=0;i<_MN;++i) _vals[i]=a._vals[i];
             return *this;
+        }
+        else{
+            if(_M!=a.GetM()&&_N!=a.GetN()){
+                MessagePrinter::PrintErrorTxt("a=b cant be applied for two matrix with different size");
+                MessagePrinter::AsFem_Exit();
+            }
+            else{
+                for(int i=0;i<_MN;++i) _vals[i]=a._vals[i];
+                return *this;
+            }
         }
         return *this;
     }

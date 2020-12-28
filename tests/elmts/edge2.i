@@ -5,32 +5,39 @@
   dim=1
   nx=10
   meshtype=edge2
-  printmesh=true
   savemesh=true
 [end]
 
 [dofs]
-name=u v
+name=u
 [end]
 
 [elmts]
   [elmt1]
     type=poisson
-    dofs=u v
-  [end]
-  [elmt2]
-    type=diffusion
-    dofs=u v
+    dofs=u
+    mate=mate1
   [end]
 [end]
 
 [mates]
   [mate1]
     type=constpoisson
-    params=1.0
+    params=1.0 1.0e1
   [end]
-  [mate2]
-    type=constpoisson
-    params=1.0
+[end]
+
+[bcs]
+  [fixleft]
+    type=dirichlet
+    dof=u
+    value=0.1
+    boundary=left
+  [end]
+  [fixright]
+    type=dirichlet
+    dof=u
+    value=0.5
+     boundary=right
   [end]
 [end]

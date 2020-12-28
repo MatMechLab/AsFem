@@ -43,3 +43,18 @@ void OutputSystem::InitFromOutputBlock(OutputBlock &outputblock){
     _OutputTypeName=outputblock._OutputFormatName;
     _OutputFolderName=outputblock._OutputFolderName;
 }
+
+void OutputSystem::SetOutputType(OutputType outputtype){
+    if(outputtype==OutputType::CSV){
+        _OutputType=OutputType::CSV;
+        _OutputTypeName="csv";
+    }
+    else if(outputtype==OutputType::VTK){
+        _OutputType=OutputType::VTK;
+        _OutputTypeName="vtk";
+    }
+    else if(outputtype==OutputType::VTU){
+        _OutputType=OutputType::VTU;
+        _OutputTypeName="vtu";
+    }
+}

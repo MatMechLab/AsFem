@@ -100,3 +100,8 @@ void NonlinearSolver::Init(NonlinearSolverBlock nonlinearsolverblock){
         SNESSetType(_snes,SNESNGMRES);
     }
 }
+
+//***************************************************
+void NonlinearSolver::ReleaseMem(){
+    SNESDestroy(&_snes);
+}

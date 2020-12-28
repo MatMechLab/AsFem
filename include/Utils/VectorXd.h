@@ -60,13 +60,20 @@ public:
         return *this;
     }
     inline VectorXd& operator=(const VectorXd &a){
-        if(_M!=a.GetM()){
-            MessagePrinter::PrintErrorTxt("a=b cant be applied for two vectors with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==0){
+            _M=a.GetM();_vals.resize(_M,0.0);
             for(int i=0;i<_M;++i) _vals[i]=a._vals[i];
             return *this;
+        }
+        else{
+            if(_M!=a.GetM()){
+                MessagePrinter::PrintErrorTxt("a=b cant be applied for two vectors with different size");
+                MessagePrinter::AsFem_Exit();
+            }
+            else{
+                for(int i=0;i<_M;++i) _vals[i]=a._vals[i];
+                return *this;
+            }
         }
         return *this;
     }

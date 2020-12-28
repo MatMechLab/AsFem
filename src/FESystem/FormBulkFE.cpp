@@ -42,7 +42,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
     MPI_Comm_size(PETSC_COMM_WORLD,&_size);
 
-
     // we can get the correct value on the ghosted node!
     VecScatterCreateToAll(U,&_scatteru,&_Useq);
     VecScatterBegin(_scatteru,U,_Useq,INSERT_VALUES,SCATTER_FORWARD);
@@ -64,7 +63,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     VecScatterBegin(_scatterhistold,HistOld,_HistOldSeq,INSERT_VALUES,SCATTER_FORWARD);
     VecScatterEnd(_scatterhistold,HistOld,_HistOldSeq,INSERT_VALUES,SCATTER_FORWARD);
 
-    
 
     int rankne=mesh.GetBulkMeshBulkElmtsNum()/_size;
     int eStart=_rank*rankne;
@@ -78,19 +76,18 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     nDim=mesh.GetDim();
 
     _BulkVolumes=0.0;
+    
     for(int ee=eStart;ee<eEnd;++ee){
         e=ee+1;
         mesh.GetBulkMeshIthBulkElmtNodes(e,_elNodes);
         mesh.GetBulkMeshIthBulkElmtConn(e,_elConn);
-        // dofHandler.GetIthElmtDofIndex(e,_elDofs);
-        dofHandler.GetIthBulkElmtDofIndex(e,_elDofs,_elDofsActiveFlag);
+        dofHandler.GetIthBulkElmtDofIndex0(e,_elDofs,_elDofsActiveFlag);
         nDofs=dofHandler.GetIthBulkElmtDofsNum(e);
         nNodes=mesh.GetBulkMeshIthBulkElmtNodesNum(e);
         nDofsPerNode=nDofs/nNodes;
         
         VecGetValues(_Useq,nDofs,_elDofs.data(),_elU.data());
         VecGetValues(_Vseq,nDofs,_elDofs.data(),_elV.data());
-
         
         if(calctype==FECalcType::ComputeResidual){
             fill(_R.begin(),_R.end(),0.0);
@@ -140,7 +137,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 _gpCoord(2)+=_elNodes(i,2)*fe._BulkShp.shape_value(i);
                 _gpCoord(3)+=_elNodes(i,3)*fe._BulkShp.shape_value(i);
             }
-
+            
             _localK.setZero();_localR.setZero();
             // now we do the loop for local element, *local element could have multiple contributors according
             // to your model, i.e. one element (or one domain) can be assigned by multiple [elmt] sub block in your input file !!!
@@ -207,6 +204,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
                             _gpHist,_gpHistOld,_gpProj,_subK,_subR);
+
                         AssembleSubResidualToLocalResidual(nDofsPerNode,nDofsPerSubElmt,i,_subR,_localR);
                     }
                 }
@@ -222,7 +220,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
                             _gpHist,_gpHistOld,_gpProj,_subK,_subR);
-                            AssembleSubJacobianToLocalJacobian(nDofsPerNode,nDofsPerSubElmt,i,j,_subK,_localK);
+                            
+                            AssembleSubJacobianToLocalJacobian(nDofsPerNode,i,j,_subK,_localK);
                         }
                     }
                 }
@@ -289,12 +288,12 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     // delete scatter
     VecScatterDestroy(&_scatteru);
     VecScatterDestroy(&_scatterv);
-    VecScatterDestroy(&_scatterproj);
+    // VecScatterDestroy(&_scatterproj);
     VecScatterDestroy(&_scatterhist);
     VecScatterDestroy(&_scatterhistold);
     VecDestroy(&_Useq);
     VecDestroy(&_Vseq);
-    VecDestroy(&_ProjSeq);
+    // VecDestroy(&_ProjSeq);
     VecDestroy(&_HistSeq);
     VecDestroy(&_HistOldSeq);
 }

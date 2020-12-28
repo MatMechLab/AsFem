@@ -4,7 +4,8 @@
         "vector": "cpp",
         "iostream": "cpp",
         "*.tcc": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "chrono": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }

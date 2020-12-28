@@ -72,6 +72,7 @@ InputSystem::InputSystem(int args,char *argv[]){
         }
 
         for(int i=4-1;i<args;i++){
+            cout<<"argv["<<i<<"]="<<argv[i]<<endl;
             if(string("--read-only").find(argv[i])!=string::npos){
                 _IsReadOnly=true;
             }
@@ -93,7 +94,7 @@ void InputSystem::InitInputSystem(int args,char *argv[]){
         _MeshFileName.clear();
         _HasInputFileName=false;
         _IsBuiltInMesh=true;
-        _IsReadOnly=true;
+        _IsReadOnly=false;
         // ./asfem -i inputfilename.i
         if(string("-i").find(argv[1])!=string::npos){
             _InputFileName=argv[2];
@@ -110,6 +111,11 @@ void InputSystem::InitInputSystem(int args,char *argv[]){
         }
     }
     else{
+        _InputFileName.clear();
+        _MeshFileName.clear();
+        _HasInputFileName=false;
+        _IsBuiltInMesh=true;
+        _IsReadOnly=false;
         _HasInputFileName=false;
         if(string("-i").find(argv[1])!=string::npos){
             _InputFileName=argv[2];

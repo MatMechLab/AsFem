@@ -8,17 +8,13 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.27
-//+++ Purpose: run the related FEM analysis
+//+++ Date   : 2020.12.28
+//+++ Purpose: Define the analysis type in AsFem, i.e. static, transient
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "FEProblem/FEProblem.h"
+#pragma once
 
-void FEProblem::Run(){
-    ReadInputFile();
-    InitAllComponents();
-
-    if(_feJobType==FEJobType::STATIC){
-        RunStaticAnalysis();
-    }
-}
+enum class FEJobType{
+    STATIC,
+    TRANSIENT
+};

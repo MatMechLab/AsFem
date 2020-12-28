@@ -30,7 +30,7 @@ void EquationSystem::CreateSparsityPattern(DofHandler &dofHandler){
     for(int i=0;i<270;++i){localK[i]=0.0;}
 
     for(int e=eStart;e<eEnd;++e){
-        dofHandler.GetIthBulkElmtDofIndex(e+1,conn);
+        dofHandler.GetIthBulkElmtDofIndex0(e+1,conn);
         nDofs=dofHandler.GetIthBulkElmtDofsNum(e+1);
         MatSetValues(_AMATRIX,nDofs,conn,nDofs,conn,localK,ADD_VALUES);
     }

@@ -58,7 +58,18 @@ public:
             elDofsActiveFlag[i]=_ElmtDofFlag[e-1][i];
         }
     }
+    inline void GetIthBulkElmtDofIndex0(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
+        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_ElmtDofsMap[e-1][i]-1;
+            elDofsActiveFlag[i]=_ElmtDofFlag[e-1][i];
+        }
+    }
 
+    inline void GetIthBulkElmtDofIndex0(const int &e,int (&elDofs)[27])const{
+        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_ElmtDofsMap[e-1][i]-1;
+        }
+    }
     inline void GetIthBulkElmtDofIndex(const int &e,int (&elDofs)[27])const{
         for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
             elDofs[i]=_ElmtDofsMap[e-1][i];

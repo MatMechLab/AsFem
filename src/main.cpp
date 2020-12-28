@@ -6,6 +6,11 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.12.28
+//+++ Purpose: the main program of the whole AsFem framework
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include <iostream>
 #include "petsc.h"
@@ -29,6 +34,7 @@ int main(int args,char *argv[]){
     FEProblem feProblem;
     feProblem.InitFEProblem(args,argv);
     feProblem.Run();
+    feProblem.Finalize();
 
     
     ierr=PetscFinalize();CHKERRQ(ierr);

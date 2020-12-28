@@ -38,7 +38,14 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                     gpHist,gpHistOld,gpProj,
                     localK,localR);
         break;
-    
+    case ElmtType::POISSONELMT:
+        PoissonElmt(calctype,nDim,nNodes,t,dt,ctan,
+                    gpCoords,gpU,gpV,gpGradU,gpGradV,
+                    test,trial,grad_test,grad_trial,
+                    ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                    gpHist,gpHistOld,gpProj,
+                    localK,localR);
+        break;
     default:
         break;
     }

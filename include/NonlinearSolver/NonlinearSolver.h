@@ -86,6 +86,7 @@ public:
             FE &fe,FESystem &feSystem,
             FEControlInfo &fectrlinfo);
 
+    void ReleaseMem();
 private:
     //*********************************************
     //*** For nonlinear solver information

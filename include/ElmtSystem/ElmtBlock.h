@@ -21,6 +21,8 @@
 #include "ElmtSystem/ElmtType.h"
 #include "MateSystem/MateType.h"
 
+#include "Utils/MessagePrinter.h"
+
 using namespace std;
 class ElmtBlock{
 public:
@@ -59,5 +61,24 @@ public:
         _ElmtType=ElmtType::NULLELMT;
         _MateType=MateType::NULLMATE;
         _MateIndex=0;
+    }
+
+    void PrintInfo()const{
+        // char buff[70];
+        string str;
+        MessagePrinter::PrintNormalTxt(" +sub bulk element block information summary:");
+        str="   block name = "+_ElmtBlockName+", using ["+_MateBlockName+"] mate block ( index= "+to_string(_MateIndex)+" )";
+        MessagePrinter::PrintNormalTxt(str);
+
+        str="   DoFs name ( dofs= "+to_string(_nDofs)+" ) = ";
+        for(auto it:_DofsNameList) str+=it+"  ";
+        MessagePrinter::PrintNormalTxt(str);
+
+        str="   DoFs ID ( dofs = "+to_string(_nDofs)+" ) = ";
+        for(auto it:_DofsIDList) str+=to_string(it)+"  ";
+        MessagePrinter::PrintNormalTxt(str);
+
+        str="   domain name ="+_DomainName;
+        MessagePrinter::PrintNormalTxt(str);
     }
 };

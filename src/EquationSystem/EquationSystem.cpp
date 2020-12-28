@@ -40,3 +40,8 @@ void EquationSystem::InitEquationSystem(const int &ndofs,const int &maxrownnz){
     MatSetOption(_AMATRIX,MAT_NEW_NONZERO_ALLOCATION_ERR,PETSC_FALSE);
 }
 //*********************************************************************************
+
+void EquationSystem::ReleaseMem(){
+    MatDestroy(&_AMATRIX);
+    VecDestroy(&_RHS);
+}

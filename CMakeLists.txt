@@ -162,6 +162,8 @@ set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 ### for body source term
 set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
+### for poisson equation
+set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
@@ -275,10 +277,12 @@ set(src ${src} src/FESystem/FEProjection.cpp)
 ### For FEProblem in AsFem  (top level)                   ###
 #############################################################
 set(inc ${inc} include/FEProblem/FEControlInfo.h)
+set(inc ${inc} include/FEProblem/FEJobType.h)
 set(inc ${inc} include/FEProblem/FEProblem.h)
 set(src ${src} src/FEProblem/FEProblem.cpp)
 set(src ${src} src/FEProblem/PreRun.cpp)
 set(src ${src} src/FEProblem/Run.cpp)
+set(src ${src} src/FEProblem/RunStaticAnalysis.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

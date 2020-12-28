@@ -58,6 +58,8 @@ public:
 
     void PrintProjectionInfo()const;
 
+    void ReleaseMem();
+
 public:
     Vec _Unew,_Utemp;
     Vec _Uold,_Uolder;

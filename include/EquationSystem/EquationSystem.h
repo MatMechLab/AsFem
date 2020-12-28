@@ -30,6 +30,8 @@ public:
     void InitEquationSystem(const int &ndofs,const int &maxrownnz);
     void CreateSparsityPattern(DofHandler &dofHandler);
 
+    void ReleaseMem();
+
 public:
     Mat _AMATRIX;
     Vec _RHS;

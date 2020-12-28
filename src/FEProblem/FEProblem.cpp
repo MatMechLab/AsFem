@@ -17,9 +17,17 @@
 #include "FEProblem/FEProblem.h"
 
 FEProblem::FEProblem(){
-
+    _feJobType=FEJobType::STATIC;
 }
 
 void FEProblem::InitFEProblem(int args,char *argv[]){
+    _feJobType=FEJobType::STATIC;
     _inputSystem.InitInputSystem(args,argv);
+}
+
+
+void FEProblem::Finalize(){
+    _solutionSystem.ReleaseMem();
+    _equationSystem.ReleaseMem();
+    _nonlinearSolver.ReleaseMem();
 }

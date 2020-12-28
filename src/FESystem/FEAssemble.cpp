@@ -34,11 +34,11 @@ void FESystem::AssembleLocalResidualToGlobalResidual(const int &ndofs,const vect
     VecSetValues(rhs,ndofs,dofindex.data(),residual.data(),ADD_VALUES);
 }
 //*************************************************************
-void FESystem::AssembleSubJacobianToLocalJacobian(const int &ndofspernode,const int &dofs,
+void FESystem::AssembleSubJacobianToLocalJacobian(const int &ndofspernode,
                                             const int &iInd,const int &jInd,
                                             const MatrixXd &subK,MatrixXd &localK){
-    for(int i=1;i<=dofs;i++){
-        for(int j=1;j<=dofs;j++){
+    for(int i=1;i<=ndofspernode;i++){
+        for(int j=1;j<=ndofspernode;j++){
             localK((iInd-1)*ndofspernode+i,(jInd-1)*ndofspernode+j)+=subK(i,j);
         }
     }
@@ -48,7 +48,8 @@ void FESystem::AccumulateLocalJacobian(const int &dofs,const vector<double> &dof
     for(int i=1;i<=dofs;i++){
         if(dofsactiveflag[i-1]>0.0){
             for(int j=1;j<=dofs;j++){
-                sumK[(i-1)*dofs+j]+=localK(i,j)*JxW;
+                sumK[(i-1)*dofs+j-1]+=localK(i,j)*JxW;
+                if(localK(i,j)*JxW>_MaxKMatrixValue) _MaxKMatrixValue=localK(i,j)*JxW;
             }
         }
     }

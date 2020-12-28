@@ -33,8 +33,8 @@ void BCSystem::ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,co
         if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
 
         for(e=eStart;e<eEnd;++e){
-            ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
-            for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,ee);++i){
+            ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);//global id
+            for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(ee);++i){
                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                 iInd=dofHandler.GetIthNodeJthDofIndex(j,dofindex)-1;
                 if(calctype==FECalcType::ComputeResidual) {

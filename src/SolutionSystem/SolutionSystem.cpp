@@ -40,3 +40,22 @@ void SolutionSystem::PrintProjectionInfo()const{
     MessagePrinter::PrintNormalTxt(msg);
     MessagePrinter::PrintDashLine();
 }
+
+//*******************************************
+void SolutionSystem::ReleaseMem(){
+    VecDestroy(&_Unew);
+    VecDestroy(&_Utemp);
+
+    VecDestroy(&_Uold);
+    VecDestroy(&_Uolder);
+
+    VecDestroy(&_dU);
+
+    VecDestroy(&_V);
+    VecDestroy(&_Vold);
+    VecDestroy(&_Volder);
+
+    VecDestroy(&_Hist);
+    VecDestroy(&_HistOld);
+    VecDestroy(&_Proj);
+}

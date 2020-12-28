@@ -67,11 +67,11 @@ void FESystem::InitBulkFESystem(const Mesh &mesh,
     _nGPoints=fe._BulkQPoint.GetQpPointsNum();
     
     
-    _localK=MatrixXd(dofHandler.GetMaxDofsNumPerBulkElmt(),dofHandler.GetMaxDofsNumPerBulkElmt());
-    _localR=VectorXd(dofHandler.GetMaxDofsNumPerBulkElmt());
+    _localK.Resize(dofHandler.GetMaxDofsNumPerBulkElmt(),dofHandler.GetMaxDofsNumPerBulkElmt());
+    _localR.Resize(dofHandler.GetMaxDofsNumPerBulkElmt());
 
-    _subK=MatrixXd(dofHandler.GetDofsNumPerNode(),dofHandler.GetDofsNumPerNode());
-    _subR=VectorXd(dofHandler.GetDofsNumPerNode());
+    _subK.Resize(dofHandler.GetDofsNumPerNode(),dofHandler.GetDofsNumPerNode());
+    _subR.Resize(dofHandler.GetDofsNumPerNode());
 
     _K.resize(dofHandler.GetMaxDofsNumPerBulkElmt()*dofHandler.GetMaxDofsNumPerBulkElmt(),0.0);
     _R.resize(dofHandler.GetMaxDofsNumPerBulkElmt(),0.0);
@@ -85,7 +85,7 @@ void FESystem::InitBulkFESystem(const Mesh &mesh,
     double w,xi,eta,zeta,DetJac,JxW;
     int nDim=mesh.GetDim();
     _KMatrixFactor=1.0e16;
-    int einc=int(1.0*mesh.GetBulkMeshBulkElmtsNum()/10);
+    int einc=int(1.0*mesh.GetBulkMeshBulkElmtsNum()/200);
     if(einc<1) einc=1;
     _BulkVolumes=0.0;
     for(e=1;e<=mesh.GetBulkMeshBulkElmtsNum();e+=einc){

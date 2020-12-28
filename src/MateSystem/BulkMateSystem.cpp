@@ -63,16 +63,18 @@ void BulkMateSystem::InitBulkMateSystem(){
 //***********************************************************
 void BulkMateSystem::PrintBulkMateSystemInfo()const{
     if(_nBulkMateBlocks>0){
-        PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
-        MessagePrinter::PrintDashLine();
         MessagePrinter::PrintNormalTxt("Material system information summary:");
         string str;
         for(auto it:_BulkMateBlockList){
-            str="  mate block name="+it._MateBlockName+", mate type="+it._MateTypeName;
+            str=" +material block information summary:";
             MessagePrinter::PrintNormalTxt(str);
-            str="  parameters=";
-            for(auto sit:it._Parameters) str+=to_string(sit);
+
+            str="   mate block name="+it._MateBlockName+", mate type="+it._MateTypeName+", block index="+to_string(it._MateBlockIndex);
+            MessagePrinter::PrintNormalTxt(str);
+            str="   parameters=";
+            for(auto sit:it._Parameters) str+=to_string(sit)+" ";
             MessagePrinter::PrintNormalTxt(str);
         }
+        MessagePrinter::PrintDashLine();
     }
 }

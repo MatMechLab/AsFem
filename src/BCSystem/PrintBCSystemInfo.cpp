@@ -20,34 +20,34 @@ void BCSystem::PrintBCSystemInfo()const{
     char buff[len];
     string str;
     for(auto it:_BCBlockList){
-        snprintf(buff,len,"+Boundary block information:");
+        snprintf(buff,len," +Boundary block information:");
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
         //*
-        snprintf(buff,len,"  boundary block name = [%40s]",it._BCBlockName.c_str());
+        snprintf(buff,len,"   boundary block name = [%40s]",it._BCBlockName.c_str());
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
         //*
         if(it._IsTimeDependent){
-            snprintf(buff,len,"  boundary type name  = %15s (Time dependent)",it._BCTypeName.c_str());
+            snprintf(buff,len,"   boundary type name  = %15s (Time dependent)",it._BCTypeName.c_str());
             str=buff;
             MessagePrinter::PrintNormalTxt(str);
         }
         else{
-            snprintf(buff,len,"  boundary type name  = %15s",it._BCTypeName.c_str());
+            snprintf(buff,len,"   boundary type name  = %15s",it._BCTypeName.c_str());
             str=buff;
             MessagePrinter::PrintNormalTxt(str);
         }
         //*
-        snprintf(buff,len,"  dof name            = %15s, dof index=%2d",it._DofName.c_str(),it._DofID);
+        snprintf(buff,len,"   dof name            = %15s, dof index=%2d",it._DofName.c_str(),it._DofID);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
         //*
-        snprintf(buff,len,"  boundary value      = %14.6e",it._BCValue);
+        snprintf(buff,len,"   boundary value      = %14.6e",it._BCValue);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
         //*
-        str="  boundary name       =";
+        str="   boundary name       =";
         for(auto bcname:it._BoundaryNameList){
             str+=bcname;
         }

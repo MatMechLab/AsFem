@@ -17,25 +17,31 @@
 
 void LagrangeMesh::PrintBulkMeshInfo()const{
     char buff[70];
-    MessagePrinter::PrintDashLine();
+    // MessagePrinter::PrintDashLine();
     MessagePrinter::PrintNormalTxt("Mesh information summary:");
     
-    snprintf(buff,70,"  nodes=%9d, elmts=%9d, nodesperbulkelmt=%3d",GetBulkMeshNodesNum(),GetBulkMeshElmtsNum(),GetBulkMeshNodesNumPerBulkElmt());
+    snprintf(buff,70,"  nodes=%9d, nodesperbulkelmt=%3d, dim=%1d(max)-->%1d(min)",GetBulkMeshNodesNum(),GetBulkMeshNodesNumPerBulkElmt(),GetBulkMeshDim(),GetBulkMeshMinDim());
     MessagePrinter::PrintNormalTxt(string(buff));
 
-    snprintf(buff,70,"  max dim=%2d, min dim=%2d, phygroup=%4d, meshtype=%6s, order=%1d",
-                     GetBulkMeshDim(),GetBulkMeshMinDim(),GetBulkMeshPhysicalGroupNum(),GetBulkMeshBulkElmtTypeName().c_str(),GetBulkMeshOrder());
+
+    snprintf(buff,70,"  elmts=%9d, bulk elmts=%9d, sub dim elmts=%6d",GetBulkMeshElmtsNum(),GetBulkMeshBulkElmtsNum(),GetBulkMeshElmtsNum()-GetBulkMeshBulkElmtsNum());
     MessagePrinter::PrintNormalTxt(string(buff));
 
-    MessagePrinter::PrintNormalTxt("  physical id                    phsical Name             elmts");
 
-    int phyid,n;
+    snprintf(buff,70,"  physical groups=%4d, bulk mesh type=%8s, bulk mesh order=%2d",
+                    GetBulkMeshPhysicalGroupNum(),GetBulkMeshBulkElmtTypeName().c_str(),GetBulkMeshOrder());
+    MessagePrinter::PrintNormalTxt(string(buff));
+
+    MessagePrinter::PrintNormalTxt("  physical id       dim                phsical Name          elmts");
+
+    int phyid,n,dim;
     string phyname;
     for(int i=0;i<GetBulkMeshPhysicalGroupNum();i++){
         phyid=GetBulkMeshIthPhysicalID(i+1);
         phyname=GetBulkMeshIthPhysicalName(i+1);
         n=GetBulkMeshElmtsNumViaPhysicalName(phyname);
-        snprintf(buff,70,"  %6d      %30s          %8d",phyid,phyname.c_str(),n);
+        dim=GetBulkMeshDimViaPhyName(phyname);
+        snprintf(buff,70,"  %6d            %2d %28s      %8d",phyid,dim,phyname.c_str(),n);
         MessagePrinter::PrintNormalTxt(string(buff));
     }
     MessagePrinter::PrintDashLine();

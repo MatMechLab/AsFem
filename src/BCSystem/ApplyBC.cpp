@@ -252,6 +252,14 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
             }//===> end-of-boundary-name-list-loop
         }
     }
+
+    VecAssemblyBegin(U);
+    VecAssemblyEnd(U);
+    VecAssemblyBegin(RHS);
+    VecAssemblyEnd(RHS);
+
+    MatAssemblyBegin(AMATRIX,MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(AMATRIX,MAT_FINAL_ASSEMBLY);
 }
 //****************************************************
 void BCSystem::ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,const double &t,Vec &U){

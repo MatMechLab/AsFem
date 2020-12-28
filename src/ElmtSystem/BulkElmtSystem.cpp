@@ -91,3 +91,12 @@ void BulkElmtSystem::AddBulkElmtBlock2List(ElmtBlock &elmtBlock){
         }
     }
 }
+
+//*******************************************************
+void BulkElmtSystem::PrintBulkElmtInfo()const{
+    MessagePrinter::PrintNormalTxt("Element system information summary:");
+    for(auto it:_BulkElmtBlockList){
+        it.PrintInfo();
+    }
+    MessagePrinter::PrintDashLine();
+}

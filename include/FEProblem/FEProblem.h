@@ -16,6 +16,9 @@
 
 #pragma once
 
+#include <iostream>
+#include <ctime>
+#include <chrono>
 
 #include "InputSystem/InputSystem.h"
 #include "Mesh/Mesh.h"
@@ -31,6 +34,10 @@
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "OutputSystem/OutputSystem.h"
 
+#include "FEProblem/FEJobType.h"
+#include "FEProblem/FEControlInfo.h"
+
+using namespace std;
 
 class FEProblem{
 public:
@@ -39,6 +46,8 @@ public:
     void InitFEProblem(int args,char *argv[]);
 
     void Run();
+
+    void Finalize();
 
 private:
     void ReadInputFile();
@@ -61,5 +70,22 @@ private:
     EquationSystem _equationSystem;
     NonlinearSolver _nonlinearSolver;
     OutputSystem _outputSystem;
+
+    FEJobType _feJobType;
+
+    FEControlInfo _feCtrlInfo;
+
+private:
+    //****************************************************************
+    //*** for profiling
+    //****************************************************************
+    PetscMPIInt _rank;
+    double Duration(chrono::high_resolution_clock::time_point &p1,chrono::high_resolution_clock::time_point &p2){
+        return chrono::duration_cast<std::chrono::microseconds>(p2-p1).count()/1.0e6;
+    }
+
+    chrono::high_resolution_clock::time_point _TimerStart,_TimerEnd;
+    double _Duration;
+
 
 };

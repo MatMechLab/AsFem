@@ -85,7 +85,7 @@ private:
     //*********************************************************
     //*** assemble jacobian to local and global one
     //*********************************************************
-    void AssembleSubJacobianToLocalJacobian(const int &ndofspernode,const int &dofs,
+    void AssembleSubJacobianToLocalJacobian(const int &ndofspernode,
                                             const int &iInd,const int &jInd,
                                             const MatrixXd &subK,MatrixXd &localK);
     void AccumulateLocalJacobian(const int &dofs,const vector<double> &dofsactiveflag,const double &JxW,
@@ -133,7 +133,7 @@ private:
     vector<double> _MaterialValues;
     Vector3d _gpCoord;
     int _nHist,_nProj,_nGPoints;
-    double _MaxKMatrixValue=-1.0e3,_KMatrixFactor=0.1;
+    double _MaxKMatrixValue=-1.0e9,_KMatrixFactor=0.1;
 
     ElmtType elmttype;
     MateType matetype;

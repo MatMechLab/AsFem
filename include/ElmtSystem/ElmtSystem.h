@@ -30,6 +30,7 @@ class ElmtSystem:public BulkElmtSystem{
 public:
     ElmtSystem();
 
+    void PrintElmtSystemInfo()const{PrintBulkElmtInfo();}
     //*******************************************
     //*** some getting funs
     //*******************************************

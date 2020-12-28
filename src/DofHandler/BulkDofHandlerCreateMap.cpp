@@ -25,13 +25,13 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
     _nNodesPerBulkElmt=mesh.GetBulkMeshNodesNumPerBulkElmt();
     _nMaxDofsPerElmt=_nNodesPerBulkElmt*_nDofsPerNode;
 
-    _NodalDofFlag.resize(_nNodes,vector<double>(_nDofsPerNode,0.0));// for dirichlet bc is  : 0
+    _NodalDofFlag.resize(_nNodes,vector<double>(_nDofsPerNode,-1.0));// for dirichlet bc is  : 0
                                                                     // for neumann bc is    : 1
                                                                     // for robin/other bc is: 2
-    _ElmtDofFlag.resize(_nBulkElmts,vector<double>(_nMaxDofsPerElmt,0.0));
+    _ElmtDofFlag.resize(_nBulkElmts,vector<double>(_nMaxDofsPerElmt,-1.0));
 
-    _NodeDofsMap.resize(_nNodes,vector<int>(_nDofsPerNode,0));
-    _ElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,0));
+    _NodeDofsMap.resize(_nNodes,vector<int>(_nDofsPerNode,-1));
+    _ElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,-1));
 
     vector<pair<ElmtType,MateType>> temp;
     temp.clear();
@@ -98,8 +98,8 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
             _ElmtElmtMateTypePairList[ee-1].push_back(make_pair(elmttype,matetype));
             _ElmtLocalDofIndex[ee-1].push_back(dofindex);
             _ElmtElmtMateIndexList[ee-1].push_back(mateindex);
-            for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(e);i++){
-                iInd=mesh.GetBulkMeshIthElmtJthNodeID(e,i);
+            for(i=1;i<=mesh.GetBulkMeshIthBulkElmtNodesNum(ee);i++){
+                iInd=mesh.GetBulkMeshIthBulkElmtJthNodeID(ee,i);
                 for(j=1;j<=ndofs;j++){
                     jInd=dofindex[j-1];
                     _NodeDofsMap[iInd-1][jInd-1]=1;
@@ -158,29 +158,34 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
             for(k=1;k<=_nDofsPerNode;k++){
                 ii=(j-1)*_nDofsPerNode+k-1;
 
-                if(_NodalDofFlag[iInd-1][k-1]>0.0){
+                if(_NodalDofFlag[iInd-1][k-1]>=0.0){
                     _ElmtDofsMap[e-1][ii]=_NodeDofsMap[iInd-1][k-1];
                     _RowNNZ[_NodeDofsMap[iInd-1][k-1]-1]+=_nMaxDofsPerElmt;
 
                     if(_RowNNZ[_NodeDofsMap[iInd-1][k-1]-1]>_RowMaxNNZ){
                         _RowMaxNNZ=_RowNNZ[_NodeDofsMap[iInd-1][k-1]-1];
                     }
-
-                    _ElmtDofFlag[e-1][ii]=1.0;
+                    if(_NodalDofFlag[iInd-1][k-1]>0.0){
+                        _ElmtDofFlag[e-1][ii]=1.0;
+                    }
+                    else if(_NodalDofFlag[iInd-1][k-1]==0.0){
+                        _ElmtDofFlag[e-1][ii]=0.0;
+                    }
                 }
             }
         }
         // remove the zero element space
         _ElmtDofFlag[e-1].erase(
-            remove(_ElmtDofFlag[e-1].begin(),_ElmtDofFlag[e-1].end(),0.0),
+            remove(_ElmtDofFlag[e-1].begin(),_ElmtDofFlag[e-1].end(),-1.0),
             _ElmtDofFlag[e-1].end()
         );
         _ElmtDofFlag[e-1].shrink_to_fit();
 
         _ElmtDofsMap[e-1].erase(
-            remove(_ElmtDofsMap[e-1].begin(),_ElmtDofsMap[e-1].end(),0),
+            remove(_ElmtDofsMap[e-1].begin(),_ElmtDofsMap[e-1].end(),-1),
             _ElmtDofsMap[e-1].end()
         );
         _ElmtDofsMap[e-1].shrink_to_fit();
     }
+
 }

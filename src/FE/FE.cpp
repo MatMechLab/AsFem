@@ -109,7 +109,7 @@ void FE::InitFE(Mesh &mesh){
 //*******************************************
 void FE::PrintFEInfo()const{
     string msg;
-    MessagePrinter::PrintNormalTxt("Summary information of qpoint");
+    MessagePrinter::PrintNormalTxt("QPoint information summary:");
     if(_BulkQPoint.GetQpPointType()==QPointType::GAUSSLEGENDRE){
         msg="  qpoint type= Gauss-Legendre, dim="+to_string(GetDim());
     }

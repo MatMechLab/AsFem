@@ -27,4 +27,5 @@ class MateSystem:public BulkMateSystem{
 public:
     MateSystem();
 
+    void PrintMateSystemInfo()const{PrintBulkMateSystemInfo();}
 };

@@ -52,12 +52,11 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
     int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);// just to get rid of unused snes warning
-    // user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
+    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
 
     // calculate the current velocity
     VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._Uold,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
-
     
     user->_feSystem.FormBulkFE(FECalcType::ComputeResidual,
                         user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
@@ -68,13 +67,12 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
                         user->_solutionSystem._Proj,
                         user->_equationSystem._AMATRIX,RHS);
     
-    // user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
+    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
 
-    // user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-    //                     user->_fectrlinfo.t,user->_fectrlinfo.ctan,
-    //                     user->_equationSystem._AMATRIX,RHS,user->_solution._Utemp);
-
-
+    user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
+                    FECalcType::ComputeResidual,user->_fectrlinfo.t,user->_fectrlinfo.ctan,U,
+                    user->_equationSystem._AMATRIX,RHS);
+    
     return 0;
 }
 
@@ -86,13 +84,11 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     int i;
 
     user->_feSystem.ResetMaxAMatrixValue();
-
-    // user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
+    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
 
     //*** calculate the current velocity
     VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._Uold,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
-
 
     user->_feSystem.FormBulkFE(FECalcType::ComputeJacobian,
                         user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
@@ -103,24 +99,22 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
                         user->_solutionSystem._Proj,
                         A,user->_equationSystem._RHS);
     
-    // if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){
-    //     user->_bcSystem.SetBCPenaltyFactor(1.0e20);
-    // }
-    // else if(user->_feSystem.GetMaxAMatrixValue()>1.0e6&&user->_feSystem.GetMaxAMatrixValue()<=1.0e12){
-    //     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
-    // }
-    // else if(user->_feSystem.GetMaxAMatrixValue()>1.0e3&&user->_feSystem.GetMaxAMatrixValue()<=1.0e6){
-    //     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e12);
-    // }
-    // else{
-    //     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e16);
-    // }
+    if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){
+        user->_bcSystem.SetBCPenaltyFactor(1.0e20);
+    }
+    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e6&&user->_feSystem.GetMaxAMatrixValue()<=1.0e12){
+        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
+    }
+    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e3&&user->_feSystem.GetMaxAMatrixValue()<=1.0e6){
+        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e12);
+    }
+    else{
+        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e16);
+    }
 
-    // user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-    //                     user->_fectrlinfo.t,user->_fectrlinfo.ctan,
-    //                     A,user->_equationSystem._RHS,user->_solution._Utemp);
-
-   
+    user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
+                    FECalcType::ComputeJacobian,user->_fectrlinfo.t,user->_fectrlinfo.ctan,U,
+                    A,user->_equationSystem._RHS);
 
     MatGetSize(B,&i,&i);
     SNESGetMaxNonlinearStepFailures(snes,&i);
@@ -137,6 +131,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
                         SolutionSystem &solutionSystem,EquationSystem &equationSystem,
                         FE &fe,FESystem &feSystem,
                         FEControlInfo &fectrlinfo){
+    
     _appctx=AppCtx{mesh,dofHandler,
                    bcSystem,icSystem,
                    elmtSystem,mateSystem,
@@ -144,7 +139,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
                    fe,feSystem,
                    fectrlinfo
                    };
-
+    
     _monctx=MonitorCtx{0.0,1.0,
             0.0,1.0,
             0.0,1.0,
@@ -152,7 +147,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
             fectrlinfo.IsDepDebug};
 
 
-    // _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,1.0,_appctx._solution._Unew);
+    _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,1.0,_appctx._solutionSystem._Unew);
     
     SNESSetFunction(_snes,_appctx._equationSystem._RHS,ComputeResidual,&_appctx);
 
@@ -164,7 +159,9 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     SNESSetFromOptions(_snes);
 
+    
     SNESSolve(_snes,NULL,_appctx._solutionSystem._Unew);
+    
 
     SNESGetConvergedReason(_snes,&_snesreason);
     
