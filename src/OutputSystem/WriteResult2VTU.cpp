@@ -33,6 +33,7 @@ void OutputSystem::WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler
         }
         int i,j,iInd,e;
 
+        _OutputFileName=_VTUFileName;
         //****************************************
         //*** print out header information
         //****************************************
@@ -136,6 +137,8 @@ void OutputSystem::WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler
             MessagePrinter::AsFem_Exit();
         }
         int i,j,iInd,e;
+
+        _OutputFileName=_VTUFileName;
 
         //****************************************
         //*** print out header information

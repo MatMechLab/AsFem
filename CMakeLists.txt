@@ -109,6 +109,7 @@ set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
 set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
 set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
+set(src ${src} src/InputSystem/ReadFEJobBlock.cpp)
 
 #############################################################
 ### For Mesh class                                        ###
@@ -278,6 +279,7 @@ set(src ${src} src/FESystem/FEProjection.cpp)
 #############################################################
 set(inc ${inc} include/FEProblem/FEControlInfo.h)
 set(inc ${inc} include/FEProblem/FEJobType.h)
+set(inc ${inc} include/FEProblem/FEJobBlock.h)
 set(inc ${inc} include/FEProblem/FEProblem.h)
 set(src ${src} src/FEProblem/FEProblem.cpp)
 set(src ${src} src/FEProblem/PreRun.cpp)

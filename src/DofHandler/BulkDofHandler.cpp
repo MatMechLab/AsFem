@@ -67,9 +67,9 @@ void BulkDofHandler::AddDofNameFromStrVec(vector<string> &namelist){
 }
 //**************************************************
 void BulkDofHandler::PrintBulkDofInfo()const{
-    char buff[50];
+    char buff[70];
     MessagePrinter::PrintNormalTxt("Degrees of freedom (DoFs) information summary");
-    snprintf(buff,50,"  each node has %2d dofs (max)",GetDofsNumPerNode());
+    snprintf(buff,70,"  each node has %2d dofs (max), total dofs=%6d",GetDofsNumPerNode(),GetActiveDofsNum());
     MessagePrinter::PrintNormalTxt(string(buff));
 
     MessagePrinter::PrintNormalTxt("  DoFs id                                 DoFs name");

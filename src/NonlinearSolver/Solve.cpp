@@ -38,7 +38,7 @@ PetscErrorCode Monitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
         user->enorm0=user->enorm;
     }
     if(user->IsDepDebug){
-        snprintf(buff,68,"SNES solver: iters=%3d,|R|=%12.5e,|dU|=%12.5e",iters,rnorm,user->dunorm);
+        snprintf(buff,68,"  SNES solver: iters=%3d,|R|=%12.5e,|dU|=%12.5e",iters,rnorm,user->dunorm);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
     }
@@ -175,7 +175,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     if(_snesreason==SNES_CONVERGED_FNORM_ABS){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"Converged for |R|<atol, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |R|<atol, final iters=%3d",_monctx.iters+1);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
@@ -183,7 +183,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_FNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"Converged for |R|<rtol*|R0|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |R|<rtol*|R0|, final iters=%3d",_monctx.iters+1);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
@@ -191,14 +191,14 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_SNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         return true;
     }
     else{
-        snprintf(buff,65,"Divergent, SNES nonlinear solver failed, iters=%3d",_monctx.iters+1);
+        snprintf(buff,65,"  Divergent, SNES nonlinear solver failed, iters=%3d",_monctx.iters+1);
         str=buff;
         MessagePrinter::PrintShortTxt(str);
         return false;

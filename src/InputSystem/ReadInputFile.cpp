@@ -23,7 +23,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 FE &fe,
                                 SolutionSystem &solutionSystem,
                                 OutputSystem &outputSystem,
-                                NonlinearSolver &nonlinearSolver){
+                                NonlinearSolver &nonlinearSolver,
+                                FEJobBlock &feJobBlock){
     ifstream in;
     string str;
     int linenum=0;
@@ -38,6 +39,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasOutputBlock=false;
     bool HasProjectionBlock=false;
     bool HasNonlinearSolverBlock=false;
+    bool HasFEJobBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -271,6 +273,24 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if((str.find("[job]")!=string::npos)&&str.length()==5){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadFEJobBlock(in,str,linenum,feJobBlock)){
+                    HasFEJobBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [job] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasFEJobBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[job]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
         else if(str.find("[]")!=string::npos){
             MessagePrinter::PrintErrorInLineNumber(linenum);
             MessagePrinter::PrintErrorTxt("the bracket pair is not complete in your input file, you should check it",false);
@@ -355,6 +375,11 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         NonlinearSolverBlock nonlinearSolverBlock;
         nonlinearSolverBlock.Init();
         nonlinearSolver.Init(nonlinearSolverBlock);
+    }
+
+    if(!HasFEJobBlock){
+        MessagePrinter::PrintErrorTxt("no [job] block is found, for FEM analysis, the [job] is required");
+        MessagePrinter::AsFem_Exit();
     }
 
     MessagePrinter::PrintDashLine();

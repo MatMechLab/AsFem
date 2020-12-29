@@ -105,3 +105,39 @@ void NonlinearSolver::Init(NonlinearSolverBlock nonlinearsolverblock){
 void NonlinearSolver::ReleaseMem(){
     SNESDestroy(&_snes);
 }
+
+//****************************************************
+void NonlinearSolver::PrintInfo()const{
+    MessagePrinter::PrintNormalTxt(" Nonlinear solver information summary:");
+    char buff[70];
+    string str;
+
+    if(_SolverType==NonlinearSolverType::NEWTON||_SolverType==NonlinearSolverType::NEWTONLS){
+        str="   solver type= newton with line search";
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONTR){
+        str="   solver type= newton trust region";
+    }
+    else if(_SolverType==NonlinearSolverType::BFGS){
+        str="   solver type= BFGS";
+    }
+    else if(_SolverType==NonlinearSolverType::BROYDEN){
+        str="   solver type= Broyden";
+    }
+    else if(_SolverType==NonlinearSolverType::BADBROYDEN){
+        str="   solver type= Bad Broyden";
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONCG){
+        str="   solver type= newton CG";
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONGMRES){
+        str="   solver type= newton GMRES";
+    }
+    MessagePrinter::PrintNormalTxt(str);
+
+    snprintf(buff,70,"   max iters=%3d, abs R tol=%13.5e, rel R tol=%13.5e",_MaxIters,_RAbsTol,_RRelTol);
+    str=buff;
+    MessagePrinter::PrintNormalTxt(str);
+    
+    MessagePrinter::PrintDashLine();
+}

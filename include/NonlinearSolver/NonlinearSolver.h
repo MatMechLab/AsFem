@@ -87,6 +87,8 @@ public:
             FEControlInfo &fectrlinfo);
 
     void ReleaseMem();
+
+    void PrintInfo()const;
 private:
     //*********************************************
     //*** For nonlinear solver information

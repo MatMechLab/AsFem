@@ -17,7 +17,7 @@
 void FEProblem::ReadInputFile(){
     _inputSystem.ReadInputFile(_mesh,_dofHandler,
     _elmtSystem,_mateSystem,_bcSystem,_icSystem,_fe,
-    _solutionSystem,_outputSystem,_nonlinearSolver);
+    _solutionSystem,_outputSystem,_nonlinearSolver,_feJobBlock);
 
     _mesh.PrintMeshInfo();
     _dofHandler.PrintAllDofInfo();
@@ -35,6 +35,17 @@ void FEProblem::ReadInputFile(){
     if(_solutionSystem.IsProjection()){
         _solutionSystem.PrintProjectionInfo();
     }
+
+    _outputSystem.PrintInfo();
+
+    _nonlinearSolver.PrintInfo();
+
+    _feJobType=_feJobBlock._jobType;
+    _feCtrlInfo.IsDebug=_feJobBlock._IsDebug;
+    _feCtrlInfo.IsDepDebug=_feJobBlock._IsDepDebug;
+    _feCtrlInfo.IsProjection=_solutionSystem.IsProjection();
+
+    _feJobBlock.PrintJobInfo();
 }
 //******************************************
 void FEProblem::InitAllComponents(){

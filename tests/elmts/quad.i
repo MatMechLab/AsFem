@@ -6,7 +6,7 @@
   nx=100
   ny=100
   meshtype=quad9
-  savemesh=true
+  //savemesh=true
 [end]
 
 [dofs]
@@ -41,4 +41,13 @@ name=u
     value=0.5
      boundary=right
   [end]
+[end]
+
+
+[projection]
+name=uproj dux duy
+[end]
+
+[job]
+  type=static
 [end]

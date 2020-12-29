@@ -36,6 +36,7 @@
 
 #include "FEProblem/FEJobType.h"
 #include "FEProblem/FEControlInfo.h"
+#include "FEProblem/FEJobBlock.h"
 
 using namespace std;
 
@@ -74,6 +75,8 @@ private:
     FEJobType _feJobType;
 
     FEControlInfo _feCtrlInfo;
+
+    FEJobBlock _feJobBlock;
 
 private:
     //****************************************************************

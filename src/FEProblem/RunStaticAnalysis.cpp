@@ -15,7 +15,7 @@
 #include "FEProblem/FEProblem.h"
 
 void FEProblem::RunStaticAnalysis(){
-    MessagePrinter::PrintStars();
+    // MessagePrinter::PrintStars();
     MessagePrinter::PrintNormalTxt("Start to do the static FEM analysis ...");
     if(_rank==0){
         _TimerStart=chrono::high_resolution_clock::now();
@@ -32,17 +32,29 @@ void FEProblem::RunStaticAnalysis(){
             _Duration=Duration(_TimerStart,_TimerEnd);
         }
         char buff[70];string str;
-        snprintf(buff,70,"Static analysis finished! [time=%14.6e]",_Duration);
+        snprintf(buff,70,"Static analysis finished! [elapse time=%14.6e]",_Duration);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
-        // _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
-
-        _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
-        _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,_solutionSystem._Unew,_solutionSystem._V,
-        _solutionSystem._Hist,_solutionSystem._HistOld,_solutionSystem._Proj,_equationSystem._AMATRIX,_equationSystem._RHS);
+        if(_feCtrlInfo.IsProjection){
+            _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
+                _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,
+                _solutionSystem._Unew,_solutionSystem._V,
+                _solutionSystem._Hist,_solutionSystem._HistOld,_solutionSystem._Proj,
+                _equationSystem._AMATRIX,_equationSystem._RHS);
 
         
-        _outputSystem.WriteResultToFile(_mesh,_dofHandler,
-        _solutionSystem._Unew,_solutionSystem.GetProjNumPerNode(),_solutionSystem.GetProjNameVec(),_solutionSystem._Proj);
+            _outputSystem.WriteResultToFile(_mesh,_dofHandler,
+            _solutionSystem._Unew,_solutionSystem.GetProjNumPerNode(),_solutionSystem.GetProjNameVec(),_solutionSystem._Proj);
+        }
+        else{
+             _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
+        }
+        MessagePrinter::PrintStars();
+        MessagePrinter::PrintNormalTxt("Write result to "+_outputSystem.GetOutputFileName());
+        MessagePrinter::PrintStars();
+    }
+    else{
+        MessagePrinter::PrintNormalTxt("SNES solver failed for your static analysis, please check either your code or your boundary condition");
+        MessagePrinter::AsFem_Exit();
     }
 }

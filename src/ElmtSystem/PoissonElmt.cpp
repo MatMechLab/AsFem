@@ -30,7 +30,7 @@ void BulkElmtSystem::PoissonElmt(const FECalcType &calctype,
                 MatrixXd &localK,VectorXd &localR){
     //*******************************************************
     //*** to get rid of the warning for unused variables  ***
-    //*** for normal users, you dont need to do this       ***
+    //*** for normal users, you dont need to do this      ***
     //*******************************************************
     if(nDim||nNodes||t||dt||ctan[0]||gpCoords(1)||gpU.size()||gpV.size()||
        gpGradU.size()||gpGradV.size()||test||trial||grad_test(1)||grad_trial(1)||

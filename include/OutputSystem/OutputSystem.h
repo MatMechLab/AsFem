@@ -55,6 +55,8 @@ public:
     void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,
     const int &nProj,const vector<string> &projname,const Vec &Proj);
 
+    void PrintInfo()const;
+    
 private:
     void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
     void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);

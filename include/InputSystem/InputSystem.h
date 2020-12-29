@@ -41,6 +41,7 @@
 #include "SolutionSystem/SolutionSystem.h"
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "OutputSystem/OutputSystem.h"
+#include "FEProblem/FEJobBlock.h"
 
 
 class InputSystem{
@@ -54,7 +55,8 @@ public:
                        FE &fe,
                        SolutionSystem &solutionSystem,
                        OutputSystem &outputSystem,
-                       NonlinearSolver &nonlinearSolver);
+                       NonlinearSolver &nonlinearSolver,
+                       FEJobBlock &feJobBlock);
 
 private:
     //******************************************************
@@ -90,6 +92,11 @@ private:
     //*** functions for reading [nonlinearsolver]
     //******************************************************
     bool ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,NonlinearSolver &nonlinearSolver);
+
+    //******************************************************
+    //*** functions for reading [job]
+    //******************************************************
+    bool ReadFEJobBlock(ifstream &in,string str,int &linenum,FEJobBlock &feJobBlock);
 
     
     //******************************************************

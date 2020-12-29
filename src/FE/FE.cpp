@@ -124,7 +124,7 @@ void FE::PrintFEInfo()const{
         MessagePrinter::PrintNormalTxt(msg);
     }
     else if(GetDim()==2){
-        msg="  for boun: order="+to_string(_BulkQPoint.GetQpOrder())
+        msg="  for bulk: order="+to_string(_BulkQPoint.GetQpOrder())
            +", num of qpoints="+to_string(_BulkQPoint.GetQpPointsNum());
         MessagePrinter::PrintNormalTxt(msg);
 
