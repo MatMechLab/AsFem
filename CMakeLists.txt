@@ -255,6 +255,14 @@ set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
 set(src ${src} src/NonlinearSolver/Solve.cpp)
 
 #############################################################
+### For time stepping system in AsFem                     ###
+#############################################################
+set(inc ${inc} include/TimeStepping/TimeSteppingType.h)
+set(inc ${inc} include/TimeStepping/TimeSteppingBlock.h)
+set(inc ${inc} include/TimeStepping/TimeStepping.h)
+set(src ${src} src/TimeStepping/TimeStepping.cpp)
+
+#############################################################
 ### For output system in AsFem                            ###
 #############################################################
 set(inc ${inc} include/OutputSystem/OutputType.h)
