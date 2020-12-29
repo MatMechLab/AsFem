@@ -35,6 +35,14 @@ void FEProblem::RunStaticAnalysis(){
         snprintf(buff,70,"Static analysis finished! [time=%14.6e]",_Duration);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
-        _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
+        // _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
+
+        _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
+        _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,_solutionSystem._Unew,_solutionSystem._V,
+        _solutionSystem._Hist,_solutionSystem._HistOld,_solutionSystem._Proj,_equationSystem._AMATRIX,_equationSystem._RHS);
+
+        
+        _outputSystem.WriteResultToFile(_mesh,_dofHandler,
+        _solutionSystem._Unew,_solutionSystem.GetProjNumPerNode(),_solutionSystem.GetProjNameVec(),_solutionSystem._Proj);
     }
 }

@@ -4,8 +4,8 @@
   type=asfem
   dim=1
   nx=10
-  meshtype=edge2
-  savemesh=true
+  meshtype=edge3
+  //savemesh=true
 [end]
 
 [dofs]
@@ -40,4 +40,13 @@ name=u
     value=0.5
      boundary=right
   [end]
+[end]
+
+[projection]
+name=uproj dux duy
+[end]
+
+[qpoint]
+  type=gauss
+  order=6
 [end]

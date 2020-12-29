@@ -31,6 +31,10 @@ void FEProblem::ReadInputFile(){
     _fe.PrintFEInfo();
 
     _bcSystem.PrintBCSystemInfo();
+
+    if(_solutionSystem.IsProjection()){
+        _solutionSystem.PrintProjectionInfo();
+    }
 }
 //******************************************
 void FEProblem::InitAllComponents(){
@@ -89,7 +93,7 @@ void FEProblem::InitAllComponents(){
     }
     _solutionSystem.SetHistNumPerGPoint(10);
     _solutionSystem.InitSolution(_dofHandler.GetActiveDofsNum(),
-                            _mesh.GetBulkMeshNodesNum(),_mesh.GetBulkMeshBulkElmtsNum(),
+                            _mesh.GetBulkMeshBulkElmtsNum(),_mesh.GetBulkMeshNodesNum(),
                             _fe._BulkQPoint.GetQpPointsNum());
     
     if(_rank==0){

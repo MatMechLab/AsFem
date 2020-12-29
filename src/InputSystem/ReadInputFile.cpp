@@ -333,11 +333,12 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         if(!_IsReadOnly){
             MessagePrinter::PrintWarningTxt("no [projection] block is found, the default projection name will be used by AsFem",false);
         }
-        solutionSystem.PrintProjectionInfo();
+        // solutionSystem.PrintProjectionInfo();
+        solutionSystem.SetProjNumPerNode(9);
     }
-    else{
-        solutionSystem.PrintProjectionInfo();
-    }
+    // else{
+    //     solutionSystem.PrintProjectionInfo();
+    // }
 
     if(!HasOutputBlock){
         if(!_IsReadOnly){

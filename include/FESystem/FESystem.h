@@ -96,7 +96,7 @@ private:
     //*********************************************************
     //*** for projection
     //*********************************************************
-    void AssembleLocalProjectionToGlobal(const int &iInd,const int &nproj,const double &detjac,const double &test,const vector<double> &projvec,Vec &ProjVec);
+    void AssembleLocalProjectionToGlobal(const int &nNodes,const double &DetJac,const ShapeFun &shp,const vector<double> &elProj,Vec &ProjVec);
     void Projection(const int &nTotalNodes,const int &nproj,Vec &ProjVec);
 
 

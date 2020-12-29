@@ -96,11 +96,6 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
 
     VecSet(_HistOld,0.0);
 
-    // VecCreate(PETSC_COMM_WORLD,&_HistOld);
-    // VecSetSizes(_HistOld,PETSC_DECIDE,_nElmts*(_nGPointsPerBulkElmt*_nHistPerGPoint));
-    // VecSetUp(_HistOld);
-    // VecSet(_HistOld,0.0);
-
     
     _IsInit=true;
 }

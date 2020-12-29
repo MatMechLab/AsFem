@@ -54,13 +54,13 @@ void BulkElmtSystem::PoissonElmt(const FECalcType &calctype,
         gpHistOld=gpHist;
         break;
     case FECalcType::Projection:
-        gpProj[0]=gpU[0];
-        gpProj[1]=gpGradU[0](1);
-        gpProj[2]=gpGradU[0](2);
-        gpProj[3]=gpGradU[0](3);
+        gpProj[0]=gpU[1];
+        gpProj[1]=gpGradU[1](1);
+        gpProj[2]=gpGradU[1](2);
+        gpProj[3]=gpGradU[1](3);
         break;
     default:
-        MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Laplace element");
+        MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Poisson element");
         MessagePrinter::AsFem_Exit();
         break;
     }

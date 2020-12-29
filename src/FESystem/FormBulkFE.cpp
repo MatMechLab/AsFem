@@ -88,12 +88,19 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         
         VecGetValues(_Useq,nDofs,_elDofs.data(),_elU.data());
         VecGetValues(_Vseq,nDofs,_elDofs.data(),_elV.data());
+
+        for(i=1;i<=nDofs;i++){
+            
+        }
         
         if(calctype==FECalcType::ComputeResidual){
             fill(_R.begin(),_R.end(),0.0);
         }
         else if(calctype==FECalcType::ComputeJacobian){
             fill(_K.begin(),_K.end(),0.0);
+        }
+        else if(calctype==FECalcType::Projection){
+            fill(_gpProj.begin(),_gpProj.end(),0.0);
         }
         
         xi=0.0;eta=0.0;zeta=0.0;DetJac=1.0;w=1.0;
@@ -138,7 +145,16 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 _gpCoord(3)+=_elNodes(i,3)*fe._BulkShp.shape_value(i);
             }
             
-            _localK.setZero();_localR.setZero();
+            
+            if(calctype==FECalcType::ComputeResidual){
+                _localR.setZero();
+            }
+            else if(calctype==FECalcType::ComputeJacobian){
+                _localK.setZero();
+            }
+            else if(calctype==FECalcType::Projection){
+                fill(_gpProj.begin(),_gpProj.end(),0.0);
+            }
             // now we do the loop for local element, *local element could have multiple contributors according
             // to your model, i.e. one element (or one domain) can be assigned by multiple [elmt] sub block in your input file !!!
             for(int ielmt=1;ielmt<=static_cast<int>(dofHandler.GetIthElmtElmtMateTypePair(e).size());ielmt++){
@@ -180,9 +196,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 }
                 else if(calctype==FECalcType::ComputeJacobian){
                     _subK.setZero();
-                }
-                else if(calctype==FECalcType::Projection){
-                    fill(_gpProj.begin(),_gpProj.end(),0.0);
                 }
 
                 //*****************************************************
@@ -228,17 +241,19 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 else if(calctype==FECalcType::Projection){
                     for(i=1;i<=nNodes;i++){
                         elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,t,dt,ctan,
-                            _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
-                            fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
-                            fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
-                            mateSystem.GetScalarMatePtr(),
-                            mateSystem.GetVectorMatePtr(),
-                            mateSystem.GetRank2MatePtr(),
-                            mateSystem.GetRank4MatePtr(),
-                            _gpHist,_gpHistOld,_gpProj,_subK,_subR);
-                        
-                        AssembleLocalProjectionToGlobal(_elConn[i-1]-1,_nProj,JxW,fe._BulkShp.shape_value(i),_gpProj,Proj);
+                        _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
+                        fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
+                        fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
+                        mateSystem.GetScalarMatePtr(),
+                        mateSystem.GetVectorMatePtr(),
+                        mateSystem.GetRank2MatePtr(),
+                        mateSystem.GetRank4MatePtr(),
+                        _gpHist,_gpHistOld,_gpProj,_subK,_subR);
                     }
+                    // here we should not assemble the local projection, because the JxW should not be accumulated
+                    // inside the element-loop, but the gpProj should be.
+                    // therefore, each sub element should use its own place of gpProj, in short, the gpProj is shared
+                    // between different elements
                 }
             }//=====> end-of-sub-element-loop
 
@@ -249,6 +264,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             }
             else if(calctype==FECalcType::ComputeJacobian){
                 AccumulateLocalJacobian(nDofs,_elDofsActiveFlag,JxW,_localK,_K);
+            }
+            else if(calctype==FECalcType::Projection){
+                AssembleLocalProjectionToGlobal(nNodes,JxW,fe._BulkShp,_gpProj,Proj);
             }
         }//----->end of gauss point loop
         mesh.SetBulkMeshIthBulkElmtVolume(e,elVolume);
@@ -262,7 +280,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             AssembleLocalJacobianToGlobalJacobian(nDofs,_elDofs,_K,AMATRIX);
         }
     }//------>end of element loop
-
 
     //********************************************************************
     //*** finish all the final assemble for different matrix and array

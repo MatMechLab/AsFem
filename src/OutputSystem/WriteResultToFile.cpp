@@ -8,7 +8,7 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.17
+//+++ Date   : 2020.12.29
 //+++ Purpose: write results to files in different format
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -17,6 +17,12 @@
 void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U){
     if(_OutputType==OutputType::VTU){
         WriteResult2VTU(mesh,dofHandler,U);
+    }
+}
+//*********************************************************************
+void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj){
+    if(_OutputType==OutputType::VTU){
+        WriteResult2VTU(mesh,dofHandler,U,nProj,projname,Proj);
     }
 }
     
