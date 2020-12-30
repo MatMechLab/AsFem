@@ -171,6 +171,7 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     _Enorm=_monctx.enorm;
 
     char buff[65];//77-12=65
+    char buffnew[68];
     string str;
 
     if(_snesreason==SNES_CONVERGED_FNORM_ABS){
@@ -178,6 +179,11 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
             snprintf(buff,65,"  Converged for |R|<atol, final iters=%3d",_monctx.iters+1);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
+        }
+        else{
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            str=buffnew;
+            MessagePrinter::PrintNormalTxt(str);
         }
         return true;
     }
@@ -187,6 +193,11 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
+        else{
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            str=buffnew;;
+            MessagePrinter::PrintNormalTxt(str);
+        }
         return true;
     }
     else if(_snesreason==SNES_CONVERGED_SNORM_RELATIVE){
@@ -194,6 +205,11 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
             snprintf(buff,65,"  Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
+        }
+        else{
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            str=buffnew;
+            MessagePrinter::PrintNormalTxt(str);
         }
         return true;
     }
