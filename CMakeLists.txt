@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 17)
 ### The only things to modify is the        ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
-set(PETSC_DIR "/home/by/Programs/petsc/3.13.6")
+set(PETSC_DIR "/home/by/Programs/petsc/3.14.2")
 set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
 
 ###############################################
