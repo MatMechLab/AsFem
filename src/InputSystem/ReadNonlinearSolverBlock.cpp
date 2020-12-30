@@ -267,7 +267,7 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
         getline(in,str);linenum+=1;
     }
 
-    nonlinearSolver.Init(nonlinearSolverBlock);
+    nonlinearSolver.SetOptionsFromNonlinearSolverBlock(nonlinearSolverBlock);
     
     return HasType;
 }

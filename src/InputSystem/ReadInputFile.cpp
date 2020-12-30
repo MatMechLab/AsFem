@@ -396,7 +396,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         }
         NonlinearSolverBlock nonlinearSolverBlock;
         nonlinearSolverBlock.Init();
-        nonlinearSolver.Init(nonlinearSolverBlock);
+        nonlinearSolver.SetOptionsFromNonlinearSolverBlock(nonlinearSolverBlock);
     }
 
     if(!HasFEJobBlock){

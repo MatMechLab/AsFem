@@ -30,8 +30,7 @@ NonlinearSolver::NonlinearSolver(){
     _PCTypeName="lu";
 }
 
-
-void NonlinearSolver::Init(NonlinearSolverBlock nonlinearsolverblock){
+void NonlinearSolver::SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock){
     _SolverType=nonlinearsolverblock._SolverType;
     _MaxIters=nonlinearsolverblock._MaxIters;
     _RAbsTol=nonlinearsolverblock._RAbsTol;
@@ -41,7 +40,8 @@ void NonlinearSolver::Init(NonlinearSolverBlock nonlinearsolverblock){
     _SolverType=nonlinearsolverblock._SolverType;
     _SolverName=nonlinearsolverblock._SolverTypeName;
     _PCTypeName=nonlinearsolverblock._PCTypeName;
-
+}
+void NonlinearSolver::Init(){
     //**************************************************
     //*** create our SNES solver
     //**************************************************

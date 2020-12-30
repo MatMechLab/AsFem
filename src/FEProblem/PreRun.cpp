@@ -67,7 +67,7 @@ void FEProblem::InitAllComponents(){
         _TimerEnd=chrono::high_resolution_clock::now();
         _Duration=Duration(_TimerStart,_TimerEnd);
     }
-    snprintf(buff,70,"  dof map generated ! [time=%14.6e]",_Duration);
+    snprintf(buff,70,"  dof map generated ! [elapsed time=%14.6e]",_Duration);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
@@ -90,7 +90,7 @@ void FEProblem::InitAllComponents(){
         _TimerEnd=chrono::high_resolution_clock::now();
         _Duration=Duration(_TimerStart,_TimerEnd);
     }
-    snprintf(buff,70,"  fe space is initialized ! [time=%14.6e]",_Duration);
+    snprintf(buff,70,"  fe space is initialized ! [elapsed time=%14.6e]",_Duration);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
     
@@ -113,7 +113,7 @@ void FEProblem::InitAllComponents(){
         _TimerEnd=chrono::high_resolution_clock::now();
         _Duration=Duration(_TimerStart,_TimerEnd);
     }
-    snprintf(buff,70,"  solution is initialized ! [time=%14.6e]",_Duration);
+    snprintf(buff,70,"  solution is initialized ! [elapsed time=%14.6e]",_Duration);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
@@ -132,14 +132,27 @@ void FEProblem::InitAllComponents(){
         _TimerEnd=chrono::high_resolution_clock::now();
         _Duration=Duration(_TimerStart,_TimerEnd);
     }
-    snprintf(buff,70,"  sparse matrix is initialized ! [time=%14.6e]",_Duration);
+    snprintf(buff,70,"  sparse matrix is initialized ! [elapsed time=%14.6e]",_Duration);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
     //***************************************************************
-    //*** for nonlinear solver
-    //*** it is already initialized in input system !!!
+    //*** for nonlinear solver SNES
     //***************************************************************
+    snprintf(buff,70,"Start to initialize nonlinear solver system ...");
+    str=buff;
+    MessagePrinter::PrintNormalTxt(str);
+    if(_rank==0){
+        _TimerStart=chrono::high_resolution_clock::now();
+    }
+    _nonlinearSolver.Init();
+    if(_rank==0){
+        _TimerEnd=chrono::high_resolution_clock::now();
+        _Duration=Duration(_TimerStart,_TimerEnd);
+    }
+    snprintf(buff,70,"  nonlinear solver is initialized ! [elapsed time=%14.6e]",_Duration);
+    str=buff;
+    MessagePrinter::PrintNormalTxt(str);
 
 
     //***************************************************************
@@ -156,10 +169,13 @@ void FEProblem::InitAllComponents(){
         _TimerEnd=chrono::high_resolution_clock::now();
         _Duration=Duration(_TimerStart,_TimerEnd);
     }
-    snprintf(buff,70,"  fe system is initialized ! [time=%14.6e]",_Duration);
+    snprintf(buff,70,"  fe system is initialized ! [elapsed time=%14.6e]",_Duration);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
+
+    MessagePrinter::PrintNormalTxt("Now all the components are ready, we can start the simulation !");
+    MessagePrinter::PrintDashLine();
     MessagePrinter::PrintStars();
 
 }

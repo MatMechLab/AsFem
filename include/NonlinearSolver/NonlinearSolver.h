@@ -78,7 +78,8 @@ extern PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx);
 class NonlinearSolver{
 public:
     NonlinearSolver();
-    void Init(NonlinearSolverBlock nonlinearsolverblock);
+    void Init();
+    void SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock);
     bool Solve(Mesh &mesh,DofHandler &dofHandler,
             ElmtSystem &elmtSystem,MateSystem &mateSystem,
             BCSystem &bcSystem,ICSystem &icSystem,
