@@ -5,8 +5,8 @@
   dim=2
   xmax=8.0
   ymax=8.0
-  nx=60
-  ny=60
+  nx=80
+  ny=80
   meshtype=quad9
 [end]
 
@@ -36,9 +36,19 @@ name=c mu
 [end]
 
 [timestepping]
-  type=be
-  dt=1.0e-2
-  time=1.0e1
+  type=cn
+  dt=1.0e-4
+  time=1.0e3
+  optiters=4
+  growthfactor=1.2
+  adaptive=true
+[end]
+
+[nonlinearsolver]
+  type=nr
+  maxiters=50
+  r_rel_tol=1.0e-8
+  r_abs_tol=1.0e-7
 [end]
 
 [projection]

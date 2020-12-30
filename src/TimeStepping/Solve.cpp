@@ -20,7 +20,7 @@
 //*** here we define a monitor to print out the iteration info
 //***************************************************************
 PetscErrorCode MySNESMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
-    char buff[68];
+    char buff[70];
     string str;
     TSAppCtx *user=(TSAppCtx*)ctx;
     user->iters=iters;
@@ -38,7 +38,7 @@ PetscErrorCode MySNESMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx)
         user->enorm0=user->enorm;
     }
     if(user->IsDepDebug){
-        snprintf(buff,68,"  SNES solver: iters=%3d,|R|=%12.5e,|dU|=%12.5e",iters,rnorm,user->dunorm);
+        snprintf(buff,70,"  SNES solver:iters=%3d,|R|=%11.4e,|dU|=%11.4e,dt=%7.2e",iters,rnorm,user->dunorm,user->dt);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
     }
@@ -58,6 +58,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
     user->dt=dt;
     
     snprintf(buff,68,"Time step=%8d, time=%13.5e, dt=%13.5e",step,time,dt);
+    str=buff;
     MessagePrinter::PrintNormalTxt(str);
     if(!user->IsDebug){
         snprintf(buff,68," SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",user->iters+1,user->rnorm0,user->rnorm);
@@ -79,8 +80,20 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         else{
             user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U);
         }
-        MessagePrinter::PrintNormalTxt("Write result to"+user->_outputSystem.GetOutputFileName());
+        MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();
+    }
+
+    if(user->IsAdaptive){
+        if(user->iters+1<=user->OptiIters){
+            dt=user->dt*user->GrowthFactor;
+            if(dt>user->DtMax) dt=user->DtMax;
+        }
+        else{
+            dt=user->dt*user->CutbackFactor;
+            if(dt<user->DtMin) dt=user->DtMin;
+        }
+        TSSetTimeStep(ts,dt);
     }
 
     return 0;
@@ -90,9 +103,8 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
 //***************************************************************
 PetscErrorCode ComputeIResidual(TS ts,PetscReal t,Vec U,Vec V,Vec RHS,void *ctx){
     TSAppCtx *user=(TSAppCtx*)ctx;
-    int i;
 
-    TSGetMaxSteps(ts,&i);
+    TSGetTimeStep(ts,&user->dt);
     // apply the initial dirichlet boundary condition
     user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,t,U);
 
@@ -119,6 +131,7 @@ PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,
     int i;
 
     TSGetTimeStep(ts,&user->_fectrlinfo.dt);
+    TSGetTimeStep(ts,&user->dt);
     user->_feSystem.ResetMaxAMatrixValue();// we reset the penalty factor
     user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,t,U);
 
@@ -178,7 +191,12 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                    0.0,0.0,
                    0,
                    fectrlinfo.IsDebug,fectrlinfo.IsDepDebug,
-                   0.0,0.0,0
+                   0.0,0.0,0,
+                    //********************************
+                    _Adaptive,
+                    _OptIters,
+                    _GrowthFactor,_CutBackFactor,
+                    _DtMin,_DtMax
                    };
     
 

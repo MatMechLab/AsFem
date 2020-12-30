@@ -45,6 +45,9 @@ void TimeStepping::Init(){
     TSSetMaxTime(_ts,_FinalT);
     TSSetExactFinalTime(_ts,TS_EXACTFINALTIME_INTERPOLATE);
 
+    TSGetAdapt(_ts,&_tsadapt);
+    TSAdaptSetType(_tsadapt,TSADAPTNONE);// disable adaptivity, we will use our own adapter
+
     //***************************************************
     //*** for the nonlinear solver settings
     //***************************************************
@@ -55,6 +58,7 @@ void TimeStepping::Init(){
     SNESGetKSP(_snes,&_ksp);
     KSPGMRESSetRestart(_ksp,1300);
     KSPGetPC(_ksp,&_pc);
+    PCSetType(_pc,PCLU);
     #ifdef HASMUMPS
     PCSetType(_pc,PCLU);
     KSPSetType(_ksp,KSPPREONLY);

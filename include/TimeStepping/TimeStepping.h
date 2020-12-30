@@ -71,6 +71,13 @@ typedef struct{
     double time;
     double dt;
     int step;
+    //**************************
+    bool IsAdaptive;
+    int OptiIters;
+    double GrowthFactor;
+    double CutbackFactor;
+    double DtMin;
+    double DtMax;
 } TSAppCtx;
 
 //************************************************************************
@@ -115,6 +122,7 @@ private:
     string _TimeSteppingTypeName="backward-euler";
     double _GrowthFactor=1.1,_CutBackFactor=0.85;
     int _OptIters;
+    double _DtMin,_DtMax;
 
 private:
     //*****************************************************************
@@ -134,6 +142,7 @@ private:
     //*** for TS components from PETSc
     //*****************************************************************
     TS _ts;
+    TSAdapt _tsadapt;
     SNES _snes;
     KSP _ksp;
     PC _pc;

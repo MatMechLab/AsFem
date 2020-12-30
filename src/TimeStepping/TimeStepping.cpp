@@ -25,6 +25,8 @@ TimeStepping::TimeStepping(){
     _GrowthFactor=1.1;
     _CutBackFactor=0.85;
     _OptIters=3;
+    _DtMax=1.0e1;
+    _DtMin=1.0e-12;
     //**********************************
     //*** for nonlinear solver
     //**********************************
