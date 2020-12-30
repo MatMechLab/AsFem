@@ -37,6 +37,8 @@
 
 #include "OutputSystem/OutputSystem.h"
 
+#include "NonlinearSolver/NonlinearSolverBlock.h"
+
 #include "TimeStepping/TimeSteppingBlock.h"
 #include "TimeStepping/TimeSteppingType.h"
 
@@ -47,8 +49,14 @@ class TimeStepping{
 public:
     TimeStepping();
 
-    void InitTimeStepping(TimeSteppingBlock &timeSteppingBlock);
+    void SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppingBlock);
 
+    void SetTSNonlinearSolver(NonlinearSolverBlock &nonlinearSolverBlock);
+
+
+    void ReleaseMem();
+
+    void PrintTimeSteppingInfo()const;
 private:
     //*****************************************************************
     //*** basic variables for time stepping
@@ -57,7 +65,15 @@ private:
     double _FinalT=1.0e-3;
     bool _Adaptive=false;
     long int _TotalSteps=-1;
+    long int _CurrentStep=-1;
     TimeSteppingType _TimeSteppingType=TimeSteppingType::BACKWARDEULER;
     string _TimeSteppingTypeName="backward-euler";
+    double _GrowthFactor=1.1,_CutBackFactor=0.85;
+    int _OptIters;
+
+private:
+    //*****************************************************************
+    //*** for TS components from PETSc
+    //*****************************************************************
 
 };

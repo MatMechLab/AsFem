@@ -24,6 +24,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 SolutionSystem &solutionSystem,
                                 OutputSystem &outputSystem,
                                 NonlinearSolver &nonlinearSolver,
+                                TimeStepping &timestepping,
                                 FEJobBlock &feJobBlock){
     ifstream in;
     string str;
@@ -40,6 +41,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasProjectionBlock=false;
     bool HasNonlinearSolverBlock=false;
     bool HasFEJobBlock=false;
+    bool HasTimeSteppingBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
@@ -73,6 +75,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasOutputBlock=false;
     HasProjectionBlock=false;
     HasNonlinearSolverBlock=false;
+    HasFEJobBlock=false;
+    HasTimeSteppingBlock=false;
 
     while(!in.eof()){
         getline(in,str);linenum+=1;
@@ -273,6 +277,24 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if((str.find("[timestepping]")!=string::npos)&&str.length()==14){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadTimeSteppingBlock(in,str,linenum,timestepping)){
+                    HasTimeSteppingBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [timestepping] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasTimeSteppingBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[timestepping]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
         else if((str.find("[job]")!=string::npos)&&str.length()==5){
             int lastendlinenum;
             if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
@@ -381,6 +403,20 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         MessagePrinter::PrintErrorTxt("no [job] block is found, for FEM analysis, the [job] is required");
         MessagePrinter::AsFem_Exit();
     }
+
+    if(feJobBlock._jobType==FEJobType::TRANSIENT){
+        if(!HasTimeSteppingBlock){
+            MessagePrinter::PrintErrorTxt("no [timestepping] block is found for a transient FEM analysis, the [timestepping] block is required for time dependent problem");
+            MessagePrinter::AsFem_Exit();
+        }
+    }
+    else{
+        if(HasTimeSteppingBlock){
+            MessagePrinter::PrintErrorTxt("for static analysis, you dont need the [timestepping] block");
+            MessagePrinter::AsFem_Exit();
+        }
+    }
+
 
     MessagePrinter::PrintDashLine();
 

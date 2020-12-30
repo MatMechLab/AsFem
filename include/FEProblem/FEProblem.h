@@ -32,6 +32,7 @@
 #include "BCSystem/BCSystem.h"
 #include "ICSystem/ICSystem.h"
 #include "NonlinearSolver/NonlinearSolver.h"
+#include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
 
 #include "FEProblem/FEJobType.h"
@@ -70,6 +71,7 @@ private:
     SolutionSystem _solutionSystem;
     EquationSystem _equationSystem;
     NonlinearSolver _nonlinearSolver;
+    TimeStepping _timestepping;
     OutputSystem _outputSystem;
 
     FEJobType _feJobType;

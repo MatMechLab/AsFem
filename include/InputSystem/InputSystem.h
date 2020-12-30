@@ -40,6 +40,7 @@
 #include "FE/FE.h"
 #include "SolutionSystem/SolutionSystem.h"
 #include "NonlinearSolver/NonlinearSolver.h"
+#include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
 #include "FEProblem/FEJobBlock.h"
 
@@ -56,6 +57,7 @@ public:
                        SolutionSystem &solutionSystem,
                        OutputSystem &outputSystem,
                        NonlinearSolver &nonlinearSolver,
+                       TimeStepping &timestepping,
                        FEJobBlock &feJobBlock);
 
 private:
@@ -92,6 +94,12 @@ private:
     //*** functions for reading [nonlinearsolver]
     //******************************************************
     bool ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,NonlinearSolver &nonlinearSolver);
+
+
+    //******************************************************
+    //*** functions for reading [timestepping]
+    //******************************************************
+    bool ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,TimeStepping &timestepping);
 
     //******************************************************
     //*** functions for reading [job]
