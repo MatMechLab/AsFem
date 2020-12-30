@@ -170,6 +170,8 @@ set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
 set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
 ### for diffusion equation
 set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
+### for diffusion equation
+set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
