@@ -41,7 +41,6 @@ void TimeStepping::Init(){
         MessagePrinter::AsFem_Exit();
     }
 
-    TSSetTime(_ts,_FinalT);// we set the total time
     TSSetTimeStep(_ts,_Dt);// we set the initial delta t
     TSSetMaxTime(_ts,_FinalT);
     TSSetExactFinalTime(_ts,TS_EXACTFINALTIME_INTERPOLATE);

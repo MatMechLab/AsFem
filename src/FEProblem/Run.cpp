@@ -21,4 +21,11 @@ void FEProblem::Run(){
     if(_feJobType==FEJobType::STATIC){
         RunStaticAnalysis();
     }
+    else if(_feJobType==FEJobType::TRANSIENT){
+        RunTransientAnalysis();
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported FEM job type, please check your input file");
+        MessagePrinter::AsFem_Exit();
+    }
 }

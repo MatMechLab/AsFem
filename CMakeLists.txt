@@ -168,6 +168,8 @@ set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
 set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
 ### for poisson equation
 set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
+### for diffusion equation
+set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
