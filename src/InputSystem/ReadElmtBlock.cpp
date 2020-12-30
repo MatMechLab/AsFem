@@ -86,6 +86,11 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         elmtBlock._ElmtType=ElmtType::POISSONELMT;
                         HasElmtType=true;
                     }
+                    else if(substr.find("timederiv")!=string::npos && substr.length()==9){
+                        elmtBlock._ElmtTypeName="timederiv";
+                        elmtBlock._ElmtType=ElmtType::TIMEDERIVELMT;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("diffusion")!=string::npos && substr.length()==9){
                         elmtBlock._ElmtTypeName="diffusion";
                         elmtBlock._ElmtType=ElmtType::DIFFUSIONELMT;
