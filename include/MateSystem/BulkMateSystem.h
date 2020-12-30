@@ -107,4 +107,14 @@ protected:
                         const vector<double> &gpU,const vector<double> &gpV,
                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                         vector<double> &gpHist,const vector<double> &gpHistOld);
+
+    //******************************************************************************
+    //*** for constant diffusivity material
+    //******************************************************************************
+    void ConstDiffusionMaterial(const int &nDim,const double &t,const double &dt,
+                              const vector<double> &InputParams,
+                              const Vector3d &gpCoord,
+                              const vector<double> &gpU,const vector<double> &gpV,
+                              const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                              vector<double> &gpHist,const vector<double> &gpHistOld);
 };
