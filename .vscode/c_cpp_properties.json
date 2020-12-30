@@ -4,15 +4,14 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/include",
-                "${workspaceFolder}/external/eigen",
-                "/home/by/Programs/petsc/3.13.6/include",
-                "/home/by/Programs/mpich/3.3.2/include"
+                "/home/by/Programs/petsc/3.14.2/include",
+                "/home/by/Programs/mpich/3.3.2/include",
+                "${workspaceFolder}/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/g++",
             "cStandard": "gnu17",
-            "cppStandard": "gnu++17",
+            "cppStandard": "gnu++14",
             "intelliSenseMode": "gcc-x64",
             "configurationProvider": "ms-vscode.cmake-tools"
         }

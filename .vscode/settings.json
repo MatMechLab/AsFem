@@ -1,11 +1,2 @@
 {
-    "files.associations": {
-        "iosfwd": "cpp",
-        "vector": "cpp",
-        "iostream": "cpp",
-        "*.tcc": "cpp",
-        "string": "cpp",
-        "chrono": "cpp"
-    },
-    "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }
