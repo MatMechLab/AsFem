@@ -19,10 +19,21 @@ void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandl
         WriteResult2VTU(mesh,dofHandler,U);
     }
 }
+void OutputSystem::WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U){
+    if(_OutputType==OutputType::VTU){
+        WriteResult2VTU(step,mesh,dofHandler,U);
+    }
+}
 //*********************************************************************
 void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj){
     if(_OutputType==OutputType::VTU){
         WriteResult2VTU(mesh,dofHandler,U,nProj,projname,Proj);
+    }
+}
+void OutputSystem::WriteResultToFile(const int &step, const Mesh &mesh, const DofHandler &dofHandler, const Vec &U,
+                                     const int &nProj, const vector<string> &projname, const Vec &Proj){
+    if(_OutputType==OutputType::VTU){
+        WriteResult2VTU(step,mesh,dofHandler,U,nProj,projname,Proj);
     }
 }
     

@@ -60,7 +60,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
     snprintf(buff,68,"Time step=%8d, time=%13.5e, dt=%13.5e",step,time,dt);
     MessagePrinter::PrintNormalTxt(str);
     if(!user->IsDebug){
-        snprintf(buff,68," SNES solver: iters=%3d,|R|=%12.5e,|dU|=%12.5e",user->iters,user->rnorm,user->dunorm);
+        snprintf(buff,68," SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",user->iters+1,user->rnorm0,user->rnorm);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
     }
@@ -72,12 +72,12 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
             U,user->_solutionSystem._V,user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
             user->_solutionSystem._Proj,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
-            user->_outputSystem.WriteResultToFile(user->_mesh,user->_dofHandler,U,
+            user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U,
             user->_solutionSystem.GetProjNumPerNode(),user->_solutionSystem.GetProjNameVec(),
             user->_solutionSystem._Proj);
         }
         else{
-            user->_outputSystem.WriteResultToFile(user->_mesh,user->_dofHandler,U);
+            user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U);
         }
         MessagePrinter::PrintNormalTxt("Write result to"+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();
