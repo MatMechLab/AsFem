@@ -61,8 +61,8 @@ void OutputSystem::SetOutputType(OutputType outputtype){
 
 //****************************************************
 void OutputSystem::PrintInfo()const{
-    MessagePrinter::PrintNormalTxt(" Output system information summary:");
-    MessagePrinter::PrintNormalTxt("   output file format ="+_OutputTypeName);
-    MessagePrinter::PrintNormalTxt("   output interval="+to_string(_Interval));
+    MessagePrinter::PrintNormalTxt("Output system information summary:");
+    MessagePrinter::PrintNormalTxt("  output file format ="+_OutputTypeName);
+    MessagePrinter::PrintNormalTxt("  output interval="+to_string(_Interval));
     MessagePrinter::PrintDashLine();
 }

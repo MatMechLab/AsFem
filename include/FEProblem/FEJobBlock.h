@@ -38,14 +38,14 @@ public:
     }
 
     void PrintJobInfo(){
-        MessagePrinter::PrintNormalTxt(" Job information summary:");
-        MessagePrinter::PrintNormalTxt("   job type="+_jobTypeName);
+        MessagePrinter::PrintNormalTxt("Job information summary:");
+        MessagePrinter::PrintNormalTxt("  job type="+_jobTypeName);
         if(_IsDebug){
             if(_IsDepDebug){
-                MessagePrinter::PrintNormalTxt("   debug dep print is enabled");
+                MessagePrinter::PrintNormalTxt("  debug dep print is enabled");
             }
             else{
-                MessagePrinter::PrintNormalTxt("   debug print is enabled");
+                MessagePrinter::PrintNormalTxt("  debug print is enabled");
             }
         }
         MessagePrinter::PrintDashLine();
