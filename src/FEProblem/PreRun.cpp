@@ -20,39 +20,6 @@ void FEProblem::ReadInputFile(){
     _solutionSystem,_outputSystem,
     _nonlinearSolver,_timestepping,
     _feJobBlock);
-
-    _mesh.PrintMeshInfo();
-    _dofHandler.PrintAllDofInfo();
-
-    _elmtSystem.InitBulkElmtMateInfo(_mateSystem);
-    _elmtSystem.PrintElmtSystemInfo();
-
-    _mateSystem.InitBulkMateSystem();// clean all the materials variables
-    _mateSystem.PrintMateSystemInfo();
-
-    _fe.PrintFEInfo();
-
-    _bcSystem.PrintBCSystemInfo();
-
-    if(_solutionSystem.IsProjection()){
-        _solutionSystem.PrintProjectionInfo();
-    }
-
-    _outputSystem.PrintInfo();
-
-    _nonlinearSolver.PrintInfo();
-
-
-    _feJobType=_feJobBlock._jobType;
-    _feCtrlInfo.IsDebug=_feJobBlock._IsDebug;
-    _feCtrlInfo.IsDepDebug=_feJobBlock._IsDepDebug;
-    _feCtrlInfo.IsProjection=_solutionSystem.IsProjection();
-
-    if(_feJobType==FEJobType::TRANSIENT){
-        _timestepping.PrintTimeSteppingInfo();
-    }
-
-    _feJobBlock.PrintJobInfo();
 }
 //******************************************
 void FEProblem::InitAllComponents(){
@@ -60,6 +27,15 @@ void FEProblem::InitAllComponents(){
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
     char buff[70];
     string str;
+
+
+    //***************************************************************
+    //*** for boundary condition system initializing
+    //***************************************************************
+    _elmtSystem.InitBulkElmtMateInfo(_mateSystem);// set mate index for each elmt block
+    _mateSystem.InitBulkMateSystem();// clean all the materials variables
+    _bcSystem.InitBCSystem(_mesh);
+
 
     snprintf(buff,70,"Start to creat dof map ...");
     str=buff;
@@ -76,10 +52,6 @@ void FEProblem::InitAllComponents(){
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
-    //***************************************************************
-    //*** for boundary condition system initializing
-    //***************************************************************
-    _bcSystem.InitBCSystem(_mesh);
     
     //***************************************************************
     //*** for FE space initializing
@@ -206,5 +178,36 @@ void FEProblem::InitAllComponents(){
     MessagePrinter::PrintNormalTxt("Now all the components are ready, we can start the simulation !");
     MessagePrinter::PrintDashLine();
     MessagePrinter::PrintStars();
+
+    _mesh.PrintMeshInfo();
+    _dofHandler.PrintAllDofInfo();
+
+    _elmtSystem.PrintElmtSystemInfo();
+    _mateSystem.PrintMateSystemInfo();
+
+    _fe.PrintFEInfo();
+
+    _bcSystem.PrintBCSystemInfo();
+    _icSystem.PrintICSystemInfo();
+
+    if(_solutionSystem.IsProjection()){
+        _solutionSystem.PrintProjectionInfo();
+    }
+
+    _outputSystem.PrintInfo();
+
+    _nonlinearSolver.PrintInfo();
+
+
+    _feJobType=_feJobBlock._jobType;
+    _feCtrlInfo.IsDebug=_feJobBlock._IsDebug;
+    _feCtrlInfo.IsDepDebug=_feJobBlock._IsDepDebug;
+    _feCtrlInfo.IsProjection=_solutionSystem.IsProjection();
+
+    if(_feJobType==FEJobType::TRANSIENT){
+        _timestepping.PrintTimeSteppingInfo();
+    }
+
+    _feJobBlock.PrintJobInfo();
 
 }
