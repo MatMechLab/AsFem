@@ -3,8 +3,10 @@
 [mesh]
   type=asfem
   dim=2
-  nx=50
-  ny=50
+  xmax=8.0
+  ymax=8.0
+  nx=60
+  ny=60
   meshtype=quad9
 [end]
 
@@ -29,14 +31,14 @@ name=c mu
 [mates]
   [mate1]
     type=cahnhilliard
-    params=1.0 0.05
+    params=1.0 2.5 0.03
   [end]
 [end]
 
 [timestepping]
   type=be
-  dt=1.0e-5
-  time=1.0e-2
+  dt=1.0e-2
+  time=1.0e1
 [end]
 
 [projection]

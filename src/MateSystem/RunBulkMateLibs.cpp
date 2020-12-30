@@ -29,10 +29,14 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,
         ConstPoissonMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
             gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;
-        case MateType::CONSTDIFFUSIONMATE:
-            ConstDiffusionMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+    case MateType::CONSTDIFFUSIONMATE:
+        ConstDiffusionMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+                               gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+        break;
+    case MateType::CAHNHILLIARDMATE:
+        CahnHilliardMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
                                    gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
-            break;
+        break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of MateSystem, please check either your code or your input file");
         MessagePrinter::AsFem_Exit();

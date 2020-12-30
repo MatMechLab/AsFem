@@ -187,6 +187,7 @@ set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
 set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
+set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 
 #############################################################
 ### For Boundary condition system in AsFem                ###
