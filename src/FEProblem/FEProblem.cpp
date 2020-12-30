@@ -30,4 +30,5 @@ void FEProblem::Finalize(){
     _solutionSystem.ReleaseMem();
     _equationSystem.ReleaseMem();
     _nonlinearSolver.ReleaseMem();
+    _timestepping.ReleaseMem();
 }

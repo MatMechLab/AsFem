@@ -74,3 +74,7 @@ void TimeStepping::PrintTimeSteppingInfo()const{
     MessagePrinter::PrintNormalTxt("  init delta T="+to_string(_Dt)+", final T="+to_string(_FinalT));
     MessagePrinter::PrintDashLine();
 }
+//****************************************
+void TimeStepping::ReleaseMem(){
+    TSDestroy(&_ts);
+}

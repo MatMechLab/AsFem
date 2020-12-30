@@ -262,6 +262,8 @@ set(inc ${inc} include/TimeStepping/TimeSteppingType.h)
 set(inc ${inc} include/TimeStepping/TimeSteppingBlock.h)
 set(inc ${inc} include/TimeStepping/TimeStepping.h)
 set(src ${src} src/TimeStepping/TimeStepping.cpp)
+set(src ${src} src/TimeStepping/TimeSteppingInit.cpp)
+set(src ${src} src/TimeStepping/Solve.cpp)
 
 #############################################################
 ### For output system in AsFem                            ###
@@ -294,6 +296,7 @@ set(src ${src} src/FEProblem/FEProblem.cpp)
 set(src ${src} src/FEProblem/PreRun.cpp)
 set(src ${src} src/FEProblem/Run.cpp)
 set(src ${src} src/FEProblem/RunStaticAnalysis.cpp)
+set(src ${src} src/FEProblem/RunTransientAnalysis.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})

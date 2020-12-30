@@ -42,10 +42,15 @@ void FEProblem::ReadInputFile(){
 
     _nonlinearSolver.PrintInfo();
 
+
     _feJobType=_feJobBlock._jobType;
     _feCtrlInfo.IsDebug=_feJobBlock._IsDebug;
     _feCtrlInfo.IsDepDebug=_feJobBlock._IsDepDebug;
     _feCtrlInfo.IsProjection=_solutionSystem.IsProjection();
+
+    if(_feJobType==FEJobType::TRANSIENT){
+        _timestepping.PrintTimeSteppingInfo();
+    }
 
     _feJobBlock.PrintJobInfo();
 }
@@ -153,6 +158,30 @@ void FEProblem::InitAllComponents(){
     snprintf(buff,70,"  nonlinear solver is initialized ! [elapsed time=%14.6e]",_Duration);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
+
+
+    //***************************************************************
+    //*** for timestepping solver SNES
+    //***************************************************************
+    if(_feJobType==FEJobType::TRANSIENT){
+        snprintf(buff,70,"Start to initialize time stepping system ...");
+        str=buff;
+        MessagePrinter::PrintNormalTxt(str);
+        if(_rank==0){
+            _TimerStart=chrono::high_resolution_clock::now();
+        }
+    }
+    _timestepping.Init();
+    
+    if(_feJobType==FEJobType::TRANSIENT){
+        if(_rank==0){
+            _TimerEnd=chrono::high_resolution_clock::now();
+            _Duration=Duration(_TimerStart,_TimerEnd);
+        }
+        snprintf(buff,70,"  time stepping is initialized ! [elapsed time=%14.6e]",_Duration);
+        str=buff;
+        MessagePrinter::PrintNormalTxt(str);
+    }
 
 
     //***************************************************************

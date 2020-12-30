@@ -42,8 +42,44 @@
 #include "TimeStepping/TimeSteppingBlock.h"
 #include "TimeStepping/TimeSteppingType.h"
 
+#include "FEProblem/FEControlInfo.h"
+
 using namespace std;
 
+//************************************************************************
+//*** for some user-defined contex
+typedef struct{
+    Mesh _mesh;
+    DofHandler _dofHandler;
+    BCSystem _bcSystem;
+    ICSystem _icSystem;
+    ElmtSystem _elmtSystem;
+    MateSystem _mateSystem;
+    SolutionSystem _solutionSystem;
+    EquationSystem _equationSystem;
+    FE _fe;
+    FESystem _feSystem;
+    OutputSystem _outputSystem;
+    FEControlInfo _fectrlinfo;
+    //********************************
+    PetscReal rnorm,rnorm0;
+    PetscReal dunorm,dunorm0;
+    PetscReal enorm,enorm0;
+    PetscInt iters;
+    bool IsDebug;
+    bool IsDepDebug;
+    double time;
+    double dt;
+    int step;
+} TSAppCtx;
+
+//************************************************************************
+//*** subroutines for the calculation of Residual and Jacobian
+extern PetscErrorCode ComputeIResidual(TS ts,PetscReal t,Vec U,Vec V,Vec RHS,void *ctx);
+extern PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,Mat B,void *ctx);
+extern PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx);
+extern PetscErrorCode MySNESMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx);
+//************************************************************************
 
 class TimeStepping{
 public:
@@ -55,6 +91,13 @@ public:
 
     void SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock);
 
+    bool Solve(Mesh &mesh,DofHandler &dofHandler,
+            ElmtSystem &elmtSystem,MateSystem &mateSystem,
+            BCSystem &bcSystem,ICSystem &icSystem,
+            SolutionSystem &solutionSystem,EquationSystem &equationSystem,
+            FE &fe,FESystem &feSystem,
+            OutputSystem &outputSystem,
+            FEControlInfo &fectrlinfo);
 
     void ReleaseMem();
 
@@ -90,5 +133,10 @@ private:
     //*****************************************************************
     //*** for TS components from PETSc
     //*****************************************************************
-
+    TS _ts;
+    SNES _snes;
+    KSP _ksp;
+    PC _pc;
+    SNESConvergedReason _snesreason;
+    TSAppCtx _appctx;
 };

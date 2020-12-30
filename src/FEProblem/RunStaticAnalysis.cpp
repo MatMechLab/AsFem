@@ -15,13 +15,10 @@
 #include "FEProblem/FEProblem.h"
 
 void FEProblem::RunStaticAnalysis(){
-    // MessagePrinter::PrintStars();
     MessagePrinter::PrintNormalTxt("Start to do the static FEM analysis ...");
     if(_rank==0){
         _TimerStart=chrono::high_resolution_clock::now();
     }
-
-    _feCtrlInfo.IsDepDebug=true;
 
     if(_nonlinearSolver.Solve(_mesh,_dofHandler,_elmtSystem,_mateSystem,
         _bcSystem,_icSystem,
