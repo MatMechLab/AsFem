@@ -28,6 +28,10 @@
 //******************************************
 #include "Utils/MessagePrinter.h"
 
+#include "Mesh/Mesh.h"
+#include "DofHandler/DofHandler.h"
+
+
 #include "ICSystem/ICBlock.h"
 #include "ICSystem/ICType.h"
 
@@ -36,10 +40,37 @@ using namespace std;
 class ICSystem{
 public:
     ICSystem();
+    void ApplyIC(const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
 
+    //******************************************************
+    //*** add ic block
+    //******************************************************
     void AddICBlock2List(ICBlock &icblock);
+    inline int GetICBlocksNum()const{return _nICBlocks;}
+    inline vector<ICBlock> GetICBlockList()const {return _ICBlockList;}
+
+
+    void PrintICSystemInfo()const;
 
 private:
     int _nICBlocks;
     vector<ICBlock> _ICBlockList;
+
+    PetscMPIInt _rank,_size;
+    PetscRandom _rnd;
+
+private:
+    //****************************************************
+    //*** Apply different initial conditions
+    //****************************************************
+    void RunICLibs(const ICType &ictype,const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    // for built-in ic
+    void ApplyConstantIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    void ApplyRandomIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    void ApplyRectangleIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    void ApplyCircleIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    void ApplyCubicIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    void ApplySphereIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    // for user-defined ic
+    void User1IC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
 };

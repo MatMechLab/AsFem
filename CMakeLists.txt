@@ -202,6 +202,16 @@ set(inc ${inc} include/ICSystem/ICType.h)
 set(inc ${inc} include/ICSystem/ICBlock.h)
 set(inc ${inc} include/ICSystem/ICSystem.h)
 set(src ${src} src/ICSystem/ICSystem.cpp)
+set(src ${src} src/ICSystem/PrintICSystemInfo.cpp)
+set(src ${src} src/ICSystem/ApplyIC.cpp)
+set(src ${src} src/ICSystem/RunICLibs.cpp)
+set(src ${src} src/ICSystem/ApplyConstantIC.cpp)
+set(src ${src} src/ICSystem/ApplyRandomIC.cpp)
+set(src ${src} src/ICSystem/ApplyRectangleIC.cpp)
+set(src ${src} src/ICSystem/ApplyCircleIC.cpp)
+set(src ${src} src/ICSystem/ApplyCubicIC.cpp)
+set(src ${src} src/ICSystem/ApplySphereIC.cpp)
+set(src ${src} src/ICSystem/User1IC.cpp)
 
 #############################################################
 ### For FE space and the related functions in AsFem       ###

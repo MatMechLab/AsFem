@@ -183,6 +183,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
     
 
 
+    _appctx._icSystem.ApplyIC(_appctx._mesh,_appctx._dofHandler,_appctx._solutionSystem._Unew);
     _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,1.0,_appctx._solutionSystem._Unew);
 
     TSSetIFunction(_ts,_appctx._equationSystem._RHS,ComputeIResidual,&_appctx);
