@@ -111,6 +111,7 @@ private:
     //*** private variables
     //******************************************************
     MeshIO _meshio;
+    NonlinearSolverBlock _nonlinearSolverBlock;
     string _InputFileName,_MeshFileName;
     bool _HasInputFileName=false;
     bool _IsBuiltInMesh=true;

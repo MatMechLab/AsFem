@@ -25,6 +25,17 @@ TimeStepping::TimeStepping(){
     _GrowthFactor=1.1;
     _CutBackFactor=0.85;
     _OptIters=3;
+    //**********************************
+    //*** for nonlinear solver
+    //**********************************
+    _Rnorm0=1.0;_Rnorm=1.0;
+    _Enorm0=1.0;_Enorm=1.0;
+    _RAbsTol=1.0e-8;_RRelTol=1.0e-10;
+    _EAbsTol=1.0e-19;_ERelTol=1.0e-20;
+    _MaxIters=20;_Iters=0;
+    _STol=1.0e-16;
+    _SolverType=NonlinearSolverType::NEWTONLS;
+    _PCTypeName="lu";
 }
 
 //****************************************************
@@ -38,6 +49,16 @@ void TimeStepping::SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppi
     _GrowthFactor=timeSteppingBlock._GrowthFactor;
     _CutBackFactor=timeSteppingBlock._CutBackFactor;
     _OptIters=timeSteppingBlock._OptIters;
+}
+void TimeStepping::SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock){
+    _SolverType=nonlinearsolverblock._SolverType;
+    _MaxIters=nonlinearsolverblock._MaxIters;
+    _RAbsTol=nonlinearsolverblock._RAbsTol;
+    _RRelTol=nonlinearsolverblock._RRelTol;
+    _STol=nonlinearsolverblock._STol;
+
+    _SolverType=nonlinearsolverblock._SolverType;
+    _PCTypeName=nonlinearsolverblock._PCTypeName;
 }
 //*******************************************************
 void TimeStepping::PrintTimeSteppingInfo()const{

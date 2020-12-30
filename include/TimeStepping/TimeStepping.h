@@ -49,9 +49,11 @@ class TimeStepping{
 public:
     TimeStepping();
 
+    void Init();
+
     void SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppingBlock);
 
-    void SetTSNonlinearSolver(NonlinearSolverBlock &nonlinearSolverBlock);
+    void SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock);
 
 
     void ReleaseMem();
@@ -72,6 +74,19 @@ private:
     int _OptIters;
 
 private:
+    //*****************************************************************
+    //*** for nonlinear solver options
+    //*****************************************************************
+    double _Rnorm0,_Rnorm;
+    double _Enorm0,_Enorm;
+    double _dUnorm,_dUnorm0;
+    double _RAbsTol,_RRelTol;
+    double _EAbsTol,_ERelTol;
+    double _STol;
+    int _MaxIters,_Iters;
+    bool _IsConvergent;
+    NonlinearSolverType _SolverType;
+    string _PCTypeName;
     //*****************************************************************
     //*** for TS components from PETSc
     //*****************************************************************

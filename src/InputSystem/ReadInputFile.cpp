@@ -394,9 +394,8 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         if(!_IsReadOnly){
             MessagePrinter::PrintWarningTxt("no [nonlinearsolver] block is found, default newton-raphson with line search solver options will be used by AsFem",false);
         }
-        NonlinearSolverBlock nonlinearSolverBlock;
-        nonlinearSolverBlock.Init();
-        nonlinearSolver.SetOptionsFromNonlinearSolverBlock(nonlinearSolverBlock);
+        _nonlinearSolverBlock.Init();
+        nonlinearSolver.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
     }
 
     if(!HasFEJobBlock){
@@ -408,6 +407,9 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         if(!HasTimeSteppingBlock){
             MessagePrinter::PrintErrorTxt("no [timestepping] block is found for a transient FEM analysis, the [timestepping] block is required for time dependent problem");
             MessagePrinter::AsFem_Exit();
+        }
+        else{
+            timestepping.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
         }
     }
     else{

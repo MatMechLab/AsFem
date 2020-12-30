@@ -30,9 +30,9 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
     // now str already contains [dofs]
     getline(in,str);linenum+=1;
 
-    NonlinearSolverBlock nonlinearSolverBlock;
+    
 
-    nonlinearSolverBlock.Init();// use the default value
+    _nonlinearSolverBlock.Init();// use the default value
     
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
@@ -49,44 +49,44 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
             if((substr.find("nr")!=string::npos||substr.find("NR")!=string::npos)&&
                substr.length()==2){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="newton-raphson";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTON;
+                _nonlinearSolverBlock._SolverTypeName="newton-raphson";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTON;
             }
             else if((substr.find("newtonls")!=string::npos||substr.find("NEWTONLS")!=string::npos)&&
                substr.length()==8){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="newton with line search";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONLS;
+                _nonlinearSolverBlock._SolverTypeName="newton with line search";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONLS;
             }
             else if((substr.find("newtontr")!=string::npos||substr.find("NEWTONTR")!=string::npos)&&
                substr.length()==8){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="newton with trust region";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONTR;
+                _nonlinearSolverBlock._SolverTypeName="newton with trust region";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONTR;
             }
             else if((substr.find("bfgs")!=string::npos||substr.find("BFGS")!=string::npos)&&
                substr.length()==4){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="BFGS";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::BFGS;
+                _nonlinearSolverBlock._SolverTypeName="BFGS";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::BFGS;
             }
             else if((substr.find("broyden")!=string::npos||substr.find("BROYDEN")!=string::npos)&&
                substr.length()==7){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="broyden";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::BROYDEN;
+                _nonlinearSolverBlock._SolverTypeName="broyden";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::BROYDEN;
             }
             else if((substr.find("ngmres")!=string::npos||substr.find("NGMRES")!=string::npos)&&
                substr.length()==6){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="ngmres";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONGMRES;
+                _nonlinearSolverBlock._SolverTypeName="ngmres";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONGMRES;
             }
             else if((substr.find("ncg")!=string::npos||substr.find("NCG")!=string::npos)&&
                substr.length()==6){
                 HasType=true;
-                nonlinearSolverBlock._SolverTypeName="ncg";
-                nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONCG;
+                _nonlinearSolverBlock._SolverTypeName="ncg";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONCG;
             }
             else{
                 MessagePrinter::PrintErrorInLineNumber(linenum);
@@ -114,7 +114,7 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
                     MessagePrinter::PrintErrorTxt("invalid maxiters number in the [nonlinearsolver] block, maxiters=integer is expected",false);
                     MessagePrinter::AsFem_Exit();
                 }
-                nonlinearSolverBlock._MaxIters=int(numbers[0]);
+                _nonlinearSolverBlock._MaxIters=int(numbers[0]);
             }
         }
         else if(str.find("r_rel_tol=")!=string::npos||
@@ -139,7 +139,7 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
                     MessagePrinter::PrintErrorTxt("invalid r_rel_tol found in [nonlinearsolver] block, r_rel_tol=real should be given");
                     MessagePrinter::AsFem_Exit();
                 }
-                nonlinearSolverBlock._RRelTol=numbers[0];
+                _nonlinearSolverBlock._RRelTol=numbers[0];
             }
         }
         else if(str.find("r_abs_tol=")!=string::npos||
@@ -164,7 +164,7 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
                     MessagePrinter::PrintErrorTxt("invalid r_abs_tol found in [nonlinearsolver] block, 'r_abs_tol=real' should be given",false);
                     MessagePrinter::AsFem_Exit();
                 }
-                nonlinearSolverBlock._RAbsTol=numbers[0];
+                _nonlinearSolverBlock._RAbsTol=numbers[0];
             }
         }
         else if(str.find("stol=")!=string::npos||
@@ -188,72 +188,9 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
                     MessagePrinter::PrintErrorTxt("invalid stol= number found in [nonlinearsolver] block, stol=real should be given",false);
                     MessagePrinter::AsFem_Exit();
                 }
-                nonlinearSolverBlock._STol=numbers[0];
+                _nonlinearSolverBlock._STol=numbers[0];
             }
         }
-        // else if((str.find("linesearch")!=string::npos||str.find("LINESEARCH")!=string::npos)&&
-        //         (str.find("linesearchorder")==string::npos&&str.find("LINESEARCHORDER")==string::npos)){
-        //     if(!HasType){
-        //         PetscPrintf(PETSC_COMM_WORLD,"*** Error: no type= is found in [nonlinearsolver] block         !!!   ***\n");
-        //         PetscPrintf(PETSC_COMM_WORLD,"***        linesearch= must be given after type=                !!!   ***\n");
-        //         Msg_AsFem_Exit();
-        //     }
-        //     int i=str.find_first_of('=');
-        //     string substr=str.substr(i+1,str.length());
-        //     substr=StringUtils::RemoveStrSpace(substr);
-        //     substr=StringUtils::StrToLower(substr);
-        //     if((substr.find("default")!=string::npos||substr.find("DEFAULT")!=string::npos)&&
-        //         substr.length()==7){
-        //         nonlinearSolverBlock._LineSearchType=LineSearchType::LineSearchDefault;
-        //     }
-        //     else if((substr.find("basic")!=string::npos||substr.find("BASIC")!=string::npos)&&
-        //              substr.length()==5){
-        //         nonlinearSolverBlock._LineSearchType=LineSearchType::LineSearchBasic;
-        //     }
-        //     else if((substr.find("backtrace")!=string::npos||substr.find("BACKTRACE")!=string::npos)&&
-        //              substr.length()==9){
-        //         nonlinearSolverBlock._LineSearchType=LineSearchType::LineSearchBackTrace;
-        //     }
-        //     else if((substr.find("l2")!=string::npos||substr.find("L2")!=string::npos)&&
-        //              substr.length()==2){
-        //         nonlinearSolverBlock._LineSearchType=LineSearchType::LineSearchL2;
-        //     }
-        //     else if((substr.find("critical")!=string::npos||substr.find("CRITICAL")!=string::npos)&&
-        //              substr.length()==8){
-        //         nonlinearSolverBlock._LineSearchType=LineSearchType::LineSearchCP;
-        //     }
-        //     else{
-        //         Msg_Input_LineError(linenum);
-        //         PetscPrintf(PETSC_COMM_WORLD,"*** Error: invalid line search type in [nonlinearsolver] block  !!!   ***\n");
-        //         PetscPrintf(PETSC_COMM_WORLD,"***        linesearch=default[basic,backtrace,l2,critical] is ok!!!   ***\n");
-        //         Msg_AsFem_Exit();
-        //     }
-        // }
-        // else if(str.find("linesearchorder")!=string::npos||str.find("LINESEARCHORDER")!=string::npos){
-        //     if(!HasType){
-        //         PetscPrintf(PETSC_COMM_WORLD,"*** Error: no type= is found in [nonlinearsolver] block         !!!   ***\n");
-        //         PetscPrintf(PETSC_COMM_WORLD,"***        linesearchorder= must be given after type=           !!!   ***\n");
-        //         Msg_AsFem_Exit();
-        //     }
-        //     int i=str.find_first_of('=');
-        //     string substr=str.substr(i+1,str.length());
-        //     numbers=SplitStrNum(substr);
-        //     if(numbers.size()<1){
-        //         Msg_Input_LineError(linenum);
-        //         PetscPrintf(PETSC_COMM_WORLD,"*** Error: no linesearchorder found in [nonlinearsolver] block  !!!   ***\n");
-        //         PetscPrintf(PETSC_COMM_WORLD,"***        linesearchorder=1[,2,3] should be given              !!!   ***\n");
-        //         Msg_AsFem_Exit();
-        //     }
-        //     else{
-        //         if(numbers[0]<1||numbers[0]>3){
-        //             Msg_Input_LineError(linenum);
-        //             PetscPrintf(PETSC_COMM_WORLD,"*** Error: invalid linesearchorder in [nonlinearsolver] block   !!!   ***\n");
-        //             PetscPrintf(PETSC_COMM_WORLD,"***        linesearchorder=1[2,3] should be given               !!!   ***\n");
-        //             Msg_AsFem_Exit();
-        //         }
-        //         nonlinearSolverBlock._LineSearchOrder=int(numbers[0]);
-        //     }
-        // }
         else if(str.find("[]")!=string::npos){
             MessagePrinter::PrintErrorInLineNumber(linenum);
             MessagePrinter::PrintErrorTxt("the bracket pair is not complete in the [nonlinearsolver] block",false);
@@ -267,7 +204,7 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
         getline(in,str);linenum+=1;
     }
 
-    nonlinearSolver.SetOptionsFromNonlinearSolverBlock(nonlinearSolverBlock);
+    nonlinearSolver.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
     
     return HasType;
 }
