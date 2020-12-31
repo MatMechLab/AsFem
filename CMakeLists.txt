@@ -30,12 +30,12 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/eigen")
 ###############################################
 ### For debug mode                          ###
 ###############################################
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
 
 ###############################################
 ### For release mode                        ###
 ###############################################
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG -Wno-deprecated")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
 # if you have mumps installed, please use the following line
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG -DHASMUMPS")
 
