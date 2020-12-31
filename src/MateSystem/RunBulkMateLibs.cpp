@@ -35,7 +35,11 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,
         break;
     case MateType::CAHNHILLIARDMATE:
         CahnHilliardMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-                                   gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+                             gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+        break;
+    case MateType::LINEARELASTICMATE:
+        LinearElasticMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of MateSystem, please check either your code or your input file");
