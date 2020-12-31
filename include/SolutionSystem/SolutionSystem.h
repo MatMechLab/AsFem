@@ -35,7 +35,7 @@ public:
         _DofNameList=vec;_HasDofNameList=true;
     }
     void AddProjectionNameFromVec(vector<string> vec){
-        _ProjectionNameList=vec;_HasProjNameList=true;
+        _ProjectionNameList=vec;_HasProjNameList=true;_IsProjection=true;
     }
     void InitSolution(const int &ndofs,const int &nelmts,const int &nnodes,const int &ngp);
 
