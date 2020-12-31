@@ -6,13 +6,16 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.12.26
+//+++ Purpose: Define equation system in AsFem, here you can access
+//+++          K matrix and Residual of our system equations
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_EQUATIONSYSTEM_H
-#define ASFEM_EQUATIONSYSTEM_H
+#pragma once
 
 #include <iostream>
-#include <iomanip>
-#include <string>
 
 #include "petsc.h"
 
@@ -20,22 +23,18 @@
 
 using namespace std;
 
-
 class EquationSystem{
 public:
     EquationSystem();
 
-    void InitEquationSystem(const PetscInt &ndofs,const PetscInt &maxrownnz);
+    void InitEquationSystem(const int &ndofs,const int &maxrownnz);
     void CreateSparsityPattern(DofHandler &dofHandler);
+
+    void ReleaseMem();
 
 public:
     Mat _AMATRIX;
     Vec _RHS;
-
 private:
-    PetscInt _nDofs;
+    int _nDofs;
 };
-
-
-
-#endif // ASFEM_EQUATIONSYSTEM_H

@@ -6,23 +6,48 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.06.29
+//+++ Purpose: Implement the welcome screen for the initial running
+//+++          of AsFem.
+//+++          This printer offers the summary information, i.e.
+//+++            version of AsFem, PETSc
+//+++            news report... and so on.
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#include <iostream>
+#include <string>
+#include <cstdio>
 
 #include "petsc.h"
+#include "Utils/MessagePrinter.h"
 
-
+using namespace std;
 void Welcome(const PetscInt &year,const PetscInt &month,const PetscInt &day,const PetscReal &version){
     PetscInt Major,Minor,SubMinor;
     PetscGetVersionNumber(&Major,&Minor,&SubMinor,NULL);
-    PetscPrintf(PETSC_COMM_WORLD,"*************************************************************************\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Welcome to use AsFem                                              ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** A Simple Finite Element Method program                            ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Version: %-10.2f  Release @ %4d-%02d-%02d                         ***\n",version,year,month,day);
-    PetscPrintf(PETSC_COMM_WORLD,"*** PETSc version: %2d.%2d.%-2d                                           ***\n",Major,Minor,SubMinor);
-    PetscPrintf(PETSC_COMM_WORLD,"*** License: GPL-3.0                                                  ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Author: Yang Bai                                                  ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Contact: walkandthinker@gmail.com                                 ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** QQ Group: 879908352                                               ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Website: https://github.com/yangbai90/AsFem                       ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Feel free to use and discuss  .:.                                 ***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*************************************************************************\n");
+    char buff[50];
+    string str;
+    
+    MessagePrinter::PrintStars();
+    MessagePrinter::PrintWelcomeTxt("Welcome to use AsFem");
+    MessagePrinter::PrintWelcomeTxt("A Simple Finite Element Method Program");
+
+    snprintf(buff,50,"Version: %-10.2f  Release @ %4d-%02d-%02d",version,year,month,day);
+    str=buff;
+    MessagePrinter::PrintWelcomeTxt(str);
+
+    snprintf(buff,50,"PETSc version: %2d.%2d.%-2d",Major,Minor,SubMinor);
+    str=buff;
+    MessagePrinter::PrintWelcomeTxt(str);
+    
+    MessagePrinter::PrintWelcomeTxt("License: GPL-3.0");
+    MessagePrinter::PrintWelcomeTxt("Author: Yang Bai");
+    MessagePrinter::PrintWelcomeTxt("Contact: walkandthinker@gmail.com");
+
+    MessagePrinter::PrintWelcomeTxt("QQ Group: 879908352");
+    MessagePrinter::PrintWelcomeTxt("Website: https://github.com/yangbai90/AsFem");
+    MessagePrinter::PrintWelcomeTxt("Feel free to use and discuss  .:.");
+    MessagePrinter::PrintStars();
 }

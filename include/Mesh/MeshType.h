@@ -12,6 +12,7 @@
 
 enum class MeshType{
     NULLTYPE,
+    POINT,
     EDGE2,
     EDGE3,
     EDGE4,

@@ -6,10 +6,14 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.10
+//+++ Purpose: Define the element system in AsFem
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "ElmtSystem/ElmtSystem.h"
 
 ElmtSystem::ElmtSystem(){
-    _ElmtBlockList.clear();
-    _nElmtBlocks=0;
+    InitBulkElmtSystem();
 }

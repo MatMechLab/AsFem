@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "iosfwd": "cpp",
         "array": "cpp",
         "atomic": "cpp",
         "bit": "cpp",
@@ -9,7 +8,6 @@
         "chrono": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
-        "codecvt": "cpp",
         "complex": "cpp",
         "condition_variable": "cpp",
         "cstdarg": "cpp",
@@ -50,6 +48,7 @@
         "future": "cpp",
         "initializer_list": "cpp",
         "iomanip": "cpp",
+        "iosfwd": "cpp",
         "iostream": "cpp",
         "istream": "cpp",
         "limits": "cpp",
@@ -64,7 +63,6 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "valarray": "cpp",
-        "filesystem": "cpp"
+        "valarray": "cpp"
     }
 }

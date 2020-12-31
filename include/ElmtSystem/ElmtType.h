@@ -6,46 +6,52 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.01
+//+++ Purpose: Define the basic element type in AsFem
+//+++          The elements can be classified into two groups:
+//+++             1. built-in elements,i.e. mechanics,cahnhilliard...
+//+++             2. user-defined-elements(uel),i.e. user1,user2...
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_ELMTTYPE_H
-#define ASFEM_ELMTTYPE_H
+#pragma once
+
 
 enum class ElmtType{
-    NullElmt,
-    PoissonElmt,
-    DiffusionElmt,
-    WaveElmt,
-    CahnHilliardElmt,
-    TensorCahnHilliardElmt,
-    MechCahnHilliardElmt,
-    MechanicsElmt,
-    ThermalElmt,
-    ThermalMechanicsElmt,
-    PhaseFieldFracElmt,
-    MieheFractureElmt,
-    CohesivePFFracElmt,
-    BordenFractureElmt,
-    DendriteElmt,
-    User1Elmt,
-    User2Elmt,
-    User3Elmt,
-    User4Elmt,
-    User5Elmt,
-    User6Elmt,
-    User7Elmt,
-    User8Elmt,
-    User9Elmt,
-    User10Elmt,
-    User11Elmt,
-    User12Elmt,
-    User13Elmt,
-    User14Elmt,
-    User15Elmt,
-    User16Elmt,
-    User17Elmt,
-    User18Elmt,
-    User19Elmt,
-    User20Elmt
+    NULLELMT,
+    TIMEDERIVELMT,
+    LAPLACEELMT,
+    POISSONELMT,
+    MECHANICSELMT,
+    CAHNHILLIARDELMT,
+    MECHCAHNHILLIARDELMT,
+    DIFFUSIONELMT,
+    WAVEELMT,
+    THERMALCONDUCTELMT,
+    THERMALMECHANICSELMT,
+    DIFFUSIONMECHANICSELMT,
+    ALLANCAHNELMT,
+    MIEHEFRACELMT,
+    DENDRITEELMT,
+    USER1ELMT,
+    USER2ELMT,
+    USER3ELMT,
+    USER4ELMT,
+    USER5ELMT,
+    USER6ELMT,
+    USER7ELMT,
+    USER8ELMT,
+    USER9ELMT,
+    USER10ELMT,
+    USER11ELMT,
+    USER12ELMT,
+    USER13ELMT,
+    USER14ELMT,
+    USER15ELMT,
+    USER16ELMT,
+    USER17ELMT,
+    USER18ELMT,
+    USER19ELMT,
+    USER20ELMT
 };
-
-#endif //ASFEM_ELMTTYPE_H

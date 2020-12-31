@@ -6,11 +6,19 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.11.30
+//+++ Purpose: Implement the general tasks of FEM calculation in AsFem,
+//+++          i.e. compute residual, compute jacobian
+//+++          projection from gauss point to nodal point
+//+++          assemble from local element to global, ...
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FESystem/FESystem.h"
 
 FESystem::FESystem(){
-    _Volumes=0.0;
+    _BulkVolumes=0.0;
     
     _elConn.clear();_elDofs.clear();
     _elDofsActiveFlag.clear();

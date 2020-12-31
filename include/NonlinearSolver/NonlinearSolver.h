@@ -6,9 +6,17 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.12
+//+++ Purpose: define the nonlinear solver class in AsFem
+//+++          this class mainly call the SNES subroutines of PETSc
+//+++          to solve the nonlinear equations
+//+++          once PETSc update the API, we should also update the
+//+++          related code !!!
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_NONLINEARSOLVER_H
-#define ASFEM_NONLINEARSOLVER_H
+#pragma once
 
 #include <iostream>
 #include <iomanip>
@@ -16,28 +24,23 @@
 
 #include "petsc.h"
 
-//************************************
-//*** For AsFem's own header file
-//************************************
+#include "Utils/MessagePrinter.h"
+
 #include "Mesh/Mesh.h"
 #include "DofHandler/DofHandler.h"
-#include "BCs/BCSystem.h"
-#include "ICs/ICSystem.h"
-
+#include "BCSystem/BCSystem.h"
+#include "ICSystem/ICSystem.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "MateSystem/MateSystem.h"
-
-#include "Solution/Solution.h"
-#include "EquationSystem/EquationSystem.h"
+#include "SolutionSystem/SolutionSystem.h"
 #include "FE/FE.h"
 #include "FESystem/FESystem.h"
+#include "EquationSystem/EquationSystem.h"
+#include "NonlinearSolver/NonlinearSolverBlock.h"
+#include "FEProblem/FEControlInfo.h"
 
 
-#include "NonlinearSolverBlock.h"
-#include "NonlinearSolverType.h"
-#include "FEProblem/FeCtrlInfo.h"
-
-using namespace std;
+//*******************************************************************
 
 typedef struct{
     Mesh _mesh;
@@ -46,11 +49,11 @@ typedef struct{
     ICSystem _icSystem;
     ElmtSystem _elmtSystem;
     MateSystem _mateSystem;
-    Solution _solution;
+    SolutionSystem _solutionSystem;
     EquationSystem _equationSystem;
     FE _fe;
     FESystem _feSystem;
-    FeCtrlInfo _fectrlinfo;
+    FEControlInfo _fectrlinfo;
 } AppCtx;
 
 typedef struct{
@@ -61,73 +64,57 @@ typedef struct{
     bool IsDepDebug;
 } MonitorCtx;
 
-
-extern PetscErrorCode Monitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx);
-extern PetscErrorCode FormJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx);
-extern PetscErrorCode FormResidual(SNES snes,Vec U,Vec RHS,void *ctx);
-
+extern PetscErrorCode MyMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx);
 extern PetscErrorCode MyConvergent(SNES snes,PetscInt iters,PetscReal xnorm,PetscReal snorm,PetscReal fnorm,SNESConvergedReason *reason, void *cctx);
+
+//************************************************************************
+//*** the core part for our jacobian and residual calculation
+//************************************************************************
+extern PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx);
+extern PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx);
+
+
 
 class NonlinearSolver{
 public:
     NonlinearSolver();
-    void Init(NonlinearSolverBlock &nonlinearsolverblock);
-
-    inline PetscInt GetCurrentIters()const{return _Iters;}
-
+    void Init();
+    void SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock);
     bool Solve(Mesh &mesh,DofHandler &dofHandler,
-               ElmtSystem &elmtSystem,MateSystem &mateSystem,
-               BCSystem &bcSystem,ICSystem &icSystem,
-               Solution &solution,EquationSystem &equationSystem,
-               FE &fe,FESystem &feSystem);
-    bool SSolve(Mesh &mesh,DofHandler &dofHandler,
-               ElmtSystem &elmtSystem,MateSystem &mateSystem,
-               BCSystem &bcSystem,ICSystem &icSystem,
-               Solution &solution,EquationSystem &equationSystem,
-               FE &fe,FESystem &feSystem,
-               FeCtrlInfo &fectrlinfo);
+            ElmtSystem &elmtSystem,MateSystem &mateSystem,
+            BCSystem &bcSystem,ICSystem &icSystem,
+            SolutionSystem &solutionSystem,EquationSystem &equationSystem,
+            FE &fe,FESystem &feSystem,
+            FEControlInfo &fectrlinfo);
 
-    inline double GetRnorm()const{return _Rnorm;}
-    inline double GetdUnorm()const{return _dUnorm;}
-    inline double GetEnorm()const{return _Enorm;}
+    void ReleaseMem();
 
-private:
-    bool NewtonRaphson(Mesh &mesh,DofHandler &dofHandler,
-               ElmtSystem &elmtSystem,MateSystem &mateSystem,
-               BCSystem &bcSystem,ICSystem &icSystem,
-               Solution &solution,EquationSystem &equationSystem,
-               FE &fe,FESystem &feSystem);
-    
-
-private:
-    KSP _ksp;
-    PC _pc;
-    SNES _snes;
-    SNESLineSearch _linesearch;
-    SNESConvergedReason _snesreason;
-    AppCtx _appctx;
-    MonitorCtx _monctx;
-    KSPConvergedReason _reason;
-
-    bool LinearSolve(Mat &A,Vec &x,Vec &F);
-    bool CheckConvergence();
-
-    void PrintIterationInfo()const;
-    void PrintIterationDetailsInfo()const;
-
+    void PrintInfo()const;
 private:
     //*********************************************
     //*** For nonlinear solver information
     //*********************************************
-    PetscReal _Rnorm0,_Rnorm;
-    PetscReal _Enorm0,_Enorm;
-    PetscReal _dUnorm,_dUnorm0;
-    PetscReal _RAbsTol,_RRelTol;
-    PetscReal _EAbsTol,_ERelTol;
-    PetscReal _STol;
-    PetscInt _MaxIters,_Iters;
+    double _Rnorm0,_Rnorm;
+    double _Enorm0,_Enorm;
+    double _dUnorm,_dUnorm0;
+    double _RAbsTol,_RRelTol;
+    double _EAbsTol,_ERelTol;
+    double _STol;
+    int _MaxIters,_Iters;
     bool _IsConvergent;
     NonlinearSolverType _SolverType;
-};
+    string _SolverName;
+    string _PCTypeName;
 
-#endif // ASFEM_NONLINEARSOLVER_H
+    //*********************************************
+    //*** For nonlinear solver's related components
+    //*********************************************
+    KSP _ksp;
+    PC  _pc;
+    SNES _snes;
+    SNESLineSearch _sneslinesearch;
+    SNESConvergedReason _snesreason;
+    AppCtx _appctx;
+    MonitorCtx _monctx;
+
+};

@@ -6,81 +6,52 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.12.27
+//+++ Purpose: run the static analysis 
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FEProblem/FEProblem.h"
 
 void FEProblem::RunStaticAnalysis(){
-    // _nonlinearsolver.Solve(_mesh,_dofHandler,
-    //                        _elmtSystem,_mateSystem,
-    //                        _bcSystem,_icSystem,_solution,_equationSystem,
-    //                        _fe,
-    //                        _feSystem);
+    MessagePrinter::PrintNormalTxt("Start to do the static FEM analysis ...");
+    if(_rank==0){
+        _TimerStart=chrono::high_resolution_clock::now();
+    }
 
-    // chrono::high_resolution_clock::time_point mystart,myend;
-    // if(_rank==0){
-    //     mystart=chrono::high_resolution_clock::now();
-    // }
+    if(_nonlinearSolver.Solve(_mesh,_dofHandler,_elmtSystem,_mateSystem,
+        _bcSystem,_icSystem,
+        _solutionSystem,_equationSystem,
+        _fe,_feSystem,_feCtrlInfo)){
+        if(_rank==0){
+            _TimerEnd=chrono::high_resolution_clock::now();
+            _Duration=Duration(_TimerStart,_TimerEnd);
+        }
+        char buff[70];string str;
+        snprintf(buff,70,"Static analysis finished! [elapse time=%14.6e]",_Duration);
+        str=buff;
+        MessagePrinter::PrintNormalTxt(str);
+        if(_feCtrlInfo.IsProjection){
+            _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
+                _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,
+                _solutionSystem._Unew,_solutionSystem._V,
+                _solutionSystem._Hist,_solutionSystem._HistOld,_solutionSystem._Proj,
+                _equationSystem._AMATRIX,_equationSystem._RHS);
 
-    _feCtrlInfo.timesteppingtype=TimeSteppingType::BackWardEuler;
-    _feCtrlInfo.ctan[0]=1.0;
-    _feCtrlInfo.ctan[1]=1.0;
-    _nonlinearsolver.SSolve(_mesh,_dofHandler,
-                           _elmtSystem,_mateSystem,
-                           _bcSystem,_icSystem,_solution,_equationSystem,
-                           _fe,
-                           _feSystem,
-                           _feCtrlInfo);
-    
-    if(_feCtrlInfo.IsProjection){
-        _feSystem.FormFE(9,_feCtrlInfo.t,_feCtrlInfo.dt,_feCtrlInfo.ctan,
-                        _mesh,_dofHandler,_fe,
-                        _elmtSystem,_mateSystem,
-                        _solution._Unew,_solution._V,
-                        _solution._Hist,_solution._HistOld,
-                        _solution._Proj,
-                        _equationSystem._AMATRIX,_equationSystem._RHS);
-        _outputSystem.WriteResultToVTU(_mesh,_dofHandler,_solution._Unew,_solution.GetProjNumPerNode(),_solution.GetProjNameVec(),_solution._Proj);
+        
+            _outputSystem.WriteResultToFile(_mesh,_dofHandler,
+            _solutionSystem._Unew,_solutionSystem.GetProjNumPerNode(),_solutionSystem.GetProjNameVec(),_solutionSystem._Proj);
+        }
+        else{
+             _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
+        }
+        MessagePrinter::PrintStars();
+        MessagePrinter::PrintNormalTxt("Write result to "+_outputSystem.GetOutputFileName());
+        MessagePrinter::PrintStars();
     }
     else{
-        _outputSystem.WriteResultToVTU(_mesh,_dofHandler,_solution._Unew);
+        MessagePrinter::PrintNormalTxt("SNES solver failed for your static analysis, please check either your code or your boundary condition");
+        MessagePrinter::AsFem_Exit();
     }
-    PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
-    PetscPrintf(PETSC_COMM_WORLD,"*** Write result to [%41s] !!!   ***\n",_outputSystem.GetVTUFileName().c_str());
-    PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
-
-    // if(_rank==0){
-    //     myend=chrono::high_resolution_clock::now();
-    // }
-
-    // PetscPrintf(PETSC_COMM_WORLD,"*** Nonlinear solver using time=%14.6e [s] \n",
-    // chrono::duration_cast<std::chrono::microseconds>(myend-mystart).count()/1.0e6);
-
-    //************************************************************************************
-    //*** this is for performance test(just assemble, dont solve the equations!!!)
-    //************************************************************************************
-    
-    // if(_rank==0){
-    //     mystart=chrono::high_resolution_clock::now();
-    // }
-
-    // for(int i=1;i<=10;i++){
-    //     _feSystem.FormFE(6, _feCtrlInfo.t, _feCtrlInfo.dt, _feCtrlInfo.ctan,
-    //                      _mesh, _dofHandler, _fe,
-    //                      _elmtSystem, _mateSystem,
-    //                      _solution._Unew, _solution._V,
-    //                      _solution._Hist, _solution._HistOld,
-    //                      _solution._Proj,
-    //                      _equationSystem._AMATRIX, _equationSystem._RHS);
-    // }
-    
-    
-    // if(_rank==0){
-    //     myend=chrono::high_resolution_clock::now();
-    // }
-
-    // PetscPrintf(PETSC_COMM_WORLD,"*** System assemble using time=%14.6e [s] \n",
-    // chrono::duration_cast<std::chrono::microseconds>(myend-mystart).count()/1.0e6);
-
-
-
 }

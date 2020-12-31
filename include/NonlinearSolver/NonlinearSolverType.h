@@ -6,27 +6,21 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.12
+//+++ Purpose: define the nonlinear solver type in AsFem
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_NONLINEARSOLVERTYPE_H
-#define ASFEM_NONLINEARSOLVERTYPE_H
+#pragma once
 
 enum class NonlinearSolverType{
-    NewtonRaphson,
-    SNESNewtonLs,
-    SNESNewtonTr,
-    SNESNewtonCG,
-    SNESNewtonGMRES,
-    SNESLBfgs,
-    SNESBroyden,
-    SNESBadBroyden
+    NEWTON,
+    NEWTONLS,
+    NEWTONTR,
+    NEWTONCG,
+    NEWTONGMRES,
+    BFGS,
+    BROYDEN,
+    BADBROYDEN
 };
-
-enum class LineSearchType{
-    LineSearchDefault,
-    LineSearchBasic,
-    LineSearchBackTrace,
-    LineSearchL2,
-    LineSearchCP
-};
-
-#endif // ASFEM_NONLINEARSOLVERTYPE_H

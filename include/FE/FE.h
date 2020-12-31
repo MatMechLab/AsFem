@@ -6,57 +6,69 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.12
+//+++ Purpose: implement the general FE space for FEM calculation
+//+++          in AsFem, here one can use:
+//+++            1) gauss integration 
+//+++            2) shape functions for different mesh
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_FE_H
-#define ASFEM_FE_H
+#pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <string>
 
-#include "petsc.h"
-
-//**********************************
-//*** AsFem's own header file    ***
-//**********************************
-#include "QPoint.h"
-#include "ShapeFun.h"
-#include "Mesh/Nodes.h"
 #include "Mesh/Mesh.h"
+#include "FE/QPoint.h"
+#include "FE/ShapeFun.h"
 
 class Mesh;
 
-class FE
-{
+class FE{
 public:
     FE();
-    void SetDim(int dim) {_nDim=dim;}
-    void SetDimMin(int dim) {_nDimMin=dim;}
-    void SetOrder(int order) {_nOrder=order;}
-    void SetBCOrder(int order) {_nBCOrder=order;}
-    void SetQPointType(string qtype) {_QPointType=qtype;}
-    void InitFE(Mesh &mesh);// init the gauss point system and shape fun system
-                            // before real calculcation
-                            // 
+    void SetDim(int dim){_nDim=dim;_HasDimSet=true;}
+    void SetMinDim(int dim){_nMinDim=dim;}
+    void InitFE(Mesh &mesh);
+    //***********************************************
+    //*** for QPoint
+    //***********************************************
+    void SetQPointType(QPointType qptype);
+    void SetBulkQpOrder(int order);
+    void SetBCQpOrder(int order);
+    void CreateQPoints(Mesh &mesh);
+    //***********************************************
+    //*** for shape functions
+    //***********************************************
+    void CreateShapeFuns(Mesh &mesh);
 
-    inline int GetDim() const {return _nDim;}
-    inline int GetDimMin() const {return _nDimMin;}
-    inline int GetOrder() const {return _nOrder;}
-    inline int GetBCOrder() const {return _nBCOrder;}
+
+    //***********************************************
+    //*** for get functions
+    //***********************************************
+    inline int GetDim()const{return _nDim;}
+    inline int GetMinDim()const{return _nMinDim;}
+
+    QPoint& GetBulkQPointPtr(){return _BulkQPoint;}
+    QPoint& GetLineQPointPtr(){return _LineQPoint;}
+    QPoint& GetSurfaceQPointPtr(){return _SurfaceQPoint;}
+
+    ShapeFun& GetBulkShpPtr(){return _BulkShp;}
+    ShapeFun& GetSurfaceShpPtr(){return _SurfaceShp;}
+    ShapeFun& GetLineShpPtr(){return _LineShp;}
 
 
-    void PrintQPointInfo() const;
-
+    void PrintFEInfo()const;
 
 public:
-    string _QPointType="gauss";
+    QPoint _BulkQPoint,_LineQPoint,_SurfaceQPoint;
+    ShapeFun _BulkShp,_LineShp,_SurfaceShp;
+    Nodes _BulkNodes,_SurfaceNodes,_LineNodes;
+
+private:
+    int _nDim,_nMinDim;
+    bool _HasDimSet=false;
     bool _IsInit=false;
-    int _nDim,_nDimMin,_nOrder,_nBCOrder;
-    QPoint _qp_bulk,_qp_surface,_qp_line;
-    ShapeFun _shp_bulk,_shp_surface,_shp_line;
-    Nodes _nodes,_surface_nodes,_line_nodes;
+    int _nBulkQpOrder,_nBCQpOrder;
     
 };
-
-
-#endif // ASFEM_FE_H

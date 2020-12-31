@@ -6,6 +6,11 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.06.30
+//+++ Purpose: Function for reading the whole input file
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "InputSystem/InputSystem.h"
 
@@ -15,44 +20,43 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 MateSystem &mateSystem,
                                 BCSystem &bcSystem,
                                 ICSystem &icSystem,
-                                Solution &solution,
                                 FE &fe,
-                                NonlinearSolverBlock &nonlinearSolverBlock,
-                                TimeSteppingBlock &timesteppingblock,
-                                JobBlock &jobBlock,
-                                OutputBlock &outputblock){
+                                SolutionSystem &solutionSystem,
+                                OutputSystem &outputSystem,
+                                NonlinearSolver &nonlinearSolver,
+                                TimeStepping &timestepping,
+                                FEJobBlock &feJobBlock){
     ifstream in;
     string str;
     int linenum=0;
 
     bool HasMeshBlock=false;
     bool HasDofsBlock=false;
-    bool HasBCBlock=false;
-    bool HasICBlock=false;
     bool HasElmtBlock=false;
     bool HasMateBlock=false;
-    bool HasJobBlock=false;
-    bool HasTimeSteppingBlock=false;
-    bool HasQpBlock=false;
-    // bool HasLinearSolverBlock=false;
-    bool HasNonLinearSolverBlock=false;
-    bool HasProjectionBlock=false;
+    bool HasBCBlock=false;
+    bool HasICBlock=false;
+    bool HasQPointBlock=false;
     bool HasOutputBlock=false;
+    bool HasProjectionBlock=false;
+    bool HasNonlinearSolverBlock=false;
+    bool HasFEJobBlock=false;
+    bool HasTimeSteppingBlock=false;
 
     if(_HasInputFileName){
         in.open(_InputFileName.c_str(),ios::in);
         while(!in.is_open()){
-            Msg_InputFileName_Invalid(_InputFileName);
-            PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the input file name:");
+            MessagePrinter::PrintErrorTxt("can\'t open the input file");
+            PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the correct input file name:");
             cin>>_InputFileName;
         }
     }
     else{
-        PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the input file name:");
-        cin>>_InputFileName;
+        PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the correct input file name:");
+            cin>>_InputFileName;
         in.open(_InputFileName.c_str(),ios::in);
         while(!in.is_open()){
-            Msg_InputFileName_Invalid(_InputFileName);
+            MessagePrinter::PrintErrorTxt("can\'t open the input file");
             PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the input file name:");
             cin>>_InputFileName;
         }
@@ -63,341 +67,360 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
 
     HasMeshBlock=false;
     HasDofsBlock=false;
-    HasBCBlock=false;
-    HasICBlock=false;
     HasElmtBlock=false;
     HasMateBlock=false;
-    HasJobBlock=false;
-    HasQpBlock=false;
-    // HasLinearSolverBlock=false;
-    HasNonLinearSolverBlock=false;
-    HasProjectionBlock=false;
-    HasTimeSteppingBlock=false;
+    HasBCBlock=false;
+    HasICBlock=false;
+    HasQPointBlock=false;
     HasOutputBlock=false;
-
+    HasProjectionBlock=false;
+    HasNonlinearSolverBlock=false;
+    HasFEJobBlock=false;
+    HasTimeSteppingBlock=false;
 
     while(!in.eof()){
         getline(in,str);linenum+=1;
-        str=RemoveStrSpace(str);
-        str=StrToLower(str);
-        if(IsCommentLine(str)||str.size()<1) continue;
+        str=StringUtils::RemoveStrSpace(str);
+        str=StringUtils::StrToLower(str);
+        if(StringUtils::IsCommentLine(str)||str.size()<1) continue;
+
         if(str.find("[mesh]")!=string::npos){
-            if(!IsBracketMatch(in,linenum)){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [mesh]/[end] bracket pair is not match               !!!   ***\n");
-                Msg_AsFem_Exit();
+            if(!StringUtils::IsBracketMatch(in,linenum)){
+                MessagePrinter::PrintErrorTxt("[mesh]/[end] bracket pair dosen\'t match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
             if(ReadMeshBlock(in,str,linenum,mesh)){
                 HasMeshBlock=true;
             }
             else{
+                MessagePrinter::PrintErrorTxt("some errors detected in the [mesh] block, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 HasMeshBlock=false;
             }
         }
         else if(str.find("[dofs]")!=string::npos){
-            if(!IsBracketMatch(in,linenum)){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [dofs]/[end] bracket pair is not match               !!!   ***\n");
-                Msg_AsFem_Exit();
+            if(!StringUtils::IsBracketMatch(in,linenum)){
+                MessagePrinter::PrintErrorTxt("[dofs]/[end] bracket pair dosen\'t match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
             if(ReadDofsBlock(in,str,linenum,dofHandler)){
                 HasDofsBlock=true;
             }
             else{
+                MessagePrinter::PrintErrorTxt("some errors detected in the [dofs] block, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 HasDofsBlock=false;
             }
         }
-        else if(str.find("[bcs]")!=string::npos){
+        else if(str.find("[elmts]")!=string::npos&&str.find("[ielmts]")==string::npos){
             if(!HasDofsBlock){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [bcs] block requires [dofs] block                    !!!   ***\n");
-                PetscPrintf(PETSC_COMM_WORLD,"***        you should define the [dofs] block before [bcs]      !!!   ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("[elmts] block requires the [dofs] block, you should define the [dofs] block first, then given the [elmts] block");
                 return false;
             }
             int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadBCBlock(in,str,lastendlinenum,linenum,bcSystem,dofHandler)){
-                    HasBCBlock=true;
-                }
-                else{
-                    HasBCBlock=false;
-                }
-            }
-            else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [bcs]/[end] bracket pair is not match                !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-        }
-        else if(str.find("[ics]")!=string::npos){
-            if(!HasDofsBlock){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [ics] block requires [dofs] block                    !!!   ***\n");
-                PetscPrintf(PETSC_COMM_WORLD,"***        you should define the [dofs] block before [ics]      !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-            int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadICBlock(in,str,lastendlinenum,linenum,icSystem,dofHandler)){
-                    HasICBlock=true;
-                }
-                else{
-                    HasICBlock=false;
-                    Msg_AsFem_Exit();
-                }
-            }
-            else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [ics]/[end] bracket pair is not match                !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-        }
-        else if(str.find("[elmts]")!=string::npos){
-            if(!HasDofsBlock){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [elmts] block requires [dofs] block                  !!!   ***\n");
-                PetscPrintf(PETSC_COMM_WORLD,"***        you should define the [dofs] block before [elmts]    !!!   ***\n");
-                return false;
-            }
-            int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
                 if(ReadElmtBlock(in,str,lastendlinenum,linenum,elmtSystem,dofHandler)){
                     HasElmtBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [elmts] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasElmtBlock=false;
                 }
             }
             else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [elmts]/[end] bracket pair is not match              !!!   ***\n");
+                MessagePrinter::PrintErrorTxt("[elmts]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
         }
         else if(str.find("[mates]")!=string::npos){
             int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
                 if(ReadMateBlock(in,str,lastendlinenum,linenum,mateSystem)){
                     HasMateBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [mates] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasMateBlock=false;
                 }
             }
             else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [mates]/[end] bracket pair is not match              !!!   ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("[mates]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
         }
-        else if(str.find("[job]")!=string::npos){
+        else if(str.find("[bcs]")!=string::npos){
+            if(!HasDofsBlock){
+                MessagePrinter::PrintErrorTxt("[bcs] block requires the [dofs] block, you should define the [dofs] block before the [bcs] block");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
             int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadJobBlock(in,str,linenum,jobBlock)){
-                    HasJobBlock=true;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadBCBlock(in,str,lastendlinenum,linenum,bcSystem,dofHandler)){
+                    HasBCBlock=true;
                 }
                 else{
-                    HasJobBlock=false;
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [bcs] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasBCBlock=false;
                 }
             }
             else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [job]/[end] bracket pair is not match                !!!   ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("[bcs]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if(str.find("[ics]")!=string::npos){
+            if(!HasDofsBlock){
+                MessagePrinter::PrintErrorTxt("[ics] block requires the [dofs] block, you should define the [dofs] block before the [ics] block");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadICBlock(in,str,lastendlinenum,linenum,icSystem,dofHandler)){
+                    HasICBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [ics] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasICBlock=false;
+                    MessagePrinter::AsFem_Exit();
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[ics]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
         }
         else if(str.find("[qpoint]")!=string::npos){
+            if(!HasMeshBlock){
+                MessagePrinter::PrintErrorTxt("[qpoint] block requires the [mesh] block, you should define the [mesh] block first, then given the [qpoint] block");
+                return false;
+            }
             int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
                 if(ReadQPointBlock(in,str,linenum,fe)){
-                    HasQpBlock=true;
+                    HasQPointBlock=true;
                 }
                 else{
-                    HasQpBlock=false;
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [qpoint] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasQPointBlock=false;
                 }
             }
             else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [qpoint]/[end] bracket pair is not match             !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-        }
-        else if((str.find("[linearsolver]")!=string::npos)&&str.length()==14){
-            int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                // if(ReadLinearSolverBlock(in,str,linenum,linearSolverBlockInfo)){
-                //     HasLinearSolverBlock=true;
-                // }
-                // else{
-                //     HasLinearSolverBlock=false;
-                // }
-            }
-            else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [linearsolver]/[end] bracket pair is not match       !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-        }
-        else if((str.find("[nonlinearsolver]")!=string::npos)&&str.length()==17){
-            int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadNonlinearSolverBlock(in,str,linenum,nonlinearSolverBlock)){
-                    HasNonLinearSolverBlock=true;
-                }
-                else{
-                    HasNonLinearSolverBlock=false;
-                }
-            }
-            else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [nonlinearsolver]/[end] bracket pair is not match    !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-        }
-        else if((str.find("[timestepping]")!=string::npos)&&str.length()==14){
-            int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadTimeSteppingBlock(in,str,linenum,timesteppingblock)){
-                    HasTimeSteppingBlock=true;
-                }
-                else{
-                    HasTimeSteppingBlock=false;
-                }
-            }
-            else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [timestepping]/[end] bracket pair is not match       !!!   ***\n");
-                Msg_AsFem_Exit();
-                return false;
-            }
-        }
-        else if((str.find("[projection]")!=string::npos)&&str.length()==12){
-            int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadProjectionBlock(in,str,linenum,solution)){
-                    HasProjectionBlock=true;
-                }
-                else{
-                    HasProjectionBlock=false;
-                }
-            }
-            else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [projection]/[end] bracket pair is not match         !!!   ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("[qpoint]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
         }
         else if((str.find("[output]")!=string::npos)&&str.length()==8){
             int lastendlinenum;
-            if(IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadOutputBlock(in,str,linenum,outputblock)){
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadOutputBlock(in,str,linenum,outputSystem)){
                     HasOutputBlock=true;
                 }
                 else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [output] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
                     HasOutputBlock=false;
                 }
             }
             else{
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: [output]/[end] bracket pair is not match             !!!   ***\n");
-                Msg_AsFem_Exit();
+                MessagePrinter::PrintErrorTxt("[output]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if((str.find("[projection]")!=string::npos)&&str.length()==12){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadProjectionBlock(in,str,linenum,solutionSystem)){
+                    HasProjectionBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [projection] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasProjectionBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[projection]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if((str.find("[nonlinearsolver]")!=string::npos)&&str.length()==17){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadNonlinearSolverBlock(in,str,linenum,nonlinearSolver)){
+                    HasNonlinearSolverBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [nonlinearsolver] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasNonlinearSolverBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[nonlinearsolver]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if((str.find("[timestepping]")!=string::npos)&&str.length()==14){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadTimeSteppingBlock(in,str,linenum,timestepping)){
+                    HasTimeSteppingBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [timestepping] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasTimeSteppingBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[timestepping]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
+        else if((str.find("[job]")!=string::npos)&&str.length()==5){
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadFEJobBlock(in,str,linenum,feJobBlock)){
+                    HasFEJobBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [job] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasFEJobBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[job]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
                 return false;
             }
         }
         else if(str.find("[]")!=string::npos){
-            Msg_Input_LineError(linenum);
-            Msg_Input_BlockBracketNotComplete();
-            Msg_AsFem_Exit();
+            MessagePrinter::PrintErrorInLineNumber(linenum);
+            MessagePrinter::PrintErrorTxt("the bracket pair is not complete in your input file, you should check it",false);
+            MessagePrinter::AsFem_Exit();
         }
     }
 
     if(!HasMeshBlock){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: no [mesh] block found                                !!!   ***\n");
-        return false;
-    }
-    if(!HasDofsBlock){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: no [dofs] block found                                !!!   ***\n");
-        return false;
+        MessagePrinter::PrintErrorTxt("no [mesh] block is found, for FEM analysis, mesh is required");
+        MessagePrinter::AsFem_Exit();
     }
 
-    if(!HasBCBlock){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Warning: no [bcs] block found                               !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***          AsFem will treat all boundaries as zero neumann bc !!!   ***\n");
+    if(!HasDofsBlock){
+        MessagePrinter::PrintErrorTxt("no [dofs] block is found, for FEM analysis, dofs are required");
+        MessagePrinter::AsFem_Exit();
     }
 
     if(!HasElmtBlock){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: no [elmts] block found                               !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        for a minial input, the [elmts] block is required    !!!   ***\n");
-        return false;
+        if(!_IsReadOnly){
+            MessagePrinter::PrintErrorTxt("no [elmts] block is found, for FEM analysis, elmts are required");
+            MessagePrinter::AsFem_Exit();
+        }
     }
 
     if(!HasMateBlock){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Warning: no any materials are given in your input file      !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***          not that case? then please check your input file   !!!   ***\n");
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [mates] block is found, the default material values will be used by the [elmts]",false);
+        }
+    }
+
+    if(!HasBCBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [bcs] block is found, no any boundary conditions will be used by AsFem",false);
+        }
     }
 
     if(!HasICBlock){
-        if(jobBlock._JobType==JobType::TransientJob){
-            PetscPrintf(PETSC_COMM_WORLD,"*** Warning: no [ics] block found for a transient analysis      !!!   ***\n");
-            PetscPrintf(PETSC_COMM_WORLD,"***          AsFem will treat all dofs as zero                  !!!   ***\n");
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [ics] block is found, no any initial conditions will be used by AsFem",false);
         }
     }
 
-    if(!HasQpBlock){
-        fe.SetQPointType("gauss");
-        fe.SetOrder(mesh.GetMeshOrder()+1);
-        fe.SetBCOrder(mesh.GetMeshOrder()+1);
+    if(!HasQPointBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [qpoint] block is found, default gauss-legendre integration options will be used by AsFem",false);
+        }
+        fe.SetDim(mesh.GetDim());
+        fe.SetQPointType(QPointType::GAUSSLEGENDRE);
+        fe.SetBulkQpOrder(mesh.GetBulkMeshOrder()+1);
+        fe.SetBCQpOrder(mesh.GetBulkMeshOrder()+1);
+        fe.CreateQPoints(mesh);
+    }
+    else{
+        fe.SetDim(mesh.GetDim());
+        fe.CreateQPoints(mesh);
     }
 
 
-    if(!HasOutputBlock){
-        outputblock.Reset();
+    if(!HasProjectionBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [projection] block is found, the default projection name will be used by AsFem",false);
+        }
+        // solutionSystem.PrintProjectionInfo();
+        solutionSystem.SetProjNumPerNode(9);
     }
-    outputblock._InputFileName=_InputFileName;
-
-    // if(!HasLinearSolverBlock){
-    //     linearSolverBlockInfo.Reset();
+    // else{
+    //     solutionSystem.PrintProjectionInfo();
     // }
 
-    if(!HasNonLinearSolverBlock){
-        nonlinearSolverBlock.Reset();
+    if(!HasOutputBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [output] block is found, default output options will be used by AsFem",false);
+        }
+        outputSystem.Init(_InputFileName);
+        outputSystem.SetOutputType(OutputType::VTU);
     }
 
-    if(!HasTimeSteppingBlock){
-        timesteppingblock.Reset();
+    if(!HasNonlinearSolverBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [nonlinearsolver] block is found, default newton-raphson with line search solver options will be used by AsFem",false);
+        }
+        _nonlinearSolverBlock.Init();
+        nonlinearSolver.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
     }
 
-    if(HasProjectionBlock){};// to get rid of compiler's complain
-
-    if(!HasJobBlock){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: no [job] block found                                 !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        for a minial input, the [job] block is required      !!!   ***\n");
-        return false;
+    if(!HasFEJobBlock){
+        MessagePrinter::PrintErrorTxt("no [job] block is found, for FEM analysis, the [job] is required");
+        MessagePrinter::AsFem_Exit();
     }
 
-    //******************************************************************
-    //*** now we first set the mate type id for each elmt block
-    //******************************************************************
-    bool HasMate=false;
-    for(PetscInt ielmtblock=1;ielmtblock<=elmtSystem.GetElmtBlocksNum();++ielmtblock){
-        if(elmtSystem.GetIthElmtBlock(ielmtblock)._MateBlockName.size()<1){
-            elmtSystem.GetIthElmtBlock(ielmtblock)._MateBlockName.clear();
-            elmtSystem.GetIthElmtBlock(ielmtblock)._MateType=MateType::NullMate;
-            elmtSystem.GetIthElmtBlock(ielmtblock)._MateBlockIndex=1;
+    if(feJobBlock._jobType==FEJobType::TRANSIENT){
+        if(!HasTimeSteppingBlock){
+            MessagePrinter::PrintErrorTxt("no [timestepping] block is found for a transient FEM analysis, the [timestepping] block is required for time dependent problem");
+            MessagePrinter::AsFem_Exit();
         }
         else{
-            HasMate=false;
-            for(PetscInt imateblock=1;imateblock<=mateSystem.GetMateBlocksNum();++imateblock){
-                if(elmtSystem.GetIthElmtBlock(ielmtblock)._MateBlockName==mateSystem.GetIthMateBlock(imateblock)._MateBlockName){
-                    HasMate=true;
-                    elmtSystem.GetIthElmtBlock(ielmtblock)._MateType=mateSystem.GetIthMateBlock(imateblock)._MateType;
-                    elmtSystem.GetIthElmtBlock(ielmtblock)._MateBlockIndex=imateblock;
-                }
-            }
-            if(!HasMate){
-                PetscPrintf(PETSC_COMM_WORLD,"*** Error: no [%-15s] found for [%-15s] in [mates]***\n",elmtSystem.GetIthElmtBlock(ielmtblock)._MateBlockName.c_str(),
-                                                                                                                elmtSystem.GetIthElmtBlock(ielmtblock)._ElmtBlockName.c_str());
-                PetscPrintf(PETSC_COMM_WORLD,"***        you should define a correct [mates] sub block for it !!!   ***\n");
-                Msg_AsFem_Exit();
-                return HasMate;
-            }
+            timestepping.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
         }
     }
+    else{
+        if(HasTimeSteppingBlock){
+            MessagePrinter::PrintErrorTxt("for static analysis, you dont need the [timestepping] block");
+            MessagePrinter::AsFem_Exit();
+        }
+    }
+
+
+    MessagePrinter::PrintDashLine();
+
     return true;
 }

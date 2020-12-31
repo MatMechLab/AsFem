@@ -6,29 +6,36 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.11.30
+//+++ Purpose: Calculate the material properties required by Poisson
+//+++          element. In this code, we can define:
+//+++           1) Sigma
+//+++           2) dSigma/du(=0)
+//+++           3) F
+//+++           4) dF/du(=0)
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/MateSystem.h"
+#include "MateSystem/BulkMateSystem.h"
 
-void MateSystem::ConstPoissonMaterial(const int &nDim,const double &t,const double &dt,
-                        const vector<double> InputParams,
-                        const Vector3d &gpCoord,
-                        const vector<double> &gpU,const vector<double> &gpV,
-                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                        vector<double> &gpHist,const vector<double> &gpHistOld){
-    if(nDim){}
-    if(t||dt){}
-    if(gpCoord(0)){}
-    if(gpU[0]){}
-    if(gpV[0]){}
-    if(gpGradU[0](0)){}
-    if(gpGradV[0](0)){}
-    if(gpHist[0]){}
-    if(gpHistOld[0]){}
+void BulkMateSystem::ConstPoissonMaterial(const int &nDim,const double &t,const double &dt,
+                                    const vector<double> &InputParams,
+                                    const Vector3d &gpCoord,
+                                    const vector<double> &gpU,const vector<double> &gpV,
+                                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                                    vector<double> &gpHist,const vector<double> &gpHistOld){
+    
+    //*****************************************************************************
+    //*** just to get rid of warnings, normal users dont need to do this
+    //*****************************************************************************
+    if(nDim||t||dt||InputParams.size()||
+       gpCoord(1)||gpU.size()||gpV.size()||gpGradU.size()||gpGradV.size()||
+       gpHist.size()||gpHistOld.size()){}
 
     if(InputParams.size()<2){
-        PetscPrintf(PETSC_COMM_WORLD,"*** Error: for const poisson mate, two parameters are required  !!!   ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***        sigma*div(grad(phi))=F, so sigma and F are required  !!!   ***\n");
-        Msg_AsFem_Exit();
+        MessagePrinter::PrintErrorTxt("for const poisson material, two parameters are required. sigma*div(grad(phi))=F, so sigma and F are required");
+        MessagePrinter::AsFem_Exit();
     }
 
     //************************
@@ -38,14 +45,9 @@ void MateSystem::ConstPoissonMaterial(const int &nDim,const double &t,const doub
     //**** MateVals[1]-->store dsigma/dphi(for constant case, it is zero)
     //**** MateVals[2]-->store F
     //**** MateVals[3]-->store dF/dphi (for constant case, it is zero)
-    _ScalarMaterials[0]=InputParams[0];// sigma
-    _ScalarMaterials[1]=0.0;// dsigma/dphi
-    _ScalarMaterials[2]=InputParams[1];// F
-    _ScalarMaterials[3]=0.0;// dF/dphi
-
-    // in this case, the equation becomes:
-    // lap(phi)=1
-    // so now you can see that, in AsFem, we use this approach
-    // to allow modeling of different models
-    // one uel+one umate, which is quite helpful for simulations.
+    _ScalarMaterials["sigma"]=InputParams[0];// sigma
+    _ScalarMaterials["dsigmadu"]=0.0;// dsigma/dphi
+    _ScalarMaterials["f"]=InputParams[1];// F
+    _ScalarMaterials["dfdu"]=0.0;// dF/dphi
 }
+

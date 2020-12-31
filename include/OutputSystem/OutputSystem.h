@@ -6,73 +6,93 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.12
+//+++ Purpose: define the output system for AsFem, where all the 
+//+++          results should be written out to the result file
+//+++          by this class
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_OUTPUTSYSTEM_H
-#define ASFEM_OUTPUTSYSTEM_H
+#pragma once 
 
 #include <iostream>
 #include <iomanip>
-#include <string>
-#include <vector>
 #include <fstream>
+#include <string>
+#include <sstream>
 
-//#include <filesystem>
+#include "OutputSystem/OutputBlock.h"
 
-#include <cstdlib>
-
-#include "petsc.h"
-
-//*********************************
-//*** AsFem's own header file
-//*********************************
-#include "MessagePrinter/MessagePrinter.h"
-#include "Utils/StringUtils.h"
 #include "Mesh/Mesh.h"
 #include "DofHandler/DofHandler.h"
-#include "OutputBlock.h"
+
 
 using namespace std;
-
 
 
 class OutputSystem{
 public:
     OutputSystem();
-    inline string GetLogFileName() const{return _LogFileName;}
-    inline string GetVTUFileName() const{return _VTUFileName;}
-    void InitOutputStream();
-    void SetInputFileName(string inputname) {_InputFileName=inputname;_IsInit=false;}
 
-    void WriteResultToVTU(Mesh &mesh,DofHandler &dofHandler,const Vec &U);
-    void WriteResultToVTU(Mesh &mesh,DofHandler &dofHandler,const Vec &U,const int &nproj,const vector<string> &namelist,const Vec &Proj);
+    void Init(string inputfilename);
+    void InitFromOutputBlock(OutputBlock &outputblock);
+    //************************************************************
+    //*** basic settings
+    //************************************************************
+    inline void SetInputFileName(string inputfilename){_InputFileName=inputfilename;}
+    void SetOutputType(OutputType outputtype);
+    //************************************************************
+    //*** basic getting functions
+    //************************************************************
+    inline int GetIntervalNum()const{return _Interval;}
+    inline string GetOutputFileName()const{return _OutputFileName;}
+
+    //************************************************************
+    //*** write out our results to files with different format
+    //************************************************************
+    void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,
+    const int &nProj,const vector<string> &projname,const Vec &Proj);
+    void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,
+                           const int &nProj,const vector<string> &projname,const Vec &Proj);
+
+    void PrintInfo()const;
     
-    // for time step output
-    void WriteResultToVTU(const int &step,Mesh &mesh,DofHandler &dofHandler,const Vec &U);
-    void WriteResultToVTU(const int &step,Mesh &mesh,DofHandler &dofHandler,const Vec &U,const int &nproj,const vector<string> &namelist,const Vec &Proj);
-
-
-    OutputBlock _OutputBlock;
-    void PrintOutputSystem() const{
-        _OutputBlock.PrintOutputBlock();
-    }
 private:
-    bool _IsInit=false;
-    bool _IsLogOn=false;
-    string _InputFileName;
-    string _OutputFilePrefix;
-    string _LogFileName;
-    // ofstream _VTUFile,_LogFile;
-    string _VTUFileName;
-    
+    void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    void WriteResult2VTU(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    void WriteResult2CSV(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    //**************************
+    void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
+    void WriteResult2VTU(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
+    void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
+    void WriteResult2CSV(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
 
-    //************************************
-    //*** For petsc related variables
+
+private:
+    int _Interval;
+    OutputType _OutputType;
+    string _OutputFileName,_InputFileName;
+    string _OutputTypeName;
+    string _OutputFolderName;
+    vector<string> _CSVFieldNameList;
+
+private:
+    //****************************************
+    //*** for PETSc vec
+    //****************************************
+    Vec _Useq,_ProjSeq;
+    VecScatter _scatterU,_scatterProj;
     PetscMPIInt _rank;
-    VecScatter _scatter,_scatterproj;
-    Vec _Useq,_PROJseq;
+
+private:
+    //****************************************
+    //*** for file I/O
+    //****************************************
+    string _VTUFileName;
+    string _OutputFilePrefix;
 
 };
-
-
-
-#endif // ASFEM_OUTPUTSYSTEM_H

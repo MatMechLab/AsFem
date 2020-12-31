@@ -6,75 +6,79 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.01
+//+++ Purpose: Define the input block for the element in AsFem
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_ELMTBLOCK_H
-#define ASFEM_ELMTBLOCK_H
+#pragma once
 
-#include <iostream>
 #include <iomanip>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "petsc.h"
-
-#include "ElmtType.h"
+#include "ElmtSystem/ElmtType.h"
 #include "MateSystem/MateType.h"
 
+#include "Utils/MessagePrinter.h"
+
 using namespace std;
-
-//******************************************************************
-//*** you element block in your input file should look like:
-//*** [blockname]
-//***   type=element_name(or uel name,i.e. user1, user2)
-//***   dofs=dof1 dof2
-//***   mate=mateblockname(optional,not the material type name, instead, the material block's name !!!)
-//***   domain=alldomain(optional,default one is 'alldomain',thus all the domain will be applied !!!)
-//*** [end]
-
 class ElmtBlock{
 public:
-    string _ElmtBlockName;
-    string _ElmtTypeName;
-    ElmtType _ElmtType;
-    MateType _MateType;
-    int      _MateBlockIndex;
-    vector<string> _DofNameList;
-    vector<PetscInt> _DofIndexList;
-    string _MateBlockName;
-    string _DomainName;
-    bool _IsPrint=true;
-
-    void Reset(){
+    ElmtBlock(){
+        _DofsIDList.clear();
+        _DofsNameList.clear();
+        _nDofs=0;
         _ElmtBlockName.clear();
         _ElmtTypeName.clear();
-        _DofNameList.clear();
-        _DofIndexList.clear();
-        _ElmtType=ElmtType::NullElmt;
-        _MateType=MateType::NullMate;
-        _MateBlockIndex=1;
         _MateBlockName.clear();
-        _DomainName.clear();
-        _IsPrint=true;
+        _DomainName="alldomain";
+        _ElmtType=ElmtType::NULLELMT;
+        _MateType=MateType::NULLMATE;
+        _MateIndex=0;
     }
 
-    void PrintElmtBlock()const{
-        PetscPrintf(PETSC_COMM_WORLD,"*** +Element block information:                                       ***\n");
-        PetscPrintf(PETSC_COMM_WORLD,"***   element block name = [%40s] ***\n",_ElmtBlockName.c_str());
-        if(_DofNameList.size()==1){
-            PetscPrintf(PETSC_COMM_WORLD,"***   dof name           = %35s        ***\n",_DofNameList[0].c_str());
-        }
-        else{
-            PetscPrintf(PETSC_COMM_WORLD,"***   dofs name          =");
-            for(auto it:_DofNameList){
-                PetscPrintf(PETSC_COMM_WORLD,"%10s ",it.c_str());
-            }
-            PetscPrintf(PETSC_COMM_WORLD,"\n");
-        }
-        PetscPrintf(PETSC_COMM_WORLD,"***   mate name          = %35s        ***\n",_MateBlockName.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"***   domain name        = %35s        ***\n",_DomainName.c_str());
+    vector<int>    _DofsIDList;
+    vector<string> _DofsNameList;
+    int            _nDofs;
+    string         _ElmtBlockName;
+    string         _ElmtTypeName;
+    string         _MateBlockName;
+    string         _DomainName;
+    ElmtType       _ElmtType=ElmtType::NULLELMT;
+    MateType       _MateType=MateType::NULLMATE;
+    int            _MateIndex=0;
+    
+    void Init(){
+        _DofsIDList.clear();
+        _DofsNameList.clear();
+        _nDofs=0;
+        _ElmtBlockName.clear();
+        _ElmtTypeName.clear();
+        _MateBlockName.clear();
+        _DomainName="alldomain";
+        _ElmtType=ElmtType::NULLELMT;
+        _MateType=MateType::NULLMATE;
+        _MateIndex=0;
     }
 
+    void PrintInfo()const{
+        // char buff[70];
+        string str;
+        MessagePrinter::PrintNormalTxt(" +sub bulk element block information summary:");
+        str="   block name = "+_ElmtBlockName+", using ["+_MateBlockName+"] mate block ( index= "+to_string(_MateIndex)+" )";
+        MessagePrinter::PrintNormalTxt(str);
+
+        str="   DoFs name ( dofs= "+to_string(_nDofs)+" ) = ";
+        for(auto it:_DofsNameList) str+=it+"  ";
+        MessagePrinter::PrintNormalTxt(str);
+
+        str="   DoFs ID ( dofs = "+to_string(_nDofs)+" ) = ";
+        for(auto it:_DofsIDList) str+=to_string(it)+"  ";
+        MessagePrinter::PrintNormalTxt(str);
+
+        str="   domain name ="+_DomainName;
+        MessagePrinter::PrintNormalTxt(str);
+    }
 };
-
-
-#endif //ASFEM_ELMTBLOCK_H

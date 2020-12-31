@@ -6,15 +6,18 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
-
-#ifndef ASFEM_TIMESTEPPINGTYPE_H
-#define ASFEM_TIMESTEPPINGTYPE_H
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.12.29
+//+++ Purpose: Define time stepping type for AsFem, i.e.
+//+++          backward-euler, cranck-nicolson,...
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#pragma once
 
 enum class TimeSteppingType{
-    BackWardEuler,
-    CrankNicolson,
-    ThetaMethod,
-    AlphaMethod
+    BACKWARDEULER,
+    CRANCKNICLSON,
+    ALPHA,
+    GL,
+    ROSW
 };
-
-#endif // ASFEM_TIMESTEPPINGTYPE_H

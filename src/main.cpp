@@ -6,6 +6,11 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.12.28
+//+++ Purpose: the main program of the whole AsFem framework
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include <iostream>
 #include "petsc.h"
@@ -14,10 +19,11 @@
 
 #include "FEProblem/FEProblem.h"
 
+
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
-
+    
     const PetscInt Year=2020;
     const PetscInt Month=3;
     const PetscInt Day=25;
@@ -25,11 +31,12 @@ int main(int args,char *argv[]){
 
     Welcome(Year,Month,Day,Version);
     
-    FEProblem feProblem(args,argv);
+    FEProblem feProblem;
+    feProblem.InitFEProblem(args,argv);
+    feProblem.Run();
+    feProblem.Finalize();
 
-    feProblem.RunFEProblem();
-
-
+    
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;
 }

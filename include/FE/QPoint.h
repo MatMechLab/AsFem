@@ -6,66 +6,110 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.12
+//+++ Purpose: implement the general gauss integration class for
+//+++          AsFem, here one can use:
+//+++            1) standard Gauss-Legendre integration scheme
+//+++            2) Gauss-Lobatto integration scheme
+//+++            3) if you want to implement your own integration
+//+++               scheme, all you need to do is create a new class
+//+++               which should inherit from QPointBase, then override
+//+++               the CreateQPoints() function
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#ifndef ASFEM_QPOINT_H
-#define ASFEM_QPOINT_H
+#pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <cmath>
-#include <string>
-#include <vector>
+#include "FE/QPointGaussLegendre.h"
+#include "FE/QPointGaussLobatto.h"
 
-#include "petsc.h"
 
-//******************************************
-#include "MessagePrinter/MessagePrinter.h"
-#include "Mesh/MeshType.h"
-
-using namespace std;
-
-class QPoint
-{
+class QPoint:public QPointGaussLegendre,public QPointGaussLobatto{
 public:
     QPoint();
     QPoint(int dim,int order);
+    QPoint(int dim,int order,QPointType qptype);
 
+    //************************************************
+    //*** for basic settings
+    //************************************************
+    void Init();
+    void SetDim(int dim){QPointGaussLegendre::SetDim(dim);QPointGaussLobatto::SetDim(dim);}
+    void SetQPointOrder(int order){QPointGaussLegendre::SetQPointOrder(order);QPointGaussLobatto::SetQPointOrder(order);}
+    void SetQPointType(QPointType qptype){
+        QPointGaussLegendre::SetQPointType(qptype);QPointGaussLobatto::SetQPointType(qptype);
+        _CurrentQPType=qptype;
+    }
+    //************************************************
+    //*** for basic gettings
+    //************************************************
+    inline int GetDim() const {
+        if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+            return QPointGaussLegendre::GetDim();
+        }
+        else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+            return QPointGaussLobatto::GetDim();
+        }
+        return -1;
+    }
+    inline int GetQpOrder() const {
+        if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+            return QPointGaussLegendre::GetQpOrder();
+        }
+        else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+            return QPointGaussLobatto::GetQpOrder();
+        }
+        return -1;
+    }
+    inline int GetQpPointsNum() const {
+        if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+            return QPointGaussLegendre::GetQpPointsNum();
+        }
+        else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+            return QPointGaussLobatto::GetQpPointsNum();
+        }
+        return -1;
+    }
+    inline QPointType GetQpPointType()const{return _CurrentQPType;}
 
-    void SetDim(int dim) {_nDim=dim;}
-    void SetQPointOrder(int order) {_nOrder=order;}
-    void SetQPointType(string type="gauss") {_QPointType=type;}
-    void CreateQPoints(MeshType meshtype);
+    //************************************************
+    //*** for operator overload
+    //************************************************
+    inline double operator()(int i,int j)const{
+        if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+            return QPointGaussLegendre::GetIthQpPointJthCoord(i,j);
+        }
+        else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+            return QPointGaussLobatto::GetIthQpPointJthCoord(i,j);
+        }
+    }
+    inline double& operator()(int i,int j){
+        if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+            return QPointGaussLegendre::GetIthQpPointJthCoord(i,j);
+        }
+        else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+            return QPointGaussLobatto::GetIthQpPointJthCoord(i,j);
+        }
+        return QPointGaussLegendre::GetIthQpPointJthCoord(i,j);
+    }
 
-    // get function
-    inline int GetDim() const {return _nDim;}
-    inline int GetQpOrder() const {return _nOrder;}
-    inline int GetQpPointsNum() const {return _nQpPoints;}
-    inline string GetQpType()const{return _QPointType;}
-    
-    inline double operator()(int i,int j) const {return _qp_coords[(i-1)*(_nDim+1)+j];}
-    inline double& operator()(int i,int j) {return _qp_coords[(i-1)*(_nDim+1)+j];}
+    inline double GetIthQpPointJthCoord(int i,int j)const{
+        if(_CurrentQPType==QPointType::GAUSSLEGENDRE){
+            return QPointGaussLegendre::GetIthQpPointJthCoord(i,j);
+        }
+        else if(_CurrentQPType==QPointType::GAUSSLOBATTO){
+            return QPointGaussLobatto::GetIthQpPointJthCoord(i,j);
+        }
+        return 0.0;
+    }
 
-    inline double GetIthQpPointJthCoord(int i,int j) const {return _qp_coords[(i-1)*(_nDim+1)+j];}
+    virtual void CreateQpoints(MeshType meshtype) final;
+
+    void PrintQPointInfo()const;
+    void PrintQPointDetailInfo()const;
 
 private:
-    void Create1DGaussPoint();
-    void Create1DGaussLobattoPoint();
-
-    void Create2DGaussPoint(MeshType meshtype);
-    void Create2DGaussLobattoPoint(MeshType meshtype);
-
-    void Create3DGaussPoint(MeshType meshtype);
-    void Create3DGaussLobattoPoint(MeshType meshtype);
-
-private:
-    vector<double> _qp_coords;
-    int _nQpPoints,_nOrder;
-    int _nDim;
-    string _QPointType;
-    bool _HasSettings=false;
-    bool _HasDim,_HasOrder;
+    QPointType _CurrentQPType;
 
 };
-
-
-#endif // ASFEM_QPOINT_H

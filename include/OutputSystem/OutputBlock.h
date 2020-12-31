@@ -6,70 +6,41 @@
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//+++ Author : Yang Bai
+//+++ Date   : 2020.07.12
+//+++ Purpose: define the [output] block for our input file
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
-#ifndef ASFEM_OUTPUTBLOCK_H
-#define ASFEM_OUTPUTBLOCK_H
+#pragma once
 
 #include <iostream>
-#include <iomanip>
-#include <vector>
 #include <string>
+#include <vector>
 
-#include "petsc.h"
-
-#include "OutputFileType.h"
+#include "OutputSystem/OutputType.h"
 
 using namespace std;
 
-//******************************************************************
-//*** you output block in your input file should look like:
-//*** [output]
-//***   type=vtu(vtk,csv,txt...)
-//***   folder=folder_name [default value should be empty]
-//*** [end]
-
 class OutputBlock{
 public:
-    OutputFileType _OutputFileType=OutputFileType::VTU;
-    string _FolderName="";// default value is empty
-    string _InputFileName="";
-    string _OutputFilePrefix="";
-    string _LogFileName="";
-    bool _IsPrint=false;
-
-    void Reset(){
-        _OutputFileType=OutputFileType::VTU;
-        _FolderName.clear();
-        _InputFileName.clear();
-        _OutputFilePrefix.clear();
-        _LogFileName.clear();
-        _IsPrint=false;
+    OutputBlock(){
+        _Interval=1;
+        _OutputFormatName="vtu";
+        _OutputFolderName.clear();
+        _OutputType=OutputType::VTU;
     }
 
-    void PrintOutputBlock()const{
-        PetscPrintf(PETSC_COMM_WORLD,"***-------------------------------------------------------------------***\n");
-        
-        PetscPrintf(PETSC_COMM_WORLD,"*** Output block information:                                         ***\n");
-        
-        if(_OutputFileType==OutputFileType::VTU){
-            PetscPrintf(PETSC_COMM_WORLD,"***   output file type = VTU                                          ***\n");
-        }
-        else if(_OutputFileType==OutputFileType::VTK){
-            PetscPrintf(PETSC_COMM_WORLD,"***   output file type = VTK                                          ***\n");
-        }
-        else if(_OutputFileType==OutputFileType::CSV){
-            PetscPrintf(PETSC_COMM_WORLD,"***   output file type = CSV                                          ***\n");
-        }
-        if(_FolderName.size()<1){
-            PetscPrintf(PETSC_COMM_WORLD,"***   output folder    = emtpy                                        ***\n");
-        }
-        else{
-            PetscPrintf(PETSC_COMM_WORLD,"***   output folder    = %-42s   ***\n",_FolderName.c_str());
-        }
+    int            _Interval;
+    string         _OutputFormatName;
+    string         _OutputFolderName;
+    OutputType     _OutputType;
 
-        PetscPrintf(PETSC_COMM_WORLD,"***   output fileprefix= %-42s   ***\n",_OutputFilePrefix.c_str());
+    void Init(){
+        _Interval=1;
+        _OutputFormatName="vtu";
+        _OutputFolderName.clear();
+        _OutputType=OutputType::VTU;
     }
+
 };
-
-#endif
