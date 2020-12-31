@@ -77,6 +77,7 @@ void TimeStepping::Init(){
     //**************************************************
     SNESSetTolerances(_snes,_RAbsTol,_RRelTol,_STol,_MaxIters,-1);
     SNESSetDivergenceTolerance(_snes,-1);
+    TSSetMaxSNESFailures(_ts,-1);
 
     //**************************************************
     //*** for different type of nonlinear methods

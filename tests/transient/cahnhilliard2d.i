@@ -36,10 +36,10 @@ name=c mu
 [end]
 
 [timestepping]
-  type=cn
+  type=be
   dt=1.0e-4
   time=1.0e3
-  optiters=4
+  optiters=3
   growthfactor=1.2
   adaptive=true
 [end]
