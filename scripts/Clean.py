@@ -15,6 +15,8 @@ print('We are in folder:%s\n'%(currentdir))
 ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0
 cmake=0
 for subdir,dirs,files in os.walk(currentdir):
+    if ('external/eigen' in subdir) or ('.git' in subdir):
+        continue
     #>>> clean files
     for file in files:
         if ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.inp' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.png' in file) or ('.pdf' in file) or ('.json' in file) or ('.f90' in file) or ('.f' in file) or ('.xlsx' in file):

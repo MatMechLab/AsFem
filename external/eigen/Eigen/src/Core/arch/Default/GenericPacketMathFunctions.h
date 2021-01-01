@@ -59,21 +59,21 @@ pldexp_double(Packet a, Packet exponent)
   return pmul(a, preinterpret<Packet>(plogical_shift_left<52>(ei)));
 }
 
-// Natural logarithm
+// Natural or base 2 logarithm.
 // Computes log(x) as log(2^e * m) = C*e + log(m), where the constant C =log(2)
 // and m is in the range [sqrt(1/2),sqrt(2)). In this range, the logarithm can
 // be easily approximated by a polynomial centered on m=1 for stability.
 // TODO(gonnet): Further reduce the interval allowing for lower-degree
 //               polynomial interpolants -> ... -> profit!
-template <typename Packet>
+template <typename Packet, bool base2>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 EIGEN_UNUSED
-Packet plog_float(const Packet _x)
+Packet plog_impl_float(const Packet _x)
 {
   Packet x = _x;
 
   const Packet cst_1              = pset1<Packet>(1.0f);
-  const Packet cst_half           = pset1<Packet>(0.5f);
+  const Packet cst_neg_half       = pset1<Packet>(-0.5f);
   // The smallest non denormalized float number.
   const Packet cst_min_norm_pos   = pset1frombits<Packet>( 0x00800000u);
   const Packet cst_minus_inf      = pset1frombits<Packet>( 0xff800000u);
@@ -90,8 +90,6 @@ Packet plog_float(const Packet _x)
   const Packet cst_cephes_log_p6 = pset1<Packet>(+2.0000714765E-1f);
   const Packet cst_cephes_log_p7 = pset1<Packet>(-2.4999993993E-1f);
   const Packet cst_cephes_log_p8 = pset1<Packet>(+3.3333331174E-1f);
-  const Packet cst_cephes_log_q1 = pset1<Packet>(-2.12194440e-4f);
-  const Packet cst_cephes_log_q2 = pset1<Packet>(0.693359375f);
 
   // Truncate input values to the minimum positive normal.
   x = pmax(x, cst_min_norm_pos);
@@ -129,14 +127,17 @@ Packet plog_float(const Packet _x)
   y  = pmadd(y, x3, y2);
   y  = pmul(y, x3);
 
+  y = pmadd(cst_neg_half, x2, y);
+  x = padd(x, y);
+
   // Add the logarithm of the exponent back to the result of the interpolation.
-  y1  = pmul(e, cst_cephes_log_q1);
-  tmp = pmul(x2, cst_half);
-  y   = padd(y, y1);
-  x   = psub(x, tmp);
-  y2  = pmul(e, cst_cephes_log_q2);
-  x   = padd(x, y);
-  x   = padd(x, y2);
+  if (base2) {
+    const Packet cst_log2e = pset1<Packet>(static_cast<float>(EIGEN_LOG2E));
+    x = pmadd(x, cst_log2e, e);
+  } else {
+    const Packet cst_ln2 = pset1<Packet>(static_cast<float>(EIGEN_LN2));
+    x = pmadd(e, cst_ln2, x);
+  }
 
   Packet invalid_mask = pcmp_lt_or_nan(_x, pzero(_x));
   Packet iszero_mask  = pcmp_eq(_x,pzero(_x));
@@ -149,32 +150,45 @@ Packet plog_float(const Packet _x)
                               por(pselect(pos_inf_mask,cst_pos_inf,x), invalid_mask));
 }
 
-
-/* Returns the base e (2.718...) logarithm of x.
- * The argument is separated into its exponent and fractional
- * parts.  If the exponent is between -1 and +1, the logarithm
- * of the fraction is approximated by
- *
- *     log(1+x) = x - 0.5 x**2 + x**3 P(x)/Q(x).
- *
- * Otherwise, setting  z = 2(x-1)/x+1),
- *                     log(x) = z + z**3 P(z)/Q(z).
- * 
- * for more detail see: http://www.netlib.org/cephes/
- */
 template <typename Packet>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 EIGEN_UNUSED
-Packet plog_double(const Packet _x)
+Packet plog_float(const Packet _x)
+{
+  return plog_impl_float<Packet, /* base2 */ false>(_x);
+}
+
+template <typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet plog2_float(const Packet _x)
+{
+  return plog_impl_float<Packet, /* base2 */ true>(_x);
+}
+
+/* Returns the base e (2.718...) or base 2 logarithm of x.
+ * The argument is separated into its exponent and fractional parts.
+ * The logarithm of the fraction in the interval [sqrt(1/2), sqrt(2)],
+ * is approximated by
+ *
+ *     log(1+x) = x - 0.5 x**2 + x**3 P(x)/Q(x).
+ *
+ * for more detail see: http://www.netlib.org/cephes/
+ */
+template <typename Packet, bool base2>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet plog_impl_double(const Packet _x)
 {
   Packet x = _x;
 
   const Packet cst_1              = pset1<Packet>(1.0);
-  const Packet cst_half           = pset1<Packet>(0.5);
-  // The smallest non denormalized float number.
+  const Packet cst_neg_half       = pset1<Packet>(-0.5);
+  // The smallest non denormalized double.
   const Packet cst_min_norm_pos   = pset1frombits<Packet>( static_cast<uint64_t>(0x0010000000000000ull));
   const Packet cst_minus_inf      = pset1frombits<Packet>( static_cast<uint64_t>(0xfff0000000000000ull));
   const Packet cst_pos_inf        = pset1frombits<Packet>( static_cast<uint64_t>(0x7ff0000000000000ull));
+
 
  // Polynomial Coefficients for log(1+x) = x - x**2/2 + x**3 P(x)/Q(x)
  //                             1/sqrt(2) <= x < sqrt(2)
@@ -186,15 +200,12 @@ Packet plog_double(const Packet _x)
   const Packet cst_cephes_log_p4 = pset1<Packet>(1.79368678507819816313E1);
   const Packet cst_cephes_log_p5 = pset1<Packet>(7.70838733755885391666E0);
 
-  const Packet cst_cephes_log_r0 = pset1<Packet>(1.0);
-  const Packet cst_cephes_log_r1 = pset1<Packet>(1.12873587189167450590E1);
-  const Packet cst_cephes_log_r2 = pset1<Packet>(4.52279145837532221105E1);
-  const Packet cst_cephes_log_r3 = pset1<Packet>(8.29875266912776603211E1);
-  const Packet cst_cephes_log_r4 = pset1<Packet>(7.11544750618563894466E1);
-  const Packet cst_cephes_log_r5 = pset1<Packet>(2.31251620126765340583E1);
-
-  const Packet cst_cephes_log_q1 = pset1<Packet>(-2.121944400546905827679e-4);
-  const Packet cst_cephes_log_q2 = pset1<Packet>(0.693359375);
+  const Packet cst_cephes_log_q0 = pset1<Packet>(1.0);
+  const Packet cst_cephes_log_q1 = pset1<Packet>(1.12873587189167450590E1);
+  const Packet cst_cephes_log_q2 = pset1<Packet>(4.52279145837532221105E1);
+  const Packet cst_cephes_log_q3 = pset1<Packet>(8.29875266912776603211E1);
+  const Packet cst_cephes_log_q4 = pset1<Packet>(7.11544750618563894466E1);
+  const Packet cst_cephes_log_q5 = pset1<Packet>(2.31251620126765340583E1);
 
   // Truncate input values to the minimum positive normal.
   x = pmax(x, cst_min_norm_pos);
@@ -220,31 +231,34 @@ Packet plog_double(const Packet _x)
   Packet x3 = pmul(x2, x);
 
   // Evaluate the polynomial approximant , probably to improve instruction-level parallelism.
-  // y = x * ( z * polevl( x, P, 5 ) / p1evl( x, Q, 5 ) );
-  Packet y, y1, y2,y_;
+  // y = x - 0.5*x^2 + x^3 * polevl( x, P, 5 ) / p1evl( x, Q, 5 ) );
+  Packet y, y1, y_;
   y  = pmadd(cst_cephes_log_p0, x, cst_cephes_log_p1);
   y1 = pmadd(cst_cephes_log_p3, x, cst_cephes_log_p4);
   y  = pmadd(y, x, cst_cephes_log_p2);
   y1 = pmadd(y1, x, cst_cephes_log_p5);
   y_ = pmadd(y, x3, y1);
 
-  y  = pmadd(cst_cephes_log_r0, x, cst_cephes_log_r1);
-  y1 = pmadd(cst_cephes_log_r3, x, cst_cephes_log_r4);
-  y  = pmadd(y, x, cst_cephes_log_r2);
-  y1 = pmadd(y1, x, cst_cephes_log_r5);
+  y  = pmadd(cst_cephes_log_q0, x, cst_cephes_log_q1);
+  y1 = pmadd(cst_cephes_log_q3, x, cst_cephes_log_q4);
+  y  = pmadd(y, x, cst_cephes_log_q2);
+  y1 = pmadd(y1, x, cst_cephes_log_q5);
   y  = pmadd(y, x3, y1);
 
   y_ = pmul(y_, x3);
   y  = pdiv(y_, y);
 
+  y = pmadd(cst_neg_half, x2, y);
+  x = padd(x, y);
+
   // Add the logarithm of the exponent back to the result of the interpolation.
-  y1  = pmul(e, cst_cephes_log_q1);
-  tmp = pmul(x2, cst_half);
-  y   = padd(y, y1);
-  x   = psub(x, tmp);
-  y2  = pmul(e, cst_cephes_log_q2);
-  x   = padd(x, y);
-  x   = padd(x, y2);
+  if (base2) {
+    const Packet cst_log2e = pset1<Packet>(static_cast<double>(EIGEN_LOG2E));
+    x = pmadd(x, cst_log2e, e);
+  } else {
+    const Packet cst_ln2 = pset1<Packet>(static_cast<double>(EIGEN_LN2));
+    x = pmadd(e, cst_ln2, x);
+  }
 
   Packet invalid_mask = pcmp_lt_or_nan(_x, pzero(_x));
   Packet iszero_mask  = pcmp_eq(_x,pzero(_x));
@@ -255,6 +269,22 @@ Packet plog_double(const Packet _x)
   //  - +INF will be +INF
   return pselect(iszero_mask, cst_minus_inf,
                               por(pselect(pos_inf_mask,cst_pos_inf,x), invalid_mask));
+}
+
+template <typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet plog_double(const Packet _x)
+{
+  return plog_impl_double<Packet, /* base2 */ false>(_x);
+}
+
+template <typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet plog2_double(const Packet _x)
+{
+  return plog_impl_double<Packet, /* base2 */ true>(_x);
 }
 
 /** \internal \returns log(1 + x) computed using W. Kahan's formula.
@@ -345,25 +375,21 @@ Packet pexp_float(const Packet _x)
 #endif
 
   Packet r2 = pmul(r, r);
+  Packet r3 = pmul(r2, r);
 
-  // TODO(gonnet): Split into odd/even polynomials and try to exploit
-  //               instruction-level parallelism.
-  Packet y = cst_cephes_exp_p0;
-  y = pmadd(y, r, cst_cephes_exp_p1);
-  y = pmadd(y, r, cst_cephes_exp_p2);
-  y = pmadd(y, r, cst_cephes_exp_p3);
-  y = pmadd(y, r, cst_cephes_exp_p4);
-  y = pmadd(y, r, cst_cephes_exp_p5);
-  y = pmadd(y, r2, r);
-  y = padd(y, cst_1);
-
+  // Evaluate the polynomial approximant,improved by instruction-level parallelism.
+  Packet y, y1, y2;
+  y  = pmadd(cst_cephes_exp_p0, r, cst_cephes_exp_p1);
+  y1 = pmadd(cst_cephes_exp_p3, r, cst_cephes_exp_p4);
+  y2 = padd(r, cst_1);
+  y  = pmadd(y, r, cst_cephes_exp_p2);
+  y1 = pmadd(y1, r, cst_cephes_exp_p5);
+  y  = pmadd(y, r3, y1);
+  y  = pmadd(y, r2, y2);
+  
   // Return 2^m * exp(r).
   return pmax(pldexp(y,m), _x);
 }
-
-// make it the default path for scalar float
-template<>
-EIGEN_DEVICE_FUNC inline float pexp(const float& a) { return pexp_float(a); }
 
 template <typename Packet>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
@@ -433,10 +459,6 @@ Packet pexp_double(const Packet _x)
   return pmax(pldexp(x,fx), _x);
 }
 
-// make it the default path for scalar double
-template<>
-EIGEN_DEVICE_FUNC inline double pexp(const double& a) { return pexp_double(a); }
-
 // The following code is inspired by the following stack-overflow answer:
 //   https://stackoverflow.com/questions/30463616/payne-hanek-algorithm-implementation-in-c/30465751#30465751
 // It has been largely optimized:
@@ -469,7 +491,7 @@ inline float trig_reduce_huge (float xf, int *quadrant)
     0x10e41000, 0xe4100000
   };
   
-  uint32_t xi = numext::as_uint(xf);
+  uint32_t xi = numext::bit_cast<uint32_t>(xf);
   // Below, -118 = -126 + 8.
   //   -126 is to get the exponent,
   //   +8 is to enable alignment of 2/pi's bits on 8 bits.
@@ -649,6 +671,120 @@ EIGEN_UNUSED
 Packet pcos_float(const Packet& x)
 {
   return psincos_float<false>(x);
+}
+
+
+template<typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet psqrt_complex(const Packet& a) {
+  typedef typename unpacket_traits<Packet>::type Scalar;
+  typedef typename Scalar::value_type RealScalar;
+  typedef typename unpacket_traits<Packet>::as_real RealPacket;
+
+  // Computes the principal sqrt of the complex numbers in the input.
+  //
+  // For example, for packets containing 2 complex numbers stored in interleaved format
+  //    a = [a0, a1] = [x0, y0, x1, y1],
+  // where x0 = real(a0), y0 = imag(a0) etc., this function returns
+  //    b = [b0, b1] = [u0, v0, u1, v1],
+  // such that b0^2 = a0, b1^2 = a1.
+  //
+  // To derive the formula for the complex square roots, let's consider the equation for
+  // a single complex square root of the number x + i*y. We want to find real numbers
+  // u and v such that
+  //    (u + i*v)^2 = x + i*y  <=>
+  //    u^2 - v^2 + i*2*u*v = x + i*v.
+  // By equating the real and imaginary parts we get:
+  //    u^2 - v^2 = x
+  //    2*u*v = y.
+  //
+  // For x >= 0, this has the numerically stable solution
+  //    u = sqrt(0.5 * (x + sqrt(x^2 + y^2)))
+  //    v = 0.5 * (y / u)
+  // and for x < 0,
+  //    v = sign(y) * sqrt(0.5 * (x + sqrt(x^2 + y^2)))
+  //    u = |0.5 * (y / v)|
+  //
+  //  To avoid unnecessary over- and underflow, we compute sqrt(x^2 + y^2) as
+  //     l = max(|x|, |y|) * sqrt(1 + (min(|x|, |y|) / max(|x|, |y|))^2) ,
+
+  // In the following, without lack of generality, we have annotated the code, assuming
+  // that the input is a packet of 2 complex numbers.
+  //
+  // Step 1. Compute l = [l0, l0, l1, l1], where
+  //    l0 = sqrt(x0^2 + y0^2),  l1 = sqrt(x1^2 + y1^2)
+  // To avoid over- and underflow, we use the stable formula for each hypotenuse
+  //    l0 = (min0 == 0 ? max0 : max0 * sqrt(1 + (min0/max0)**2)),
+  // where max0 = max(|x0|, |y0|), min0 = min(|x0|, |y0|), and similarly for l1.
+
+  Packet a_flip = pcplxflip(a);
+  RealPacket a_abs = pabs(a.v);           // [|x0|, |y0|, |x1|, |y1|]
+  RealPacket a_abs_flip = pabs(a_flip.v); // [|y0|, |x0|, |y1|, |x1|]
+  RealPacket a_max = pmax(a_abs, a_abs_flip);
+  RealPacket a_min = pmin(a_abs, a_abs_flip);
+  RealPacket a_min_zero_mask = pcmp_eq(a_min, pzero(a_min));
+  RealPacket a_max_zero_mask = pcmp_eq(a_max, pzero(a_max));
+  RealPacket r = pdiv(a_min, a_max);
+  const RealPacket cst_one  = pset1<RealPacket>(RealScalar(1));
+  RealPacket l = pmul(a_max, psqrt(padd(cst_one, pmul(r, r))));  // [l0, l0, l1, l1]
+  // Set l to a_max if a_min is zero.
+  l = pselect(a_min_zero_mask, a_max, l);
+
+  // Step 2. Compute [rho0, *, rho1, *], where
+  // rho0 = sqrt(0.5 * (l0 + |x0|)), rho1 =  sqrt(0.5 * (l1 + |x1|))
+  // We don't care about the imaginary parts computed here. They will be overwritten later.
+  const RealPacket cst_half = pset1<RealPacket>(RealScalar(0.5));
+  Packet rho;
+  rho.v = psqrt(pmul(cst_half, padd(a_abs, l)));
+
+  // Step 3. Compute [rho0, eta0, rho1, eta1], where
+  // eta0 = (y0 / l0) / 2, and eta1 = (y1 / l1) / 2.
+  // set eta = 0 of input is 0 + i0.
+  RealPacket eta = pandnot(pmul(cst_half, pdiv(a.v, pcplxflip(rho).v)), a_max_zero_mask);
+  RealPacket real_mask = peven_mask(a.v);
+  Packet positive_real_result;
+  // Compute result for inputs with positive real part.
+  positive_real_result.v = pselect(real_mask, rho.v, eta);
+
+  // Step 4. Compute solution for inputs with negative real part:
+  //         [|eta0|, sign(y0)*rho0, |eta1|, sign(y1)*rho1]
+  const RealPacket cst_imag_sign_mask = pset1<Packet>(Scalar(RealScalar(0.0), RealScalar(-0.0))).v;
+  RealPacket imag_signs = pand(a.v, cst_imag_sign_mask);
+  Packet negative_real_result;
+  // Notice that rho is positive, so taking it's absolute value is a noop.
+  negative_real_result.v = por(pabs(pcplxflip(positive_real_result).v), imag_signs);
+
+  // Step 5. Select solution branch based on the sign of the real parts.
+  Packet negative_real_mask;
+  negative_real_mask.v = pcmp_lt(pand(real_mask, a.v), pzero(a.v));
+  negative_real_mask.v = por(negative_real_mask.v, pcplxflip(negative_real_mask).v);
+  Packet result = pselect(negative_real_mask, negative_real_result, positive_real_result);
+
+  // Step 6. Handle special cases for infinities:
+  // * If z is (x,+∞), the result is (+∞,+∞) even if x is NaN
+  // * If z is (x,-∞), the result is (+∞,-∞) even if x is NaN
+  // * If z is (-∞,y), the result is (0*|y|,+∞) for finite or NaN y
+  // * If z is (+∞,y), the result is (+∞,0*|y|) for finite or NaN y
+  const RealPacket cst_pos_inf = pset1<RealPacket>(NumTraits<RealScalar>::infinity());
+  Packet is_inf;
+  is_inf.v = pcmp_eq(a_abs, cst_pos_inf);
+  Packet is_real_inf;
+  is_real_inf.v = pand(is_inf.v, real_mask);
+  is_real_inf = por(is_real_inf, pcplxflip(is_real_inf));
+  // prepare packet of (+∞,0*|y|) or (0*|y|,+∞), depending on the sign of the infinite real part.
+  Packet real_inf_result;
+  real_inf_result.v = pmul(a_abs, pset1<Packet>(Scalar(RealScalar(1.0), RealScalar(0.0))).v);
+  real_inf_result.v = pselect(negative_real_mask.v, pcplxflip(real_inf_result).v, real_inf_result.v);
+  // prepare packet of (+∞,+∞) or (+∞,-∞), depending on the sign of the infinite imaginary part.
+  Packet is_imag_inf;
+  is_imag_inf.v = pandnot(is_inf.v, real_mask);
+  is_imag_inf = por(is_imag_inf, pcplxflip(is_imag_inf));
+  Packet imag_inf_result;
+  imag_inf_result.v = por(pand(cst_pos_inf, real_mask), pandnot(a.v, real_mask));
+
+  return  pselect(is_imag_inf, imag_inf_result,
+                  pselect(is_real_inf, real_inf_result,result));
 }
 
 /* polevl (modified for Eigen)

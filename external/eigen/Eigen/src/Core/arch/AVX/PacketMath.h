@@ -105,7 +105,8 @@ template<> struct packet_traits<double> : default_packet_traits
     HasBlend = 1,
     HasRound = 1,
     HasFloor = 1,
-    HasCeil = 1
+    HasCeil = 1,
+    HasRint = 1
   };
 };
 
@@ -119,22 +120,36 @@ struct packet_traits<Eigen::half> : default_packet_traits {
     AlignedOnScalar = 1,
     size = 8,
     HasHalfPacket = 0,
+
+    HasCmp    = 1,
     HasAdd    = 1,
     HasSub    = 1,
     HasMul    = 1,
     HasDiv    = 1,
+    HasSin    = EIGEN_FAST_MATH,
+    HasCos    = EIGEN_FAST_MATH,
     HasNegate = 1,
-    HasAbs    = 0,
+    HasAbs    = 1,
     HasAbs2   = 0,
-    HasMin    = 0,
-    HasMax    = 0,
-    HasConj   = 0,
+    HasMin    = 1,
+    HasMax    = 1,
+    HasConj   = 1,
     HasSetLinear = 0,
-    HasSqrt = 0,
-    HasRsqrt = 0,
-    HasExp = 0,
-    HasLog = 0,
-    HasBlend = 0
+    HasLog    = 1,
+    HasLog1p  = 1,
+    HasExpm1  = 1,
+    HasExp    = 1,
+    HasSqrt   = 1,
+    HasRsqrt  = 1,
+    HasTanh   = EIGEN_FAST_MATH,
+    HasErf    = EIGEN_FAST_MATH,
+    HasBlend  = 0,
+    HasRound  = 1,
+    HasFloor  = 1,
+    HasCeil   = 1,
+    HasRint   = 1,
+    HasBessel = 1,
+    HasNdtri  = 1
   };
 };
 
@@ -150,16 +165,24 @@ struct packet_traits<bfloat16> : default_packet_traits {
     size = 8,
     HasHalfPacket = 0,
 
-    HasCmp  = 1,
+    HasCmp = 1,
+    HasAdd = 1,
+    HasSub = 1,
+    HasMul = 1,
     HasDiv = 1,
     HasSin = EIGEN_FAST_MATH,
     HasCos = EIGEN_FAST_MATH,
+    HasNegate = 1,
+    HasAbs    = 1,
+    HasAbs2   = 0,
+    HasMin    = 1,
+    HasMax    = 1,
+    HasConj   = 1,
+    HasSetLinear = 0,
     HasLog = 1,
     HasLog1p  = 1,
     HasExpm1  = 1,
     HasExp = 1,
-    HasNdtri = 1,
-    HasBessel  = 1,
     HasSqrt = 1,
     HasRsqrt = 1,
     HasTanh = EIGEN_FAST_MATH,
@@ -168,7 +191,9 @@ struct packet_traits<bfloat16> : default_packet_traits {
     HasRound = 1,
     HasFloor = 1,
     HasCeil = 1,
-    HasRint = 1
+    HasRint = 1,
+    HasBessel = 1,
+    HasNdtri  = 1
   };
 };
 #endif
@@ -211,6 +236,7 @@ EIGEN_STRONG_INLINE __m128i Pack16To8(Packet8f rf) {
                          _mm256_extractf128_si256(_mm256_castps_si256(rf), 1));
 }
 
+
 template<> EIGEN_STRONG_INLINE Packet8f pset1<Packet8f>(const float&  from) { return _mm256_set1_ps(from); }
 template<> EIGEN_STRONG_INLINE Packet4d pset1<Packet4d>(const double& from) { return _mm256_set1_pd(from); }
 template<> EIGEN_STRONG_INLINE Packet8i pset1<Packet8i>(const int&    from) { return _mm256_set1_epi32(from); }
@@ -221,6 +247,11 @@ template<> EIGEN_STRONG_INLINE Packet4d pset1frombits<Packet4d>(uint64_t from) {
 template<> EIGEN_STRONG_INLINE Packet8f pzero(const Packet8f& /*a*/) { return _mm256_setzero_ps(); }
 template<> EIGEN_STRONG_INLINE Packet4d pzero(const Packet4d& /*a*/) { return _mm256_setzero_pd(); }
 template<> EIGEN_STRONG_INLINE Packet8i pzero(const Packet8i& /*a*/) { return _mm256_setzero_si256(); }
+
+
+template<> EIGEN_STRONG_INLINE Packet8f peven_mask(const Packet8f& /*a*/) { return _mm256_castsi256_ps(_mm256_set_epi32(0, -1, 0, -1, 0, -1, 0, -1)); }
+template<> EIGEN_STRONG_INLINE Packet8i peven_mask(const Packet8i& /*a*/) { return _mm256_set_epi32(0, -1, 0, -1, 0, -1, 0, -1); }
+template<> EIGEN_STRONG_INLINE Packet4d peven_mask(const Packet4d& /*a*/) { return _mm256_castsi256_pd(_mm256_set_epi32(0, 0, -1, -1, 0, 0, -1, -1)); }
 
 template<> EIGEN_STRONG_INLINE Packet8f pload1<Packet8f>(const float*  from) { return _mm256_broadcast_ss(from); }
 template<> EIGEN_STRONG_INLINE Packet4d pload1<Packet4d>(const double* from) { return _mm256_broadcast_sd(from); }
@@ -258,7 +289,15 @@ template<> EIGEN_STRONG_INLINE Packet8i pconj(const Packet8i& a) { return a; }
 
 template<> EIGEN_STRONG_INLINE Packet8f pmul<Packet8f>(const Packet8f& a, const Packet8f& b) { return _mm256_mul_ps(a,b); }
 template<> EIGEN_STRONG_INLINE Packet4d pmul<Packet4d>(const Packet4d& a, const Packet4d& b) { return _mm256_mul_pd(a,b); }
-
+template<> EIGEN_STRONG_INLINE Packet8i pmul<Packet8i>(const Packet8i& a, const Packet8i& b) {
+#ifdef EIGEN_VECTORIZE_AVX2
+  return _mm256_mullo_epi32(a,b);
+#else
+  const __m128i lo = _mm_mullo_epi32(_mm256_extractf128_si256(a, 0), _mm256_extractf128_si256(b, 0));
+  const __m128i hi = _mm_mullo_epi32(_mm256_extractf128_si256(a, 1), _mm256_extractf128_si256(b, 1));
+  return _mm256_insertf128_si256(_mm256_castsi128_si256(lo), (hi), 1);
+#endif
+}
 
 template<> EIGEN_STRONG_INLINE Packet8f pdiv<Packet8f>(const Packet8f& a, const Packet8f& b) { return _mm256_div_ps(a,b); }
 template<> EIGEN_STRONG_INLINE Packet4d pdiv<Packet4d>(const Packet4d& a, const Packet4d& b) { return _mm256_div_pd(a,b); }
@@ -479,14 +518,14 @@ template<> EIGEN_STRONG_INLINE Packet8i pandnot<Packet8i>(const Packet8i& a, con
 
 template<> EIGEN_STRONG_INLINE Packet8f pround<Packet8f>(const Packet8f& a)
 {
-  const Packet8f mask = pset1frombits<Packet8f>(0x80000000u);
-  const Packet8f prev0dot5 = pset1frombits<Packet8f>(0x3EFFFFFFu);
+  const Packet8f mask = pset1frombits<Packet8f>(static_cast<numext::uint32_t>(0x80000000u));
+  const Packet8f prev0dot5 = pset1frombits<Packet8f>(static_cast<numext::uint32_t>(0x3EFFFFFFu));
   return _mm256_round_ps(padd(por(pand(a, mask), prev0dot5), a), _MM_FROUND_TO_ZERO);
 }
 template<> EIGEN_STRONG_INLINE Packet4d pround<Packet4d>(const Packet4d& a)
 {
-  const Packet4d mask = _mm256_castsi256_pd(_mm256_set_epi64x(0x8000000000000000ull, 0x8000000000000000ull, 0x8000000000000000ull, 0x8000000000000000ull));
-  const Packet4d prev0dot5 = _mm256_castsi256_pd(_mm256_set_epi64x(0x3FDFFFFFFFFFFFFFull, 0x3FDFFFFFFFFFFFFFull, 0x3FDFFFFFFFFFFFFFull, 0x3FDFFFFFFFFFFFFFull));
+  const Packet4d mask = pset1frombits<Packet4d>(static_cast<numext::uint64_t>(0x8000000000000000ull));
+  const Packet4d prev0dot5 = pset1frombits<Packet4d>(static_cast<numext::uint64_t>(0x3FDFFFFFFFFFFFFFull));
   return _mm256_round_pd(padd(por(pand(a, mask), prev0dot5), a), _MM_FROUND_TO_ZERO);
 }
 
@@ -695,20 +734,18 @@ template<> EIGEN_STRONG_INLINE Packet4d pfrexp<Packet4d>(const Packet4d& a, Pack
   __m256i a_expo = _mm256_castpd_si256(pand(a, cst_exp_mask));
 #ifdef EIGEN_VECTORIZE_AVX2
   a_expo = _mm256_srli_epi64(a_expo, 52);
-#endif
-#if defined(EIGEN_VECTORIZE_AVX2) && defined(EIGEN_VECTORIZE_AVX512DQ)
-  exponent =  _mm256_cvtepi64_pd(a_expo);
+  __m128i lo = _mm256_extractf128_si256(a_expo, 0);
+  __m128i hi = _mm256_extractf128_si256(a_expo, 1);
 #else
   __m128i lo = _mm256_extractf128_si256(a_expo, 0);
   __m128i hi = _mm256_extractf128_si256(a_expo, 1);
-#ifndef EIGEN_VECTORIZE_AVX2
   lo = _mm_srli_epi64(lo, 52);
   hi = _mm_srli_epi64(hi, 52);
 #endif
   Packet2d exponent_lo = _mm_cvtepi32_pd(vec4i_swizzle1(lo, 0, 2, 1, 3));
   Packet2d exponent_hi = _mm_cvtepi32_pd(vec4i_swizzle1(hi, 0, 2, 1, 3));
-  exponent = _mm256_set_m128d(exponent_hi, exponent_lo);
-#endif  // EIGEN_VECTORIZE_AVX512DQ
+  exponent = _mm256_insertf128_pd(exponent, exponent_lo, 0);
+  exponent = _mm256_insertf128_pd(exponent, exponent_hi, 1);
   exponent = psub(exponent, cst_1022d);
   const Packet4d cst_mant_mask  = pset1frombits<Packet4d>(static_cast<uint64_t>(~0x7ff0000000000000ull));
   return por(pand(a, cst_mant_mask), cst_half);
@@ -869,14 +906,15 @@ template<> EIGEN_STRONG_INLINE Packet4d pblend(const Selector<4>& ifPacket, cons
 }
 
 // Packet math for Eigen::half
+
 template<> struct unpacket_traits<Packet8h> { typedef Eigen::half type; enum {size=8, alignment=Aligned16, vectorizable=true, masked_load_available=false, masked_store_available=false}; typedef Packet8h half; };
 
 template<> EIGEN_STRONG_INLINE Packet8h pset1<Packet8h>(const Eigen::half& from) {
-  return _mm_set1_epi16(from.x);
+  return _mm_set1_epi16(numext::bit_cast<numext::uint16_t>(from));
 }
 
 template<> EIGEN_STRONG_INLINE Eigen::half pfirst<Packet8h>(const Packet8h& from) {
-  return half_impl::raw_uint16_to_half(static_cast<unsigned short>(_mm_extract_epi16(from, 0)));
+  return numext::bit_cast<Eigen::half>(static_cast<numext::uint16_t>(_mm_extract_epi16(from, 0)));
 }
 
 template<> EIGEN_STRONG_INLINE Packet8h pload<Packet8h>(const Eigen::half* from) {
@@ -897,18 +935,28 @@ template<> EIGEN_STRONG_INLINE void pstoreu<Eigen::half>(Eigen::half* to, const 
 
 template<> EIGEN_STRONG_INLINE Packet8h
 ploaddup<Packet8h>(const Eigen::half*  from) {
-  unsigned short a = from[0].x;
-  unsigned short b = from[1].x;
-  unsigned short c = from[2].x;
-  unsigned short d = from[3].x;
+  const numext::uint16_t a = numext::bit_cast<numext::uint16_t>(from[0]);
+  const numext::uint16_t b = numext::bit_cast<numext::uint16_t>(from[1]);
+  const numext::uint16_t c = numext::bit_cast<numext::uint16_t>(from[2]);
+  const numext::uint16_t d = numext::bit_cast<numext::uint16_t>(from[3]);
   return _mm_set_epi16(d, d, c, c, b, b, a, a);
 }
 
 template<> EIGEN_STRONG_INLINE Packet8h
 ploadquad<Packet8h>(const Eigen::half* from) {
-  unsigned short a = from[0].x;
-  unsigned short b = from[1].x;
+  const numext::uint16_t a = numext::bit_cast<numext::uint16_t>(from[0]);
+  const numext::uint16_t b = numext::bit_cast<numext::uint16_t>(from[1]);
   return _mm_set_epi16(b, b, b, b, a, a, a, a);
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h ptrue(const Packet8h& a) {
+ return _mm_cmpeq_epi32(a, a);
+}
+
+template <>
+EIGEN_STRONG_INLINE Packet8h pabs(const Packet8h& a) {
+  const __m128i sign_mask = _mm_set1_epi16(static_cast<numext::uint16_t>(0x8000));
+  return _mm_andnot_si128(sign_mask, a);
 }
 
 EIGEN_STRONG_INLINE Packet8f half2float(const Packet8h& a) {
@@ -936,21 +984,33 @@ EIGEN_STRONG_INLINE Packet8h float2half(const Packet8f& a) {
 #else
   EIGEN_ALIGN32 float aux[8];
   pstore(aux, a);
-  Eigen::half h0(aux[0]);
-  Eigen::half h1(aux[1]);
-  Eigen::half h2(aux[2]);
-  Eigen::half h3(aux[3]);
-  Eigen::half h4(aux[4]);
-  Eigen::half h5(aux[5]);
-  Eigen::half h6(aux[6]);
-  Eigen::half h7(aux[7]);
-
-  return _mm_set_epi16(h7.x, h6.x, h5.x, h4.x, h3.x, h2.x, h1.x, h0.x);
+  const numext::uint16_t s0 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[0]));
+  const numext::uint16_t s1 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[1]));
+  const numext::uint16_t s2 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[2]));
+  const numext::uint16_t s3 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[3]));
+  const numext::uint16_t s4 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[4]));
+  const numext::uint16_t s5 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[5]));
+  const numext::uint16_t s6 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[6]));
+  const numext::uint16_t s7 = numext::bit_cast<numext::uint16_t>(Eigen::half(aux[7]));
+  return _mm_set_epi16(s7, s6, s5, s4, s3, s2, s1, s0);
 #endif
 }
 
-template<> EIGEN_STRONG_INLINE Packet8h ptrue(const Packet8h& a) {
- return _mm_cmpeq_epi32(a, a);
+template <>
+EIGEN_STRONG_INLINE Packet8h pmin<Packet8h>(const Packet8h& a,
+                                            const Packet8h& b) {
+  return float2half(pmin<Packet8f>(half2float(a), half2float(b)));
+}
+
+template <>
+EIGEN_STRONG_INLINE Packet8h pmax<Packet8h>(const Packet8h& a,
+                                            const Packet8h& b) {
+  return float2half(pmax<Packet8f>(half2float(a), half2float(b)));
+}
+
+template <>
+EIGEN_STRONG_INLINE Packet8h plset<Packet8h>(const half& a) {
+  return float2half(plset<Packet8f>(static_cast<float>(a)));
 }
 
 template<> EIGEN_STRONG_INLINE Packet8h por(const Packet8h& a,const Packet8h& b) {
@@ -972,19 +1032,42 @@ template<> EIGEN_STRONG_INLINE Packet8h pselect(const Packet8h& mask, const Pack
   return _mm_blendv_epi8(b, a, mask);
 }
 
+template<> EIGEN_STRONG_INLINE Packet8h pround<Packet8h>(const Packet8h& a) {
+  return float2half(pround<Packet8f>(half2float(a)));
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h print<Packet8h>(const Packet8h& a) {
+  return float2half(print<Packet8f>(half2float(a)));
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h pceil<Packet8h>(const Packet8h& a) {
+  return float2half(pceil<Packet8f>(half2float(a)));
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h pfloor<Packet8h>(const Packet8h& a) {
+  return float2half(pfloor<Packet8f>(half2float(a)));
+}
+
 template<> EIGEN_STRONG_INLINE Packet8h pcmp_eq(const Packet8h& a,const Packet8h& b) {
-  Packet8f af = half2float(a);
-  Packet8f bf = half2float(b);
-  Packet8f rf = pcmp_eq(af, bf);
-  // Pack the 32-bit flags into 16-bits flags.
-  return _mm_packs_epi32(_mm256_extractf128_si256(_mm256_castps_si256(rf), 0),
-                         _mm256_extractf128_si256(_mm256_castps_si256(rf), 1));
+  return Pack16To8(pcmp_eq(half2float(a), half2float(b)));
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h pcmp_le(const Packet8h& a,const Packet8h& b) {
+  return Pack16To8(pcmp_le(half2float(a), half2float(b)));
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h pcmp_lt(const Packet8h& a,const Packet8h& b) {
+  return Pack16To8(pcmp_lt(half2float(a), half2float(b)));
+}
+
+template<> EIGEN_STRONG_INLINE Packet8h pcmp_lt_or_nan(const Packet8h& a,const Packet8h& b) {
+  return Pack16To8(pcmp_lt_or_nan(half2float(a), half2float(b)));
 }
 
 template<> EIGEN_STRONG_INLINE Packet8h pconj(const Packet8h& a) { return a; }
 
 template<> EIGEN_STRONG_INLINE Packet8h pnegate(const Packet8h& a) {
-  Packet8h sign_mask = _mm_set1_epi16(static_cast<unsigned short>(0x8000));
+  Packet8h sign_mask = _mm_set1_epi16(static_cast<numext::uint16_t>(0x8000));
   return _mm_xor_si128(a, sign_mask);
 }
 
@@ -1018,7 +1101,15 @@ template<> EIGEN_STRONG_INLINE Packet8h pdiv<Packet8h>(const Packet8h& a, const 
 
 template<> EIGEN_STRONG_INLINE Packet8h pgather<Eigen::half, Packet8h>(const Eigen::half* from, Index stride)
 {
-  return _mm_set_epi16(from[7*stride].x, from[6*stride].x, from[5*stride].x, from[4*stride].x, from[3*stride].x, from[2*stride].x, from[1*stride].x, from[0*stride].x);
+  const numext::uint16_t s0 = numext::bit_cast<numext::uint16_t>(from[0*stride]);
+  const numext::uint16_t s1 = numext::bit_cast<numext::uint16_t>(from[1*stride]);
+  const numext::uint16_t s2 = numext::bit_cast<numext::uint16_t>(from[2*stride]);
+  const numext::uint16_t s3 = numext::bit_cast<numext::uint16_t>(from[3*stride]);
+  const numext::uint16_t s4 = numext::bit_cast<numext::uint16_t>(from[4*stride]);
+  const numext::uint16_t s5 = numext::bit_cast<numext::uint16_t>(from[5*stride]);
+  const numext::uint16_t s6 = numext::bit_cast<numext::uint16_t>(from[6*stride]);
+  const numext::uint16_t s7 = numext::bit_cast<numext::uint16_t>(from[7*stride]);
+  return _mm_set_epi16(s7, s6, s5, s4, s3, s2, s1, s0);
 }
 
 template<> EIGEN_STRONG_INLINE void pscatter<Eigen::half, Packet8h>(Eigen::half* to, const Packet8h& from, Index stride)
@@ -1138,6 +1229,8 @@ ptranspose(PacketBlock<Packet8h,4>& kernel) {
   kernel.packet[3] = pload<Packet8h>(out[3]);
 }
 
+// BFloat16 implementation.
+
 EIGEN_STRONG_INLINE Packet8f Bf16ToF32(const Packet8bf& a) {
 #ifdef EIGEN_VECTORIZE_AVX2
   __m256i extend = _mm256_cvtepu16_epi32(a);
@@ -1177,7 +1270,7 @@ EIGEN_STRONG_INLINE Packet8bf F32ToBf16(const Packet8f& a) {
   __m256 mask = _mm256_cmp_ps(flush, flush, _CMP_ORD_Q);
   __m256i nan = _mm256_set1_epi32(0x7fc0);
   t = _mm256_blendv_epi8(nan, t, _mm256_castps_si256(mask));
-  // output.value = static_cast<uint16_t>(input);
+  // output = numext::bit_cast<uint16_t>(input);
   return _mm_packus_epi32(_mm256_extractf128_si256(t, 0),
                          _mm256_extractf128_si256(t, 1));
 #else
@@ -1201,17 +1294,17 @@ EIGEN_STRONG_INLINE Packet8bf F32ToBf16(const Packet8f& a) {
   __m128i nan = _mm_set1_epi32(0x7fc0);
   lo = _mm_blendv_epi8(nan, lo, _mm_castps_si128(_mm256_castps256_ps128(mask)));
   hi = _mm_blendv_epi8(nan, hi, _mm_castps_si128(_mm256_extractf128_ps(mask, 1)));
-  // output.value = static_cast<uint16_t>(input);
+  // output = numext::bit_cast<uint16_t>(input);
   return _mm_packus_epi32(lo, hi);
 #endif
 }
 
 template<> EIGEN_STRONG_INLINE Packet8bf pset1<Packet8bf>(const bfloat16& from) {
-  return _mm_set1_epi16(from.value);
+  return _mm_set1_epi16(numext::bit_cast<numext::uint16_t>(from));
 }
 
 template<> EIGEN_STRONG_INLINE bfloat16 pfirst<Packet8bf>(const Packet8bf& from) {
-  return bfloat16_impl::raw_uint16_to_bfloat16(static_cast<unsigned short>(_mm_extract_epi16(from, 0)));
+  return numext::bit_cast<bfloat16>(static_cast<numext::uint16_t>(_mm_extract_epi16(from, 0)));
 }
 
 template<> EIGEN_STRONG_INLINE Packet8bf pload<Packet8bf>(const bfloat16* from) {
@@ -1232,17 +1325,17 @@ template<> EIGEN_STRONG_INLINE void pstoreu<bfloat16>(bfloat16* to, const Packet
 
 template<> EIGEN_STRONG_INLINE Packet8bf
 ploaddup<Packet8bf>(const bfloat16* from) {
-  unsigned short a = from[0].value;
-  unsigned short b = from[1].value;
-  unsigned short c = from[2].value;
-  unsigned short d = from[3].value;
+  const numext::uint16_t a = numext::bit_cast<numext::uint16_t>(from[0]);
+  const numext::uint16_t b = numext::bit_cast<numext::uint16_t>(from[1]);
+  const numext::uint16_t c = numext::bit_cast<numext::uint16_t>(from[2]);
+  const numext::uint16_t d = numext::bit_cast<numext::uint16_t>(from[3]);
   return _mm_set_epi16(d, d, c, c, b, b, a, a);
 }
 
 template<> EIGEN_STRONG_INLINE Packet8bf
 ploadquad<Packet8bf>(const bfloat16* from) {
-  unsigned short a = from[0].value;
-  unsigned short b = from[1].value;
+  const numext::uint16_t a = numext::bit_cast<numext::uint16_t>(from[0]);
+  const numext::uint16_t b = numext::bit_cast<numext::uint16_t>(from[1]);
   return _mm_set_epi16(b, b, b, b, a, a, a, a);
 }
 
@@ -1252,7 +1345,8 @@ template<> EIGEN_STRONG_INLINE Packet8bf ptrue(const Packet8bf& a) {
 
 template <>
 EIGEN_STRONG_INLINE Packet8bf pabs(const Packet8bf& a) {
-  return F32ToBf16(pabs<Packet8f>(Bf16ToF32(a)));
+  const __m128i sign_mask = _mm_set1_epi16(static_cast<numext::uint16_t>(0x8000));
+  return _mm_andnot_si128(sign_mask, a);
 }
 
 template <>
@@ -1325,7 +1419,7 @@ template<> EIGEN_STRONG_INLINE Packet8bf pcmp_lt_or_nan(const Packet8bf& a,const
 template<> EIGEN_STRONG_INLINE Packet8bf pconj(const Packet8bf& a) { return a; }
 
 template<> EIGEN_STRONG_INLINE Packet8bf pnegate(const Packet8bf& a) {
-  Packet8bf sign_mask = _mm_set1_epi16(static_cast<unsigned short>(0x8000));
+  Packet8bf sign_mask = _mm_set1_epi16(static_cast<numext::uint16_t>(0x8000));
   return _mm_xor_si128(a, sign_mask);
 }
 
@@ -1348,7 +1442,15 @@ template<> EIGEN_STRONG_INLINE Packet8bf pdiv<Packet8bf>(const Packet8bf& a, con
 
 template<> EIGEN_STRONG_INLINE Packet8bf pgather<bfloat16, Packet8bf>(const bfloat16* from, Index stride)
 {
-  return _mm_set_epi16(from[7*stride].value, from[6*stride].value, from[5*stride].value, from[4*stride].value, from[3*stride].value, from[2*stride].value, from[1*stride].value, from[0*stride].value);
+  const numext::uint16_t s0 = numext::bit_cast<numext::uint16_t>(from[0*stride]);
+  const numext::uint16_t s1 = numext::bit_cast<numext::uint16_t>(from[1*stride]);
+  const numext::uint16_t s2 = numext::bit_cast<numext::uint16_t>(from[2*stride]);
+  const numext::uint16_t s3 = numext::bit_cast<numext::uint16_t>(from[3*stride]);
+  const numext::uint16_t s4 = numext::bit_cast<numext::uint16_t>(from[4*stride]);
+  const numext::uint16_t s5 = numext::bit_cast<numext::uint16_t>(from[5*stride]);
+  const numext::uint16_t s6 = numext::bit_cast<numext::uint16_t>(from[6*stride]);
+  const numext::uint16_t s7 = numext::bit_cast<numext::uint16_t>(from[7*stride]);
+  return _mm_set_epi16(s7, s6, s5, s4, s3, s2, s1, s0);
 }
 
 template<> EIGEN_STRONG_INLINE void pscatter<bfloat16, Packet8bf>(bfloat16* to, const Packet8bf& from, Index stride)

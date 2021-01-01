@@ -69,7 +69,7 @@ struct bfloat16 : public bfloat16_impl::bfloat16_base {
   template<class T>
   explicit EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR bfloat16(const T& val)
       : bfloat16_impl::bfloat16_base(bfloat16_impl::float_to_bfloat16_rtne<internal::is_integral<T>::value>(static_cast<float>(val))) {}
-  
+
   explicit EIGEN_DEVICE_FUNC bfloat16(float f)
       : bfloat16_impl::bfloat16_base(bfloat16_impl::float_to_bfloat16_rtne<false>(f)) {}
 
@@ -82,14 +82,6 @@ struct bfloat16 : public bfloat16_impl::bfloat16_base {
   EIGEN_DEVICE_FUNC operator float() const {  // NOLINT: Allow implicit conversion to float, because it is lossless.
     return bfloat16_impl::bfloat16_to_float(*this);
   }
-
-#if EIGEN_HAS_CXX11
-  EIGEN_DEVICE_FUNC EIGEN_EXPLICIT_CAST(bool) const {
-    // +0.0 and -0.0 become false, everything else becomes true.
-    return (value & 0x7fff) != 0;
-  }
-#endif 
-
 };
 } // namespace Eigen
 
@@ -272,8 +264,12 @@ EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC __bfloat16_raw truncate_to_bfloat16(const 
   return output;
 }
 
-EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR __bfloat16_raw raw_uint16_to_bfloat16(unsigned short value) {
+EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR __bfloat16_raw raw_uint16_to_bfloat16(numext::uint16_t value) {
   return __bfloat16_raw(value);
+}
+
+EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC EIGEN_CONSTEXPR numext::uint16_t raw_bfloat16_as_uint16(const __bfloat16_raw& bf) {
+  return bf.value;
 }
 
 // float_to_bfloat16_rtne template specialization that does not make any
@@ -454,20 +450,20 @@ EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC __bfloat16_raw float_to_bfloat16_rtne<fals
 // float_to_bfloat16_rtne template specialization that assumes that its function
 // argument (ff) is either a normal floating point number, or +/-infinity, or
 // zero. Used to improve the runtime performance of conversion from an integer
-// type to bfloat16.  
+// type to bfloat16.
 template <>
 EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC __bfloat16_raw float_to_bfloat16_rtne<true>(float ff) {
 #if (defined(EIGEN_HAS_CUDA_BF16) && defined(EIGEN_HAS_HIP_BF16))
     // Nothing to do here
 #else
-    unsigned int input = numext::as_uint(ff);
+    numext::uint32_t input = numext::bit_cast<numext::uint32_t>(ff);
     __bfloat16_raw output;
 
     // Least significant bit of resulting bfloat.
-    unsigned int lsb = (input >> 16) & 1;
-    unsigned int rounding_bias = 0x7fff + lsb;
+    numext::uint32_t lsb = (input >> 16) & 1;
+    numext::uint32_t rounding_bias = 0x7fff + lsb;
     input += rounding_bias;
-    output.value = static_cast<unsigned short>(input >> 16);
+    output.value = static_cast<numext::uint16_t>(input >> 16);
     return output;
 #endif
 }
@@ -515,6 +511,9 @@ EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC bfloat16 log1p(const bfloat16& a) {
 }
 EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC bfloat16 log10(const bfloat16& a) {
   return bfloat16(::log10f(float(a)));
+}
+EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC bfloat16 log2(const bfloat16& a) {
+  return bfloat16(static_cast<float>(EIGEN_LOG2E) * ::logf(float(a)));
 }
 EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC bfloat16 sqrt(const bfloat16& a) {
     return bfloat16(::sqrtf(float(a)));
@@ -691,7 +690,17 @@ bool (isfinite)(const Eigen::bfloat16& h) {
   return (bfloat16_impl::isfinite)(h);
 }
 
-} // namespace numext
+template <>
+EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC Eigen::bfloat16 bit_cast<Eigen::bfloat16, uint16_t>(const uint16_t& src) {
+  return Eigen::bfloat16(Eigen::bfloat16_impl::raw_uint16_to_bfloat16(src));
+}
+
+template <>
+EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC uint16_t bit_cast<uint16_t, Eigen::bfloat16>(const Eigen::bfloat16& src) {
+  return Eigen::bfloat16_impl::raw_bfloat16_as_uint16(src);
+}
+
+}  // namespace numext
 }  // namespace Eigen
 
 #endif // EIGEN_BFLOAT16_H

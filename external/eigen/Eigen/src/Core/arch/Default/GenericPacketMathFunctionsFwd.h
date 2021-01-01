@@ -32,11 +32,23 @@ EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 EIGEN_UNUSED
 Packet plog_float(const Packet _x);
 
+/** \internal \returns log2(x) for single precision float */
+template <typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet plog2_float(const Packet _x);
+
 /** \internal \returns log(x) for single precision float */
 template <typename Packet>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 EIGEN_UNUSED
 Packet plog_double(const Packet _x);
+
+/** \internal \returns log2(x) for single precision float */
+template <typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet plog2_double(const Packet _x);
 
 /** \internal \returns log(1 + x) */
 template<typename Packet>
@@ -70,7 +82,14 @@ EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
 EIGEN_UNUSED
 Packet pcos_float(const Packet& x);
 
+/** \internal \returns sqrt(x) for complex types */
+template<typename Packet>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS
+EIGEN_UNUSED
+Packet psqrt_complex(const Packet& a);
+
 template <typename Packet, int N> struct ppolevl;
+
 
 } // end namespace internal
 } // end namespace Eigen

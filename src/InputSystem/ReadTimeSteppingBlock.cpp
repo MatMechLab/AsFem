@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2020
+//* All rights reserved, Yang Bai @ CopyRight 2021
 //* https://github.com/yangbai90/AsFem.git
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -61,7 +61,7 @@ bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,Tim
                substr.length()==2){
                 HasType=true;
                 timesteppingBlock._TimeSteppingType=TimeSteppingType::CRANCKNICLSON;
-                timesteppingBlock._TimeSteppingTypeName="crank–nicolson";
+                timesteppingBlock._TimeSteppingTypeName="crankânicolson";
             }
             else if((substr.find("gl")!=string::npos||substr.find("GL")!=string::npos)&&
                substr.length()==2){
