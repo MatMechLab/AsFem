@@ -10,9 +10,11 @@
 #ifndef EIGEN_MATHFUNCTIONS_H
 #define EIGEN_MATHFUNCTIONS_H
 
-// source: http://www.geom.uiuc.edu/~huberty/math5337/groupe/digits.html
 // TODO this should better be moved to NumTraits
-#define EIGEN_PI 3.141592653589793238462643383279502884197169399375105820974944592307816406L
+// Source: WolframAlpha
+#define EIGEN_PI    3.141592653589793238462643383279502884197169399375105820974944592307816406L
+#define EIGEN_LOG2E 1.442695040888963407359924681001892137426645954152985934135449406931109219L
+#define EIGEN_LN2   0.693147180559945309417232121458176568075500134360255254120680009493393621L
 
 namespace Eigen {
 
@@ -376,13 +378,29 @@ struct hypot_retval
 * Implementation of cast                                                 *
 ****************************************************************************/
 
-template<typename OldType, typename NewType>
+template<typename OldType, typename NewType, typename EnableIf = void>
 struct cast_impl
 {
   EIGEN_DEVICE_FUNC
   static inline NewType run(const OldType& x)
   {
     return static_cast<NewType>(x);
+  }
+};
+
+// Casting from S -> Complex<T> leads to an implicit conversion from S to T,
+// generating warnings on clang.  Here we explicitly cast the real component.
+template<typename OldType, typename NewType>
+struct cast_impl<OldType, NewType,
+  typename internal::enable_if<
+    !NumTraits<OldType>::IsComplex && NumTraits<NewType>::IsComplex
+  >::type>
+{
+  EIGEN_DEVICE_FUNC
+  static inline NewType run(const OldType& x)
+  {
+    typedef typename NumTraits<NewType>::Real NewReal;
+    return static_cast<NewType>(static_cast<NewReal>(x));
   }
 };
 
@@ -486,7 +504,7 @@ struct rint_retval
       #if defined(EIGEN_HIP_DEVICE_COMPILE)
       // HIP does not seem to have a native device side implementation for the math routine "arg"
       using std::arg;
-      #else 		  
+      #else
       EIGEN_USING_STD(arg);
       #endif
       return arg(x);
@@ -967,7 +985,7 @@ template<typename T> T generic_fast_tanh_float(const T& a_x);
 
 namespace numext {
 
-#if (!defined(EIGEN_GPUCC) || defined(EIGEN_CONSTEXPR_ARE_DEVICE_FUNC)) 
+#if (!defined(EIGEN_GPUCC) || defined(EIGEN_CONSTEXPR_ARE_DEVICE_FUNC))
 template<typename T>
 EIGEN_DEVICE_FUNC
 EIGEN_ALWAYS_INLINE T mini(const T& x, const T& y)
@@ -1357,6 +1375,11 @@ T sqrt(const T &x)
   EIGEN_USING_STD(sqrt);
   return sqrt(x);
 }
+
+// Boolean specialization, avoids implicit float to bool conversion (-Wimplicit-conversion-floating-point-to-bool).
+template<>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_DEVICE_FUNC
+bool sqrt<bool>(const bool &x) { return x; }
 
 #if defined(SYCL_DEVICE_ONLY)
 SYCL_SPECIALIZE_FLOATING_TYPES_UNARY(sqrt, sqrt)
@@ -1845,6 +1868,11 @@ template<> struct random_impl<bool>
   static inline bool run()
   {
     return random<int>(0,1)==0 ? false : true;
+  }
+
+  static inline bool run(const bool& a, const bool& b)
+  {
+    return random<int>(a, b)==0 ? false : true;
   }
 };
 

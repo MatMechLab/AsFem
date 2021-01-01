@@ -35,7 +35,6 @@ namespace internal {
 #define _EIGEN_DECLARE_CONST_Packet16bf_FROM_INT(NAME, X) \
   const Packet16bf p16bf_##NAME =  preinterpret<Packet16bf,Packet16i>(pset1<Packet16i>(X))
 
-#if defined(EIGEN_VECTORIZE_AVX512DQ)
 template <>
 EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
 plog<Packet16f>(const Packet16f& _x) {
@@ -48,8 +47,23 @@ plog<Packet8d>(const Packet8d& _x) {
   return plog_double(_x);
 }
 
+F16_PACKET_FUNCTION(Packet16f, Packet16h, plog)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, plog)
-#endif
+
+template <>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
+plog2<Packet16f>(const Packet16f& _x) {
+  return plog2_float(_x);
+}
+
+template <>
+EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet8d
+plog2<Packet8d>(const Packet8d& _x) {
+  return plog2_double(_x);
+}
+
+F16_PACKET_FUNCTION(Packet16f, Packet16h, plog2)
+BF16_PACKET_FUNCTION(Packet16f, Packet16bf, plog2)
 
 // Exponential function. Works by writing "x = m*log(2) + r" where
 // "m = floor(x/log(2)+1/2)" and "r" is the remainder. The result is then
@@ -85,17 +99,17 @@ pexp<Packet16f>(const Packet16f& _x) {
   _EIGEN_DECLARE_CONST_Packet16f(nln2, -0.6931471805599453f);
   Packet16f r = _mm512_fmadd_ps(m, p16f_nln2, x);
   Packet16f r2 = pmul(r, r);
+  Packet16f r3 = pmul(r2, r);
 
-  // TODO(gonnet): Split into odd/even polynomials and try to exploit
-  //               instruction-level parallelism.
-  Packet16f y = p16f_cephes_exp_p0;
-  y = pmadd(y, r, p16f_cephes_exp_p1);
-  y = pmadd(y, r, p16f_cephes_exp_p2);
-  y = pmadd(y, r, p16f_cephes_exp_p3);
-  y = pmadd(y, r, p16f_cephes_exp_p4);
-  y = pmadd(y, r, p16f_cephes_exp_p5);
-  y = pmadd(y, r2, r);
-  y = padd(y, p16f_1);
+  // Evaluate the polynomial approximant,improved by instruction-level parallelism.
+  Packet16f y, y1, y2;
+  y  = pmadd(p16f_cephes_exp_p0, r, p16f_cephes_exp_p1);
+  y1 = pmadd(p16f_cephes_exp_p3, r, p16f_cephes_exp_p4);
+  y2 = padd(r, p16f_1);
+  y  = pmadd(y, r, p16f_cephes_exp_p2);
+  y1 = pmadd(y1, r, p16f_cephes_exp_p5);
+  y  = pmadd(y, r3, y1);
+  y  = pmadd(y, r2, y2);
 
   // Build emm0 = 2^m.
   Packet16i emm0 = _mm512_cvttps_epi32(padd(m, p16f_127));
@@ -174,6 +188,7 @@ pexp<Packet8d>(const Packet8d& _x) {
   return pmax(pmul(x, e), _x);
   }*/
 
+F16_PACKET_FUNCTION(Packet16f, Packet16h, pexp)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pexp)
 
 // Functions for sqrt.
@@ -232,6 +247,7 @@ EIGEN_STRONG_INLINE Packet8d psqrt<Packet8d>(const Packet8d& x) {
 }
 #endif
 
+F16_PACKET_FUNCTION(Packet16f, Packet16h, psqrt)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, psqrt)
 
 // prsqrt for float.
@@ -256,7 +272,7 @@ prsqrt<Packet16f>(const Packet16f& _x) {
   __mmask16 inf_mask = _mm512_cmp_ps_mask(_x, p16f_inf, _CMP_EQ_OQ);
   __mmask16 not_pos_mask = _mm512_cmp_ps_mask(_x, _mm512_setzero_ps(), _CMP_LE_OQ);
   __mmask16 not_finite_pos_mask = not_pos_mask | inf_mask;
-  
+
   // Compute an approximate result using the rsqrt intrinsic, forcing +inf
   // for denormals for consistency with AVX and SSE implementations.
   Packet16f y_approx = _mm512_rsqrt14_ps(_x);
@@ -281,6 +297,7 @@ EIGEN_STRONG_INLINE Packet16f prsqrt<Packet16f>(const Packet16f& x) {
 }
 #endif
 
+F16_PACKET_FUNCTION(Packet16f, Packet16h, prsqrt)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, prsqrt)
 
 // prsqrt for double.
@@ -330,12 +347,12 @@ EIGEN_STRONG_INLINE Packet8d prsqrt<Packet8d>(const Packet8d& x) {
 }
 #endif
 
-#if defined(EIGEN_VECTORIZE_AVX512DQ)
 template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
 Packet16f plog1p<Packet16f>(const Packet16f& _x) {
   return generic_plog1p(_x);
 }
 
+F16_PACKET_FUNCTION(Packet16f, Packet16h, plog1p)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, plog1p)
 
 template<> EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED
@@ -343,8 +360,8 @@ Packet16f pexpm1<Packet16f>(const Packet16f& _x) {
   return generic_expm1(_x);
 }
 
+F16_PACKET_FUNCTION(Packet16f, Packet16h, pexpm1)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pexpm1)
-#endif
 
 #endif
 
@@ -366,6 +383,10 @@ EIGEN_DEFINE_FUNCTION_ALLOWING_MULTIPLE_DEFINITIONS EIGEN_UNUSED Packet16f
 ptanh<Packet16f>(const Packet16f& _x) {
   return internal::generic_fast_tanh_float(_x);
 }
+
+F16_PACKET_FUNCTION(Packet16f, Packet16h, psin)
+F16_PACKET_FUNCTION(Packet16f, Packet16h, pcos)
+F16_PACKET_FUNCTION(Packet16f, Packet16h, ptanh)
 
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, psin)
 BF16_PACKET_FUNCTION(Packet16f, Packet16bf, pcos)

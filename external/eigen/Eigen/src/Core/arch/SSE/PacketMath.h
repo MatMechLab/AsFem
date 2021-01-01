@@ -52,22 +52,59 @@ template<> struct is_arithmetic<__m128d> { enum { value = true }; };
 template<> struct is_arithmetic<Packet4i>  { enum { value = true }; };
 template<> struct is_arithmetic<Packet16b>  { enum { value = true }; };
 
-#define EIGEN_SSE_SHUFFLE_MASK(p,q,r,s) ((s)<<6|(r)<<4|(q)<<2|(p))
+template<int p, int q, int r, int s>
+struct shuffle_mask{
+ enum { mask = (s)<<6|(r)<<4|(q)<<2|(p) };
+};
 
+// TODO: change the implementation of all swizzle* ops from macro to template,
 #define vec4f_swizzle1(v,p,q,r,s) \
-  (_mm_castsi128_ps(_mm_shuffle_epi32( _mm_castps_si128(v), EIGEN_SSE_SHUFFLE_MASK(p,q,r,s))))
+  Packet4f(_mm_castsi128_ps(_mm_shuffle_epi32( _mm_castps_si128(v), (shuffle_mask<p,q,r,s>::mask))))
 
 #define vec4i_swizzle1(v,p,q,r,s) \
-  (_mm_shuffle_epi32( v, EIGEN_SSE_SHUFFLE_MASK(p,q,r,s)))
+  Packet4i(_mm_shuffle_epi32( v, (shuffle_mask<p,q,r,s>::mask)))
 
 #define vec2d_swizzle1(v,p,q) \
-  (_mm_castsi128_pd(_mm_shuffle_epi32( _mm_castpd_si128(v), EIGEN_SSE_SHUFFLE_MASK(2*p,2*p+1,2*q,2*q+1))))
+  Packet2d(_mm_castsi128_pd(_mm_shuffle_epi32( _mm_castpd_si128(v), (shuffle_mask<2*p,2*p+1,2*q,2*q+1>::mask))))
 
 #define vec4f_swizzle2(a,b,p,q,r,s) \
-  (_mm_shuffle_ps( (a), (b), EIGEN_SSE_SHUFFLE_MASK(p,q,r,s)))
+  Packet4f(_mm_shuffle_ps( (a), (b), (shuffle_mask<p,q,r,s>::mask)))
 
 #define vec4i_swizzle2(a,b,p,q,r,s) \
-  (_mm_castps_si128( (_mm_shuffle_ps( _mm_castsi128_ps(a), _mm_castsi128_ps(b), EIGEN_SSE_SHUFFLE_MASK(p,q,r,s)))))
+  Packet4i(_mm_castps_si128( (_mm_shuffle_ps( _mm_castsi128_ps(a), _mm_castsi128_ps(b), (shuffle_mask<p,q,r,s>::mask)))))
+
+EIGEN_STRONG_INLINE Packet4f vec4f_movelh(const Packet4f& a, const Packet4f& b)
+{
+  return Packet4f(_mm_movelh_ps(a,b));
+}
+EIGEN_STRONG_INLINE Packet4f vec4f_movehl(const Packet4f& a, const Packet4f& b)
+{
+  return Packet4f(_mm_movehl_ps(a,b));
+}
+EIGEN_STRONG_INLINE Packet4f vec4f_unpacklo(const Packet4f& a, const Packet4f& b)
+{
+  return Packet4f(_mm_unpacklo_ps(a,b));
+}
+EIGEN_STRONG_INLINE Packet4f vec4f_unpackhi(const Packet4f& a, const Packet4f& b)
+{
+  return Packet4f(_mm_unpackhi_ps(a,b));
+}
+#define vec4f_duplane(a,p) \
+  vec4f_swizzle2(a,a,p,p,p,p)
+
+#define vec2d_swizzle2(a,b,mask) \
+  Packet2d(_mm_shuffle_pd(a,b,mask))
+
+EIGEN_STRONG_INLINE Packet2d vec2d_unpacklo(const Packet2d& a, const Packet2d& b)
+{
+  return Packet2d(_mm_unpacklo_pd(a,b));
+}
+EIGEN_STRONG_INLINE Packet2d vec2d_unpackhi(const Packet2d& a, const Packet2d& b)
+{
+  return Packet2d(_mm_unpackhi_pd(a,b));
+}
+#define vec2d_duplane(a,p) \
+  vec2d_swizzle2(a,a,(p<<1)|p)
 
 #define _EIGEN_DECLARE_CONST_Packet4f(NAME,X) \
   const Packet4f p4f_##NAME = pset1<Packet4f>(X)
@@ -181,7 +218,8 @@ template<> struct packet_traits<bool> : default_packet_traits
     HasAbs2      = 0,
     HasMin       = 0,
     HasMax       = 0,
-    HasConj      = 0
+    HasConj      = 0,
+    HasSqrt      = 1
   };
 };
 
@@ -228,6 +266,10 @@ template<> EIGEN_STRONG_INLINE Packet16b pset1<Packet16b>(const bool&    from) {
 
 template<> EIGEN_STRONG_INLINE Packet4f pset1frombits<Packet4f>(unsigned int from) { return _mm_castsi128_ps(pset1<Packet4i>(from)); }
 template<> EIGEN_STRONG_INLINE Packet2d pset1frombits<Packet2d>(uint64_t from) { return _mm_castsi128_pd(_mm_set1_epi64x(from)); }
+
+template<> EIGEN_STRONG_INLINE Packet4f peven_mask(const Packet4f& /*a*/) { return _mm_castsi128_ps(_mm_set_epi32(0, -1, 0, -1)); }
+template<> EIGEN_STRONG_INLINE Packet4i peven_mask(const Packet4i& /*a*/) { return _mm_set_epi32(0, -1, 0, -1); }
+template<> EIGEN_STRONG_INLINE Packet2d peven_mask(const Packet2d& /*a*/) { return _mm_castsi128_pd(_mm_set_epi32(0, 0, -1, -1)); }
 
 template<> EIGEN_STRONG_INLINE Packet4f pzero(const Packet4f& /*a*/) { return _mm_setzero_ps(); }
 template<> EIGEN_STRONG_INLINE Packet2d pzero(const Packet2d& /*a*/) { return _mm_setzero_pd(); }
@@ -691,7 +733,7 @@ template<> EIGEN_DEVICE_FUNC inline Packet16b pgather<bool, Packet16b>(const boo
                       from[11*stride], from[10*stride], from[9*stride], from[8*stride],
                       from[7*stride], from[6*stride], from[5*stride], from[4*stride],
                       from[3*stride], from[2*stride], from[1*stride], from[0*stride]);
- }
+}
 
 template<> EIGEN_DEVICE_FUNC inline void pscatter<float, Packet4f>(float* to, const Packet4f& from, Index stride)
 {
@@ -761,8 +803,8 @@ template<> EIGEN_STRONG_INLINE int    pfirst<Packet4i>(const Packet4i& a) { int 
 template<> EIGEN_STRONG_INLINE float  pfirst<Packet4f>(const Packet4f& a) { return _mm_cvtss_f32(a); }
 template<> EIGEN_STRONG_INLINE double pfirst<Packet2d>(const Packet2d& a) { return _mm_cvtsd_f64(a); }
 template<> EIGEN_STRONG_INLINE int    pfirst<Packet4i>(const Packet4i& a) { return _mm_cvtsi128_si32(a); }
-template<> EIGEN_STRONG_INLINE bool   pfirst<Packet16b>(const Packet16b& a) { int x = _mm_cvtsi128_si32(a); return static_cast<bool>(x & 1); }
 #endif
+template<> EIGEN_STRONG_INLINE bool   pfirst<Packet16b>(const Packet16b& a) { int x = _mm_cvtsi128_si32(a); return static_cast<bool>(x & 1); }
 
 template<> EIGEN_STRONG_INLINE Packet4f preverse(const Packet4f& a) { return _mm_shuffle_ps(a,a,0x1B); }
 template<> EIGEN_STRONG_INLINE Packet2d preverse(const Packet2d& a) { return _mm_shuffle_pd(a,a,0x1); }
