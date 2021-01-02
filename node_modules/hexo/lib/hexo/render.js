@@ -8,7 +8,7 @@ const getExtname = str => {
   if (typeof str !== 'string') return '';
 
   const ext = extname(str);
-  return ext[0] === '.' ? ext.slice(1) : ext;
+  return ext.startsWith('.') ? ext.slice(1) : ext;
 };
 
 const toString = (result, options) => {
@@ -89,10 +89,8 @@ class Render {
     }).asCallback(callback);
   }
 
-  renderSync(data, options) {
+  renderSync(data, options = {}) {
     if (!data) throw new TypeError('No input file or string!');
-
-    options = options || {};
 
     const ctx = this.context;
 

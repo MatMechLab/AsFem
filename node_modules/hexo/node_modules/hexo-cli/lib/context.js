@@ -9,54 +9,53 @@ const ConsoleExtend = require('./extend/console');
 // a stub Hexo object
 // see `hexojs/hexo/lib/hexo/index.js`
 
-function Context(base = process.cwd(), args = {}) {
-  EventEmitter.call(this);
+class Context extends EventEmitter {
+  constructor(base = process.cwd(), args = {}) {
+    super();
+    this.base_dir = base;
+    this.log = logger(args);
 
-  this.base_dir = base;
-  this.log = logger(args);
-
-  this.extend = {
-    console: new ConsoleExtend()
-  };
-}
-
-require('util').inherits(Context, EventEmitter);
-
-Context.prototype.init = () => {
-  // Do nothing
-};
-
-Context.prototype.call = function(name, args, callback) {
-  if (!callback && typeof args === 'function') {
-    callback = args;
-    args = {};
+    this.extend = {
+      console: new ConsoleExtend()
+    };
   }
 
-  return new Promise((resolve, reject) => {
-    const c = this.extend.console.get(name);
+  init() {
+    // Do nothing
+  }
 
-    if (c) {
-      c.call(this, args).then(resolve, reject);
-    } else {
-      reject(new Error(`Console \`${name}\` has not been registered yet!`));
+  call(name, args, callback) {
+    if (!callback && typeof args === 'function') {
+      callback = args;
+      args = {};
     }
-  }).asCallback(callback);
-};
 
-Context.prototype.exit = function(err) {
-  if (err) {
-    this.log.fatal(
-      {err},
-      'Something\'s wrong. Maybe you can find the solution here: %s',
-      chalk.underline('http://hexo.io/docs/troubleshooting.html')
-    );
+    return new Promise((resolve, reject) => {
+      const c = this.extend.console.get(name);
+
+      if (c) {
+        c.call(this, args).then(resolve, reject);
+      } else {
+        reject(new Error(`Console \`${name}\` has not been registered yet!`));
+      }
+    }).asCallback(callback);
   }
 
-  return Promise.resolve();
-};
+  exit(err) {
+    if (err) {
+      this.log.fatal(
+        {err},
+        'Something\'s wrong. Maybe you can find the solution here: %s',
+        chalk.underline('http://hexo.io/docs/troubleshooting.html')
+      );
+    }
 
-Context.prototype.unwatch = () => {
-  // Do nothing
-};
+    return Promise.resolve();
+  }
+
+  unwatch() {
+    // Do nothing
+  }
+}
 
 module.exports = Context;

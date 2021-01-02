@@ -35,6 +35,7 @@ server:
   log: false
   ip: 0.0.0.0
   compress: false
+  cache: false
   header: true
   serveStatic:
     extensions:
@@ -45,6 +46,9 @@ server:
 - **log**: Display request info on the console. Always enabled in debug mode.
 - **ip**: Server IP
 - **compress**: Enable GZIP compression
+- **cache**: Enable cache for rendered content
+  - This can speed up server response. However, any changes will no longer take effect in real time.
+  - Suitable for production environment only.
 - **header**: Add `X-Powered-By: Hexo` header
 - **serveStatic**: Extra options passed to [serve-static](https://github.com/expressjs/serve-static#options)
 

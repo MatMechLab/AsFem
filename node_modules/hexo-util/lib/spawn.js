@@ -4,15 +4,15 @@ const spawn = require('cross-spawn');
 const Promise = require('bluebird');
 const CacheStream = require('./cache_stream');
 
-function promiseSpawn(command, args = [], options) {
+function promiseSpawn(command, args = [], options = {}) {
   if (!command) throw new TypeError('command is required!');
 
-  if (!options && !Array.isArray(args)) {
+  if (typeof args === 'string') args = [args];
+
+  if (!Array.isArray(args)) {
     options = args;
     args = [];
   }
-
-  options = options || {};
 
   return new Promise((resolve, reject) => {
     const task = spawn(command, args, options);

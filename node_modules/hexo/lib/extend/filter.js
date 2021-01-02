@@ -4,7 +4,8 @@ const Promise = require('bluebird');
 
 const typeAlias = {
   pre: 'before_post_render',
-  post: 'after_post_render'
+  post: 'after_post_render',
+  'after_render:html': '_after_html_render'
 };
 
 class Filter {
@@ -44,6 +45,8 @@ class Filter {
     if (!type) throw new TypeError('type is required');
     if (typeof fn !== 'function') throw new TypeError('fn must be a function');
 
+    type = typeAlias[type] || type;
+
     const list = this.list(type);
     if (!list || !list.length) return;
 
@@ -54,6 +57,8 @@ class Filter {
 
   exec(type, data, options = {}) {
     const filters = this.list(type);
+    if (filters.length === 0) return Promise.resolve(data);
+
     const ctx = options.context;
     const args = options.args || [];
 
@@ -67,12 +72,15 @@ class Filter {
 
   execSync(type, data, options = {}) {
     const filters = this.list(type);
+    const filtersLen = filters.length;
+    if (filtersLen === 0) return data;
+
     const ctx = options.context;
     const args = options.args || [];
 
     args.unshift(data);
 
-    for (let i = 0, len = filters.length; i < len; i++) {
+    for (let i = 0, len = filtersLen; i < len; i++) {
       const result = Reflect.apply(filters[i], ctx, args);
       args[0] = result == null ? args[0] : result;
     }

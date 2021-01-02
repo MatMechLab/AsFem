@@ -1,11 +1,11 @@
 'use strict';
 
 const chalk = require('chalk');
-const fs = require('hexo-fs');
-const pathFn = require('path');
+const { readFile } = require('hexo-fs');
+const { join } = require('path');
 const Promise = require('bluebird');
 
-const COMPLETION_DIR = pathFn.join(__dirname, '../../completion');
+const COMPLETION_DIR = join(__dirname, '../../completion');
 
 function helpConsole(args) {
   if (args.v || args.version) {
@@ -110,7 +110,7 @@ function printConsoleList(list) {
 }
 
 function printCompletion(type) {
-  return fs.readFile(pathFn.join(COMPLETION_DIR, type)).then(content => {
+  return readFile(join(COMPLETION_DIR, type)).then(content => {
     console.log(content);
   });
 }

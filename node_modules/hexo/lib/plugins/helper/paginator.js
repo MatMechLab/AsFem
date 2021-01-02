@@ -1,11 +1,11 @@
 'use strict';
 
-const { htmlTag } = require('hexo-util');
+const { htmlTag, url_for } = require('hexo-util');
 
 const createLink = (options, ctx) => {
   const { base, format } = options;
 
-  return i => ctx.url_for(i === 1 ? base : base + format.replace('%d', i));
+  return i => url_for.call(ctx, i === 1 ? base : base + format.replace('%d', i));
 };
 
 const createPageTag = (options, ctx) => {
@@ -80,7 +80,7 @@ const pagenasionPartShow = (tags, options, ctx) => {
     tags.push(spaceHtml);
   }
 
-  // Dispaly pages on the right edge
+  // Display pages on the right edge
   for (let i = rightEnd; i <= total; i++) {
     tags.push(pageTag(i));
   }

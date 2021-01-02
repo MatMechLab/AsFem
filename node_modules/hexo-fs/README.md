@@ -29,7 +29,7 @@ const fs = require('hexo-fs');
 
 > Some methods in the original fs module are not listed below, but they're available in hexo-fs.
 
-### exists(path, [callback])
+### exists(path)
 
 Test whether or not the given `path` exists by checking with the file system.
 
@@ -37,7 +37,7 @@ Test whether or not the given `path` exists by checking with the file system.
 
 Synchronous version of `fs.exists`.
 
-### mkdirs(path, [callback])
+### mkdirs(path)
 
 Creates a directory and its parent directories if they does not exist.
 
@@ -45,7 +45,7 @@ Creates a directory and its parent directories if they does not exist.
 
 Synchronous version of `fs.mkdirs`.
 
-### writeFile(path, data, [options], [callback])
+### writeFile(path, data, [options])
 
 Writes data to a file.
 
@@ -59,7 +59,7 @@ Option | Description | Default
 
 Synchronous version of `fs.writeFile`.
 
-### appendFile(path, data, [options], [callback])
+### appendFile(path, data, [options])
 
 Appends data to a file.
 
@@ -77,7 +77,7 @@ Synchronous version of `fs.appendFile`.
 
 Copies a file from `src` to `dest`.
 
-### copyDir(src, dest, [options], [callback])
+### copyDir(src, dest, [options])
 
 Copies a directory from `src` to `dest`. It returns an array of copied files.
 
@@ -86,7 +86,7 @@ Option | Description | Default
 `ignoreHidden` | Ignore hidden files | true
 `ignorePattern` | Ignore files which pass the regular expression |
 
-### listDir(path, [options], [callback])
+### listDir(path, [options])
 
 Lists files in a directory.
 
@@ -99,7 +99,7 @@ Option | Description | Default
 
 Synchronous version of `fs.listDir`.
 
-### readFile(path, [options], [callback])
+### readFile(path, [options])
 
 Reads the entire contents of a file.
 
@@ -113,7 +113,7 @@ Option | Description | Default
 
 Synchronous version of `fs.readFile`.
 
-### emptyDir(path, [options], [callback])
+### emptyDir(path, [options])
 
 Deletes all files in a directory. It returns an array of deleted files.
 
@@ -127,7 +127,7 @@ Option | Description | Default
 
 Synchronous version of `fs.emptyDir`.
 
-### rmdir(path, [callback])
+### rmdir(path)
 
 Removes a directory and all files in it.
 
@@ -135,13 +135,13 @@ Removes a directory and all files in it.
 
 Synchronous version of `fs.rmdir`.
 
-### watch(path, [options], [callback])
+### watch(path, [options])
 
 Watches changes of a file or a directory.
 
 See [Chokidar API](https://github.com/paulmillr/chokidar#api) for more info.
 
-### ensurePath(path, [callback])
+### ensurePath(path)
 
 Ensures the given path is available to use or appends a number to the path.
 
@@ -149,11 +149,11 @@ Ensures the given path is available to use or appends a number to the path.
 
 Synchronous version of `fs.ensurePath`.
 
-### ensureWriteStream(path, [options], [callback])
+### ensureWriteStream(path, [options])
 
 Creates the parent directories if they does not exist and returns a writable stream.
 
-### ensureWriteStream(path, [options])
+### ensureWriteStreamSync(path, [options])
 
 Synchronous version of `fs.ensureWriteStream`.
 

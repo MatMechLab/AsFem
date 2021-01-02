@@ -12,10 +12,13 @@ module.exports = ctx => {
 
   renderer.register('json', 'json', require('./json'), true);
 
-  renderer.register('swig', 'html', require('./swig'), true);
-
   const yaml = require('./yaml');
 
   renderer.register('yml', 'json', yaml, true);
   renderer.register('yaml', 'json', yaml, true);
+
+  const nunjucks = require('./nunjucks');
+
+  renderer.register('njk', 'html', nunjucks, true);
+  renderer.register('j2', 'html', nunjucks, true);
 };

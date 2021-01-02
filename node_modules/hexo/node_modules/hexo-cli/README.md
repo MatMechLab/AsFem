@@ -13,6 +13,13 @@ Command line interface for Hexo.
 $ npm install hexo-cli -g
 ```
 
+## Development
+
+1. Fork this project
+2. `$ git clone https://github.com/user/hexo-cli --recurse-submodules && cd hexo-cli/`
+3. `$ npm install`
+4. `$ npm test`
+
 ## License
 
-MIT
+[MIT](LICENSE)

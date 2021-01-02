@@ -1,16 +1,23 @@
 'use strict';
 
+const { toMomentLocale } = require('./date');
+const { url_for } = require('hexo-util');
+
 function listArchivesHelper(options = {}) {
   const { config } = this;
   const archiveDir = config.archive_dir;
   const { timezone } = config;
-  const lang = this.page.lang || this.page.language || config.language;
+  const lang = toMomentLocale(this.page.lang || this.page.language || config.language);
   let { format } = options;
   const type = options.type || 'monthly';
   const { style = 'list', transform, separator = ', ' } = options;
   const showCount = Object.prototype.hasOwnProperty.call(options, 'show_count') ? options.show_count : true;
   const className = options.class || 'archive';
   const order = options.order || -1;
+  const compareFunc = type === 'monthly'
+    ? (yearA, monthA, yearB, monthB) => yearA === yearB && monthA === monthB
+    : (yearA, monthA, yearB, monthB) => yearA === yearB;
+
   let result = '';
 
   if (!format) {
@@ -28,14 +35,14 @@ function listArchivesHelper(options = {}) {
     let date = post.date.clone();
 
     if (timezone) date = date.tz(timezone);
-    if (lang) date = date.locale(lang);
 
     const year = date.year();
     const month = date.month() + 1;
-    const name = date.format(format);
     const lastData = data[length - 1];
 
-    if (!lastData || lastData.name !== name) {
+    if (!lastData || !compareFunc(lastData.year, lastData.month, year, month)) {
+      if (lang) date = date.locale(lang);
+      const name = date.format(format);
       length = data.push({
         name,
         year,
@@ -55,7 +62,7 @@ function listArchivesHelper(options = {}) {
       url += `${item.month}/`;
     }
 
-    return this.url_for(url);
+    return url_for.call(this, url);
   };
 
   if (style === 'list') {
