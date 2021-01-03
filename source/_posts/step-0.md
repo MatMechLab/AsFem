@@ -20,7 +20,7 @@ option1=...
 option2=...
 [end]
 ```
-here, to set the properties we want, we use the [blockname]/[end] bracket pair. Every block pair must therefore end up with an'[end]'. Note, even inside one wide block there are sub-blocks, each (sub)block itself always has to end up with an'[end]'. Otherwise, the input file will complain to you about mistakes!
+here, to set the properties we want, we use the `[blockname]/[end]` bracket pair. Every block pair must therefore end up with an `[end]`. Note, even inside one wide block there are sub-blocks, each (sub)block itself always has to end up with an `[end]`. Otherwise, the input file will complain to you about mistakes!
 
 
 For one minimal input file, you need:
@@ -44,7 +44,7 @@ and the element or module you'd like to use:
 [end]
 ```
 
-as well as the necessary information for the analysis(we call it the [job] block)
+as well as the necessary information for the analysis(we call it the `[job]` block)
 ```
 [job]
 ...
@@ -115,3 +115,5 @@ The list of all the blocks in full is:
 ```
 
 In the following steps, we will introduce you the details of each block and their functions.
+
+All the input file can be found in the `examples/tutorial` folder.

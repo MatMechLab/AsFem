@@ -83,12 +83,12 @@ menu:
   home: / || fa fa-home fa-2x
   About: /about/ || fa fa-user fa-2x
   #tags: /tags/ || fa fa-tags
-  #categories: /categories/ || fa fa-th
+  # categories: /categories/ || fa fa-th fa-2x
   #archives: /archives/ || fa fa-archive
   #schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
-  Tutorial: /categories/Tutorial || fa fa-book-open fa-2x
+  Tutorial: /categories/Tutorial/ || fa fa-book-open fa-2x
   Release: /release/ || fa fa-dragon fa-2x
 
 # Enable / Disable menu icons / item badges.
@@ -433,7 +433,7 @@ font:
   title:
     external: true
     family:
-    size: 
+    size:
 
   # Font settings for headlines (<h1> to <h6>).
   headings:
