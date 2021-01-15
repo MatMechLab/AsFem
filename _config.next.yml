@@ -88,6 +88,7 @@ menu:
   #schedule: /schedule/ || fa fa-calendar
   #sitemap: /sitemap.xml || fa fa-sitemap
   #commonweal: /404/ || fa fa-heartbeat
+  Document: /categories/Document/ || fa fa-book fa-2x
   Tutorial: /categories/Tutorial/ || fa fa-book-open fa-2x
   Release: /release/ || fa fa-dragon fa-2x
 

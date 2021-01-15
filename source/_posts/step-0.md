@@ -66,6 +66,7 @@ To sum up, you at least need:
 ...
 [end]
 ```
+However, one can also use the `--read-only` option to force AsFem to only read the input file but ignore the FEM analysis workflow.
 
 The list of all the blocks in full is:
 ```

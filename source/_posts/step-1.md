@@ -107,7 +107,7 @@ then the unit `[0,1]x[0,1]x[0,1]` 3D domain will be used by default.
 
 # First try in your AsFem
 
-Now, lets try your first example in AsFem. You can create a new txt file or simply run the following commands:
+Now, lets try your first example in AsFem. You can create a new text file or simply run the following commands(you can use whatever your like, here we use nano and vim):
 ```
 nano firstrun.i
 ```
@@ -129,12 +129,38 @@ then copy and paste the following `[mesh]` block into your `firstrun.i`:
 ```
 save it and then execute your `AsFem` as follows:
 ```
-asfem -i firstrun.i
+asfem -i firstrun.i --read-only
 ```
 or in parallel:
 ```
-mpirun -np 4 asfem -i firstrun.i
+mpirun -np 4 asfem -i firstrun.i --read-only
 ```
+Here one need the `--read-only` option, since we do not have a complete input file but only the `[mesh]` block. If everthing works fine, you should see the following output:
+```
+*****************************************************************************
+*** Welcome to use AsFem                                                  ***
+*** A Simple Finite Element Method Program                                ***
+*** Version: 0.40        Release @ 2021-01-01                             ***
+*** PETSc version:  3.14.3                                                ***
+*** License: GPL-3.0                                                      ***
+*** Author: Yang Bai                                                      ***
+*** Contact: walkandthinker@gmail.com                                     ***
+*** QQ Group: 879908352                                                   ***
+*** Website: https://github.com/yangbai90/AsFem                           ***
+*** Feel free to use and discuss  .:.                                     ***
+*****************************************************************************
+*** Start to create mesh ...                                              ***
+*** Mesh generation finished !                                            ***
+*** Save mesh to [                         step1_mesh.vtu]                ***
+***-----------------------------------------------------------------------***
+***-----------------------------------------------------------------------***
+*** Read-only mode analysis is finished !                                 ***
+*****************************************************************************
+```
+Then, one can use the [Paraview](https://www.paraview.org/download/) to check our 3D mesh, which looks like below:
+![](step1.jpeg)
+
+As an exercise for the'[mesh]' block, it is highly recommended to try various options to generate the mesh you need before moving to the next step.
 
 
 The complete input files can be fund in `examples/tutorial`.
