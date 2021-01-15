@@ -42,6 +42,8 @@ name=c mu
   optiters=3
   growthfactor=1.2
   adaptive=true
+  dtmin=1.0e-8
+  dtmax=1.0e1
 [end]
 
 [nonlinearsolver]
@@ -66,5 +68,5 @@ name=projc dcx dcy
 
 [job]
   type=transient
-  debug=dep
+  debug=true
 [end]

@@ -26,7 +26,7 @@ TimeStepping::TimeStepping(){
     _GrowthFactor=1.1;
     _CutBackFactor=0.85;
     _OptIters=3;
-    _DtMax=1.0e1;
+    _DtMax=1.0e2;
     _DtMin=1.0e-12;
     //**********************************
     //*** for nonlinear solver
@@ -45,6 +45,8 @@ TimeStepping::TimeStepping(){
 //****************************************************
 void TimeStepping::SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppingBlock){
     _Dt=timeSteppingBlock._Dt;
+    _DtMin=timeSteppingBlock._DtMin;
+    _DtMax=timeSteppingBlock._DtMax;
     _FinalT=timeSteppingBlock._FinalT;
     _TotalSteps=static_cast<long int>(_FinalT/_Dt);
     _TimeSteppingType=timeSteppingBlock._TimeSteppingType;
@@ -76,7 +78,19 @@ void TimeStepping::PrintTimeSteppingInfo()const{
     else{
         MessagePrinter::PrintNormalTxt("  adaptive is disabled");
     }
-    MessagePrinter::PrintNormalTxt("  init delta T="+to_string(_Dt)+", final T="+to_string(_FinalT));
+    char buff[20];
+    snprintf(buff,20,"%14.5e",_Dt);
+    string str;
+    str="  init delta T="+string(buff);
+    snprintf(buff,20,"%14.5e",_FinalT);
+    str+=", final T="+string(buff);
+    MessagePrinter::PrintNormalTxt(str);
+
+    snprintf(buff,20,"%14.5e",_DtMax);
+    str="  max delta T="+string(buff);
+    snprintf(buff,20,"%14.5e",_DtMin);
+    str+=", min delta T="+string(buff);
+    MessagePrinter::PrintNormalTxt(str);
     MessagePrinter::PrintDashLine();
 }
 //****************************************

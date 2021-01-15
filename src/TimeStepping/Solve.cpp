@@ -60,8 +60,8 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
     snprintf(buff,68,"Time step=%8d, time=%13.5e, dt=%13.5e",step,time,dt);
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
-    if(!user->IsDebug){
-        snprintf(buff,68," SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",user->iters+1,user->rnorm0,user->rnorm);
+    if(!user->IsDepDebug){
+        snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",user->iters+1,user->rnorm0,user->rnorm);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
     }
@@ -84,7 +84,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         MessagePrinter::PrintDashLine();
     }
 
-    if(user->IsAdaptive){
+    if(user->IsAdaptive&&step>=1){
         if(user->iters+1<=user->OptiIters){
             dt=user->dt*user->GrowthFactor;
             if(dt>user->DtMax) dt=user->DtMax;
