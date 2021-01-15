@@ -89,9 +89,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         VecGetValues(_Useq,nDofs,_elDofs.data(),_elU.data());
         VecGetValues(_Vseq,nDofs,_elDofs.data(),_elV.data());
 
-        for(i=1;i<=nDofs;i++){
-            
-        }
         
         if(calctype==FECalcType::ComputeResidual){
             fill(_R.begin(),_R.end(),0.0);
