@@ -50,7 +50,7 @@ public:
 
 
     void RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                        const int &nDim,const int &nNodes,
+                        const int &nDim,const int &nNodes,const int &nDofs,
                         const double &t,const double &dt,const double (&ctan)[2],
                         const Vector3d &gpCoords,
                         const vector<double> &gpU,const vector<double> &gpV,
@@ -78,7 +78,7 @@ protected:
     //****************************************************************************
     //*** the laplace means: \int(\nabla U*\nabla test)dV
     void LaplaceElmt(const FECalcType &calctype,
-                const int &nDim,const int &nNodes,
+                const int &nDim,const int &nNodes,const int &nDofs,
                 const double &t,const double &dt,const double (&ctan)[2],
                 const Vector3d &gpCoords,
                 const vector<double> &gpU,const vector<double> &gpV,
@@ -93,7 +93,7 @@ protected:
                 MatrixXd &localK,VectorXd &localR);
     //*** the body source means  int(f*test)dV
     void BodySourceElmt(const FECalcType &calctype,
-                const int &nDim,const int &nNodes,
+                const int &nDim,const int &nNodes,const int &nDofs,
                 const double &t,const double &dt,const double (&ctan)[2],
                 const Vector3d &gpCoords,
                 const vector<double> &gpU,const vector<double> &gpV,
@@ -110,7 +110,7 @@ protected:
     //*** for general time derivative
     //************************************************************************************
     void TimeDerivElmt(const FECalcType &calctype,
-                     const int &nDim,const int &nNodes,
+                     const int &nDim,const int &nNodes,const int &nDofs,
                      const double &t,const double &dt,const double (&ctan)[2],
                      const Vector3d &gpCoords,
                      const vector<double> &gpU,const vector<double> &gpV,
@@ -127,7 +127,7 @@ protected:
     //*** for general poisson element
     //************************************************************************************
     void PoissonElmt(const FECalcType &calctype,
-                const int &nDim,const int &nNodes,
+                const int &nDim,const int &nNodes,const int &nDofs,
                 const double &t,const double &dt,const double (&ctan)[2],
                 const Vector3d &gpCoords,
                 const vector<double> &gpU,const vector<double> &gpV,
@@ -145,7 +145,7 @@ protected:
     //*** for general diffusion element
     //************************************************************************************
     void DiffusionElmt(const FECalcType &calctype,
-                     const int &nDim,const int &nNodes,
+                     const int &nDim,const int &nNodes,const int &nDofs,
                      const double &t,const double &dt,const double (&ctan)[2],
                      const Vector3d &gpCoords,
                      const vector<double> &gpU,const vector<double> &gpV,
@@ -162,7 +162,7 @@ protected:
     //*** for Cahn-Hilliard element in mixed-formula
     //************************************************************************************
     void CahnHilliardElmt(const FECalcType &calctype,
-                       const int &nDim,const int &nNodes,
+                       const int &nDim,const int &nNodes,const int &nDofs,
                        const double &t,const double &dt,const double (&ctan)[2],
                        const Vector3d &gpCoords,
                        const vector<double> &gpU,const vector<double> &gpV,
@@ -180,7 +180,7 @@ protected:
     //*** for mechanics element
     //************************************************************************************
     void MechanicsElmt(const FECalcType &calctype,
-                          const int &nDim,const int &nNodes,
+                          const int &nDim,const int &nNodes,const int &nDofs,
                           const double &t,const double &dt,const double (&ctan)[2],
                           const Vector3d &gpCoords,
                           const vector<double> &gpU,const vector<double> &gpV,

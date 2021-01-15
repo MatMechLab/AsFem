@@ -208,7 +208,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 //*****************************************************
                 if(calctype==FECalcType::ComputeResidual){
                     for(i=1;i<=nNodes;i++){
-                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,t,dt,ctan,
+                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
                             _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
                             fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
                             fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
@@ -224,7 +224,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 else if(calctype==FECalcType::ComputeJacobian){
                     for(i=1;i<=nNodes;i++){
                         for(j=1;j<=nNodes;j++){
-                            elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,t,dt,ctan,
+                            elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
                             _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
                             fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(j),
                             fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(j),
@@ -240,7 +240,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 }
                 else if(calctype==FECalcType::Projection){
                     for(i=1;i<=nNodes;i++){
-                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,t,dt,ctan,
+                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
                         _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
                         fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
                         fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
