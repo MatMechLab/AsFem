@@ -27,8 +27,10 @@ void FEProblem::InitFEProblem(int args,char *argv[]){
 
 
 void FEProblem::Finalize(){
-    _solutionSystem.ReleaseMem();
-    _equationSystem.ReleaseMem();
-    _nonlinearSolver.ReleaseMem();
-    _timestepping.ReleaseMem();
+    if(!_inputSystem.IsReadOnlyMode()){
+        _solutionSystem.ReleaseMem();
+        _equationSystem.ReleaseMem();
+        _nonlinearSolver.ReleaseMem();
+        _timestepping.ReleaseMem();
+    }
 }

@@ -16,16 +16,22 @@
 
 void FEProblem::Run(){
     ReadInputFile();
-    InitAllComponents();
+    if(!_inputSystem.IsReadOnlyMode()){
+        InitAllComponents();
 
-    if(_feJobType==FEJobType::STATIC){
-        RunStaticAnalysis();
-    }
-    else if(_feJobType==FEJobType::TRANSIENT){
-        RunTransientAnalysis();
+        if(_feJobType==FEJobType::STATIC){
+            RunStaticAnalysis();
+        }
+        else if(_feJobType==FEJobType::TRANSIENT){
+            RunTransientAnalysis();
+        }
+        else{
+            MessagePrinter::PrintErrorTxt("unsupported FEM job type, please check your input file");
+            MessagePrinter::AsFem_Exit();
+        }
     }
     else{
-        MessagePrinter::PrintErrorTxt("unsupported FEM job type, please check your input file");
-        MessagePrinter::AsFem_Exit();
+        MessagePrinter::PrintNormalTxt("Read-only mode analysis is finished !");
+        MessagePrinter::PrintStars();
     }
 }
