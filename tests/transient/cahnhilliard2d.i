@@ -42,6 +42,8 @@ name=c mu
   optiters=3
   growthfactor=1.2
   adaptive=true
+  dtmin=1.0e-8
+  dtmax=1.0e1
 [end]
 
 [nonlinearsolver]
@@ -49,6 +51,7 @@ name=c mu
   maxiters=50
   r_rel_tol=1.0e-8
   r_abs_tol=1.0e-7
+  solver=superlu
 [end]
 
 [projection]
@@ -65,5 +68,5 @@ name=projc dcx dcy
 
 [job]
   type=transient
-  debug=dep
+  debug=true
 [end]

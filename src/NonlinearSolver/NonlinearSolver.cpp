@@ -21,12 +21,13 @@
 NonlinearSolver::NonlinearSolver(){
     _Rnorm0=1.0;_Rnorm=1.0;
     _Enorm0=1.0;_Enorm=1.0;
-    _RAbsTol=1.0e-8;_RRelTol=1.0e-10;
+    _RAbsTol=4.0e-8;_RRelTol=1.0e-9;
     _EAbsTol=1.0e-19;_ERelTol=1.0e-20;
-    _MaxIters=20;_Iters=0;
+    _MaxIters=25;_Iters=0;
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
-    _SolverName="newton with line search";
+    _SolverTypeName="newton with line search";
+    _LinearSolverName="ksp";
     _PCTypeName="lu";
 }
 
@@ -38,7 +39,8 @@ void NonlinearSolver::SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &n
     _STol=nonlinearsolverblock._STol;
 
     _SolverType=nonlinearsolverblock._SolverType;
-    _SolverName=nonlinearsolverblock._SolverTypeName;
+    _SolverTypeName=nonlinearsolverblock._SolverTypeName;
+    _LinearSolverName=nonlinearsolverblock._LinearSolverName;
     _PCTypeName=nonlinearsolverblock._PCTypeName;
 }
 void NonlinearSolver::Init(){
@@ -51,13 +53,19 @@ void NonlinearSolver::Init(){
     //*** init KSP
     //**************************************************
     SNESGetKSP(_snes,&_ksp);
-    KSPGMRESSetRestart(_ksp,1300);
+    KSPGMRESSetRestart(_ksp,1400);
     KSPGetPC(_ksp,&_pc);
-    #ifdef HASMUMPS
-    PCSetType(_pc,PCLU);
-    KSPSetType(_ksp,KSPPREONLY);
-    PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
-    #endif
+
+    if(_LinearSolverName=="mumps"){
+        PCSetType(_pc,PCLU);
+        KSPSetType(_ksp,KSPPREONLY);
+        PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
+    }
+    else if(_LinearSolverName=="superlu"){
+        PCSetType(_pc,PCLU);
+        KSPSetType(_ksp,KSPPREONLY);
+        PCFactorSetMatSolverType(_pc,MATSOLVERSUPERLU_DIST);
+    }
 
     PCFactorSetReuseOrdering(_pc,PETSC_TRUE);
 
@@ -137,6 +145,9 @@ void NonlinearSolver::PrintInfo()const{
 
     snprintf(buff,70,"  max iters=%3d, abs R tol=%13.5e, rel R tol=%13.5e",_MaxIters,_RAbsTol,_RRelTol);
     str=buff;
+    MessagePrinter::PrintNormalTxt(str);
+
+    str="  linear solver is: "+_LinearSolverName;
     MessagePrinter::PrintNormalTxt(str);
     
     MessagePrinter::PrintDashLine();

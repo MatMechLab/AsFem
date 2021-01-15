@@ -60,6 +60,8 @@ public:
                        TimeStepping &timestepping,
                        FEJobBlock &feJobBlock);
 
+    bool IsReadOnlyMode()const{return _IsReadOnly;}
+
 private:
     //******************************************************
     //*** functions for reading each block

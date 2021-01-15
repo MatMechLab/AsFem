@@ -15,7 +15,7 @@
 #include "ElmtSystem/BulkElmtSystem.h"
 
 void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                        const int &nDim,const int &nNodes,
+                        const int &nDim,const int &nNodes,const int &nDofs,
                         const double &t,const double &dt,const double (&ctan)[2],
                         const Vector3d &gpCoords,
                         const vector<double> &gpU,const vector<double> &gpV,
@@ -31,7 +31,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
     switch (elmtytype)
     {
     case ElmtType::LAPLACEELMT:
-        LaplaceElmt(calctype,nDim,nNodes,t,dt,ctan,
+        LaplaceElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
                     gpCoords,gpU,gpV,gpGradU,gpGradV,
                     test,trial,grad_test,grad_trial,
                     ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
@@ -39,7 +39,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                     localK,localR);
         break;
     case ElmtType::POISSONELMT:
-        PoissonElmt(calctype,nDim,nNodes,t,dt,ctan,
+        PoissonElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
                     gpCoords,gpU,gpV,gpGradU,gpGradV,
                     test,trial,grad_test,grad_trial,
                     ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
@@ -47,7 +47,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                     localK,localR);
         break;
     case ElmtType::TIMEDERIVELMT:
-        TimeDerivElmt(calctype,nDim,nNodes,t,dt,ctan,
+        TimeDerivElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
                       gpCoords,gpU,gpV,gpGradU,gpGradV,
                       test,trial,grad_test,grad_trial,
                       ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
@@ -55,7 +55,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                       localK,localR);
         break;
     case ElmtType::DIFFUSIONELMT:
-        DiffusionElmt(calctype,nDim,nNodes,t,dt,ctan,
+        DiffusionElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
                       gpCoords,gpU,gpV,gpGradU,gpGradV,
                       test,trial,grad_test,grad_trial,
                       ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
@@ -63,7 +63,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                       localK,localR);
         break;
     case ElmtType::CAHNHILLIARDELMT:
-        CahnHilliardElmt(calctype,nDim,nNodes,t,dt,ctan,
+        CahnHilliardElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
                       gpCoords,gpU,gpV,gpGradU,gpGradV,
                       test,trial,grad_test,grad_trial,
                       ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
@@ -71,7 +71,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                       localK,localR);
         break;
     case ElmtType::MECHANICSELMT:
-        MechanicsElmt(calctype,nDim,nNodes,t,dt,ctan,
+        MechanicsElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
                       gpCoords,gpU,gpV,gpGradU,gpGradV,
                       test,trial,grad_test,grad_trial,
                       ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,

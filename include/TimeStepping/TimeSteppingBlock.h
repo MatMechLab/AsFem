@@ -36,6 +36,8 @@ public:
 
     double _Dt=1.0e-5;
     double _FinalT=1.0e-3;
+    double _DtMin=1.0e-12;
+    double _DtMax=1.0e2;
 
     void Init(){
         _TimeSteppingType=TimeSteppingType::BACKWARDEULER;
@@ -45,6 +47,8 @@ public:
         _GrowthFactor=1.1;
         _CutBackFactor=0.85;
         _Dt=1.0e-5;
+        _DtMin=1.0e-12;
+        _DtMax=1.0e2;
         _FinalT=1.0e-3;
     }
 };

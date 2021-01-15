@@ -154,6 +154,54 @@ bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,Tim
                 timesteppingBlock._FinalT=numbers[0];
             }
         }
+        else if(str.find("dtmin=")!=string::npos||
+                str.find("DtMin=")!=string::npos||
+                str.find("DTMIN=")!=string::npos){
+            if(!HasType){
+                MessagePrinter::PrintErrorTxt("no 'type=' found in the [timestepping] block, dtmin= should be given after 'type='");
+                MessagePrinter::AsFem_Exit();
+            }
+            int i=str.find_first_of('=');
+            string substr=str.substr(i+1,str.length());
+            numbers=StringUtils::SplitStrNum(substr);
+            if(numbers.size()<1){
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                MessagePrinter::PrintErrorTxt("no dtmin found in the [timestepping] block, dtmin=real should be given");
+                MessagePrinter::AsFem_Exit();
+            }
+            else{
+                if(numbers[0]<=0.0){
+                    MessagePrinter::PrintErrorInLineNumber(linenum);
+                    MessagePrinter::PrintErrorTxt("invalid dtmin found in [timestepping] block, dtmin=real should be given");
+                    MessagePrinter::AsFem_Exit();
+                }
+                timesteppingBlock._DtMin=numbers[0];
+            }
+        }
+        else if(str.find("dtmax=")!=string::npos||
+                str.find("DtMax=")!=string::npos||
+                str.find("DTMAX=")!=string::npos){
+            if(!HasType){
+                MessagePrinter::PrintErrorTxt("no 'type=' found in the [timestepping] block, dtmax= should be given after 'type='");
+                MessagePrinter::AsFem_Exit();
+            }
+            int i=str.find_first_of('=');
+            string substr=str.substr(i+1,str.length());
+            numbers=StringUtils::SplitStrNum(substr);
+            if(numbers.size()<1){
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                MessagePrinter::PrintErrorTxt("no dtmax found in the [timestepping] block, dtmax=real should be given");
+                MessagePrinter::AsFem_Exit();
+            }
+            else{
+                if(numbers[0]<=0.0){
+                    MessagePrinter::PrintErrorInLineNumber(linenum);
+                    MessagePrinter::PrintErrorTxt("invalid dtmax found in [timestepping] block, dtmax=real should be given");
+                    MessagePrinter::AsFem_Exit();
+                }
+                timesteppingBlock._DtMax=numbers[0];
+            }
+        }
         else if(str.find("growthfactor=")!=string::npos||
                  str.find("GrowthFactor=")!=string::npos||
                  str.find("GROWTHFACTOR=")!=string::npos){

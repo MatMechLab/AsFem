@@ -56,14 +56,20 @@ void TimeStepping::Init(){
     //*** init KSP
     //**************************************************
     SNESGetKSP(_snes,&_ksp);
-    KSPGMRESSetRestart(_ksp,1300);
+    KSPGMRESSetRestart(_ksp,1400);
     KSPGetPC(_ksp,&_pc);
     PCSetType(_pc,PCLU);
-    #ifdef HASMUMPS
-    PCSetType(_pc,PCLU);
-    KSPSetType(_ksp,KSPPREONLY);
-    PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
-    #endif
+
+    if(_LinearSolverName=="mumps"){
+        PCSetType(_pc,PCLU);
+        KSPSetType(_ksp,KSPPREONLY);
+        PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
+    }
+    else if(_LinearSolverName=="superlu"){
+        PCSetType(_pc,PCLU);
+        KSPSetType(_ksp,KSPPREONLY);
+        PCFactorSetMatSolverType(_pc,MATSOLVERSUPERLU_DIST);
+    }
 
     PCFactorSetReuseOrdering(_pc,PETSC_TRUE);
 

@@ -120,6 +120,7 @@ private:
     long int _CurrentStep=-1;
     TimeSteppingType _TimeSteppingType=TimeSteppingType::BACKWARDEULER;
     string _TimeSteppingTypeName="backward-euler";
+    string _LinearSolverName="ksp";
     double _GrowthFactor=1.1,_CutBackFactor=0.85;
     int _OptIters;
     double _DtMin,_DtMax;

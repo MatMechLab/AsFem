@@ -8,8 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
 ### The only things to modify is the        ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
-set(PETSC_DIR "/home/by/Programs/petsc/3.14.2")
-set(MPI_DIR "/home/by/Programs/mpich/3.3.2")
+set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
+set(MPI_DIR "/home/by/Programs/mpich/3.4")
 
 ###############################################
 ### For your PETSc library file  (edit)     ###
@@ -30,14 +30,12 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/eigen")
 ###############################################
 ### For debug mode                          ###
 ###############################################
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
 
 ###############################################
 ### For release mode                        ###
 ###############################################
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
-# if you have mumps installed, please use the following line
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG -DHASMUMPS")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
 
 
 ###############################################

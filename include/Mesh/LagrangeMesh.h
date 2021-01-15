@@ -155,7 +155,7 @@ public:
             nodes(i,0)=0.0;
             nodes(i,1)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),1);
             nodes(i,2)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),2);
-            nodes(i,2)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),2);
+            nodes(i,3)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthElmtJthNodeID(e,i),3);
         }
     }
     inline void GetBulkMeshIthBulkElmtNodes(const int &e,Nodes &nodes)const{
@@ -163,7 +163,7 @@ public:
             nodes(i,0)=0.0;
             nodes(i,1)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthBulkElmtJthNodeID(e,i),1);
             nodes(i,2)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthBulkElmtJthNodeID(e,i),2);
-            nodes(i,2)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthBulkElmtJthNodeID(e,i),2);
+            nodes(i,3)=GetBulkMeshIthNodeJthCoord(GetBulkMeshIthBulkElmtJthNodeID(e,i),3);
         }
     }
     //*** for elmt connectivity information

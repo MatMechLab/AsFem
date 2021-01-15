@@ -326,8 +326,10 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     }
 
     if(!HasDofsBlock){
-        MessagePrinter::PrintErrorTxt("no [dofs] block is found, for FEM analysis, dofs are required");
-        MessagePrinter::AsFem_Exit();
+        if(!_IsReadOnly){
+            MessagePrinter::PrintErrorTxt("no [dofs] block is found, for FEM analysis, dofs are required");
+            MessagePrinter::AsFem_Exit();
+        }
     }
 
     if(!HasElmtBlock){
@@ -399,23 +401,29 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     }
 
     if(!HasFEJobBlock){
-        MessagePrinter::PrintErrorTxt("no [job] block is found, for FEM analysis, the [job] is required");
-        MessagePrinter::AsFem_Exit();
+        if(!_IsReadOnly){
+            MessagePrinter::PrintErrorTxt("no [job] block is found, for FEM analysis, the [job] is required");
+            MessagePrinter::AsFem_Exit();
+        }
     }
 
     if(feJobBlock._jobType==FEJobType::TRANSIENT){
-        if(!HasTimeSteppingBlock){
-            MessagePrinter::PrintErrorTxt("no [timestepping] block is found for a transient FEM analysis, the [timestepping] block is required for time dependent problem");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
-            timestepping.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
+        if(!_IsReadOnly){
+            if(!HasTimeSteppingBlock){
+                MessagePrinter::PrintErrorTxt("no [timestepping] block is found for a transient FEM analysis, the [timestepping] block is required for time dependent problem");
+                MessagePrinter::AsFem_Exit();
+            }
+            else{
+                timestepping.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
+            }
         }
     }
     else{
-        if(HasTimeSteppingBlock){
-            MessagePrinter::PrintErrorTxt("for static analysis, you dont need the [timestepping] block");
-            MessagePrinter::AsFem_Exit();
+        if(!_IsReadOnly){
+            if(HasTimeSteppingBlock){
+                MessagePrinter::PrintErrorTxt("for static analysis, you dont need the [timestepping] block");
+                MessagePrinter::AsFem_Exit();
+            }
         }
     }
 
