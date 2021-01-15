@@ -191,6 +191,30 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
                 _nonlinearSolverBlock._STol=numbers[0];
             }
         }
+        else if(str.find("solver=")!=string::npos||
+           str.find("Solver=")!=string::npos||
+           str.find("SOLVER=")!=string::npos) {
+            int i = str.find_first_of('=');
+            string substr = str.substr(i + 1, str.length());
+            substr = StringUtils::RemoveStrSpace(substr);
+            if ((substr.find("ksp") != string::npos || substr.find("KSP") != string::npos) &&
+                substr.length() == 3) {
+                _nonlinearSolverBlock._LinearSolverName = "ksp";
+            }
+            else if ((substr.find("mumps") != string::npos || substr.find("MUMPS") != string::npos) &&
+                     substr.length() == 5) {
+                _nonlinearSolverBlock._LinearSolverName = "mumps";
+            }
+            else if ((substr.find("superlu") != string::npos || substr.find("SUPERLU") != string::npos) &&
+                     substr.length() == 7) {
+                _nonlinearSolverBlock._LinearSolverName = "superlu";
+            }
+            else{
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                MessagePrinter::PrintErrorTxt("invalid solver= option in [nonlinearsolver] block, please use ksp,mumps, and superlu",false);
+                MessagePrinter::AsFem_Exit();
+            }
+        }
         else if(str.find("[]")!=string::npos){
             MessagePrinter::PrintErrorInLineNumber(linenum);
             MessagePrinter::PrintErrorTxt("the bracket pair is not complete in the [nonlinearsolver] block",false);

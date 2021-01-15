@@ -103,7 +103,7 @@ private:
     int _MaxIters,_Iters;
     bool _IsConvergent;
     NonlinearSolverType _SolverType;
-    string _SolverName;
+    string _LinearSolverName,_SolverTypeName;
     string _PCTypeName;
 
     //*********************************************

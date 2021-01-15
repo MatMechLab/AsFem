@@ -49,6 +49,7 @@ name=c mu
   maxiters=50
   r_rel_tol=1.0e-8
   r_abs_tol=1.0e-7
+  solver=superlu
 [end]
 
 [projection]

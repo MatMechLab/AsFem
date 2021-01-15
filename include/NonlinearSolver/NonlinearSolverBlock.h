@@ -28,27 +28,30 @@ public:
     NonlinearSolverBlock(){
         _SolverTypeName="newton with line search";
         _SolverType=NonlinearSolverType::NEWTONLS;
-        _MaxIters=20;
-        _RAbsTol=2.5e-8;
+        _MaxIters=25;
+        _RAbsTol=4.5e-8;
         _RRelTol=1.0e-9;
         _STol=1.0e-16; // |dx|<|x|*stol
         _PCTypeName="lu";
+        _LinearSolverName="ksp";
     }
 
     string              _SolverTypeName;
     NonlinearSolverType _SolverType;
     int                 _MaxIters;
     double _RAbsTol,_RRelTol,_STol;
+    string _LinearSolverName;// for linear solver, i.e., ksp, mumps, superlu_dist
 
     string _PCTypeName;
 
     void Init(){
         _SolverTypeName="newton with line search";
         _SolverType=NonlinearSolverType::NEWTONLS;
-        _MaxIters=20;
-        _RAbsTol=2.5e-8;
+        _MaxIters=25;
+        _RAbsTol=4.5e-8;
         _RRelTol=1.0e-9;
         _STol=1.0e-16; // |dx|<|x|*stol
         _PCTypeName="lu";
+        _LinearSolverName="ksp";
     }
 };
