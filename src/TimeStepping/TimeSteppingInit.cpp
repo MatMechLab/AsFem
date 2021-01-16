@@ -58,7 +58,7 @@ void TimeStepping::Init(){
     SNESGetKSP(_snes,&_ksp);
     KSPGMRESSetRestart(_ksp,1400);
     KSPGetPC(_ksp,&_pc);
-    PCSetType(_pc,PCLU);
+    PCFactorSetMatSolverType(_pc,MATSOLVERPETSC);
 
     if(_LinearSolverName=="mumps"){
         PCSetType(_pc,PCLU);
