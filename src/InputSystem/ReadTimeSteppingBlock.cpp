@@ -61,7 +61,7 @@ bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,Tim
                substr.length()==2){
                 HasType=true;
                 timesteppingBlock._TimeSteppingType=TimeSteppingType::CRANCKNICLSON;
-                timesteppingBlock._TimeSteppingTypeName="crankânicolson";
+                timesteppingBlock._TimeSteppingTypeName="crank-nicolson";
             }
             else if((substr.find("gl")!=string::npos||substr.find("GL")!=string::npos)&&
                substr.length()==2){
@@ -277,12 +277,12 @@ bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,Tim
         }
         else if(str.find("[]")!=string::npos){
             MessagePrinter::PrintErrorInLineNumber(linenum);
-            MessagePrinter::PrintErrorTxt("the bracket pair is not complete in the [nonlinearsolver] block",false);
+            MessagePrinter::PrintErrorTxt("the bracket pair is not complete in the [timestepping] block",false);
             MessagePrinter::AsFem_Exit();
         }
         else{
             MessagePrinter::PrintErrorInLineNumber(linenum);
-            MessagePrinter::PrintErrorTxt("unknown option in [nonlinearsolver] block",false);
+            MessagePrinter::PrintErrorTxt("unknown option in [timestepping] block",false);
             MessagePrinter::AsFem_Exit();
         }
         getline(in,str);linenum+=1;
