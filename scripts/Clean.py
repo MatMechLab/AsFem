@@ -12,7 +12,7 @@ import shutil
 currentdir=os.getcwd()
 print('We are in folder:%s\n'%(currentdir))
 
-ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0
+ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0;metafile=0
 cmake=0
 for subdir,dirs,files in os.walk(currentdir):
     if ('external/eigen' in subdir) or ('.git' in subdir):
@@ -49,6 +49,13 @@ for subdir,dirs,files in os.walk(currentdir):
                 os.remove(removepath)
             except:
                 print('%s is not here'%(file))
+        elif ('.avi' in file) or ('.gif' in file):
+            try:
+                metafile+=1
+                removepath=subdir+'/'+file
+                os.remove(removepath)
+            except:
+                print('%s is not here'%(file))
     #>> clean folder
     for dir in dirs:
         if '.idea' in dir:
@@ -75,6 +82,7 @@ for subdir,dirs,files in os.walk(currentdir):
 print('Remove %4d ASFEM files!'%(ASFEM))
 print('Remove %4d vtu files!'%(vtu))
 print('Remove %4d .o files!'%(o))
+print('Remove %4d meta files!'%(metafile))
 print('Remove %4d .idea folder!'%(ideafolder))
 print('Remove %4d cmake file!'%(cmake))
 print('Remove %4d cmake folder!'%(cmakefolder))
