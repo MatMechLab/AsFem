@@ -1,6 +1,5 @@
 ---
-title: Blocks List
-mathjax: true
+title: mesh block
 date: 2021-01-15 16:03:08
 categories:
 - Document
@@ -8,8 +7,6 @@ tags:
 - blocks
 - input file
 - mesh
-- dofs
-- elmt
 ---
 
 # [mesh] block
@@ -22,6 +19,7 @@ The format of the block is:
   xmax=1.0
   nx=10
   meshtype=edge2
+  savemesh=true
 [end]
 ```
 ## [mesh] block options
@@ -41,21 +39,3 @@ hex8, hex20,hex27 // in 3D case
 ```
 
 If one want to save the created mesh, one will need the `savemesh=true` option. The mesh will be saved as a *.vtu* file, which should be named as 'your_input_file_name'+'_mesh.vtu' (*.i* is removed from your input file name). For example, if your input file is: *test.i*, then the mesh file name is: *test_mesh.vtu*.
-
-
-<!---your comment goes here and here-->
-# [dofs] block
-The degree of freedom (DoF) or the degrees of freedom (DoFs) can be used to define the name of each DoF and also to apply the necessary boundary conditions (`[bcs]`), elements (`[elmts]`), and so on. The `[dofs]` block looks like below:
-```
-[dofs]
-name=dof1 dof2 dof3 ...
-[end]
-```
-## [dofs] block option
-The `name=`  option specifies the name of each DoF. One should keep in mind that, the order of the name indicates the index of each DoFs. For instance, we need two displacements, namely `disp_x` and `disp_y`, if we want to do a 2D elastic analysis. The block of `[dofs]` should therefore be specified as:
-```
-[dofs]
-name=disp_x disp_y
-[end]
-```
-where `disp_x` is the first DoF(index=1), `disp_y` is the second DoF(index=2). That's all, `name=` is the only option in `[dofs]` block, nothing else.

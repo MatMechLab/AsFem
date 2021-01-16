@@ -9,7 +9,7 @@ tags:
 - input file
 - mesh
 - dofs
-- elmt
+- elmts
 ---
 
 # Introduction
@@ -78,7 +78,7 @@ The DoF is ready now, but the model in Eq.$\eqref{eq:poisson}$ is still missing.
   [end]
 [end]
 ```
-where `type=` option specifies the element we want to use, it could be either the built-in elements of AsFem or the user-defined-element (`UEL`). The DoFs that will be used in this element are defined by `dofs=`. `mate=` gives the name of the material block that we want to use. Once the `[elmts]` block is given, the model we defined in Eq.$\eqref{eq:poisson}$ is ready. 
+where `type=` option specifies the element we want to use, it could be either the built-in elements of AsFem or the user-defined-element (`UEL`). The DoFs that will be used in this element are defined by `dofs=`. `mate=` gives the name of the material block that we want to use. Once the `[elmts]` block is given, the model we defined in Eq.$\eqref{eq:poisson}$ is ready.
 
 ## Material properties
 For the coefficients $k$ and $F$, namely the material properties, they can be calculated or defined via the `[mates]` block as follows:
@@ -90,7 +90,7 @@ For the coefficients $k$ and $F$, namely the material properties, they can be ca
   [end]
 [end]
 ```
-where `type=` specifies the material type name defined in AsFem. `params=` defines the parameters we want to use in our model, in this case, $k=1.0$ and $F=10.0$ will be used. 
+where `type=` specifies the material type name defined in AsFem. `params=` defines the parameters we want to use in our model, in this case, $k=1.0$ and $F=10.0$ will be used.
 
 # Boundary conditions
 The boundary conditions, as mentioned in Eq. $\eqref{eq:dirichlet}$ and $\eqref{eq:neumann}$, can be applied via the `[bcs]` block. In our case, the *Neumann* boundary condition in Eq.$\eqref{eq:neumann}$ is zero, therefore, only the *Dirichlet* boundary condition need to be considered:
