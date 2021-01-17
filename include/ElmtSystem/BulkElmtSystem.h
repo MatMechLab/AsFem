@@ -194,4 +194,22 @@ protected:
                           vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
                           MatrixXd &localK,VectorXd &localR);
 
+    //************************************************************************************
+    //*** for Miehe's phase field fracture model
+    //************************************************************************************
+    void MieheFractureElmt(const FECalcType &calctype,
+                       const int &nDim,const int &nNodes,const int &nDofs,
+                       const double &t,const double &dt,const double (&ctan)[2],
+                       const Vector3d &gpCoords,
+                       const vector<double> &gpU,const vector<double> &gpV,
+                       const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                       const double &test,const double &trial,
+                       const Vector3d &grad_test,const Vector3d &grad_trial,
+                       const ScalarMateType &ScalarMaterials,
+                       const VectorMateType &VectorMaterials,
+                       const Rank2MateType &Rank2Materials,
+                       const Rank4MateType &Rank4Materials,
+                       vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                       MatrixXd &localK,VectorXd &localR);
+
 };

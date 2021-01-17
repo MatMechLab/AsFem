@@ -78,6 +78,14 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                       gpHist,gpHistOld,gpProj,
                       localK,localR);
         break;
+    case ElmtType::MIEHEFRACELMT:
+        MieheFractureElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
+                      gpCoords,gpU,gpV,gpGradU,gpGradV,
+                      test,trial,grad_test,grad_trial,
+                      ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                      gpHist,gpHistOld,gpProj,
+                      localK,localR);
+        break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported element type in ElmtSystem, please check your code or your input file");
         MessagePrinter::AsFem_Exit();

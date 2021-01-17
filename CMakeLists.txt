@@ -172,6 +172,8 @@ set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
 set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### for diffusion equation
 set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
+### for Miehe's fracture model
+set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
