@@ -19,8 +19,9 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "MateSystem/BulkMateSystem.h"
+#include "Utils/MathFuns.h"
 
-void BulkMateSystem::CahnHilliardMaterial(const int &nDim, const double &t, const double &dt,
+void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, const double &dt,
                                           const vector<double> &InputParams, const Vector3d &gpCoord,
                                           const vector<double> &gpU, const vector<double> &gpV,
                                           const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradV,
@@ -97,6 +98,10 @@ void BulkMateSystem::CahnHilliardMaterial(const int &nDim, const double &t, cons
     psipos=0.5*lambda*BracketPos(trEps)*BracketPos(trEps)+mu*(EpsPos*EpsPos).Trace();
     psineg=0.5*lambda*BracketNeg(trEps)*BracketNeg(trEps)+mu*(EpsNeg*EpsNeg).Trace();
     psi=(g+k)*psipos+psineg;
+
+    _ScalarMaterials["Psi"]=psi;
+    _ScalarMaterials["PsiPos"]=psipos;
+    _ScalarMaterials["PsiNeg"]=psineg;
 
     RankTwoTensor StressPos,StressNeg,I;
 

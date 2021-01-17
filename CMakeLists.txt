@@ -91,6 +91,8 @@ set(inc ${inc} include/Utils/VectorXd.h)
 set(src ${src} src/Utils/MathUtils/VectorXd.cpp)
 set(inc ${inc} include/Utils/MatrixXd.h)
 set(src ${src} src/Utils/MathUtils/MatrixXd.cpp)
+### for general mathematic functions
+set(inc ${inc} include/Utils/MathFuns.h)
 
 #############################################################
 ### For inputystem                                        ###
