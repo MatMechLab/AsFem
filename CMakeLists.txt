@@ -20,7 +20,7 @@ link_libraries("${PETSC_DIR}/lib/libpetsc.so")
 ### For your MPI library file (edit)        ###
 ###############################################
 include_directories("${MPI_DIR}/include")
-link_libraries("${MPI_DIR}/lib/libmpi.so")
+link_libraries("${MPI_DIR}/lib64/libmpi.so")
 
 ###############################################
 # For Eigen                                 ###

@@ -64,6 +64,7 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
         if(mesh.GetBulkMeshIthPhysicalDim(i)==_nMaxDim){// only check the bulk elmts
             DomainHasElmtBlock=false;
             for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
+                cout<<"j="<<j<<": "<<mesh.GetBulkMeshIthPhysicalName(i)<<", "<<elmtSystem.GetIthBulkElmtBlock(j)._DomainName<<endl;
                 if(mesh.GetBulkMeshIthPhysicalName(i)==elmtSystem.GetIthBulkElmtBlock(j)._DomainName){
                     DomainHasElmtBlock=true;
                     break;
