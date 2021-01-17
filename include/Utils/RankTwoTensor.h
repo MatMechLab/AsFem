@@ -303,6 +303,7 @@ public:
     //********************************************************
     void CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec) const;
     RankFourTensor CalcPostiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const;
+    RankFourTensor GetPostiveProjTensor() const;
     //*******************************************************************
     //*** some setting functions
     //*******************************************************************
@@ -330,6 +331,7 @@ public:
         }
     }
     // for deformation gradient based calculation(or similar calculation)
+    void SetFromGradU(const Vector3d &gradUx);
     void SetFromGradU(const Vector3d &gradUx,const Vector3d &gradUy);
     void SetFromGradU(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz);
     void SetFromVoigt(const double &v11,const double &v22,const double &v12);// for 2D

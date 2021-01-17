@@ -69,8 +69,6 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
 
     RankTwoTensor Eps,EpsPos,EpsNeg;
     RankFourTensor ProjPos,ProjNeg,I4Sym;
-    RankTwoTensor EigVec;
-    double EigVal[3];
     if(nDim==1){
         MessagePrinter::PrintErrorTxt("Miehe's phase field fracture model works only for 2D and 3D case");
         MessagePrinter::AsFem_Exit();
@@ -82,7 +80,7 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
         Eps.SetFromGradU(gpU[2],gpU[3],gpU[4]);
     }
 
-    ProjPos=Eps.CalcPostiveProjTensor(EigVal,EigVec);
+    ProjPos=Eps.GetPostiveProjTensor();
     I4Sym.SetToIdentitySymmetric4();
     ProjNeg=I4Sym-ProjPos;
 
