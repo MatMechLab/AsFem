@@ -50,22 +50,22 @@ void BulkElmtSystem::MieheFractureElmt(const FECalcType &calctype,
     switch (calctype){
         case FECalcType::ComputeResidual:
             // For R_d
-            localR(1)=ScalarMaterials.at("eta")*gpV[1]*test
+            localR(1)=ScalarMaterials.at("viscosity")*gpV[1]*test
                        +2*(gpU[1]-1)*ScalarMaterials.at("Hist")*test
                        +(ScalarMaterials.at("Gc")/ScalarMaterials.at("L"))*gpU[1]*test
                        +ScalarMaterials.at("Gc")*ScalarMaterials.at("L")*gpGradU[1]*grad_test;
             // For R_ux
-            localR(2)=Rank2Materials.at("stress").IthRow(1)*grad_test;
+            localR(2)=Rank2Materials.at("Stress").IthRow(1)*grad_test;
             // For R_uy
-            localR(3)=Rank2Materials.at("stress").IthRow(2)*grad_test;
+            localR(3)=Rank2Materials.at("Stress").IthRow(2)*grad_test;
             if(nDim==3){
                 // For R_uz
-                localR(4)=Rank2Materials.at("stress").IthRow(3)*grad_test;
+                localR(4)=Rank2Materials.at("Stress").IthRow(3)*grad_test;
             }
             break;
         case FECalcType::ComputeJacobian:
             // K_d,d  (see Eq. 47)
-            localK(1,1)=ScalarMaterials.at("eta")*trial*test*ctan[1]
+            localK(1,1)=ScalarMaterials.at("viscosity")*trial*test*ctan[1]
                            +2*trial*ScalarMaterials.at("Hist")*test*ctan[0]
                            +(ScalarMaterials.at("Gc")/ScalarMaterials.at("L"))*trial*test*ctan[0]
                            +ScalarMaterials.at("Gc")*ScalarMaterials.at("L")*grad_trial*grad_test*ctan[0];

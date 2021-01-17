@@ -191,6 +191,8 @@ set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
 set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
+### for Miehe's phase field fracture materials
+set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
 
 #############################################################
 ### For Boundary condition system in AsFem                ###
