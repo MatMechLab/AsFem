@@ -156,6 +156,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
             int nodes,dim,maxdim,elmtorder;
             vector<int> tempconn;
             MeshType meshtype,bcmeshtype;
+            string meshtypename;
 
             _nNodesPerBulkElmt=-1;
             _nNodesPerLineElmt=0;
@@ -176,6 +177,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                 dim=GetElmtDimFromGmshElmtType(elmttype);
                 vtktype=GetElmtVTKCellTypeFromGmshElmtType(elmttype);
                 meshtype=GetElmtMeshTypeFromGmshElmtType(elmttype);
+                meshtypename=GetElmtTypeNameFromGmshElmtType(elmttype);
                 bcmeshtype=GetSubElmtMeshTypeFromGmshElmtType(elmttype);
                 elmtorder=GetElmtOrderFromGmshElmtType(elmttype);
                 if(elmtorder>_nOrder) _nOrder=elmtorder;
@@ -184,6 +186,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                 if(dim==1){
                     _nNodesPerLineElmt=nodes;
                     _nNodesPerBulkElmt=nodes;
+                    mesh.SetBulkMeshMeshTypeName(meshtypename);
                     mesh.SetBulkMeshMeshType(meshtype);
                     mesh.SetBulkMeshLineMeshType(meshtype);
                     nLineElmts+=1;
@@ -192,12 +195,14 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                     _nNodesPerSurfaceElmt=nodes;
                     _nNodesPerBulkElmt=nodes;
                     mesh.SetBulkMeshMeshType(meshtype);
+                    mesh.SetBulkMeshMeshTypeName(meshtypename);
                     mesh.SetBulkMeshLineMeshType(bcmeshtype);
                     nSurfaceElmts+=1;
                 }
                 if(dim==3){
                     _nNodesPerBulkElmt=nodes;
                     mesh.SetBulkMeshMeshType(meshtype);
+                    mesh.SetBulkMeshMeshTypeName(meshtypename);
                     mesh.SetBulkMeshSurfaceMeshType(bcmeshtype);
                     nBulkElmts+=1;
                 }

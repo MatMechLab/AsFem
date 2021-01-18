@@ -39,7 +39,7 @@ TimeStepping::TimeStepping(){
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _PCTypeName="lu";
-    _LinearSolverName="ksp";
+    _LinearSolverName="petsc";
 }
 
 //****************************************************

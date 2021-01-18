@@ -54,6 +54,9 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     SNESGetMaxNonlinearStepFailures(snes,&i);// just to get rid of unused snes warning
     user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
 
+    user->_fectrlinfo.ctan[0]=1.0;
+    user->_fectrlinfo.ctan[1]=0.0;
+
     // calculate the current velocity
     VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._Uold,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
@@ -72,7 +75,7 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                     FECalcType::ComputeResidual,user->_fectrlinfo.t,user->_fectrlinfo.ctan,U,
                     user->_equationSystem._AMATRIX,RHS);
-    
+
     return 0;
 }
 
@@ -85,6 +88,9 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
 
     user->_feSystem.ResetMaxAMatrixValue();
     user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
+
+    user->_fectrlinfo.ctan[0]=1.0;
+    user->_fectrlinfo.ctan[1]=0.0;
 
     //*** calculate the current velocity
     VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._Uold,U);//V=-Uold+Unew
@@ -115,6 +121,8 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
                     FECalcType::ComputeJacobian,user->_fectrlinfo.t,user->_fectrlinfo.ctan,U,
                     A,user->_equationSystem._RHS);
+
+//    MatView(A,PETSC_VIEWER_STDOUT_WORLD);
 
     MatGetSize(B,&i,&i);
     SNESGetMaxNonlinearStepFailures(snes,&i);

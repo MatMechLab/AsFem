@@ -85,6 +85,14 @@ void LagrangeMesh::SetBulkMeshMeshTypeName(string meshname){
         _BulkMeshTypeName="quad8";
         _BulkMeshType=MeshType::QUAD8;
     }
+    else if(meshname.find("tri3")!=string::npos){
+        _BulkMeshTypeName="tri3";
+        _BulkMeshType=MeshType::TRI3;
+    }
+    else if(meshname.find("tri6")!=string::npos){
+        _BulkMeshTypeName="quad8";
+        _BulkMeshType=MeshType::TRI6;
+    }
     else if(meshname.find("quad9")!=string::npos){
         _BulkMeshTypeName="quad9";
         _BulkMeshType=MeshType::QUAD9;
@@ -100,6 +108,14 @@ void LagrangeMesh::SetBulkMeshMeshTypeName(string meshname){
     else if(meshname.find("hex27")!=string::npos){
         _BulkMeshTypeName="hex27";
         _BulkMeshType=MeshType::HEX27;
+    }
+    else if(meshname.find("tet4")!=string::npos){
+        _BulkMeshTypeName="tet4";
+        _BulkMeshType=MeshType::TET4;
+    }
+    else if(meshname.find("tet10")!=string::npos){
+        _BulkMeshTypeName="tet10";
+        _BulkMeshType=MeshType::TET10;
     }
     else{
         MessagePrinter::PrintErrorTxt("unsupported mesh type setting");

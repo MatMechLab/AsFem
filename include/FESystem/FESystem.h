@@ -106,7 +106,10 @@ private:
                                vector<double> &localK,vector<double> &localR,
                                Mat &AMATRIX,Vec &RHS);
 
-
+    //*********************************************************
+    //*** for history variables
+    //*********************************************************
+    void AssembleLocalHistToGlobal(const int &e,const int &nhist,const int &ngp,const int &gpInd,const vector<double> &localHist,Vec &Hist);
     
 
 public:

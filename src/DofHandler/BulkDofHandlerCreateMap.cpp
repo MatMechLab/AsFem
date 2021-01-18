@@ -88,6 +88,33 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
         MessagePrinter::AsFem_Exit();
     }
 
+    //*** secondly, we check whether all the DoFs have been assigned an [elmt] block
+    bool DofHasElmtBlock=false;
+    string dofname;
+    for(i=1;i<=GetDofsNumPerNode();i++){
+        DofHasElmtBlock=false;
+        dofname=GetIthDofName(i);
+        for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
+            for(const auto &name:elmtSystem.GetIthBulkElmtBlock(j)._DofsNameList){
+                if(name==dofname){
+                    DofHasElmtBlock=true;
+                    break;
+                }
+            }
+            if(DofHasElmtBlock){
+                break;
+            }
+        }
+        if(!DofHasElmtBlock){
+            break;
+        }
+    }
+    if(!DofHasElmtBlock){
+        str="DoF->"+dofname+" has not been assigned to any [elmts] block! Please check your input file carefully";
+        MessagePrinter::PrintErrorTxt(str);
+        MessagePrinter::AsFem_Exit();
+    }
+
     ElmtType elmttype;
     MateType matetype;
     int mateindex;

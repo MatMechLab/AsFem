@@ -28,7 +28,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     else if(calctype==FECalcType::ComputeJacobian){
         MatZeroEntries(AMATRIX);
     }
-    else if(calctype==FECalcType::InitHistoryVariable){
+    else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
         VecSet(Hist,0.0);
     }
     else if(calctype==FECalcType::Projection){
@@ -76,6 +76,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     nDim=mesh.GetDim();
 
     _BulkVolumes=0.0;
+
     
     for(int ee=eStart;ee<eEnd;++ee){
         e=ee+1;
@@ -98,6 +99,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         }
         else if(calctype==FECalcType::Projection){
             fill(_gpProj.begin(),_gpProj.end(),0.0);
+        }
+        else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
+            fill(_gpHist.begin(),_gpHist.end(),0.0);
         }
         
         xi=0.0;eta=0.0;zeta=0.0;DetJac=1.0;w=1.0;
@@ -160,7 +164,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 localDofIndex=dofHandler.GetIthBulkElmtJthKernelDofIndex(e,ielmt);
                 mateindex=dofHandler.GetIthBulkElmtJthKernelMateIndex(e,ielmt);
                 nDofsPerSubElmt=static_cast<int>(localDofIndex.size());
-                
+
                 // now we calculate the local dofs and their derivatives
                 // *this is only the local one, which means, i.e., if current element use dofs=u v
                 // then we only calculate u v and their derivatives on each gauss point,
@@ -199,7 +203,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 //*** For user material calculation(UMAT)
                 //*****************************************************
                 mateSystem.RunBulkMateLibs(matetype,mateindex,nDim,t,dt,_gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,_gpHist,_gpHistOld);
-
                 //*****************************************************
                 //*** For user element calculation(UEL)
                 //*****************************************************
@@ -214,7 +217,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
                             _gpHist,_gpHistOld,_gpProj,_subK,_subR);
-
                         AssembleSubResidualToLocalResidual(nDofsPerNode,nDofsPerSubElmt,i,_subR,_localR);
                     }
                 }
@@ -230,7 +232,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
                             _gpHist,_gpHistOld,_gpProj,_subK,_subR);
-                            
                             AssembleSubJacobianToLocalJacobian(nDofsPerNode,i,j,_subK,_localK);
                         }
                     }
@@ -264,6 +265,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             }
             else if(calctype==FECalcType::Projection){
                 AssembleLocalProjectionToGlobal(nNodes,JxW,fe._BulkShp,_gpProj,Proj);
+            }
+            else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
+                AssembleLocalHistToGlobal(e,_nHist,fe._BulkQPoint.GetQpPointsNum(),gpInd,_gpHist,Hist);
             }
         }//----->end of gauss point loop
         mesh.SetBulkMeshIthBulkElmtVolume(e,elVolume);

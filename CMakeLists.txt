@@ -176,6 +176,12 @@ set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
 ### for Miehe's fracture model
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
+### for User1 element
+set(src ${src} src/ElmtSystem/User1Elmt.cpp)
+### for User2 element
+set(src ${src} src/ElmtSystem/User2Elmt.cpp)
+### for User3 element
+set(src ${src} src/ElmtSystem/User3Elmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
@@ -195,6 +201,8 @@ set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
 ### for Miehe's phase field fracture materials
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+### for UMAT
+set(src ${src} src/MateSystem/User1Material.cpp)
 
 #############################################################
 ### For Boundary condition system in AsFem                ###

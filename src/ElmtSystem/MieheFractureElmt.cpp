@@ -46,50 +46,51 @@ void BulkElmtSystem::MieheFractureElmt(const FECalcType &calctype,
     //       uy-->3
     //       uz-->4
     int i;
-    double val;
+    double valx,valy,valz;
+    double viscosity=ScalarMaterials.at("viscosity");
+    double Gc=ScalarMaterials.at("Gc");
+    double L=ScalarMaterials.at("L");
+    double Hist=ScalarMaterials.at("Hist");
+    RankTwoTensor Stress=Rank2Materials.at("Stress");
+    RankTwoTensor dStressdD=Rank2Materials.at("dStressdD");
+    RankTwoTensor dHdstrain=Rank2Materials.at("dHdstrain");
+
     switch (calctype){
         case FECalcType::ComputeResidual:
             // For R_d
-            localR(1)=ScalarMaterials.at("viscosity")*gpV[1]*test
-                       +2*(gpU[1]-1)*ScalarMaterials.at("Hist")*test
-                       +(ScalarMaterials.at("Gc")/ScalarMaterials.at("L"))*gpU[1]*test
-                       +ScalarMaterials.at("Gc")*ScalarMaterials.at("L")*gpGradU[1]*grad_test;
+            localR(1)=viscosity*gpV[1]*test
+                       +2*(gpU[1]-1)*Hist*test
+                       +(Gc/L)*gpU[1]*test
+                       +Gc*L*(gpGradU[1]*grad_test);
             // For R_ux
-            localR(2)=Rank2Materials.at("Stress").IthRow(1)*grad_test;
+            localR(2)=Stress.IthRow(1)*grad_test;
             // For R_uy
-            localR(3)=Rank2Materials.at("Stress").IthRow(2)*grad_test;
+            localR(3)=Stress.IthRow(2)*grad_test;
             if(nDim==3){
                 // For R_uz
-                localR(4)=Rank2Materials.at("Stress").IthRow(3)*grad_test;
+                localR(4)=Stress.IthRow(3)*grad_test;
             }
             break;
         case FECalcType::ComputeJacobian:
             // K_d,d  (see Eq. 47)
-            localK(1,1)=ScalarMaterials.at("viscosity")*trial*test*ctan[1]
-                           +2*trial*ScalarMaterials.at("Hist")*test*ctan[0]
-                           +(ScalarMaterials.at("Gc")/ScalarMaterials.at("L"))*trial*test*ctan[0]
-                           +ScalarMaterials.at("Gc")*ScalarMaterials.at("L")*grad_trial*grad_test*ctan[0];
+            localK(1,1)=viscosity*trial*test*ctan[1]
+                           +2*trial*Hist*test*ctan[0]
+                           +(Gc/L)*trial*test*ctan[0]
+                           +Gc*L*(grad_trial*grad_test)*ctan[0];
+            //*******************************
+            valx=0.0;valy=0.0;valz=0.0;
+            for(i=1;i<=3;i++){
+                valx+=0.5*(dHdstrain(1,i)+dHdstrain(i,1))*grad_trial(i);
+                valy+=0.5*(dHdstrain(2,i)+dHdstrain(i,2))*grad_trial(i);
+                valz+=0.5*(dHdstrain(3,i)+dHdstrain(i,3))*grad_trial(i);
+            }
             // K_d,ux
-            val=0.0;
-            for(i=1;i<=nDim;i++){
-                val+=0.5*(Rank2Materials.at("dHdstrain")(1,i)+Rank2Materials.at("dHdstrain")(i,1))*grad_trial(i);
-            }
-            localK(1,2)=2*(gpU[1]-1)*val*test;
-
+            localK(1,2)=2*(gpU[1]-1)*valx*test*ctan[0];
             // K_d,uy
-            val=0.0;
-            for(i=1;i<=nDim;i++){
-                val+=0.5*(Rank2Materials.at("dHdstrain")(2,i)+Rank2Materials.at("dHdstrain")(i,2))*grad_trial(i);
-            }
-            localK(1,3)=2*(gpU[1]-1)*val*test;
-
+            localK(1,3)=2*(gpU[1]-1)*valy*test*ctan[0];
             if(nDim==3){
                 // K_d,uz
-                val=0.0;
-                for(i=1;i<=nDim;i++){
-                    val+=0.5*(Rank2Materials.at("dHdstrain")(3,i)+Rank2Materials.at("dHdstrain")(i,3))*grad_trial(i);
-                }
-                localK(1,4)=2*(gpU[1]-1)*val*test;
+                localK(1,4)=2*(gpU[1]-1)*valz*test*ctan[0];
             }
 
             // K_ux,ux
@@ -97,18 +98,17 @@ void BulkElmtSystem::MieheFractureElmt(const FECalcType &calctype,
             // K_ux,uy
             localK(2,3)=Rank4Materials.at("elasticity_tensor").GetIKjlComponent(1,2,grad_test,grad_trial)*ctan[0];
             // K_ux,d
-            localK(2,1)=Rank2Materials.at("dStressdD").IthRow(1)*grad_test*trial*ctan[0];
+            localK(2,1)=dStressdD.IthRow(1)*grad_test*trial*ctan[0];
 
             // K_uy,uy
             localK(3,3)=Rank4Materials.at("elasticity_tensor").GetIKjlComponent(2,2,grad_test,grad_trial)*ctan[0];
             // K_uy,ux
             localK(3,2)=Rank4Materials.at("elasticity_tensor").GetIKjlComponent(2,1,grad_test,grad_trial)*ctan[0];
             // K_uy,d
-            localK(3,1)=Rank2Materials.at("dStressdD").IthRow(2)*grad_test*trial*ctan[0];
+            localK(3,1)=dStressdD.IthRow(2)*grad_test*trial*ctan[0];
             if(nDim==3){
                 // K_ux,uz
                 localK(2,4)=Rank4Materials.at("elasticity_tensor").GetIKjlComponent(1,3,grad_test,grad_trial)*ctan[0];
-
                 // K_uy,uz
                 localK(3,4)=Rank4Materials.at("elasticity_tensor").GetIKjlComponent(2,4,grad_test,grad_trial)*ctan[0];
 
@@ -119,11 +119,11 @@ void BulkElmtSystem::MieheFractureElmt(const FECalcType &calctype,
                 // K_uz,uy
                 localK(4,3)=Rank4Materials.at("elasticity_tensor").GetIKjlComponent(3,2,grad_test,grad_trial)*ctan[0];
                 // K_uz,d
-                localK(4,1)=Rank2Materials.at("dStressdD").IthRow(3)*grad_test*trial*ctan[0];
+                localK(4,1)=dStressdD.IthRow(3)*grad_test*trial*ctan[0];
             }
             break;
         case FECalcType::InitHistoryVariable:
-            gpHist[0]=0.0;
+            fill(gpHist.begin(),gpHist.end(),0.0);
             break;
         case FECalcType::UpdateHistoryVariable:
             gpHistOld=gpHist;

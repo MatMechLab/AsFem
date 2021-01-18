@@ -67,18 +67,22 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     g=(1-d)*(1-d);// degradation
     dg=2*(d-1);   // derivative of g
 
-    RankTwoTensor Eps,EpsPos,EpsNeg;
-    RankFourTensor ProjPos,ProjNeg,I4Sym;
+    RankTwoTensor Eps,EpsPos,EpsNeg,GradU;
+    RankFourTensor ProjPos,ProjNeg;
+    RankFourTensor I4Sym(RankFourTensor::InitIdentitySymmetric4);
+
+    GradU.SetToZeros();
     if(nDim==1){
         MessagePrinter::PrintErrorTxt("Miehe's phase field fracture model works only for 2D and 3D case");
         MessagePrinter::AsFem_Exit();
     }
     else if(nDim==2){
-        Eps.SetFromGradU(gpU[2],gpU[3]);
+        GradU.SetFromGradU(gpGradU[2],gpGradU[3]);
     }
     else if(nDim==3){
-        Eps.SetFromGradU(gpU[2],gpU[3],gpU[4]);
+        GradU.SetFromGradU(gpGradU[2],gpGradU[3],gpGradU[4]);
     }
+    Eps=(GradU+GradU.Transpose())*0.5;
 
     ProjPos=Eps.GetPostiveProjTensor();
     I4Sym.SetToIdentitySymmetric4();
@@ -91,7 +95,6 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     double trEps,signpos,signneg;
     double psi,psipos,psineg;
 
-
     trEps=Eps.Trace();
     psipos=0.5*lambda*BracketPos(trEps)*BracketPos(trEps)+mu*(EpsPos*EpsPos).Trace();
     psineg=0.5*lambda*BracketNeg(trEps)*BracketNeg(trEps)+mu*(EpsNeg*EpsNeg).Trace();
@@ -103,12 +106,12 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
 
     RankTwoTensor StressPos,StressNeg,I;
 
+    I.SetToIdentity();
+    StressPos=I*lambda*BracketPos(trEps)+EpsPos*2*mu;
+    StressNeg=I*lambda*BracketNeg(trEps)+EpsNeg*2*mu;
 
-    StressPos=lambda*BracketPos(trEps)*I+2*mu*EpsPos;
-    StressNeg=lambda*BracketNeg(trEps)*I+2*mu*EpsNeg;
-
-    _Rank2Materials["Stress"]=(g+k)*StressPos+StressNeg;
-    _Rank2Materials["dStressdD"]=dg*StressPos;
+    _Rank2Materials["Stress"]=StressPos*(g+k)+StressNeg;
+    _Rank2Materials["dStressdD"]=StressPos*dg;
 
     if(psipos>gpHistOld[0]){
         _ScalarMaterials["Hist"]=psipos;
@@ -130,8 +133,10 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     signneg=0.0;
     if(BracketNeg(trEps)<0) signneg=1.0;
 
-    _Rank4Materials["elasticity_tensor"]=(g+k)*(lambda*signpos*I.CrossDot(I)+2*mu*ProjPos)
-                                        +lambda*signneg*I.CrossDot(I)+2*mu*ProjNeg;
+    _Rank4Materials["elasticity_tensor"].SetToZeros();
+    _Rank4Materials["elasticity_tensor"]=(I.CrossDot(I)*lambda*signpos+ProjPos*2*mu)*(g+k)
+                                         +I.CrossDot(I)*lambda*signneg+ProjNeg*2*mu;
+
 
 }
 

@@ -96,6 +96,12 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         TSSetTimeStep(ts,dt);
     }
 
+    // update history variable
+    user->_feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,time,dt,user->_fectrlinfo.ctan,
+                               user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
+                               U,user->_solutionSystem._V,user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
+                               user->_solutionSystem._Proj,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
+
     return 0;
 }
 //***************************************************************
@@ -202,7 +208,13 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
 
 
     _appctx._icSystem.ApplyIC(_appctx._mesh,_appctx._dofHandler,_appctx._solutionSystem._Unew);
-    _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,1.0,_appctx._solutionSystem._Unew);
+    _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,0.0,_appctx._solutionSystem._Unew);
+    _appctx._feSystem.FormBulkFE(FECalcType::InitHistoryVariable,_appctx._fectrlinfo.t,_appctx._fectrlinfo.dt,_appctx._fectrlinfo.ctan,
+                                 _appctx._mesh,_appctx._dofHandler,_appctx._fe,_appctx._elmtSystem,_appctx._mateSystem,
+                                 _appctx._solutionSystem._Unew,_appctx._solutionSystem._V,
+                                 _appctx._solutionSystem._Hist,_appctx._solutionSystem._HistOld,
+                                 _appctx._solutionSystem._Proj,
+                                 _appctx._equationSystem._AMATRIX,_appctx._equationSystem._RHS);
 
     TSSetIFunction(_ts,_appctx._equationSystem._RHS,ComputeIResidual,&_appctx);
     TSSetIJacobian(_ts,_appctx._equationSystem._AMATRIX,_appctx._equationSystem._AMATRIX,ComputeIJacobian,&_appctx);

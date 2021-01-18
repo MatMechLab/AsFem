@@ -33,7 +33,7 @@ public:
         _RRelTol=1.0e-9;
         _STol=1.0e-16; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="ksp";
+        _LinearSolverName="petsc";
     }
 
     string              _SolverTypeName;
@@ -52,6 +52,6 @@ public:
         _RRelTol=1.0e-9;
         _STol=1.0e-16; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="ksp";
+        _LinearSolverName="petsc";
     }
 };
