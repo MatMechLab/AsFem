@@ -59,20 +59,25 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
 
     //*** firstly, we check whether all the domain has been assigned an [elmt] block
     bool DomainHasElmtBlock=false;
+    bool UseAllDomain,UseSpeceficDomain;
     for(i=1;i<=mesh.GetBulkMeshPhysicalGroupNum();i++){
-        DomainHasElmtBlock=false;
+        DomainHasElmtBlock=false;UseAllDomain=false;UseSpeceficDomain=false;
         if(mesh.GetBulkMeshIthPhysicalDim(i)==_nMaxDim){// only check the bulk elmts
-            DomainHasElmtBlock=false;
             for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
-                cout<<"j="<<j<<": "<<mesh.GetBulkMeshIthPhysicalName(i)<<", "<<elmtSystem.GetIthBulkElmtBlock(j)._DomainName<<endl;
                 if(mesh.GetBulkMeshIthPhysicalName(i)==elmtSystem.GetIthBulkElmtBlock(j)._DomainName){
-                    DomainHasElmtBlock=true;
+                    if(elmtSystem.GetIthBulkElmtBlock(j)._DomainName=="alldomain"){
+                        UseAllDomain=true;UseSpeceficDomain=false;
+                    }
+                    else{
+                        UseAllDomain=false;UseSpeceficDomain=true;
+                    }
                     break;
                 }
             }
-            if(!DomainHasElmtBlock){
-                break;
-            }
+        }
+        if(UseAllDomain||UseSpeceficDomain){
+            DomainHasElmtBlock=true;
+            break;
         }
     }
     if(!DomainHasElmtBlock){

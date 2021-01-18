@@ -64,6 +64,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
     vector<pair<int,int>> UniquePhyDim2IDList;
     int MaxPhyIDofPhyGroup=-1,MaxPhyIDofElmt=-1;
 
+
     while(!_in.eof()){
         // now we start to read *.msh file
         getline(_in,str);
@@ -106,6 +107,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                 mesh.GetBulkMeshPhysicalGroupID2NameListPtr().push_back(make_pair(phyid,phyname));
                 mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair(phyname,phyid));
 
+
                 if(phydim>_nMaxDim) _nMaxDim=phydim;
                 if(_nMinDim<phydim) _nMinDim=phydim;
                 if(phyid>MaxPhyIDofPhyGroup) MaxPhyIDofPhyGroup=phyid;
@@ -143,6 +145,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
             _nElmts=0;
             _in>>_nElmts;
             mesh.SetBulkMeshElmtsNum(_nElmts);
+            mesh.GetBulkMeshElmtVolumePtr().resize(_nElmts,0.0);
             mesh.GetBulkMeshElmtDimListPtr().resize(_nElmts,0);
             mesh.GetBulkMeshElmtConnPtr().resize(_nElmts,vector<int>(0));
             mesh.GetBulkMeshElmtVTKCellTypeListPtr().resize(_nElmts,0);
@@ -176,6 +179,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                 bcmeshtype=GetSubElmtMeshTypeFromGmshElmtType(elmttype);
                 elmtorder=GetElmtOrderFromGmshElmtType(elmttype);
                 if(elmtorder>_nOrder) _nOrder=elmtorder;
+
 
                 if(dim==1){
                     _nNodesPerLineElmt=nodes;
@@ -236,7 +240,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                     }
                 }
 
-            }
+            }//--->end-of-element-loop
             mesh.SetBulkMeshMeshOrder(_nOrder);
             mesh.SetBulkMeshMinDim(_nMinDim);
             mesh.SetBulkMeshMaxDim(_nMaxDim);
@@ -339,9 +343,11 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
         bulkconn.clear();
         int maxid=-1;
         for(int e=0;e<_nElmts;e++){
-            _nBulkElmts+=1;
-            bulkconn.push_back(e+1);
-            if(mesh.GetBulkMeshIthElmtPhyID(e+1)>maxid) maxid=mesh.GetBulkMeshIthElmtPhyID(e+1);
+            if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
+                _nBulkElmts+=1;
+                bulkconn.push_back(e+1);
+                if(mesh.GetBulkMeshIthElmtPhyID(e+1)>maxid) maxid=mesh.GetBulkMeshIthElmtPhyID(e+1);
+            }
         }
 
         mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
@@ -361,7 +367,6 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
 
     }
     else{
-        int maxid=-1;
         string phyname;
         bulkconn.clear();
         phy2conn.resize(_nPhysicGroups,vector<int>(0));
@@ -371,15 +376,15 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
         _nLineElmts=0;
 
         for(int e=0;e<_nElmts;e++){
+            for(int j=0;j<static_cast<int>(phy2conn.size());j++){
+                if(mesh.GetBulkMeshIthElmtPhyID(e+1)==mesh.GetBulkMeshIthPhysicalID(j+1)){
+                    phy2conn[j].push_back(e+1);
+                    break;
+                }
+            }
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
                 _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
-                for(int j=0;j<static_cast<int>(phy2conn.size());j++){
-                    if(mesh.GetBulkMeshIthElmtPhyID(e+1)==mesh.GetBulkMeshIthPhysicalID(j+1)){
-                        phy2conn[j].push_back(e+1);
-                        break;
-                    }
-                }
             }
             else{
                 // for lower dimension elements
@@ -404,9 +409,9 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
         mesh.SetBulkMeshPhysicalGroupNums(1+phy2conn.size());
         mesh.GetBulkMeshPhysicalGroupNameListPtr().push_back("alldomain");
         mesh.GetBulkMeshPhysicalGroupDimListPtr().push_back(_nMaxDim);
-        mesh.GetBulkMeshPhysicalGroupIDListPtr().push_back(maxid+1);
-        mesh.GetBulkMeshPhysicalGroupID2NameListPtr().push_back(make_pair(maxid+1,"alldomain"));
-        mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair("alldomain",maxid+1));
+        mesh.GetBulkMeshPhysicalGroupIDListPtr().push_back(MaxPhyIDofElmt+1);
+        mesh.GetBulkMeshPhysicalGroupID2NameListPtr().push_back(make_pair(MaxPhyIDofElmt+1,"alldomain"));
+        mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair("alldomain",MaxPhyIDofElmt+1));
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkconn));
 
         return _nBulkElmts>0;

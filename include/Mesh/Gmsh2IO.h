@@ -13,7 +13,11 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
-
+#include <iostream>
+#include <iomanip>
+#include <vector>
+#include <map>
+#include <algorithm>
 #include "Mesh/MeshIOBase.h"
 #include "Mesh/MeshType.h"
 

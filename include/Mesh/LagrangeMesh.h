@@ -227,7 +227,7 @@ public:
         }
         return -1;
     }
-    inline string GetBulkMeshPhysicalNameViaID(const int &phyid)const{
+    inline string GetBulkMeshPhysicalNameViaPhyID(const int &phyid)const{
         for(const auto &it:_PhysicalGroupID2NameList){
             if(it.first==phyid){
                 return it.second;
