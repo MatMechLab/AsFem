@@ -40,6 +40,10 @@ name=d ux uy
   [end]
 [end]
 
+[output]
+  type=vtk
+  interval=3
+[end]
 
 [timestepping]
   type=be

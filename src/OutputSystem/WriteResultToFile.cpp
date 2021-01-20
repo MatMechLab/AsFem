@@ -18,10 +18,18 @@ void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandl
     if(_OutputType==OutputType::VTU){
         WriteResult2VTU(mesh,dofHandler,U);
     }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
+        MessagePrinter::AsFem_Exit();
+    }
 }
 void OutputSystem::WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U){
     if(_OutputType==OutputType::VTU){
         WriteResult2VTU(step,mesh,dofHandler,U);
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
+        MessagePrinter::AsFem_Exit();
     }
 }
 //*********************************************************************
@@ -29,11 +37,19 @@ void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandl
     if(_OutputType==OutputType::VTU){
         WriteResult2VTU(mesh,dofHandler,U,nProj,projname,Proj);
     }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
+        MessagePrinter::AsFem_Exit();
+    }
 }
 void OutputSystem::WriteResultToFile(const int &step, const Mesh &mesh, const DofHandler &dofHandler, const Vec &U,
                                      const int &nProj, const vector<string> &projname, const Vec &Proj){
     if(_OutputType==OutputType::VTU){
         WriteResult2VTU(step,mesh,dofHandler,U,nProj,projname,Proj);
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
+        MessagePrinter::AsFem_Exit();
     }
 }
     
