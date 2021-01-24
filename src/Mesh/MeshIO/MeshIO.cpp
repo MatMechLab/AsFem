@@ -38,10 +38,10 @@ bool MeshIO::ReadMeshFromFile(Mesh &mesh){
         return Gmsh4IO::ReadMeshFromFile(mesh);
         break;
     case MeshIOType::NETGEN:
-        // cout<<"using netgen"<<endl;
+        MessagePrinter::PrintErrorTxt("Netgen mesh is not supported yet!");
         return false;
     case MeshIOType::ABAQUS:
-        // cout<<"using abaqus"<<endl;
+        MessagePrinter::PrintErrorTxt("Abaqus mesh is not supported yet!");
         return false;
     default:
         return false;

@@ -120,6 +120,7 @@ set(inc ${inc} include/Mesh/MeshIOBase.h include/Mesh/Gmsh2IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh2IOReadMesh.cpp src/Mesh/MeshIO/Gmsh2IOGetFuns.cpp)
 set(src ${src} include/Mesh/Gmsh4IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh4IOReadMesh.cpp src/Mesh/MeshIO/Gmsh4IOGetFuns.cpp)
+set(src ${src} src/Mesh/MeshIO/Gmsh4IOUtilFuns.cpp)
 set(src ${src} include/Mesh/MeshIO.h src/Mesh/MeshIO/MeshIO.cpp src/Mesh/MeshIO/MeshIOJudgeFun.cpp)
 ### define the basic mesh type and geometry
 set(inc ${inc} include/Mesh/MeshType.h include/Mesh/Nodes.h)

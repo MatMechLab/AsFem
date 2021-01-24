@@ -17,6 +17,8 @@
 #include "Mesh/MeshIOBase.h"
 #include "Mesh/MeshType.h"
 
+#include "Utils/StringUtils.h"
+
 class Gmsh4IO:public MeshIOBase{
 public:
     Gmsh4IO(){
@@ -39,5 +41,33 @@ private:
     int GetSubElmtDimFromGmshElmtType(const int &elmttype) const;
     int GetSubElmtOrderFromGmshElmtType(const int &elmttype)const;
     MeshType GetSubElmtMeshTypeFromGmshElmtType(const int &elmttype)const;
+
+    int GetPhysicalIDViaEntityTag(const int &ndim,const int &tag)const;
+    int GetElmtVTKCellTypeFromGmshElmtType(const int &elmttype)const;
+
+    ifstream _in;
+
+    int _nMaxDim=-1,_nMinDim=4;
+    int _nPhysicGroups=0;
+    int _nNodes=0,_nElmts=0;
+    int _nBulkElmts=0,_nSurfaceElmts=0,_nLineElmts=0;
+
+    double _Xmax,_Xmin,_Ymax,_Ymin,_Zmax,_Zmin;
+
+    int _nNodesPerBulkElmt=-1;
+    int _nNodesPerLineElmt=0;
+    int _nNodesPerSurfaceElmt=0;
+    int _nOrder=1;
+
+    vector<int> _PointsEntityPhyIDs;
+    vector<int> _CurvesEntityPhyIDS;
+    vector<int> _SurfaceEntityPhyIDs;
+    vector<int> _VolumesEntityPhyIDs;
+
+private:
+    bool NextLineIsSingleNumber(ifstream &in);
+    bool NextLineIsEntities(ifstream &in);
+    bool NextLineIsCoordinate(ifstream &in);
+
 
 };
