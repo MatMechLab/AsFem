@@ -116,12 +116,18 @@ set(src ${src} src/InputSystem/ReadFEJobBlock.cpp)
 ### For Mesh class                                        ###
 #############################################################
 ### For mesh io class
+### for gmsh2 io
 set(inc ${inc} include/Mesh/MeshIOBase.h include/Mesh/Gmsh2IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh2IOReadMesh.cpp src/Mesh/MeshIO/Gmsh2IOGetFuns.cpp)
+### for gmsh4 io
 set(src ${src} include/Mesh/Gmsh4IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh4IOReadMesh.cpp src/Mesh/MeshIO/Gmsh4IOGetFuns.cpp)
 set(src ${src} src/Mesh/MeshIO/Gmsh4IOUtilFuns.cpp)
 set(src ${src} include/Mesh/MeshIO.h src/Mesh/MeshIO/MeshIO.cpp src/Mesh/MeshIO/MeshIOJudgeFun.cpp)
+### for abaqus io
+set(inc ${inc} include/Mesh/AbaqusIO.h)
+set(src ${src} src/Mesh/MeshIO/AbaqusIOGetFuns.cpp)
+set(src ${src} src/Mesh/MeshIO/AbaqusIOReadMesh.cpp)
 ### define the basic mesh type and geometry
 set(inc ${inc} include/Mesh/MeshType.h include/Mesh/Nodes.h)
 ### for the bulk mesh class
