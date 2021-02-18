@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
 set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
-set(MPI_DIR "/home/by/Programs/mpich/3.4")
+set(MPI_DIR "/home/by/Programs/openmpi/4.1.0")
 
 ###############################################
 ### For your PETSc library file  (edit)     ###
@@ -20,7 +20,7 @@ link_libraries("${PETSC_DIR}/lib/libpetsc.so")
 ### For your MPI library file (edit)        ###
 ###############################################
 include_directories("${MPI_DIR}/include")
-link_libraries("${MPI_DIR}/lib64/libmpi.so")
+link_libraries("${MPI_DIR}/lib/libmpi.so")
 
 ###############################################
 # For Eigen                                 ###
