@@ -22,6 +22,7 @@
 #include "Mesh/MeshType.h"
 
 #include "Utils/MessagePrinter.h"
+#include "Utils/StringUtils.h"
 
 class AbaqusIO:public MeshIOBase{
 public:
@@ -40,11 +41,25 @@ private:
     int GetElmtOrderFromInp()const;
     int GetElmtVTKCellTypeFromInp()const;
     MeshType GetElmtMeshTypeFromInp()const;
+    string GetElmtMeshTypeNameFromInp()const;
 
     int GetSubElmtNodesNumFromInp() const;
     int GetSubElmtDimFromGmshInp() const;
     int GetSubElmtOrderFromInpElmt()const;
     MeshType GetSubElmtMeshTypeFromInp()const;
+
+    int GetSubSubElmtNodesNumFromInp() const;
+    MeshType GetSubSubElmtMeshTypeFromInp()const;
+
+
+    int GetNodesNumFromInp()const;
+    int GetElmtsNumFromInp()const;
+    int GetNsetsNumFromInp()const;
+    int GetElsetsNumFromInp()const;
+    int GetSurfacesNumFromInp()const;
+    int GetSurfaceElmtsNumFromInp()const;
+    int GetSurfaceEdgeIDViaSurfaceNameFromInp(string surfacesetname)const;
+    vector<int> GetSurfaceElmtIDViaSurfaceNameFromInp(string surfacesetname)const;
 
 
     ifstream _in;
