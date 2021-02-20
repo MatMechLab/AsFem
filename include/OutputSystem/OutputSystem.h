@@ -47,7 +47,7 @@ public:
     //************************************************************
     inline int GetIntervalNum()const{return _Interval;}
     inline string GetOutputFileName()const{return _OutputFileName;}
-
+    inline string GetPVDFileName()const{return _PVDFileName;}
     //************************************************************
     //*** write out our results to files with different format
     //************************************************************
@@ -57,6 +57,13 @@ public:
     const int &nProj,const vector<string> &projname,const Vec &Proj);
     void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,
                            const int &nProj,const vector<string> &projname,const Vec &Proj);
+
+    //*************************************************
+    //*** for pvd file
+    //*************************************************
+    void WritePVDFileHeader();
+    void WritePVDFileEnd();
+    void WriteResultToPVDFile(const double &timestep,string resultfilename);
 
     void PrintInfo()const;
     
@@ -78,6 +85,7 @@ private:
     string _OutputFileName,_InputFileName;
     string _OutputTypeName;
     string _OutputFolderName;
+    string _PVDFileName;
     vector<string> _CSVFieldNameList;
 
 private:

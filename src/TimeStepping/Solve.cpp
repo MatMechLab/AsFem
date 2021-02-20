@@ -80,6 +80,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         else{
             user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U);
         }
+        user->_outputSystem.WriteResultToPVDFile(time,user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();
     }
@@ -228,7 +229,13 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     TSSetFromOptions(_ts);
 
+    //***************************************************
+    //*** before solve,we need to write some basic info
+    //*** to pvd file
+    //***************************************************
+    _appctx._outputSystem.WritePVDFileHeader();
     TSSolve(_ts,_appctx._solutionSystem._Unew);
+    _appctx._outputSystem.WritePVDFileEnd();
 
     return true;
 }

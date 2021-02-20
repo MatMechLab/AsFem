@@ -3,7 +3,7 @@
 """
 Created on Wed Jun 21 14:01:26 2018
 This script will clean the unnecessary file for release
-i.e. .iead, cmake-*, .vtu, *.o
+i.e. .iead, cmake-*, .vtu, pvd, *.o
 @author: Y. Bai
 """
 import os 
@@ -42,7 +42,7 @@ for subdir,dirs,files in os.walk(currentdir):
                 os.remove(removepath)
             except:
                 print('%s is not here'%(file))
-        elif ('.vtu' in file) or ('.vtk' in file):
+        elif ('.vtu' in file) or ('.vtk' in file) or ('.pvd' in file):
             try:
                 vtu+=1
                 removepath=subdir+'/'+file

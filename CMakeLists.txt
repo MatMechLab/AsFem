@@ -314,6 +314,7 @@ set(inc ${inc} include/OutputSystem/OutputSystem.h)
 set(src ${src} src/OutputSystem/OutputSystem.cpp)
 set(src ${src} src/OutputSystem/WriteResultToFile.cpp)
 set(src ${src} src/OutputSystem/WriteResult2VTU.cpp)
+set(src ${src} src/OutputSystem/WritePVDFile.cpp)
 
 #############################################################
 ### For FE system in AsFem                                ###

@@ -3,8 +3,8 @@
 [mesh]
   type=asfem
   dim=2
-  xmax=8.0
-  ymax=8.0
+  xmax=2.0
+  ymax=2.0
   nx=80
   ny=80
   meshtype=quad9
@@ -31,14 +31,14 @@ name=c mu
 [mates]
   [mate1]
     type=cahnhilliard
-    params=1.0 2.5 0.03
+    params=1.0 2.5 0.0005
   [end]
 [end]
 
 [timestepping]
   type=be
   dt=1.0e-4
-  time=1.0e3
+  time=1.0e2
   optiters=3
   growthfactor=1.2
   adaptive=true
@@ -51,7 +51,7 @@ name=c mu
   maxiters=50
   r_rel_tol=1.0e-8
   r_abs_tol=1.0e-7
-  solver=ksp
+  solver=mumps
 [end]
 
 [projection]
@@ -68,5 +68,5 @@ name=projc dcx dcy
 
 [job]
   type=transient
-  debug=true
+  debug=dep
 [end]
