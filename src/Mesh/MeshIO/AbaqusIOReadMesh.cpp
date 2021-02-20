@@ -21,8 +21,10 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
         MessagePrinter::PrintErrorTxt("can\'t read mesh, the mesh file name has not been set");
         return false;
     }
+    _in.close();_in.clear();
     _in.open(_MeshFileName.c_str(),ios::in);
     if(!_in.is_open()){
+        cout<<"meshfile1="<<_MeshFileName<<endl;
         MessagePrinter::PrintErrorTxt("can\'t read the .inp file(="+_MeshFileName+"), please make sure the file name is correct or your inp file is in the same folder as your input file");
         MessagePrinter::AsFem_Exit();
     }
@@ -58,6 +60,7 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
     mesh.SetBulkMeshLineElmtsNum(0);
     mesh.SetBulkMeshPhysicalGroupNums(0);
 
+
     _nMaxDim=-1;_nMinDim=4;
     _nPhysicGroups=0;
 
@@ -68,6 +71,8 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
 
     map<string,vector<int>> PhysicalName2NodeIDsSet;
     map<string,int> PhysicalName2IDList;
+
+    vector<int> bulkelmtid;
 
     PhysicalName2NodeIDsSet.clear();
     PhysicalName2IDList.clear();
@@ -88,7 +93,7 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
             mesh.SetBulkMeshNodesNum(_nNodes);
             for(int i=0;i<_nNodes;i++){
                 getline(_in,str);
-                numbers=StringUtils::SplitStrNum(str);
+                numbers=StringUtils::SplitStrNum(str,',');
                 if(static_cast<int>(numbers.size())!=_nMaxDim+1){
                     MessagePrinter::PrintErrorTxt("incompatible node coordinates with your mesh dimension");
                     MessagePrinter::AsFem_Exit();
@@ -112,10 +117,12 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
             _nBulkElmts=GetElmtsNumFromInp();// this is only the bulk elements number
             _nNodesPerBulkElmt=GetElmtNodesNumFromInp();
             nLowerDimElmts=GetSurfaceElmtsNumFromInp();
+            nLowerDimElmts=0;// currently, we do not account for surface element!!!
             _nElmts=_nBulkElmts+nLowerDimElmts;
             mesh.SetBulkMeshElmtsNum(_nElmts);
             mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
             mesh.SetBulkMeshNodesNumPerBulkElmt(_nNodesPerBulkElmt);
+            bulkelmtid.clear();
             if(_nMaxDim==2){
                 mesh.SetBulkMeshLineElmtsNum(nLowerDimElmts);
                 mesh.SetBulkMeshNodesNumPerLineElmt(GetSubElmtNodesNumFromInp());
@@ -151,6 +158,7 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
                     MessagePrinter::AsFem_Exit();
                 }
                 elmtid=static_cast<int>(numbers[0]);
+                bulkelmtid.push_back(elmtid);
 
                 mesh.GetBulkMeshElmtConnPtr()[elmtid-1].resize(_nNodesPerBulkElmt+1,0);
                 mesh.GetBulkMeshElmtConnPtr()[elmtid-1][0]=_nNodesPerBulkElmt;
@@ -176,6 +184,7 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
             SurfaceSetName=str.substr(i+1,string::npos);
             ElmtIDList=GetSurfaceElmtIDViaSurfaceNameFromInp(SurfaceSetName);
             edge=GetSurfaceEdgeIDViaSurfaceNameFromInp(SurfaceSetName);
+
             if(edge||ElmtIDList.size()||surfaceid){}
             // TODO: here we need some strategy to split the boundary element from the surface set
         }
@@ -210,12 +219,45 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
     }// end-of-file-reading
 
     _nPhysicGroups=0;
-    PhysicalName2IDList.clear();
+
+
+    mesh.GetBulkMeshPhysicalGroupNameListPtr().clear();
+    mesh.GetBulkMeshPhysicalGroupIDListPtr().clear();
+    mesh.GetBulkMeshPhysicalGroupDimListPtr().clear();
+    mesh.GetBulkMeshPhysicalGroupName2DimListPrt().clear();
+    mesh.GetBulkMeshPhysicalGroupName2IDListPtr().clear();
+    mesh.GetBulkMeshPhysicalGroupIDListPtr().clear();
+    mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().clear();
+    mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().clear();
+    mesh.GetBulkMeshPhysicalName2NodeIDsListPtr().clear();
+
+    //********************************************************************
+    mesh.GetBulkMeshPhysicalGroupNameListPtr().push_back("alldomain");
+    mesh.GetBulkMeshPhysicalGroupIDListPtr().push_back(_nPhysicGroups);
+    mesh.GetBulkMeshPhysicalGroupDimListPtr().push_back(_nMaxDim);
+    mesh.GetBulkMeshPhysicalGroupName2DimListPrt().push_back(make_pair("alldomain",_nMaxDim));
+    mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair("alldomain",_nPhysicGroups));
+    mesh.GetBulkMeshPhysicalGroupIDListPtr().push_back(_nPhysicGroups);
+    mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair("alldomain",_nNodesPerBulkElmt));
+    mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkelmtid));
+
     for(auto it:PhysicalName2NodeIDsSet){
         _nPhysicGroups+=1;
-        PhysicalName2IDList[it.first]=_nPhysicGroups;
+//        PhysicalName2IDList[it.first]=_nPhysicGroups;
+//        cout<<"name="<<it.first<<endl;
+//        cout<<"id="<<_nPhysicGroups<<endl;
+        mesh.GetBulkMeshPhysicalGroupNameListPtr().push_back(it.first);
+        mesh.GetBulkMeshPhysicalGroupIDListPtr().push_back(_nPhysicGroups);
+        mesh.GetBulkMeshPhysicalGroupDimListPtr().push_back(0);
+        mesh.GetBulkMeshPhysicalGroupName2DimListPrt().push_back(make_pair(it.first,0));
+        mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair(it.first,_nPhysicGroups));
+        mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(it.first,-1));
+        mesh.GetBulkMeshPhysicalName2NodeIDsListPtr().push_back(make_pair(it.first,it.second));
     }
+    _nPhysicGroups+=1;// for our bulk elements
+
+    mesh.SetBulkMeshPhysicalGroupNums(_nPhysicGroups);
 
 
-    return false;
+    return true;
 }

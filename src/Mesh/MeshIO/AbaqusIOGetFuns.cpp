@@ -19,7 +19,7 @@ int AbaqusIO::GetElmtNodesNumFromInp() const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element nodes number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element nodes number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -52,6 +52,9 @@ int AbaqusIO::GetElmtNodesNumFromInp() const{
     else if(substr.find("C3D8")!=string::npos){
         return 8;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        return 10;
+    }
     else if(substr.find("C3D20")!=string::npos){
         return 20;
     }
@@ -59,7 +62,7 @@ int AbaqusIO::GetElmtNodesNumFromInp() const{
         return 27;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetElmtNodesNumFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetElmtNodesNumFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -69,7 +72,7 @@ int AbaqusIO::GetElmtDimFromInp() const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element dimension number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element dimension number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -102,6 +105,9 @@ int AbaqusIO::GetElmtDimFromInp() const{
     else if(substr.find("C3D8")!=string::npos){
         return 3;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        return 3;
+    }
     else if(substr.find("C3D20")!=string::npos){
         return 3;
     }
@@ -109,7 +115,7 @@ int AbaqusIO::GetElmtDimFromInp() const{
         return 3;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetElmtDimFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetElmtDimFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -119,7 +125,7 @@ int AbaqusIO::GetElmtOrderFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element dimension number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element dimension number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -152,6 +158,9 @@ int AbaqusIO::GetElmtOrderFromInp()const{
     else if(substr.find("C3D8")!=string::npos){
         return 1;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        return 2;
+    }
     else if(substr.find("C3D20")!=string::npos){
         return 2;
     }
@@ -159,7 +168,7 @@ int AbaqusIO::GetElmtOrderFromInp()const{
         return 2;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetElmtOrderFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetElmtOrderFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -169,7 +178,7 @@ int AbaqusIO::GetElmtVTKCellTypeFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element dimension number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element dimension number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -208,6 +217,10 @@ int AbaqusIO::GetElmtVTKCellTypeFromInp()const{
         // 8-node hexahedron
         return 12;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return 24;
+    }
     else if(substr.find("C3D20")!=string::npos){
         // 20-node second order hexahedron
         return 25;
@@ -217,7 +230,7 @@ int AbaqusIO::GetElmtVTKCellTypeFromInp()const{
         return 29;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetElmtVTKCellTypeFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetElmtVTKCellTypeFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -227,7 +240,7 @@ MeshType AbaqusIO::GetElmtMeshTypeFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element dimension number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element dimension number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -266,6 +279,10 @@ MeshType AbaqusIO::GetElmtMeshTypeFromInp()const{
         // 8-node hexahedron
         return MeshType::HEX8;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return MeshType::TET10;
+    }
     else if(substr.find("C3D20")!=string::npos){
         // 20-node second order hexahedron
         return MeshType::HEX20;
@@ -275,7 +292,7 @@ MeshType AbaqusIO::GetElmtMeshTypeFromInp()const{
         return MeshType::HEX27;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetElmtMeshTypeFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetElmtMeshTypeFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return MeshType::NULLTYPE;
@@ -285,7 +302,7 @@ string AbaqusIO::GetElmtMeshTypeNameFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element dimension number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element dimension number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -324,6 +341,10 @@ string AbaqusIO::GetElmtMeshTypeNameFromInp()const{
         // 8-node hexahedron
         return "hex8";
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return "tet10";
+    }
     else if(substr.find("C3D20")!=string::npos){
         // 20-node second order hexahedron
         return "hex20";
@@ -333,7 +354,7 @@ string AbaqusIO::GetElmtMeshTypeNameFromInp()const{
         return "hex27";
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetElmtMeshTypeFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetElmtMeshTypeFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return "unknowm-mesh";
@@ -343,7 +364,7 @@ int AbaqusIO::GetSubElmtNodesNumFromInp() const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get sub element nodes number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get sub element nodes number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -376,6 +397,10 @@ int AbaqusIO::GetSubElmtNodesNumFromInp() const{
     else if(substr.find("C3D8")!=string::npos){
         return 4;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return 6;
+    }
     else if(substr.find("C3D20")!=string::npos){
         return 8;
     }
@@ -383,7 +408,7 @@ int AbaqusIO::GetSubElmtNodesNumFromInp() const{
         return 9;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetSubElmtNodesNumFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetSubElmtNodesNumFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -393,7 +418,7 @@ int AbaqusIO::GetSubSubElmtNodesNumFromInp() const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get sub sub element nodes number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get sub sub element nodes number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -432,6 +457,10 @@ int AbaqusIO::GetSubSubElmtNodesNumFromInp() const{
         // hex8-quad4-edge2
         return 2;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron-tri6-edge3
+        return 3;
+    }
     else if(substr.find("C3D20")!=string::npos){
         // hex20-quad8-edge3
         return 3;
@@ -441,7 +470,7 @@ int AbaqusIO::GetSubSubElmtNodesNumFromInp() const{
         return 3;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetSubSubElmtNodesNumFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetSubSubElmtNodesNumFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -454,7 +483,7 @@ int AbaqusIO::GetSubElmtOrderFromInpElmt()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get element order number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get element order number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -487,6 +516,10 @@ int AbaqusIO::GetSubElmtOrderFromInpElmt()const{
     else if(substr.find("C3D8")!=string::npos){
         return 1;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return 2;
+    }
     else if(substr.find("C3D20")!=string::npos){
         return 2;
     }
@@ -494,7 +527,7 @@ int AbaqusIO::GetSubElmtOrderFromInpElmt()const{
         return 2;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetSubElmtOrderFromInpElmt, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetSubElmtOrderFromInpElmt, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return -1;
@@ -504,7 +537,7 @@ MeshType AbaqusIO::GetSubElmtMeshTypeFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get sub element type information, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get sub element type information, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -543,6 +576,10 @@ MeshType AbaqusIO::GetSubElmtMeshTypeFromInp()const{
         // 8-node hexahedron
         return MeshType::QUAD4;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return MeshType::TRI6;
+    }
     else if(substr.find("C3D20")!=string::npos){
         // 20-node second order hexahedron
         return MeshType::QUAD8;
@@ -552,7 +589,7 @@ MeshType AbaqusIO::GetSubElmtMeshTypeFromInp()const{
         return MeshType::QUAD9;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetSubElmtMeshTypeFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetSubElmtMeshTypeFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return MeshType::NULLTYPE;
@@ -562,7 +599,7 @@ MeshType AbaqusIO::GetSubSubElmtMeshTypeFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get sub sub element type information, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get sub sub element type information, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -601,6 +638,10 @@ MeshType AbaqusIO::GetSubSubElmtMeshTypeFromInp()const{
         // 8-node hexahedron-quad4-edge2
         return MeshType::EDGE2;
     }
+    else if(substr.find("C3D10")!=string::npos){
+        // 10-node second order tetrahedron
+        return MeshType::EDGE3;
+    }
     else if(substr.find("C3D20")!=string::npos){
         // 20-node second order hexahedron-quad8-edge3
         return MeshType::EDGE3;
@@ -610,7 +651,7 @@ MeshType AbaqusIO::GetSubSubElmtMeshTypeFromInp()const{
         return MeshType::EDGE3;
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t call GetSubSubElmtMeshTypeFromInp, unsupported element type");
+        MessagePrinter::PrintErrorTxt("can not call GetSubSubElmtMeshTypeFromInp, unsupported element type");
         MessagePrinter::AsFem_Exit();
     }
     return MeshType::NULLTYPE;
@@ -620,7 +661,7 @@ int AbaqusIO::GetNodesNumFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get nodes number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get nodes number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -646,7 +687,7 @@ int AbaqusIO::GetElmtsNumFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get elements number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get elements number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -672,7 +713,7 @@ int AbaqusIO::GetNsetsNumFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get Nset number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get Nset number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -693,7 +734,7 @@ int AbaqusIO::GetElsetsNumFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get Elset number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get Elset number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -714,7 +755,7 @@ int AbaqusIO::GetSurfacesNumFromInp()const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get Surface number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get Surface number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,substr;
@@ -735,7 +776,7 @@ int AbaqusIO::GetSurfaceElmtsNumFromInp()const{
     ifstream in,insub;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get Surface elements number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get Surface elements number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,str1,substr;
@@ -792,7 +833,7 @@ int AbaqusIO::GetSurfaceEdgeIDViaSurfaceNameFromInp(string surfacesetname)const{
     ifstream in;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get Surface elements number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can not get Surface elements number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,str1,substr;
@@ -810,10 +851,10 @@ int AbaqusIO::GetSurfaceEdgeIDViaSurfaceNameFromInp(string surfacesetname)const{
             // _Surf-Left_S4, S4
             getline(in,str);// read _Surf-Left_S4, S4
             i=str.find(",");
-            substr=str.substr(0,i-1);// '_Surf-Left_S4'
+            substr=str.substr(i+1,string::npos);// '_Surf-Left_S4'
             numbers=StringUtils::SplitStrNum(substr);// split s4 into 4
             if(numbers.size()<1){
-                MessagePrinter::PrintErrorTxt("can\'t find any numbers in "+str+" ,please check your inp file");
+                MessagePrinter::PrintErrorTxt("can not find any numbers in "+str+" ,please check your inp file");
                 MessagePrinter::AsFem_Exit();
             }
             edge=static_cast<int>(numbers[0]);
@@ -827,7 +868,7 @@ vector<int> AbaqusIO::GetSurfaceElmtIDViaSurfaceNameFromInp(string surfacesetnam
     ifstream in,insub;
     in.open(_MeshFileName,ios::in);
     if(!in.is_open()){
-        MessagePrinter::PrintErrorTxt("can\'t get Surface elements number, we can\'t open "+_MeshFileName);
+        MessagePrinter::PrintErrorTxt("can nott get Surface elements number, we cant open "+_MeshFileName);
         MessagePrinter::AsFem_Exit();
     }
     string str,str1,substr;

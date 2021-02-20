@@ -90,7 +90,7 @@ void LagrangeMesh::SetBulkMeshMeshTypeName(string meshname){
         _BulkMeshType=MeshType::TRI3;
     }
     else if(meshname.find("tri6")!=string::npos){
-        _BulkMeshTypeName="quad8";
+        _BulkMeshTypeName="tri6";
         _BulkMeshType=MeshType::TRI6;
     }
     else if(meshname.find("quad9")!=string::npos){

@@ -473,17 +473,22 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
     else if(str.find("type=gmsh")!=string::npos||
             str.find("type=Gmsh")!=string::npos||
             str.find("type=GMSH")!=string::npos){
+        string str0;
         HasType=true;
         IsBuiltIn=false;
         getline(in,str);linenum+=1;
-        str=StringUtils::StrToLower(str);
+        str=StringUtils::RemoveStrSpace(str);
+        str0=str;
+//        str=StringUtils::StrToLower(str);
         bool HasFileName=false;
         while(str.find("[end]")==string::npos&&
               str.find("[END]")==string::npos){
             str=StringUtils::RemoveStrSpace(str);
             if(StringUtils::IsCommentLine(str)||str.length()<1){
                 getline(in,str);linenum+=1;
-                str=StringUtils::StrToLower(str);
+                str=StringUtils::RemoveStrSpace(str);
+                str0=str;
+//                str=StringUtils::StrToLower(str);
                 continue;
             }
             if(str.find("file=")!=string::npos||
@@ -491,7 +496,7 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                 if(str.compare(str.length()-4,4,".msh")==0||
                    str.compare(str.length()-4,4,".Msh")==0||
                    str.compare(str.length()-4,4,".MSH")==0){
-                    string filename=str.substr(5,str.length());
+                    string filename=str0.substr(5,string::npos);
                     _meshio.SetMeshFileName(filename);
                     HasFileName=true;
                     MessagePrinter::PrintNormalTxt("Start to import mesh from gmsh ...");
@@ -582,17 +587,23 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
     else if(str.find("type=abaqus")!=string::npos||
             str.find("type=Abaqus")!=string::npos||
             str.find("type=ABAQUS")!=string::npos){
+        string str0;
         HasType=true;
         IsBuiltIn=false;
         getline(in,str);linenum+=1;
-        str=StringUtils::StrToLower(str);
+        str=StringUtils::RemoveStrSpace(str);
+        str0=str;
         bool HasFileName=false;
         while(str.find("[end]")==string::npos&&
               str.find("[END]")==string::npos){
             str=StringUtils::RemoveStrSpace(str);
+            str0=str;
+//            str=StringUtils::StrToLower(str);
             if(StringUtils::IsCommentLine(str)||str.length()<1){
                 getline(in,str);linenum+=1;
-                str=StringUtils::StrToLower(str);
+                str=StringUtils::RemoveStrSpace(str);
+                str0=str;
+//                str=StringUtils::StrToLower(str);
                 continue;
             }
             if(str.find("file=")!=string::npos||
@@ -600,7 +611,7 @@ bool InputSystem::ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh)
                 if(str.compare(str.length()-4,4,".inp")==0||
                    str.compare(str.length()-4,4,".Inp")==0||
                    str.compare(str.length()-4,4,".INP")==0){
-                    string filename=str.substr(5,str.length());
+                    string filename=str0.substr(5,string::npos);
                     _meshio.SetMeshFileName(filename);
                     MessagePrinter::PrintNormalTxt("Start to import mesh from abaqus ...");
                     IsSuccess=_meshio.ReadMeshFromFile(mesh);

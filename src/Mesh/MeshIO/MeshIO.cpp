@@ -59,6 +59,7 @@ void MeshIO::SetMeshFileName(string filename){
         _MeshIOType=MeshIOType::NETGEN;
     }
     else if(IsAbaqusMeshFile(filename)){
+        AbaqusIO::SetMeshFileName(filename);
         _MeshIOType=MeshIOType::ABAQUS;
     }
     else{

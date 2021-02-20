@@ -95,6 +95,7 @@ public:
     vector<string>&                   GetBulkMeshPhysicalGroupNameListPtr(){return _PhysicalGroupNameList;}
     vector<int>&                      GetBulkMeshPhysicalGroupIDListPtr(){return _PhysicalGroupIDList;}
     vector<int>&                      GetBulkMeshPhysicalGroupDimListPtr(){return _PhysicalGroupDimList;}
+    vector<pair<string,int>>&         GetBulkMeshPhysicalGroupName2DimListPrt(){return _PhysicalGroupName2DimList;}
     vector<pair<int,string>>&         GetBulkMeshPhysicalGroupID2NameListPtr(){return _PhysicalGroupID2NameList;}
     vector<pair<string,int>>&         GetBulkMeshPhysicalGroupName2IDListPtr(){return _PhysicalGroupName2IDList;}
     vector<pair<string,int>>&         GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr(){return _PhysicalGroupName2NodesNumPerElmtList;}
