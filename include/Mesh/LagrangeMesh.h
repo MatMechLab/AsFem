@@ -291,6 +291,14 @@ public:
         }
         return 0;
     }
+    inline int GetBulkMeshIthNodeIDViaPhyName(const string phyname,const int &id)const{
+        for(const auto &it:_NodeSetPhysicalName2NodeIDsList){
+            if(it.first==phyname){
+                return it.second[id-1];
+            }
+        }
+        return -1;
+    }
     inline int GetBulkMeshIthNodeSetPhysicalID(const int &i)const{
         return _NodeSetPhysicalGroupIDList[i-1];
     }

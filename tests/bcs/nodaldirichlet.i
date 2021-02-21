@@ -1,14 +1,13 @@
 // this is a test input file for mesh generation test
 
 [mesh]
-  type=abaqus
-  //file=Quad4-MultipleSurf.inp
-  //file=quad8.inp
-  //file=tet4.inp
-  //file=tet10.inp
-  //file=tri3.inp
-  file=Tri6-SurfaceSet.inp
-  savemesh=true
+  type=asfem
+  dim=2
+  xmax=10.0
+  ymax=2.0
+  nx=200
+  ny=40
+  meshtype=quad4
 [end]
 
 [dofs]
@@ -42,26 +41,13 @@ name=c
 name=projc dcx dcy
 [end]
 
-//[ics]
-//  [randc]
-//    type=random
-//    dof=c
-//    params=1.0 2.0
-//  [end]
-//[end]
 
 [bcs]
-  //[fix]
-  //  type=nodaldirichlet
-  //  dof=c
-  //  value=1.0
-  //  boundary=Node-Left
-  //[end]
-  [flux]
-    type=nodalneumann
+  [fix]
+    type=nodaldirichlet
     dof=c
-    value=-0.1
-    boundary=Node-Left
+    value=1.0
+    boundary=left bottom
   [end]
 [end]
 

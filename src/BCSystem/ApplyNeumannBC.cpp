@@ -22,7 +22,6 @@ void BCSystem::ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &
     PetscInt i,j,e,ee,gpInd;
     PetscInt iInd;
     PetscScalar value;
-    string bcname;
     int rankne,eStart,eEnd;
 
 
