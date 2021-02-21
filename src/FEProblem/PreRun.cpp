@@ -35,6 +35,10 @@ void FEProblem::InitAllComponents(){
     _elmtSystem.InitBulkElmtMateInfo(_mateSystem);// set mate index for each elmt block
     _mateSystem.InitBulkMateSystem();// clean all the materials variables
     _bcSystem.InitBCSystem(_mesh);
+    if(!_bcSystem.CheckAppliedBCNameIsValid(_mesh)){
+        MessagePrinter::PrintErrorTxt("your boundary condition is not correct, please check the boundary name or your mesh file or your input file");
+        MessagePrinter::AsFem_Exit();
+    }
 
 
     snprintf(buff,70,"Start to creat dof map ...");

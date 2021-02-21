@@ -54,6 +54,7 @@ public:
     inline int GetBCBlockNums()const{return _nBCBlocks;}
     inline BCBlock GetIthBCBlock(const int &i)const{return _BCBlockList[i-1];}
 
+    bool CheckAppliedBCNameIsValid(const Mesh &mesh);
     //**************************************************************
     //*** add basic settings
     //**************************************************************

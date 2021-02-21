@@ -186,15 +186,16 @@ vector<string> MessagePrinter::SplitErrorStr2Vec(string str){
             if(static_cast<int>(substr.size())==nWords){
                 strvec.push_back(substr);
                 substr.clear();
-                if(count==static_cast<int>(str.length())-1){
+            }
+            else{
+                if(count==static_cast<int>(str.length())){
+                    strvec.push_back(substr);
+                    substr.clear();
                     break;
                 }
             }
-            else{
-                if(count==static_cast<int>(str.length())-1){
-                    strvec.push_back(substr);
-                    break;
-                }
+            if(count==static_cast<int>(str.length())){
+                break;
             }
         }
     }
