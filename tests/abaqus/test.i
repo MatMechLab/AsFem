@@ -33,7 +33,7 @@ name=c
 [timestepping]
   type=be
   dt=1.0e-5
-  time=1.0e-1
+  time=1.0e-4
   adaptive=true
   optiters=3
 [end]
@@ -42,11 +42,20 @@ name=c
 name=projc dcx dcy
 [end]
 
-[ics]
-  [randc]
-    type=random
+//[ics]
+//  [randc]
+//    type=random
+//    dof=c
+//    params=1.0 2.0
+//  [end]
+//[end]
+
+[bcs]
+  [flux]
+    type=neumann
     dof=c
-    params=1.0 2.0
+    value=-0.1
+    boundary=Node-Left
   [end]
 [end]
 

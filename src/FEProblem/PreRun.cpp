@@ -175,6 +175,8 @@ void FEProblem::InitAllComponents(){
     MessagePrinter::PrintNormalTxt(str);
 
 
+    MessagePrinter::PrintStars();
+    MessagePrinter::PrintDashLine();
     MessagePrinter::PrintNormalTxt("Now all the components are ready, we can start the simulation !");
     MessagePrinter::PrintDashLine();
     MessagePrinter::PrintStars();

@@ -50,7 +50,12 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
     mesh.GetBulkMeshPhysicalGroupName2IDListPtr().clear();
     mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().clear();
     mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().clear();
-    mesh.GetBulkMeshPhysicalName2NodeIDsListPtr().clear();
+    //*** for nodeset physical group information
+    mesh.GetBulkMeshNodeSetPhysicalNameListPtr().clear();
+    mesh.GetBulkMeshNodeSetPhysicalIDListPtr().clear();
+    mesh.GetBulkMeshNodeSetPhysicalID2NameListPtr().clear();
+    mesh.GetBulkMeshNodeSetPhysicalName2IDListPtr().clear();
+    mesh.GetBulkMeshNodeSetPhysicalName2NodeIDsListPtr().clear();
 
     mesh.SetBulkMeshDim(0);
     mesh.SetBulkMeshNodesNum(0);
@@ -59,9 +64,11 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
     mesh.SetBulkMeshSurfaceElmtsNum(0);
     mesh.SetBulkMeshLineElmtsNum(0);
     mesh.SetBulkMeshPhysicalGroupNums(0);
+    mesh.SetBulkMeshNodeSetPhysicalGroupNums(0);
 
     _nMaxDim=-1;_nMinDim=4;
     _nPhysicGroups=0;
+    _nNodeSetPhysicalGroups=0;
 
     vector<pair<int,int>> UniquePhyDim2IDList;
     int MaxPhyIDofPhyGroup=-1,MaxPhyIDofElmt=-1;
@@ -83,6 +90,12 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
     _CurvesEntityPhyIDS.clear();
     _SurfaceEntityPhyIDs.clear();
     _VolumesEntityPhyIDs.clear();
+
+    _Xmax=-1.0e16;_Xmin=1.0e16;
+    _Ymax=-1.0e16;_Ymin=1.0e16;
+    _Ymax=-1.0e16;_Ymin=1.0e16;
+
+    map<int,vector<int>> NodeSetPhyID2NodeIDsList;
     //*****************************************************
     //*** start to read mesh file
     //*****************************************************
@@ -106,9 +119,17 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             mesh.GetBulkMeshPhysicalGroupID2NameListPtr().clear();
             mesh.GetBulkMeshPhysicalGroupName2IDListPtr().clear();
             mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().clear();
-            mesh.GetBulkMeshPhysicalName2NodeIDsListPtr().clear();
+            mesh.GetBulkMeshNodeSetPhysicalName2NodeIDsListPtr().clear();
             mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().clear();
             mesh.SetBulkMeshPhysicalGroupNums(0);
+            //******************************************************
+            //*** node-set physical information
+            mesh.GetBulkMeshNodeSetPhysicalNameListPtr().clear();
+            mesh.GetBulkMeshNodeSetPhysicalIDListPtr().clear();
+            mesh.GetBulkMeshNodeSetPhysicalID2NameListPtr().clear();
+            mesh.GetBulkMeshNodeSetPhysicalName2IDListPtr().clear();
+            mesh.GetBulkMeshNodeSetPhysicalName2NodeIDsListPtr().clear();
+            mesh.SetBulkMeshNodeSetPhysicalGroupNums(0);
 
             int phydim, phyid;
             string phyname;
@@ -131,6 +152,14 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 if (phydim > _nMaxDim) _nMaxDim = phydim;
                 if (_nMinDim < phydim) _nMinDim = phydim;
                 if (phyid > MaxPhyIDofPhyGroup) MaxPhyIDofPhyGroup = phyid;
+                if(phydim==0){
+                    // for nodal physical information
+                    _nNodeSetPhysicalGroups+=1;
+                    mesh.GetBulkMeshNodeSetPhysicalNameListPtr().push_back(phyname);
+                    mesh.GetBulkMeshNodeSetPhysicalIDListPtr().push_back(phyid);
+                    mesh.GetBulkMeshNodeSetPhysicalID2NameListPtr().push_back(make_pair(phyid,phyname));
+                    mesh.GetBulkMeshNodeSetPhysicalName2IDListPtr().push_back(make_pair(phyname,phyid));
+                }
             }
         } // end-of-physical group information
         else if(str.find("$Entities")!=string::npos){
@@ -247,6 +276,13 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                     NodeCoords[(j-1)*3+2]=z;
                     nNodes+=1;
                     NodeIDFlag[j-1]=1;
+
+                    if(x>_Xmax) _Xmax=x;
+                    if(x<_Xmin) _Xmin=x;
+                    if(y>_Ymax) _Ymax=y;
+                    if(y<_Ymin) _Ymin=y;
+                    if(z>_Zmax) _Zmax=z;
+                    if(z<_Zmin) _Zmin=z;
                 }
             }
             if(nNodes!=numNodes){
@@ -363,6 +399,14 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                         ElmtConn[elmtid-1][j]=static_cast<int>(numbers[j]);
                     }
                     nElmts+=1;
+                    if(entityDim==0){
+                        // for node set
+                        if(nodesnum!=1){
+                            MessagePrinter::PrintErrorTxt("invalid node set(element) in your msh2 file, the connectivity array should only contain 1 element(node id)");
+                            MessagePrinter::AsFem_Exit();
+                        }
+                        NodeSetPhyID2NodeIDsList[phyid].push_back(static_cast<int>(numbers[1]));
+                    }
                 }// end-of-local-element-connectivity
             }// end-of-element-entity-block
             if(nElmts!=numElements){
@@ -407,6 +451,13 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             mesh.GetBulkMeshNodeCoordsPtr()[(count-1)*3+1-1]=NodeCoords[i*3+0];
             mesh.GetBulkMeshNodeCoordsPtr()[(count-1)*3+2-1]=NodeCoords[i*3+1];
             mesh.GetBulkMeshNodeCoordsPtr()[(count-1)*3+3-1]=NodeCoords[i*3+2];
+        }
+    }
+    int jj;
+    for(auto &it:NodeSetPhyID2NodeIDsList){
+        for(int i=0;i<static_cast<int>(it.second.size());i++){
+            jj=it.second[i];
+            it.second[i]=NodeIDFlag[jj-1];
         }
     }
     // now we rearange the element connectivity
@@ -505,8 +556,6 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
         mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair("alldomain",maxid+1));
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkconn));
 
-        return _nBulkElmts>0;
-
     }
     else if(_nPhysicGroups==1&&UniquePhyDim2IDList.size()==1){
         // for the case where only 1 physical group is defined
@@ -535,8 +584,6 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
 
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair(mesh.GetBulkMeshIthPhysicalName(1),bulkconn));
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkconn));
-
-        return _nBulkElmts>0;
 
     }
     else{
@@ -587,12 +634,30 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
         mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair("alldomain",MaxPhyIDofElmt+1));
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkconn));
 
-        return _nBulkElmts>0;
     }
 
-    return false;
+    //*********************************************************
+    //*** for node-set physical group information
+    //*********************************************************
+    int phyid;
+    string phyname;
+    bool HasNodePhyID;
+    for(int i=0;i<_nNodeSetPhysicalGroups;i++){
+        phyid=mesh.GetBulkMeshNodeSetPhysicalIDListPtr()[i];
+        phyname=mesh.GetBulkMeshNodeSetPhysicalNameListPtr()[i];
+        HasNodePhyID=false;
+        for(auto it:NodeSetPhyID2NodeIDsList){
+            if(phyid==it.first){
+                mesh.GetBulkMeshNodeSetPhysicalName2NodeIDsListPtr().push_back(make_pair(phyname,it.second));
+                HasNodePhyID=true;
+                break;
+            }
+        }
+        if(!HasNodePhyID){
+            MessagePrinter::PrintErrorTxt("you defined "+phyname+" in your $Physical block of the msh4 file, however, we can not find the related nodes in $Elements block");
+            MessagePrinter::AsFem_Exit();
+        }
+    }
 
-
-
-    return true;
+    return _nBulkElmts>0;
 }

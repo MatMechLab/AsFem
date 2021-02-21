@@ -80,6 +80,7 @@ public:
     void SetBulkMeshIthBulkElmtVolume(const int &i,const double &volume){_ElmtVolume[i+_nElmts-_nBulkElmts-1]=volume;}
     //*** for physical group settings
     void SetBulkMeshPhysicalGroupNums(const int &n){_nPhysicalGroups=n;}
+    void SetBulkMeshNodeSetPhysicalGroupNums(const int &n){_nNodeSetPhysicalGroups=n;}
     //************************************************************
     //*** for advanced getting functions (allow value modify externally!)
     //************************************************************
@@ -100,7 +101,12 @@ public:
     vector<pair<string,int>>&         GetBulkMeshPhysicalGroupName2IDListPtr(){return _PhysicalGroupName2IDList;}
     vector<pair<string,int>>&         GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr(){return _PhysicalGroupName2NodesNumPerElmtList;}
     vector<pair<string,vector<int>>>& GetBulkMeshPhysicalName2ElmtIDsListPtr(){return _PhysicalName2ElmtIDsList;}
-    vector<pair<string,vector<int>>>& GetBulkMeshPhysicalName2NodeIDsListPtr(){return _PhysicalName2NodeIDsList;}
+    // for node set physical groups
+    vector<string>&                   GetBulkMeshNodeSetPhysicalNameListPtr(){return _NodeSetPhysicalGroupNameList;}
+    vector<int>&                      GetBulkMeshNodeSetPhysicalIDListPtr(){return _NodeSetPhysicalGroupIDList;}
+    vector<pair<int,string>>&         GetBulkMeshNodeSetPhysicalID2NameListPtr(){return _NodeSetPhysicalGroupID2NameList;}
+    vector<pair<string,int>>&         GetBulkMeshNodeSetPhysicalName2IDListPtr(){return _NodeSetPhysicalGroupName2IDList;}
+    vector<pair<string,vector<int>>>& GetBulkMeshNodeSetPhysicalName2NodeIDsListPtr(){return _NodeSetPhysicalName2NodeIDsList;}
 
 
     //************************************************************
@@ -216,6 +222,7 @@ public:
         }
     }
     //*** for physical group information
+    inline int GetBulkMeshNodeSetPhysicalGroupNum()const{return _nNodeSetPhysicalGroups;}
     inline int GetBulkMeshPhysicalGroupNum()const{return _nPhysicalGroups;}
     inline int GetBulkMeshIthPhysicalID(const int &i)const{return _PhysicalGroupIDList[i-1];}
     inline int GetBulkMeshIthPhysicalDim(const int &i)const{return _PhysicalGroupDimList[i-1];}
@@ -269,7 +276,7 @@ public:
         return 0;
     }
     inline vector<int> GetBulkMeshNodeIDsViaPhysicalName(string phyname)const{
-        for(const auto &it:_PhysicalName2NodeIDsList){
+        for(const auto &it:_NodeSetPhysicalName2NodeIDsList){
             if(it.first==phyname){
                 return it.second;
             }
@@ -277,13 +284,20 @@ public:
         return vector<int>(0);
     }
     inline int GetBulkMeshNodeIDsNumViaPhysicalName(string phyname)const{
-        for(const auto &it:_PhysicalName2NodeIDsList){
+        for(const auto &it:_NodeSetPhysicalName2NodeIDsList){
             if(it.first==phyname){
                 return static_cast<int>(it.second.size());
             }
         }
         return 0;
     }
+    inline int GetBulkMeshIthNodeSetPhysicalID(const int &i)const{
+        return _NodeSetPhysicalGroupIDList[i-1];
+    }
+    inline string GetBulkMeshIthNodeSetPhysicalName(const int &i)const{
+        return _NodeSetPhysicalGroupNameList[i-1];
+    }
+
 
     //************************************************************
     //*** for mesh information printer
@@ -333,6 +347,12 @@ protected:
     vector<pair<string,int>>         _PhysicalGroupName2IDList;
     vector<pair<string,int>>         _PhysicalGroupName2NodesNumPerElmtList;
     vector<pair<string,vector<int>>> _PhysicalName2ElmtIDsList;
-    vector<pair<string,vector<int>>> _PhysicalName2NodeIDsList;
+    //*** for nodal physical group
+    int _nNodeSetPhysicalGroups;
+    vector<string>                   _NodeSetPhysicalGroupNameList;
+    vector<int>                      _NodeSetPhysicalGroupIDList;
+    vector<pair<int,string>>         _NodeSetPhysicalGroupID2NameList;
+    vector<pair<string,int>>         _NodeSetPhysicalGroupName2IDList;
+    vector<pair<string,vector<int>>> _NodeSetPhysicalName2NodeIDsList;
 
 };

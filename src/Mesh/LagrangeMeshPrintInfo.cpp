@@ -14,6 +14,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "Mesh/LagrangeMesh.h"
+#include "Utils/StringUtils.h"
 
 void LagrangeMesh::PrintBulkMeshInfo()const{
     char buff[70];
@@ -32,7 +33,7 @@ void LagrangeMesh::PrintBulkMeshInfo()const{
                     GetBulkMeshPhysicalGroupNum(),GetBulkMeshBulkElmtTypeName().c_str(),GetBulkMeshOrder());
     MessagePrinter::PrintNormalTxt(string(buff));
 
-    MessagePrinter::PrintNormalTxt("  physical id       dim                phsical Name          elmts");
+    MessagePrinter::PrintNormalTxt("  physical id       dim                physical name          elmts");
 
     int phyid,n,dim;
     string phyname;
@@ -44,6 +45,21 @@ void LagrangeMesh::PrintBulkMeshInfo()const{
         snprintf(buff,70,"  %6d            %2d %28s      %8d",phyid,dim,phyname.c_str(),n);
         MessagePrinter::PrintNormalTxt(string(buff));
     }
+
+    //***************************************************
+    //*** for nodeset physical group information
+    //***************************************************
+    if(GetBulkMeshNodeSetPhysicalGroupNum()>0){
+        MessagePrinter::PrintNormalTxt("  nodeset phyid                       physical name          nodes");
+    }
+    for(int i=0;i<GetBulkMeshNodeSetPhysicalGroupNum();i++){
+        phyid=GetBulkMeshIthNodeSetPhysicalID(i+1);
+        phyname=GetBulkMeshIthNodeSetPhysicalName(i+1);
+        n=GetBulkMeshNodeIDsNumViaPhysicalName(phyname);
+        snprintf(buff,70,"  %6d             %28s        %8d",phyid,phyname.c_str(),n);
+        MessagePrinter::PrintNormalTxt(string(buff));
+    }
+
     MessagePrinter::PrintDashLine();
 }
 //*********************************
@@ -59,7 +75,7 @@ void LagrangeMesh::PrintBulkMeshInfoDetails()const{
                      GetBulkMeshDim(),GetBulkMeshMinDim(),GetBulkMeshPhysicalGroupNum(),GetBulkMeshBulkElmtTypeName().c_str(),GetBulkMeshOrder());
     MessagePrinter::PrintNormalTxt(string(buff));
 
-    MessagePrinter::PrintNormalTxt("  physical id                    phsical Name             elmts");
+    MessagePrinter::PrintNormalTxt("  physical id                    physical name             elmts");
 
     int phyid,n;
     string phyname;

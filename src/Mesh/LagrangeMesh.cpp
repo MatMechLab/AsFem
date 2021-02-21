@@ -55,7 +55,14 @@ LagrangeMesh::LagrangeMesh(){
     _PhysicalGroupName2IDList.clear();
     _PhysicalGroupName2NodesNumPerElmtList.clear();
     _PhysicalName2ElmtIDsList.clear();
-    _PhysicalName2NodeIDsList.clear();
+
+    //*** for node set physical groups
+    _nNodeSetPhysicalGroups=0;
+    _NodeSetPhysicalGroupNameList.clear();
+    _NodeSetPhysicalGroupIDList.clear();
+    _NodeSetPhysicalGroupID2NameList.clear();
+    _NodeSetPhysicalGroupName2IDList.clear();
+    _NodeSetPhysicalName2NodeIDsList.clear();
     
 }
 
