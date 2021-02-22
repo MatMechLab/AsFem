@@ -18,6 +18,7 @@ void FEProblem::ReadInputFile(){
     _inputSystem.ReadInputFile(_mesh,_dofHandler,
     _elmtSystem,_mateSystem,_bcSystem,_icSystem,_fe,
     _solutionSystem,_outputSystem,
+    _postprocessSystem,
     _nonlinearSolver,_timestepping,
     _feJobBlock);
 }
@@ -178,6 +179,8 @@ void FEProblem::InitAllComponents(){
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
+    _postprocessSystem.InitPPSOutput();
+    _postprocessSystem.CheckWhetherPPSIsValid(_mesh);
 
     MessagePrinter::PrintStars();
     MessagePrinter::PrintDashLine();
@@ -201,6 +204,8 @@ void FEProblem::InitAllComponents(){
     }
 
     _outputSystem.PrintInfo();
+
+    _postprocessSystem.PrintPostprocessInfo();
 
     _nonlinearSolver.PrintInfo();
 

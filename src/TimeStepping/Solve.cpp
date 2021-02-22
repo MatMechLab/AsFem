@@ -85,6 +85,9 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         MessagePrinter::PrintDashLine();
     }
 
+    VecCopy(U,user->_solutionSystem._Unew);
+    user->_postprocess.RunPostprocess(time,user->_mesh,user->_dofHandler,user->_fe,user->_solutionSystem);
+
     if(user->IsAdaptive&&step>=1){
         if(user->iters+1<=user->OptiIters){
             dt=user->dt*user->GrowthFactor;
@@ -183,6 +186,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             SolutionSystem &solutionSystem,EquationSystem &equationSystem,
             FE &fe,FESystem &feSystem,
             OutputSystem &outputSystem,
+            Postprocess &postprocessSystem,
             FEControlInfo &fectrlinfo){
 
     _appctx=TSAppCtx{mesh,dofHandler,
@@ -191,6 +195,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                    solutionSystem,equationSystem,
                    fe,feSystem,
                    outputSystem,
+                   postprocessSystem,
                    fectrlinfo,
                    //*****************
                    0.0,0.0,

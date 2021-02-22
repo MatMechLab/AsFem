@@ -34,6 +34,7 @@
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
+#include "Postprocess/Postprocess.h"
 
 #include "FEProblem/FEJobType.h"
 #include "FEProblem/FEControlInfo.h"
@@ -73,6 +74,7 @@ private:
     NonlinearSolver _nonlinearSolver;
     TimeStepping _timestepping;
     OutputSystem _outputSystem;
+    Postprocess _postprocessSystem;
 
     FEJobType _feJobType;
 

@@ -23,6 +23,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                                 FE &fe,
                                 SolutionSystem &solutionSystem,
                                 OutputSystem &outputSystem,
+                                Postprocess &postProcessSystem,
                                 NonlinearSolver &nonlinearSolver,
                                 TimeStepping &timestepping,
                                 FEJobBlock &feJobBlock){
@@ -38,6 +39,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     bool HasICBlock=false;
     bool HasQPointBlock=false;
     bool HasOutputBlock=false;
+    bool HasPostprocessBlock=false;
     bool HasProjectionBlock=false;
     bool HasNonlinearSolverBlock=false;
     bool HasFEJobBlock=false;
@@ -73,6 +75,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
     HasICBlock=false;
     HasQPointBlock=false;
     HasOutputBlock=false;
+    HasPostprocessBlock=false;
     HasProjectionBlock=false;
     HasNonlinearSolverBlock=false;
     HasFEJobBlock=false;
@@ -259,6 +262,28 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 return false;
             }
         }
+        else if(str.find("[postprocess]")!=string::npos){
+            if(!HasDofsBlock){
+                MessagePrinter::PrintErrorTxt("[postprocess] block requires the [dofs] block, you should define the [dofs] block first, then given the [postprocess] block");
+                return false;
+            }
+            int lastendlinenum;
+            if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                if(ReadPostprocessBlock(in,str,lastendlinenum,linenum,postProcessSystem,dofHandler)){
+                    HasPostprocessBlock=true;
+                }
+                else{
+                    MessagePrinter::PrintErrorTxt("some errors detected in the [postprocess] block, please check your input file");
+                    MessagePrinter::AsFem_Exit();
+                    HasPostprocessBlock=false;
+                }
+            }
+            else{
+                MessagePrinter::PrintErrorTxt("[postprocess]/[end] bracket pair is not match, please check your input file");
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+        }
         else if((str.find("[nonlinearsolver]")!=string::npos)&&str.length()==17){
             int lastendlinenum;
             if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
@@ -390,6 +415,13 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         }
         outputSystem.Init(_InputFileName);
         outputSystem.SetOutputType(OutputType::VTU);
+    }
+
+    postProcessSystem.SetInputFileName(_InputFileName);
+    if(!HasPostprocessBlock){
+        if(!_IsReadOnly){
+            MessagePrinter::PrintWarningTxt("no [postprocess] block is found, no any postprocess will be carried out by AsFem",false);
+        }
     }
 
     if(!HasNonlinearSolverBlock){

@@ -46,6 +46,7 @@ void FEProblem::RunStaticAnalysis(){
         else{
              _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
         }
+        _postprocessSystem.RunPostprocess(0.0,_mesh,_dofHandler,_fe,_solutionSystem);
         MessagePrinter::PrintStars();
         MessagePrinter::PrintNormalTxt("Write result to "+_outputSystem.GetOutputFileName());
         MessagePrinter::PrintStars();

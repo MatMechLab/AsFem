@@ -107,6 +107,7 @@ set(src ${src} src/InputSystem/ReadBCBlock.cpp)
 set(src ${src} src/InputSystem/ReadICBlock.cpp)
 set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
 set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
+set(src ${src} src/InputSystem/ReadPostprocessBlock.cpp)
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
 set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
 set(src ${src} src/InputSystem/ReadTimeSteppingBlock.cpp)
@@ -328,6 +329,25 @@ set(src ${src} src/FESystem/FESystem.cpp src/FESystem/InitBulkFESystem.cpp)
 set(src ${src} src/FESystem/FormBulkFE.cpp)
 set(src ${src} src/FESystem/FEAssemble.cpp)
 set(src ${src} src/FESystem/FEProjection.cpp)
+
+#############################################################
+### For postprocess system in AsFem                       ###
+#############################################################
+set(inc ${inc} include/Postprocess/PostprocessType.h)
+set(inc ${inc} include/Postprocess/PostprocessBlock.h)
+set(inc ${inc} include/Postprocess/Postprocess.h)
+set(src ${src} src/Postprocess/Postprocess.cpp)
+### for settings check
+set(src ${src} src/Postprocess/CheckWhetherPPSIsValid.cpp)
+set(src ${src} src/Postprocess/RunPostprocess.cpp)
+### for node pps
+set(src ${src} src/Postprocess/NodeValuePostProcess.cpp)
+### for elmt pps
+set(src ${src} src/Postprocess/ElementValuePostProcess.cpp)
+set(src ${src} src/Postprocess/AreaPostProcess.cpp)
+set(src ${src} src/Postprocess/VolumePostProcess.cpp)
+set(src ${src} src/Postprocess/ElementalIntegralPostProcess.cpp)
+
 
 #############################################################
 ### For FEProblem in AsFem  (top level)                   ###
