@@ -86,7 +86,7 @@ private:
     //****************************************************************
     //*** for profiling
     //****************************************************************
-    PetscMPIInt _rank;
+    PetscMPIInt _rank,_size;
     double Duration(chrono::high_resolution_clock::time_point &p1,chrono::high_resolution_clock::time_point &p2){
         return chrono::duration_cast<std::chrono::microseconds>(p2-p1).count()/1.0e6;
     }

@@ -26,6 +26,7 @@ void FEProblem::ReadInputFile(){
 void FEProblem::InitAllComponents(){
 
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
+    MPI_Comm_size(PETSC_COMM_WORLD,&_size);
     char buff[70];
     string str;
 
@@ -220,5 +221,11 @@ void FEProblem::InitAllComponents(){
     }
 
     _feJobBlock.PrintJobInfo();
+
+    MessagePrinter::PrintStars();
+    snprintf(buff,70,"++++++ %8d CPUs will be used for the simulation      ++++++!",_size);
+    str=buff;
+    MessagePrinter::PrintNormalTxt(str);
+    MessagePrinter::PrintStars();
 
 }
