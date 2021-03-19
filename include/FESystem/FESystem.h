@@ -67,7 +67,7 @@ public:
                 Mesh &mesh,const DofHandler &dofHandler,FE &fe,
                 ElmtSystem &elmtSystem,MateSystem &mateSystem,
                 const Vec &U,const Vec &V,
-                Vec &Hist,const Vec &HistOld,Vec &Proj,
+                Vec &Hist,Vec &HistOld,Vec &Proj,
                 Mat &AMATRIX,Vec &RHS);
     
     
@@ -131,7 +131,8 @@ private:
     vector<double> _elDofsActiveFlag;
     vector<double> _elU,_elV;
     vector<double> _gpU,_gpV;
-    vector<double> _gpHist,_gpHistOld,_gpProj;
+    vector<double> _gpHist,_gpHistOld;
+    map<string,double> _gpProj;
     vector<Vector3d> _gpGradU,_gpGradV;
     vector<double> _MaterialValues;
     Vector3d _gpCoord;

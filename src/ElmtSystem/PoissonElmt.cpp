@@ -26,7 +26,7 @@ void BulkElmtSystem::PoissonElmt(const FECalcType &calctype,
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR){
     //*******************************************************
     //*** to get rid of the warning for unused variables  ***
@@ -48,16 +48,15 @@ void BulkElmtSystem::PoissonElmt(const FECalcType &calctype,
                    +ScalarMaterials.at("dfdu")*trial*test*ctan[0];
         break;
     case FECalcType::InitHistoryVariable:
-        gpHist[0]=0.0;
+        fill(gpHist.begin(),gpHist.end(),0.0);
         break;
     case FECalcType::UpdateHistoryVariable:
         gpHistOld=gpHist;
         break;
     case FECalcType::Projection:
-        gpProj[0]=gpU[1];
-        gpProj[1]=gpGradU[1](1);
-        gpProj[2]=gpGradU[1](2);
-        gpProj[3]=gpGradU[1](3);
+        gpProj["gradux"]=gpGradU[1](1);
+        gpProj["graduy"]=gpGradU[1](2);
+        gpProj["graduz"]=gpGradU[1](3);
         break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Poisson element");

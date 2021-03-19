@@ -58,7 +58,7 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     user->_fectrlinfo.ctan[1]=0.0;
 
     // calculate the current velocity
-    VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._Uold,U);//V=-Uold+Unew
+    VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
     
     user->_feSystem.FormBulkFE(FECalcType::ComputeResidual,
@@ -93,7 +93,7 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     user->_fectrlinfo.ctan[1]=0.0;
 
     //*** calculate the current velocity
-    VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._Uold,U);//V=-Uold+Unew
+    VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
 
     user->_feSystem.FormBulkFE(FECalcType::ComputeJacobian,

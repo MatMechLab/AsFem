@@ -61,7 +61,7 @@ public:
                         const VectorMateType &VectorMaterials,
                         const Rank2MateType &Rank2Materials,
                         const Rank4MateType &Rank4Materials,
-                        vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                        vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                         MatrixXd &localK,VectorXd &localR);
 
     void PrintBulkElmtInfo()const;
@@ -69,7 +69,6 @@ public:
 protected:
     int _nBulkElmtBlocks;
     vector<ElmtBlock> _BulkElmtBlockList;
-
 
 protected:
     //****************************************************************************
@@ -89,7 +88,7 @@ protected:
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
     //*** the body source means  int(f*test)dV
     void BodySourceElmt(const FECalcType &calctype,
@@ -104,7 +103,7 @@ protected:
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for general time derivative
@@ -121,7 +120,7 @@ protected:
                      const VectorMateType &VectorMaterials,
                      const Rank2MateType &Rank2Materials,
                      const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                      MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for general poisson element
@@ -138,7 +137,7 @@ protected:
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -156,7 +155,7 @@ protected:
                      const VectorMateType &VectorMaterials,
                      const Rank2MateType &Rank2Materials,
                      const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                      MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for Cahn-Hilliard element in mixed-formula
@@ -173,7 +172,7 @@ protected:
                        const VectorMateType &VectorMaterials,
                        const Rank2MateType &Rank2Materials,
                        const Rank4MateType &Rank4Materials,
-                       vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                       vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                        MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -191,7 +190,7 @@ protected:
                           const VectorMateType &VectorMaterials,
                           const Rank2MateType &Rank2Materials,
                           const Rank4MateType &Rank4Materials,
-                          vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                          vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                           MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -209,7 +208,7 @@ protected:
                        const VectorMateType &VectorMaterials,
                        const Rank2MateType &Rank2Materials,
                        const Rank4MateType &Rank4Materials,
-                       vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                       vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                        MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -227,7 +226,7 @@ protected:
                            const VectorMateType &VectorMaterials,
                            const Rank2MateType &Rank2Materials,
                            const Rank4MateType &Rank4Materials,
-                           vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                           vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                            MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for User-defined element 2
@@ -244,7 +243,7 @@ protected:
                    const VectorMateType &VectorMaterials,
                    const Rank2MateType &Rank2Materials,
                    const Rank4MateType &Rank4Materials,
-                   vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                   vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                    MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -262,7 +261,7 @@ protected:
                    const VectorMateType &VectorMaterials,
                    const Rank2MateType &Rank2Materials,
                    const Rank4MateType &Rank4Materials,
-                   vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                   vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                    MatrixXd &localK,VectorXd &localR);
 
 };

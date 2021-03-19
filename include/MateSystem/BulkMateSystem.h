@@ -63,6 +63,72 @@ public:
         return _Rank4Materials;
     }
     //***************************************************************************
+    //*** for each materials getting functions
+    //***************************************************************************
+    inline vector<string> GetScalarMateNameList()const{
+        vector<string> temp;
+        temp.clear();
+        for(const auto &it:_ScalarMaterials)temp.push_back(it.first);
+        return temp;
+    }
+    inline bool IsNameInScalarMate(string matename)const{
+        for(const auto &it:_ScalarMaterials){
+            if(it.first==matename) return true;
+        }
+        return false;
+    }
+    inline int GetScalarMateNums()const{
+        return static_cast<int>(_ScalarMaterials.size());
+    }
+    //****
+    inline vector<string> GetVectorMateNameList()const{
+        vector<string> temp;
+        temp.clear();
+        for(const auto &it:_VectorMaterials)temp.push_back(it.first);
+        return temp;
+    }
+    inline bool IsNameInVectorMate(string matename)const{
+        for(const auto &it:_VectorMaterials){
+            if(it.first==matename) return true;
+        }
+        return false;
+    }
+    inline int GetVectorMateNums()const{
+        return static_cast<int>(_VectorMaterials.size());
+    }
+    //****
+    inline vector<string> GetRank2MateNameList()const{
+        vector<string> temp;
+        temp.clear();
+        for(const auto &it:_Rank2Materials)temp.push_back(it.first);
+        return temp;
+    }
+    inline bool IsNameInRank2Mate(string matename)const{
+        for(const auto &it:_Rank2Materials){
+            if(it.first==matename) return true;
+        }
+        return false;
+    }
+    inline int GetRank2MateNums()const{
+        return static_cast<int>(_Rank2Materials.size());
+    }
+    //***
+    inline vector<string> GetRank4MateNameList()const{
+        vector<string> temp;
+        temp.clear();
+        for(const auto &it:_Rank4Materials)temp.push_back(it.first);
+        return temp;
+    }
+    inline bool IsNameInRank4Mate(string matename)const{
+        for(const auto &it:_Rank4Materials){
+            if(it.first==matename) return true;
+        }
+        return false;
+    }
+    inline int GetRank4MateNums()const{
+        return static_cast<int>(_Rank4Materials.size());
+    }
+    //***************************************************************************
     //*** For AsFem's built-in materials and User-Defined-Materials (UMAT)    ***
     //***************************************************************************
     void RunBulkMateLibs(const MateType &imate,const int &mateindex,const int &nDim,

@@ -24,7 +24,7 @@ void BulkElmtSystem::User1Elmt(const FECalcType &calctype, const int &nDim, cons
                                const Vector3d &grad_test, const Vector3d &grad_trial,
                                const ScalarMateType &ScalarMaterials, const VectorMateType &VectorMaterials,
                                const Rank2MateType &Rank2Materials, const Rank4MateType &Rank4Materials,
-                               vector<double> &gpHist, vector<double> &gpHistOld, vector<double> &gpProj,
+                               vector<double> &gpHist, vector<double> &gpHistOld,map<string,double> &gpProj,
                                MatrixXd &localK, VectorXd &localR) {
     //*******************************************************
     //*** to get rid of the warning for unused variables  ***
@@ -95,10 +95,6 @@ void BulkElmtSystem::User1Elmt(const FECalcType &calctype, const int &nDim, cons
             gpHistOld=gpHist;
             break;
         case FECalcType::Projection:
-            gpProj[0]=ScalarMaterials.at("vonMises");
-            gpProj[1]=gpGradU[1](1);
-            gpProj[2]=gpGradU[1](2);
-            gpProj[3]=gpGradU[1](3);
             break;
         default:
             MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in User1 element");
