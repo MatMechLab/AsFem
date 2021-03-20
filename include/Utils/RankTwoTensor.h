@@ -92,6 +92,27 @@ public:
         temp(3)=(*this)(3,i);
         return temp;
     }
+    inline double GetIthVoigtComponent(const int &i)const{
+        if(i==1){
+            return (*this)(1,1);
+        }
+        else if(i==2){
+            return (*this)(2,2);
+        }
+        else if(i==3){
+            return (*this)(3,3);
+        }
+        else if(i==4){
+            return(*this)(2,3);
+        }
+        else if(i==5){
+            return (*this)(1,3);
+        }
+        else if(i==6){
+            return (*this)(1,2);
+        }
+        return 0;
+    }
     //**************************************************
     //*** for some basic mathematic operators
     //**************************************************

@@ -35,8 +35,7 @@ void FEProblem::RunStaticAnalysis(){
         if(_feCtrlInfo.IsProjection){
             _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
                 _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,
-                _solutionSystem._Unew,_solutionSystem._V,
-                _solutionSystem._Hist,_solutionSystem._HistOld,_solutionSystem._Proj,
+                _solutionSystem,
                 _equationSystem._AMATRIX,_equationSystem._RHS);
 
         

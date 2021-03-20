@@ -60,14 +60,15 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     // calculate the current velocity
     VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
+
+
+    VecCopy(U,user->_solutionSystem._Unew);
     
     user->_feSystem.FormBulkFE(FECalcType::ComputeResidual,
                         user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                         user->_mesh,user->_dofHandler,user->_fe,
                         user->_elmtSystem,user->_mateSystem,
-                        U,user->_solutionSystem._V,
-                        user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
-                        user->_solutionSystem._Proj,
+                        user->_solutionSystem,
                         user->_equationSystem._AMATRIX,RHS);
     
     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
@@ -96,13 +97,13 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
     VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
 
+    VecCopy(U,user->_solutionSystem._Unew);
+
     user->_feSystem.FormBulkFE(FECalcType::ComputeJacobian,
                         user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                         user->_mesh,user->_dofHandler,user->_fe,
                         user->_elmtSystem,user->_mateSystem,
-                        U,user->_solutionSystem._V,
-                        user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
-                        user->_solutionSystem._Proj,
+                        user->_solutionSystem,
                         A,user->_equationSystem._RHS);
     
     if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){

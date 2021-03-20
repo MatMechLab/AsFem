@@ -66,8 +66,7 @@ public:
     void FormBulkFE(const FECalcType &calctype,const double &t,const double &dt,const double (&ctan)[2],
                 Mesh &mesh,const DofHandler &dofHandler,FE &fe,
                 ElmtSystem &elmtSystem,MateSystem &mateSystem,
-                const Vec &U,const Vec &V,
-                Vec &Hist,Vec &HistOld,Vec &Proj,
+                SolutionSystem &solutionSystem,
                 Mat &AMATRIX,Vec &RHS);
     
     
@@ -93,22 +92,42 @@ private:
     void AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vector<int> &dofindex,
                                             const vector<double> &jacobian,Mat &K);
 
-    //*********************************************************
-    //*** for projection
-    //*********************************************************
-    void AssembleLocalProjectionToGlobal(const int &nNodes,const double &DetJac,const ShapeFun &shp,const vector<double> &elProj,Vec &ProjVec);
-    void Projection(const int &nTotalNodes,const int &nproj,Vec &ProjVec);
-
-
-    void AssembleLocalHistToGlobal(const int &elmtid,const int &gpInd,const vector<double> &gpHist,Vec &Hist);
-    
     void AssembleLocalToGlobal(const int &isw,const int &ndofs,vector<int> &elDofs,
                                vector<double> &localK,vector<double> &localR,
                                Mat &AMATRIX,Vec &RHS);
+    //*********************************************************
+    //*** for projection
+    //*********************************************************
+    void AssembleLocalProjectionToGlobal(const int &nNodes,const double &DetJac,const ShapeFun &shp,
+                                         const map<string,double> &ProjVariables,
+                                         const ScalarMateType &ScalarMate,
+                                         const VectorMateType &VectorMate,
+                                         const Rank2MateType &Rank2Mate,
+                                         const Rank4MateType &Rank4Mate,
+                                         SolutionSystem &solutionSystem);
+
+    void AssembleLocalProjVariable2Global(const int &nNodes,const double &DetJac,const ShapeFun &shp,
+                                          const int &nProj,vector<string> ProjNameVec,const map<string,double> &elProj,Vec &ProjVec);
+
+    void AssembleLocalProjScalarMate2Global(const int &nNodes,const double &DetJac,const ShapeFun &shp,
+                                            const int &nProj,vector<string> ProjNameVec,const ScalarMateType &ScalarMate,Vec &ProjVec);
+
+    void AssembleLocalProjVectorMate2Global(const int &nNodes,const double &DetJac,const ShapeFun &shp,
+                                            const int &nProj,vector<string> ProjNameVec,const VectorMateType &VectorMate,Vec &ProjVec);
+
+    void AssembleLocalProjRank2Mate2Global(const int &nNodes,const double &DetJac,const ShapeFun &shp,
+                                            const int &nProj,vector<string> ProjNameVec,const Rank2MateType &Rank2Mate,Vec &ProjVec);
+
+    void AssembleLocalProjRank4Mate2Global(const int &nNodes,const double &DetJac,const ShapeFun &shp,
+                                            const int &nProj,vector<string> ProjNameVec,const Rank4MateType &Rank4Mate,Vec &ProjVec);
+
+    void Projection(const int &nTotalNodes,SolutionSystem &solutionSystem);
+
 
     //*********************************************************
     //*** for history variables
     //*********************************************************
+    void AssembleLocalHistToGlobal(const int &elmtid,const int &gpInd,const vector<double> &gpHist,Vec &Hist);
     void AssembleLocalHistToGlobal(const int &e,const int &nhist,const int &ngp,const int &gpInd,const vector<double> &localHist,Vec &Hist);
     
 
