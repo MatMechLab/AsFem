@@ -41,7 +41,7 @@ name=d ux uy
 [end]
 
 [output]
-  type=vtk
+  type=vtu
   interval=3
 [end]
 

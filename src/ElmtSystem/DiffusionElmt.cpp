@@ -53,9 +53,12 @@ void BulkElmtSystem::DiffusionElmt(const FECalcType &calctype,
             gpHistOld=gpHist;
             break;
         case FECalcType::Projection:
+            gpProj["dcdx"]=gpGradU[1](1);
+            gpProj["dcdy"]=gpGradU[1](2);
+            gpProj["dcdz"]=gpGradU[1](3);
             break;
         default:
-            MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Poisson element");
+            MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Diffusion element");
             MessagePrinter::AsFem_Exit();
             break;
     }

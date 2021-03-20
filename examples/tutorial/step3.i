@@ -49,7 +49,9 @@ name=ux uy
 [end]
 
 [projection]
-name=vonMises stress_xx stress_yy stress_xy
+name=reacforce_x reacforce_y
+scalarmate=vonMises
+rank2mate=stress
 [end]
 
 [job]

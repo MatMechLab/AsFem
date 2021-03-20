@@ -43,10 +43,16 @@ name=u
 [end]
 
 [projection]
-name=uproj dux duy
+name=dudx
+scalarmate=f dfdu
 [end]
 
 [qpoint]
   type=gauss
   order=6
+[end]
+
+[job]
+  type=static
+  debug=dep
 [end]

@@ -84,9 +84,9 @@ void BulkElmtSystem::MechanicsElmt(const FECalcType &calctype,
             gpHistOld=gpHist;
             break;
         case FECalcType::Projection:
-            gpProj["Fx"]=Rank2Materials.at("stress").IthRow(1)*grad_test;
-            gpProj["Fy"]=Rank2Materials.at("stress").IthRow(2)*grad_test;
-            gpProj["Fz"]=Rank2Materials.at("stress").IthRow(3)*grad_test;
+            gpProj["reacforce_x"]=Rank2Materials.at("stress").IthRow(1)*grad_test;
+            gpProj["reacforce_y"]=Rank2Materials.at("stress").IthRow(2)*grad_test;
+            gpProj["reacforce_z"]=Rank2Materials.at("stress").IthRow(3)*grad_test;
             break;
         default:
             MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Mechanics element");

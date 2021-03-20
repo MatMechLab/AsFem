@@ -45,7 +45,7 @@ name=u
 
 
 [projection]
-name=uproj dux duy
+name=dudx dudy
 [end]
 
 [job]

@@ -40,7 +40,7 @@ name=c
 [end]
 
 [projection]
-name=projc dcx dcy
+name=dcdx dcdy
 [end]
 
 [ics]

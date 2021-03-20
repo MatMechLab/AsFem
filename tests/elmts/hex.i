@@ -7,18 +7,40 @@
   ny=10
   nz=10
   meshtype=hex27
-  printmesh=true
   savemesh=true
 [end]
 
 [dofs]
-name=disp_x disp_y
+name=u
 [end]
 
 [elmts]
   [elmt1]
     type=poisson
-    dofs=disp_x disp_y
+    dofs=u
+    mate=mate1
+  [end]
+[end]
+
+[mates]
+  [mate1]
+    type=constpoisson
+    params=1.0 1.0e1
+  [end]
+[end]
+
+[bcs]
+  [fixleft]
+    type=dirichlet
+    dof=u
+    value=0.1
+    boundary=left
+  [end]
+  [fixright]
+    type=dirichlet
+    dof=u
+    value=0.5
+     boundary=right
   [end]
 [end]
 
@@ -29,5 +51,10 @@ name=disp_x disp_y
 [end]
 
 [projection]
-name=name1 name2
+name=dudx dudy dudz
+[end]
+
+[job]
+  type=static
+  debug=dep
 [end]
