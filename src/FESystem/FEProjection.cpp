@@ -151,11 +151,11 @@ void FESystem::AssembleLocalProjRank2Mate2Global(const int &nNodes,const double 
                                                  const int &nProj,vector<string> ProjNameVec,
                                                  const Rank2MateType &Rank2Mate,Vec &ProjVec){
     double w;
-    int j,k,jInd,iInd;
+    int i1,j1,ii,j,k,jInd,iInd;
     bool HasName;
     for(j=1;j<=nNodes;j++){
         iInd=_elConn[j-1]-1;
-        jInd=iInd*(nProj*6+1)+0;
+        jInd=iInd*(nProj*9+1)+0;
         w=DetJac*shp.shape_value(j);
         VecSetValue(ProjVec,jInd,w,ADD_VALUES);
         for(k=1;k<=nProj;k++){
@@ -163,24 +163,14 @@ void FESystem::AssembleLocalProjRank2Mate2Global(const int &nNodes,const double 
             for(const auto &it:Rank2Mate){
                 if(it.first==ProjNameVec[k-1]){
                     HasName=true;
-                    // for first component
-                    jInd=iInd*(nProj*6+1)+6*(k-1)+1;
-                    VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(1),ADD_VALUES);
-                    // for second component
-                    jInd=iInd*(nProj*6+1)+6*(k-1)+2;
-                    VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(2),ADD_VALUES);
-                    // for third component
-                    jInd=iInd*(nProj*6+1)+6*(k-1)+3;
-                    VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(3),ADD_VALUES);
-                    // for fourth component
-                    jInd=iInd*(nProj*6+1)+6*(k-1)+4;
-                    VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(4),ADD_VALUES);
-                    // for fifth component
-                    jInd=iInd*(nProj*6+1)+6*(k-1)+5;
-                    VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(5),ADD_VALUES);
-                    // for sixth component
-                    jInd=iInd*(nProj*6+1)+6*(k-1)+6;
-                    VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(6),ADD_VALUES);
+                    ii=0;
+                    for(i1=1;i1<=3;i1++){
+                        for(j1=1;j1<=3;j1++){
+                            ii+=1;
+                            jInd=iInd*(nProj*9+1)+9*(k-1)+ii;
+                            VecSetValue(ProjVec,jInd,w*it.second(i1,j1),ADD_VALUES);
+                        }
+                    }
                     break;
                 }
             }

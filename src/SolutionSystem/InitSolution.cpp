@@ -98,7 +98,7 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
         _nRank2ProjPerNode=static_cast<int>(_Rank2MateProjectionNameList.size());
     }
     VecCreate(PETSC_COMM_WORLD,&_ProjRank2Mate);
-    VecSetSizes(_ProjRank2Mate,PETSC_DECIDE,_nNodes*(1+_nRank2ProjPerNode*6));
+    VecSetSizes(_ProjRank2Mate,PETSC_DECIDE,_nNodes*(1+_nRank2ProjPerNode*9));
     VecSetUp(_ProjRank2Mate);
     VecSet(_ProjRank2Mate,0.0);
     //*****************************************************
