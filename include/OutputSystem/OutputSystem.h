@@ -22,10 +22,12 @@
 #include <string>
 #include <sstream>
 
+
 #include "OutputSystem/OutputBlock.h"
 
 #include "Mesh/Mesh.h"
 #include "DofHandler/DofHandler.h"
+#include "SolutionSystem/SolutionSystem.h"
 
 
 using namespace std;
@@ -51,12 +53,8 @@ public:
     //************************************************************
     //*** write out our results to files with different format
     //************************************************************
-    void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
-    void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
-    void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,
-    const int &nProj,const vector<string> &projname,const Vec &Proj);
-    void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,
-                           const int &nProj,const vector<string> &projname,const Vec &Proj);
+    void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
+    void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
 
     //*************************************************
     //*** for pvd file
@@ -68,16 +66,11 @@ public:
     void PrintInfo()const;
     
 private:
-    void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
-    void WriteResult2VTU(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
-    void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
-    void WriteResult2CSV(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U);
+    void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
+    void WriteResult2VTU(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
+    void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
+    void WriteResult2CSV(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
     //**************************
-    void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
-    void WriteResult2VTU(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
-    void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
-    void WriteResult2CSV(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj);
-
 
 private:
     int _Interval;
@@ -92,8 +85,9 @@ private:
     //****************************************
     //*** for PETSc vec
     //****************************************
-    Vec _Useq,_ProjSeq;
-    VecScatter _scatterU,_scatterProj;
+    Vec _Useq,_ProjSeq,_ProjScalarSeq,_ProjVectorSeq,_ProjRank2Seq,_ProjRank4Seq;
+    VecScatter _scatterU,_scatterProj,_scatterProjScalar;
+    VecScatter _scatterProjVector,_scatterProjRank2,_scatterProjRank4;
     PetscMPIInt _rank;
 
 private:

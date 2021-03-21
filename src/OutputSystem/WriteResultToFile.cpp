@@ -14,38 +14,18 @@
 
 #include "OutputSystem/OutputSystem.h"
 
-void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U){
+void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem){
     if(_OutputType==OutputType::VTU){
-        WriteResult2VTU(mesh,dofHandler,U);
+        WriteResult2VTU(mesh,dofHandler,solutionSystem);
     }
     else{
         MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
         MessagePrinter::AsFem_Exit();
     }
 }
-void OutputSystem::WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const Vec &U){
+void OutputSystem::WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem){
     if(_OutputType==OutputType::VTU){
-        WriteResult2VTU(step,mesh,dofHandler,U);
-    }
-    else{
-        MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
-        MessagePrinter::AsFem_Exit();
-    }
-}
-//*********************************************************************
-void OutputSystem::WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const Vec &U,const int &nProj,const vector<string> &projname,const Vec &Proj){
-    if(_OutputType==OutputType::VTU){
-        WriteResult2VTU(mesh,dofHandler,U,nProj,projname,Proj);
-    }
-    else{
-        MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");
-        MessagePrinter::AsFem_Exit();
-    }
-}
-void OutputSystem::WriteResultToFile(const int &step, const Mesh &mesh, const DofHandler &dofHandler, const Vec &U,
-                                     const int &nProj, const vector<string> &projname, const Vec &Proj){
-    if(_OutputType==OutputType::VTU){
-        WriteResult2VTU(step,mesh,dofHandler,U,nProj,projname,Proj);
+        WriteResult2VTU(step,mesh,dofHandler,solutionSystem);
     }
     else{
         MessagePrinter::PrintErrorTxt("unsupported output file format, we will update this in the future");

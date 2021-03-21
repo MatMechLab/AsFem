@@ -49,7 +49,6 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     if(!_HasProjNameList){
         _nProjPerNode=0;
         _ProjectionNameList.clear();
-        _IsProjection=false;
     }
     else{
         _nProjPerNode=static_cast<int>(_ProjectionNameList.size());
@@ -68,6 +67,7 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     }
     else{
         _nScalarProjPerNode=static_cast<int>(_ScalarMateProjectionNameList.size());
+        _IsProjection=true;
     }
     VecCreate(PETSC_COMM_WORLD,&_ProjScalarMate);
     VecSetSizes(_ProjScalarMate,PETSC_DECIDE,_nNodes*(1+_nScalarProjPerNode));
@@ -82,6 +82,7 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     }
     else{
         _nVectorProjPerNode=static_cast<int>(_VectorMateProjctionNameList.size());
+        _IsProjection=true;
     }
     VecCreate(PETSC_COMM_WORLD,&_ProjVectorMate);
     VecSetSizes(_ProjVectorMate,PETSC_DECIDE,_nNodes*(1+_nVectorProjPerNode*3));
@@ -96,6 +97,7 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     }
     else{
         _nRank2ProjPerNode=static_cast<int>(_Rank2MateProjectionNameList.size());
+        _IsProjection=true;
     }
     VecCreate(PETSC_COMM_WORLD,&_ProjRank2Mate);
     VecSetSizes(_ProjRank2Mate,PETSC_DECIDE,_nNodes*(1+_nRank2ProjPerNode*9));
@@ -110,6 +112,7 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     }
     else{
         _nRank4ProjPerNode=static_cast<int>(_Rank4MateProjectionNameList.size());
+        _IsProjection=true;
     }
     VecCreate(PETSC_COMM_WORLD,&_ProjRank4Mate);
     VecSetSizes(_ProjRank4Mate,PETSC_DECIDE,_nNodes*(1+_nRank4ProjPerNode*36));

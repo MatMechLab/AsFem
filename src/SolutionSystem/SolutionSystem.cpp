@@ -50,42 +50,38 @@ SolutionSystem::SolutionSystem(){
 }
 
 void SolutionSystem::PrintProjectionInfo()const{
-    if(_ProjectionNameList.size()<1) return;
     MessagePrinter::PrintNormalTxt("Projection information summary:");
     string msg;
-    int i;
     msg="projected variables: ";
     for(const auto &it:_ProjectionNameList){
         msg+=it+" ";
     }
-    MessagePrinter::PrintNormalTxt(msg);
+    if(GetProjNumPerNode()>0) MessagePrinter::PrintNormalTxt(msg);
     //********************************************
-    i=0;
     msg="projected scalar material: ";
     for(const auto &it:_ScalarMateProjectionNameList){
         msg+=it+" ";
-        i+=1;
     }
     if(GetScalarMateProjNumPerNode()>0) MessagePrinter::PrintNormalTxt(msg);
 
     //********************************************
-    msg="projected vector material: ";i=0;
+    msg="projected vector material: ";
     for(const auto &it:_VectorMateProjctionNameList){
-        msg+=it+" ";i+=1;
+        msg+=it+" ";
     }
     if(GetVectorMateProjNumPerNode()>0) MessagePrinter::PrintNormalTxt(msg);
 
     //********************************************
-    msg="projected rank-2 tensor material: ";i=0;
+    msg="projected rank-2 tensor material: ";
     for(const auto &it:_Rank2MateProjectionNameList){
-        msg+=it+" ";i+=1;
+        msg+=it+" ";
     }
     if(GetRank2MateProjNumPerNode()>0) MessagePrinter::PrintNormalTxt(msg);
 
     //********************************************
-    msg="projected rank-4 tensor material: ";i=0;
+    msg="projected rank-4 tensor material: ";
     for(const auto &it:_Rank4MateProjectionNameList){
-        msg+=it+" ";i+=1;
+        msg+=it+" ";
     }
     if(GetRank4MateProjNumPerNode()>0) MessagePrinter::PrintNormalTxt(msg);
 

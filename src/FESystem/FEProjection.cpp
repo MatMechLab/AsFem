@@ -334,12 +334,12 @@ void FESystem::Projection(const int &nTotalNodes,SolutionSystem &solutionSystem)
     nProj=solutionSystem.GetRank2MateProjNumPerNode();
     for(ee=eStart;ee<eEnd;++ee){
         i=ee+1;
-        iInd=(i-1)*(1+nProj*6)+0;
+        iInd=(i-1)*(1+nProj*9)+0;
         VecGetValues(_ProjSeq,1,&iInd,&weight);
         VecSetValue(solutionSystem._ProjRank2Mate,iInd,weight,ADD_VALUES);
         for(j=1;j<=nProj;j++){
-            for(k=1;k<=6;k++){
-                iInd=(i-1)*(nProj*6+1)+6*(j-1)+k;
+            for(k=1;k<=9;k++){
+                iInd=(i-1)*(nProj*9+1)+9*(j-1)+k;
                 VecGetValues(_ProjSeq,1,&iInd,&value);
                 if(abs(weight)>1.0e-15){
                     newvalue=value/weight;

@@ -37,14 +37,8 @@ void FEProblem::RunStaticAnalysis(){
                 _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,
                 _solutionSystem,
                 _equationSystem._AMATRIX,_equationSystem._RHS);
-
-        
-            _outputSystem.WriteResultToFile(_mesh,_dofHandler,
-            _solutionSystem._Unew,_solutionSystem.GetProjNumPerNode(),_solutionSystem.GetProjNameVec(),_solutionSystem._Proj);
         }
-        else{
-             _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
-        }
+        _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem);
         _postprocessSystem.RunPostprocess(0.0,_mesh,_dofHandler,_fe,_solutionSystem);
         MessagePrinter::PrintStars();
         MessagePrinter::PrintNormalTxt("Write result to "+_outputSystem.GetOutputFileName());

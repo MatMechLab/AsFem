@@ -75,13 +75,8 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
             user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
             user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
-            user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U,
-            user->_solutionSystem.GetProjNumPerNode(),user->_solutionSystem.GetProjNameVec(),
-            user->_solutionSystem._Proj);
         }
-        else{
-            user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U);
-        }
+        user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,user->_solutionSystem);
         user->_outputSystem.WriteResultToPVDFile(time,user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();

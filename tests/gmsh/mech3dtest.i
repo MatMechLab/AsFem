@@ -65,6 +65,13 @@ name=ux uy uz
   [end]
 [end]
 
+[projection]
+name=reacforce_x reacforce_y reacforce_z
+scalarmate=vonMises
+vectormate=test
+rank2mate=stress strain pp
+[end]
+
 
 [postprocess]
   [arealeft]

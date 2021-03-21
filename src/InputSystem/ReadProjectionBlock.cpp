@@ -120,8 +120,8 @@ bool InputSystem::ReadProjectionBlock(ifstream &in,string str,int &linenum,Solut
         }
         //getline(in,str);linenum+=1;
     }
-    if(!HasName){
-        MessagePrinter::PrintErrorTxt("projection name can not be found in the [projection] block, 'name=name1 name2 ...' should be given");
+    if(!HasName && !HasScalarName && !HasVectorName && !HasRank2Name && !HasRank4Name){
+        MessagePrinter::PrintErrorTxt("projection names or materials can not be found in the [projection] block, 'name=name1 name2 ...' or 'scalarmate=...' should be given");
         HasName=false;
         MessagePrinter::AsFem_Exit();
     }
@@ -139,5 +139,5 @@ bool InputSystem::ReadProjectionBlock(ifstream &in,string str,int &linenum,Solut
         MessagePrinter::PrintWarningTxt("no rank4mate name found in [projection] block, so the rank4 tensor material properties will not be projected");
     }
 
-    return HasName;
+    return true;
 }
