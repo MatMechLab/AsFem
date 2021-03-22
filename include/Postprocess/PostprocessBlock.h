@@ -37,6 +37,10 @@ public:
         _PostprocessType=PostprocessType::NULLPPS;
         _PostprocessTypeName="none";
         _VariableName.clear();
+
+        _ProjVariableName.clear();
+        _ScalarMateName.clear();_VectorMateName.clear();_Rank2MateName.clear();_Rank4MateName.clear();
+        _iInd=-1;_jInd=-1;_Component=-1;
     }
 
     int _NodeID;
@@ -47,6 +51,9 @@ public:
     PostprocessType _PostprocessType;
     string _PostprocessTypeName;
     string _VariableName;// VariableName could be name in [dofs] block, or name ini [projection] block, or even our material properties
+    string _ProjVariableName;
+    string _ScalarMateName,_VectorMateName,_Rank2MateName,_Rank4MateName;
+    int _iInd,_jInd,_Component;
 
     void Init(){
         _NodeID=-1;
@@ -59,6 +66,10 @@ public:
         _PostprocessType=PostprocessType::NULLPPS;
         _PostprocessTypeName="none";
         _VariableName.clear();
+
+        _ProjVariableName.clear();
+        _ScalarMateName.clear();_VectorMateName.clear();_Rank2MateName.clear();_Rank4MateName.clear();
+        _iInd=-1;_jInd=-1;_Component=-1;
     }
 
     void PrintInfo()const{
@@ -81,12 +92,44 @@ public:
             str="   variable="+_VariableName;
             MessagePrinter::PrintNormalTxt(str);
         }
+        if(_ProjVariableName.size()>0){
+            str="   projected variable="+_ProjVariableName;
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_ScalarMateName.size()>0){
+            str="   scalar material="+_ScalarMateName;
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_VectorMateName.size()>0){
+            str="   vector material="+_VectorMateName;
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_Rank2MateName.size()>0){
+            str="   rank-2 tensor material="+_Rank2MateName;
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_Rank4MateName.size()>0){
+            str="   rank-4 tensor material="+_Rank4MateName;
+            MessagePrinter::PrintNormalTxt(str);
+        }
         if(_NodeID>0){
             str="   node id="+to_string(_NodeID);
             MessagePrinter::PrintNormalTxt(str);
         }
         if(_ElementID>0){
             str="   element id="+to_string(_NodeID);
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_iInd>0){
+            str="   i-index ="+to_string(_iInd);
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_jInd>0){
+            str="   j-index ="+to_string(_jInd);
+            MessagePrinter::PrintNormalTxt(str);
+        }
+        if(_Component>0){
+            str="   component ="+to_string(_Component);
             MessagePrinter::PrintNormalTxt(str);
         }
     }
