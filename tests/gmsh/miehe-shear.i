@@ -28,7 +28,7 @@ name=d ux uy
   type=nr
   maxiters=50
   r_rel_tol=5.0e-10
-  r_abs_tol=4.6e-7
+  r_abs_tol=2.5e-7
   solver=superlu
 [end]
 
@@ -97,6 +97,11 @@ rank2mate=stress
   [fy]
     type=projvariablesideintegral
     projvariable=reacforce_y
+    side=top
+  [end]
+  [ux]
+    type=sideintegral
+    dof=ux
     side=top
   [end]
 [end]

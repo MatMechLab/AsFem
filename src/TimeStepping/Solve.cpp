@@ -80,9 +80,9 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         user->_outputSystem.WriteResultToPVDFile(time,user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();
-    }
 
-    user->_postprocess.RunPostprocess(time,user->_mesh,user->_dofHandler,user->_fe,user->_solutionSystem);
+        user->_postprocess.RunPostprocess(time,user->_mesh,user->_dofHandler,user->_fe,user->_solutionSystem);
+    }
 
     // update history variable
     user->_feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,time,dt,user->_fectrlinfo.ctan,

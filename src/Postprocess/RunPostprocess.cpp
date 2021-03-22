@@ -42,6 +42,9 @@ void Postprocess::RunPostprocess(const double &time,const Mesh &mesh,const DofHa
             case PostprocessType::AREAPPS:
                 _PPSValues[i]=AreaPostProcess(sidenamelist,mesh,fe);
                 break;
+            case PostprocessType::SIDEINTEGRALPPS:
+                _PPSValues[i]=SideIntegralPostProcess(sidenamelist,dofname,mesh,dofHandler,fe,solutionSystem);
+                break;
             case PostprocessType::ELEMENTINTEGRALPPS:
                 _PPSValues[i]=ElementalIntegralPostProcess(domainnamelsit,dofname,mesh,dofHandler,fe,solutionSystem);
                 break;

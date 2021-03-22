@@ -10,32 +10,38 @@
 //+++ Author : Yang Bai
 //+++ Date   : 2021.03.22
 //+++ Purpose: this pps can calculate the intergrated value over
-//+++          specific side-set for projected variable
+//+++          specific side-set for dof
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "Postprocess/Postprocess.h"
 
-double Postprocess::ProjVariableSideIntegralPostProcess(vector<string> sidenamelist,string variablename,
-                                                        const Mesh &mesh,FE &fe,const SolutionSystem &solutionSystem){
-    double value=0.0,dofvalue;
+double Postprocess::SideIntegralPostProcess(vector<string> sidenamelist,string dofname,
+                                            const Mesh &mesh,const DofHandler &dofHandler,FE &fe,
+                                            const SolutionSystem &solutionSystem){
+    double dofvalue,value;
     int nDim,nNodesPerElmt;
-    int i,j,e,ee,iInd,gpInd,nProj,ProjIndex;
+    int i,j,e,ee,iInd,gpInd,DofIndex;
     Nodes elNodes;
     elNodes.InitNodes(27);
     double xi,eta,JxW;
     double elU[27];
 
-    VecScatterCreateToAll(solutionSystem._Proj,&_scatterproj,&_ProjSeq);
-    VecScatterBegin(_scatterproj,solutionSystem._Proj,_ProjSeq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatterproj,solutionSystem._Proj,_ProjSeq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);
+    VecScatterBegin(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
 
+    DofIndex=dofHandler.GetDofIDviaDofName(dofname);
     value=0.0;
-    nProj=solutionSystem.GetProjNumPerNode();
-    ProjIndex=solutionSystem.GetProjIDViaName(variablename);
-    if(ProjIndex<1){
-        MessagePrinter::PrintErrorTxt("error detected in ProjVariableSideIntegralPostProcess,"
-                                      "we can not find projected variable(name="+variablename+")"
-                                      +", please check either your input file or your UEL code");
+
+    if(DofIndex<1){
+        MessagePrinter::PrintErrorTxt("error detected in SideIntegralPostProcess,"
+                                      "we can not find dof(name="+dofname+")"
+                                      +", please check either your input file");
+        MessagePrinter::AsFem_Exit();
+    }
+    if(sidenamelist.size()<1){
+        MessagePrinter::PrintErrorTxt("error detected in SideIntegralPostProcess,"
+                                      "we can not find any side sets , please check either your input file");
         MessagePrinter::AsFem_Exit();
     }
     for(const auto &sidename:sidenamelist){
@@ -52,8 +58,8 @@ double Postprocess::ProjVariableSideIntegralPostProcess(vector<string> sidenamel
             // get the dof value for each nodal point
             for(i=1;i<=nNodesPerElmt;++i){
                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
-                iInd=(j-1)*(nProj+1)+ProjIndex;
-                VecGetValues(_ProjSeq,1,&iInd,&dofvalue);
+                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                VecGetValues(_Useq,1,&iInd,&dofvalue);
                 elU[i-1]=dofvalue;
             }
             if(nDim==0){
@@ -96,8 +102,8 @@ double Postprocess::ProjVariableSideIntegralPostProcess(vector<string> sidenamel
         }
     }
     // delete scatter
-    VecScatterDestroy(&_scatterproj);
-    VecDestroy(&_ProjSeq);
+    VecScatterDestroy(&_scatteru);
+    VecDestroy(&_Useq);
 
     return value;
 }

@@ -71,6 +71,12 @@ private:
 
     //****************************************************************
     //*** do the side integration over specific side-set name for
+    //*** DoFs
+    //****************************************************************
+    double SideIntegralPostProcess(vector<string> sidenamelist,string dofname,
+                                   const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const SolutionSystem &solutionSystem);
+    //****************************************************************
+    //*** do the side integration over specific side-set name for
     //*** projected variable
     //****************************************************************
     double ProjVariableSideIntegralPostProcess(vector<string> sidenamelist,string variablename,

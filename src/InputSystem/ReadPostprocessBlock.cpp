@@ -97,6 +97,11 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                         ppsBlock._PostprocessTypeName="elementalintegral";
                         HasPPSType=true;
                     }
+                    else if(substr.find("sideintegral")!=string::npos && substr.length()==12){
+                        ppsBlock._PostprocessType=PostprocessType::SIDEINTEGRALPPS;
+                        ppsBlock._PostprocessTypeName="sideintegral";
+                        HasPPSType=true;
+                    }
                     else if(substr.find("area")!=string::npos && substr.length()==4){
                         ppsBlock._PostprocessType=PostprocessType::AREAPPS;
                         ppsBlock._PostprocessTypeName="area";
