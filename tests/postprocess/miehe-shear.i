@@ -81,7 +81,7 @@ name=d ux uy
 [projection]
 name=reacforce_x reacforce_y
 scalarmate=vonMises
-rank2mate=stress
+rank2mate=stress strain
 [end]
 
 [postprocess]
@@ -110,6 +110,41 @@ rank2mate=stress
     rank2mate=stress
     iindex=1
     jindex=1
+    side=top
+  [end]
+  [sigma_xy]
+    type=rank2matesideintegral
+    rank2mate=stress
+    iindex=1
+    jindex=2
+    side=top
+  [end]
+  [sigma_yy]
+    type=rank2matesideintegral
+    rank2mate=stress
+    iindex=2
+    jindex=2
+    side=top
+  [end]
+  [strain_xx]
+    type=rank2matesideintegral
+    rank2mate=strain
+    iindex=1
+    jindex=1
+    side=top
+  [end]
+  [strain_xy]
+    type=rank2matesideintegral
+    rank2mate=strain
+    iindex=1
+    jindex=2
+    side=top
+  [end]
+  [strain_yy]
+    type=rank2matesideintegral
+    rank2mate=strain
+    iindex=2
+    jindex=2
     side=top
   [end]
 [end]

@@ -33,6 +33,12 @@ double Postprocess::Rank2MateSideIntegralPostProcess(vector<string> sidenamelist
     value=0.0;
     nProj=solutionSystem.GetRank2MateProjNumPerNode();
     ProjIndex=solutionSystem.GetRank2MateIDViaName(matename);
+
+    if(sidenamelist.size()<1){
+        MessagePrinter::PrintErrorTxt("error detected in Rank2MateSideIntegralPostProcess, we can not find any side set name, "
+                                      "please check your input file or your mesh");
+        MessagePrinter::AsFem_Exit();
+    }
     if(ProjIndex<1){
         MessagePrinter::PrintErrorTxt("error detected in Rank2MateSideIntegralPostProcess,"
                                       "we can not find projected rank-2 material(name="+matename+")"

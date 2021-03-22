@@ -32,6 +32,12 @@ double Postprocess::ProjVariableSideIntegralPostProcess(vector<string> sidenamel
     value=0.0;
     nProj=solutionSystem.GetProjNumPerNode();
     ProjIndex=solutionSystem.GetProjIDViaName(variablename);
+
+    if(sidenamelist.size()<1){
+        MessagePrinter::PrintErrorTxt("error detected in ProjVariableSideIntegralPostProcess, we can not find any side set name, "
+                                      "please check your input file or your mesh");
+        MessagePrinter::AsFem_Exit();
+    }
     if(ProjIndex<1){
         MessagePrinter::PrintErrorTxt("error detected in ProjVariableSideIntegralPostProcess,"
                                       "we can not find projected variable(name="+variablename+")"

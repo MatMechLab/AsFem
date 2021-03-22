@@ -23,6 +23,13 @@ double Postprocess::ElementValuePostProcess(const int &elmtid,string variablenam
     double elmtvalue=0.0,val;
     int DofIndex,j,iInd,i;
     DofIndex=dofHandler.GetDofIDviaDofName(variablename);
+    if(DofIndex<1){
+        MessagePrinter::PrintErrorTxt("error detected in ElementValuePostProcess,"
+                                      "we can not find DoF(name="+variablename+")"
+                                      +", please check either your input file");
+        MessagePrinter::AsFem_Exit();
+    }
+
     elmtvalue=0.0;
 
     VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);

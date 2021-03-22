@@ -24,6 +24,12 @@ double Postprocess::AreaPostProcess(vector<string> sidenamelist,const Mesh &mesh
     double xi,eta,JxW;
 
 
+    if(sidenamelist.size()<1){
+        MessagePrinter::PrintErrorTxt("we can not find any side set name in your AreaPostProcess, please check your input file or your mesh");
+        MessagePrinter::AsFem_Exit();
+    }
+
+
     area=0.0;
     for(const auto &sidename:sidenamelist){
         for(e=1;e<=mesh.GetBulkMeshElmtsNumViaPhysicalName(sidename);e++){

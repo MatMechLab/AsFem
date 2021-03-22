@@ -23,6 +23,11 @@ double Postprocess::VolumePostProcess(vector<string> domainnamelist,const Mesh &
     elNodes.InitNodes(27);
     double xi,eta,zeta,JxW;
 
+    if(domainnamelist.size()<1){
+        MessagePrinter::PrintErrorTxt("error detected in VolumePostProcess, we can not find any domain name, "
+                                      "please check your input file or your mesh");
+        MessagePrinter::AsFem_Exit();
+    }
 
     volume=0.0;
     for(const auto &domainname:domainnamelist){

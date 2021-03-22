@@ -28,6 +28,18 @@ double Postprocess::ElementalIntegralPostProcess(vector<string> domainnamelist,s
 
     DofIndex=dofHandler.GetDofIDviaDofName(variablename);
 
+    if(domainnamelist.size()<1){
+        MessagePrinter::PrintErrorTxt("error detected in ElementalIntegralPostProcess, we can not find any domain name, "
+                                      "please check your input file or your mesh");
+        MessagePrinter::AsFem_Exit();
+    }
+    if(DofIndex<1){
+        MessagePrinter::PrintErrorTxt("error detected in ElementalIntegralPostProcess,"
+                                      "we can not find DoF(name="+variablename+")"
+                                      +", please check either your input file");
+        MessagePrinter::AsFem_Exit();
+    }
+
     VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);
     VecScatterBegin(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
     VecScatterEnd(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);

@@ -23,6 +23,13 @@ double Postprocess::NodeValuePostProcess(const int &nodeid,string variablename,
     double nodevalue=0.0;
     int DofIndex,j;
     DofIndex=dofHandler.GetDofIDviaDofName(variablename);
+    if(DofIndex<1){
+        MessagePrinter::PrintErrorTxt("error detected in NodeValuePostProcess,"
+                                      "we can not find DoF(name="+variablename+")"
+                                      +", please check either your input file");
+        MessagePrinter::AsFem_Exit();
+    }
+
     j=dofHandler.GetIthNodeJthDofIndex(nodeid,DofIndex)-1;
 
     VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);
