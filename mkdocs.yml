@@ -1,0 +1,35 @@
+site_name: AsFem
+
+extra_javascript:
+  - javascripts/config.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - About: about.md
+  - Tutorial:
+    - Step-0: Tutorial/step-0.md
+    - Step-1: Tutorial/step-1.md
+    - Step-2: Tutorial/step-2.md
+    - Step-3: Tutorial/step-3.md
+    - Step-4: Tutorial/step-4.md
+    - Step-5: Tutorial/step-5.md
+  - Document:
+    - mesh block: Document/block-mesh.md
+    - dofs block: Document/block-dofs.md
+    - elmts block: Document/block-elmts.md
+    - mate block: Document/block-mates.md
+    - bcs block: Document/block-bcs.md
+    - ics block: Document/block-ics.md
+    - qpoint block: Document/block-qpoint.md
+    - nonlinear solver block: Document/block-nonlinearsolver.md
+    - timestepping block: Document/block-timestepping.md
+  - Release: release.md
