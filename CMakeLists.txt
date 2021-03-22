@@ -350,7 +350,7 @@ set(src ${src} src/Postprocess/ElementalIntegralPostProcess.cpp)
 ### for side-integral of projected variables
 set(src ${src} src/Postprocess/SideIntegralPostProcess.cpp)
 set(src ${src} src/Postprocess/ProjVariableSideIntegralPostProcess.cpp)
-
+set(src ${src} src/Postprocess/Rank2MateSideIntegralPostProcess.cpp)
 
 #############################################################
 ### For FEProblem in AsFem  (top level)                   ###

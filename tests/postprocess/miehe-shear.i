@@ -105,6 +105,13 @@ rank2mate=stress
     dof=ux
     side=top
   [end]
+  [sigma_xx]
+    type=rank2matesideintegral
+    rank2mate=stress
+    iindex=1
+    jindex=1
+    side=top
+  [end]
 [end]
 
 [job]

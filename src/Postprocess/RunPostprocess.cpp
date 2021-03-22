@@ -19,17 +19,20 @@ void Postprocess::RunPostprocess(const double &time,const Mesh &mesh,const DofHa
         return;
     }
     PostprocessType ppstype;
-    int nodeid,elmtid;
-    string dofname,projvarname;
+    int nodeid,elmtid,iInd,jInd;
+    string dofname,projvarname,rank2matename;
     vector<string> sidenamelist,domainnamelsit;
     for(int i=0;i<_nPostProcessBlocks;i++){
         ppstype=_PostProcessBlockList[i]._PostprocessType;
         nodeid=_PostProcessBlockList[i]._NodeID;
         elmtid=_PostProcessBlockList[i]._ElementID;
+        iInd=_PostProcessBlockList[i]._iInd;
+        jInd=_PostProcessBlockList[i]._jInd;
         sidenamelist=_PostProcessBlockList[i]._BoundaryNameList;
         domainnamelsit=_PostProcessBlockList[i]._DomainNameList;
         dofname=_PostProcessBlockList[i]._VariableName;
         projvarname=_PostProcessBlockList[i]._ProjVariableName;
+        rank2matename=_PostProcessBlockList[i]._Rank2MateName;
         switch (ppstype) {
             case PostprocessType::NULLPPS:
                 break;
@@ -44,6 +47,9 @@ void Postprocess::RunPostprocess(const double &time,const Mesh &mesh,const DofHa
                 break;
             case PostprocessType::SIDEINTEGRALPPS:
                 _PPSValues[i]=SideIntegralPostProcess(sidenamelist,dofname,mesh,dofHandler,fe,solutionSystem);
+                break;
+            case PostprocessType::RANK2MATESIDEINTEGRALPPS:
+                _PPSValues[i]=Rank2MateSideIntegralPostProcess(sidenamelist,rank2matename,iInd,jInd,mesh,fe,solutionSystem);
                 break;
             case PostprocessType::ELEMENTINTEGRALPPS:
                 _PPSValues[i]=ElementalIntegralPostProcess(domainnamelsit,dofname,mesh,dofHandler,fe,solutionSystem);

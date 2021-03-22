@@ -84,6 +84,13 @@ private:
     double ProjVariableSideIntegralPostProcess(vector<string> sidenamelist,string variablename,
                                                const Mesh &mesh,FE &fe,const SolutionSystem &solutionSystem);
 
+    //****************************************************************
+    //*** do the side integration over specific side-set name for
+    //*** projected variable
+    //****************************************************************
+    double Rank2MateSideIntegralPostProcess(vector<string> sidenamelist,string matename,const int &ii,const int &jj,
+                                            const Mesh &mesh,FE &fe,const SolutionSystem &solutionSystem);
+
 private:
     vector<PostprocessBlock> _PostProcessBlockList;
     int _nPostProcessBlocks;

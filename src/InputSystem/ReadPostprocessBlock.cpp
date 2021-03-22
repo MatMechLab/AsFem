@@ -118,6 +118,11 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                         ppsBlock._PostprocessTypeName="projvariablesideintegral";
                         HasPPSType=true;
                     }
+                    else if(substr.find("rank2matesideintegral")!=string::npos && substr.length()==21){
+                        ppsBlock._PostprocessType=PostprocessType::RANK2MATESIDEINTEGRALPPS;
+                        ppsBlock._PostprocessTypeName="rank2matesideintegral";
+                        HasPPSType=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=StringUtils::SplitStrNum(substr);
                         MessagePrinter::PrintErrorInLineNumber(linenum);
@@ -257,7 +262,7 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                     }
                     else{
                         substr=str0.substr(str0.find_first_of('=')+1);
-                        ppsBlock._VectorMateName=substr;
+                        ppsBlock._Rank2MateName=substr;
                     }
                 }
                 else if(str.compare(0,5,"side=")==0){
