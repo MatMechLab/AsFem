@@ -69,6 +69,13 @@ private:
     double AreaPostProcess(vector<string> sidenamelist,const Mesh &mesh,FE &fe);
     double VolumePostProcess(vector<string> domainnamelist,const Mesh &mesh,FE &fe);
 
+    //****************************************************************
+    //*** do the side integration over specific side-set name for
+    //*** projected variable
+    //****************************************************************
+    double ProjVariableSideIntegralPostProcess(vector<string> sidenamelist,string variablename,
+                                               const Mesh &mesh,FE &fe,const SolutionSystem &solutionSystem);
+
 private:
     vector<PostprocessBlock> _PostProcessBlockList;
     int _nPostProcessBlocks;
@@ -82,7 +89,7 @@ private:
     //*** for PETSc
     //*************************************************
     PetscMPIInt _rank;
-    VecScatter _scatteru;
-    Vec _Useq;
+    VecScatter _scatteru,_scatterproj;
+    Vec _Useq,_ProjSeq;
 
 };

@@ -636,11 +636,26 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
 
     }
 
+    mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().clear();
+    int dim;string phyname;
+    for(int i=0;i<_nPhysicGroups;i++){
+        phyname=mesh.GetBulkMeshPhysicalGroupNameListPtr()[i];
+        dim=mesh.GetBulkMeshPhysicalGroupDimListPtr()[i];
+        if(dim==1){
+            mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(phyname,_nNodesPerLineElmt));
+        }
+        else if(dim==2){
+            mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(phyname,_nNodesPerSurfaceElmt));
+        }
+        else if(dim==3){
+            mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(phyname,_nNodesPerBulkElmt));
+        }
+    }
+
     //*********************************************************
     //*** for node-set physical group information
     //*********************************************************
     int phyid;
-    string phyname;
     bool HasNodePhyID;
     for(int i=0;i<_nNodeSetPhysicalGroups;i++){
         phyid=mesh.GetBulkMeshNodeSetPhysicalIDListPtr()[i];

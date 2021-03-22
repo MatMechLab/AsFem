@@ -347,6 +347,8 @@ set(src ${src} src/Postprocess/ElementValuePostProcess.cpp)
 set(src ${src} src/Postprocess/AreaPostProcess.cpp)
 set(src ${src} src/Postprocess/VolumePostProcess.cpp)
 set(src ${src} src/Postprocess/ElementalIntegralPostProcess.cpp)
+### for side-integral of projected variables
+set(src ${src} src/Postprocess/ProjVariableSideIntegralPostProcess.cpp)
 
 
 #############################################################

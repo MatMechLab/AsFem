@@ -62,7 +62,18 @@ public:
     //*** Basic get funs
     //**************************************
     inline int GetHistNumPerGPoint()const{return _nHistPerGPoint;}
+
     inline int GetProjNumPerNode()const{return _nProjPerNode;}
+    inline int GetProjIDViaName(string projname)const{
+        for(int i=0;i<GetProjNumPerNode();i++){
+            if(_ProjectionNameList[i]==projname){
+                return i+1;
+            }
+        }
+        return -1;
+    }
+    string GetIthProjName(const int &i)const{return _ProjectionNameList[i-1];}
+    vector<string> GetProjNameVec()const{return _ProjectionNameList;}
 
     inline int GetScalarMateProjNumPerNode()const{return _nScalarProjPerNode;}
     inline int GetScalarMateIDViaName(string scalarname)const{
@@ -120,8 +131,6 @@ public:
     }
     inline vector<string> GetRank4MateNameVec()const{return _Rank4MateProjectionNameList;}
     //**********************************************
-    string GetIthProjName(const int &i)const{return _ProjectionNameList[i-1];}
-    vector<string> GetProjNameVec()const{return _ProjectionNameList;}
     bool IsProjection()const{return _IsProjection;}
 
 

@@ -107,6 +107,11 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                         ppsBlock._PostprocessTypeName="volume";
                         HasPPSType=true;
                     }
+                    else if(substr.find("projvariablesideintegral")!=string::npos && substr.length()==24){
+                        ppsBlock._PostprocessType=PostprocessType::PROJVARIABLESIDEINTEGRALPPS;
+                        ppsBlock._PostprocessTypeName="projvariablesideintegral";
+                        HasPPSType=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=StringUtils::SplitStrNum(substr);
                         MessagePrinter::PrintErrorInLineNumber(linenum);
@@ -193,6 +198,62 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                         HasDof=true;
                     }
                 }
+                else if(str.compare(0,13,"projvariable=")==0){
+                    if(str.size()<13){
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        MessagePrinter::PrintErrorTxt("no projected variable name found in [postprocess] sub block, 'projvariable=variable-name' is expected",false);
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        substr=str0.substr(str0.find_first_of('=')+1);
+                        ppsBlock._ProjVariableName=substr;
+                    }
+                }
+                else if(str.compare(0,11,"scalarmate=")==0){
+                    if(str.size()<11){
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        MessagePrinter::PrintErrorTxt("no scalar mate name found in [postprocess] sub block, 'scalarmate=mate-name' is expected",false);
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        substr=str0.substr(str0.find_first_of('=')+1);
+                        ppsBlock._ScalarMateName=substr;
+                    }
+                }
+                else if(str.compare(0,11,"vectormate=")==0){
+                    if(str.size()<11){
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        MessagePrinter::PrintErrorTxt("no vector mate name found in [postprocess] sub block, 'vectormate=mate-name' is expected",false);
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        substr=str0.substr(str0.find_first_of('=')+1);
+                        ppsBlock._VectorMateName=substr;
+                    }
+                }
+                else if(str.compare(0,10,"rank2mate=")==0){
+                    if(str.size()<10){
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        MessagePrinter::PrintErrorTxt("no rank-2 mate name found in [postprocess] sub block, 'rank2mate=mate-name' is expected",false);
+                        MessagePrinter::PrintStars();
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        substr=str0.substr(str0.find_first_of('=')+1);
+                        ppsBlock._VectorMateName=substr;
+                    }
+                }
                 else if(str.compare(0,5,"side=")==0){
                     if(str.size()<5){
                         MessagePrinter::PrintStars();
@@ -261,6 +322,81 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                     else{
                         ppsBlock._NodeID=static_cast<int>(number[0]);
                         HasNodeID=true;
+                    }
+                }
+                else if(str.compare(0,7,"iindex=")==0){
+                    if(!HasPPSType){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no 'type=' found in ["+ppsBlock._PPSBlockName+"] sub block, 'iindex=' must be given after 'type=' in [bcs] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                    }
+                    number=StringUtils::SplitStrNum(str);
+                    if(number.size()<1){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no i-index value found in ["+ppsBlock._PPSBlockName+"] sub block, 'iindex=integer' should be given in [postprocess] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        ppsBlock._iInd=static_cast<int>(number[0]);
+                        if(ppsBlock._iInd>3||ppsBlock._iInd<1){
+                            MessagePrinter::PrintErrorInLineNumber(linenum);
+                            msg="i-index="+to_string(ppsBlock._iInd)+" is invalid";
+                            MessagePrinter::PrintErrorTxt(msg);
+                            MessagePrinter::AsFem_Exit();
+                        }
+                    }
+                }
+                else if(str.compare(0,7,"jindex=")==0){
+                    if(!HasPPSType){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no 'type=' found in ["+ppsBlock._PPSBlockName+"] sub block, 'jindex=' must be given after 'type=' in [bcs] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                    }
+                    number=StringUtils::SplitStrNum(str);
+                    if(number.size()<1){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no j-index value found in ["+ppsBlock._PPSBlockName+"] sub block, 'jindex=integer' should be given in [postprocess] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        ppsBlock._jInd=static_cast<int>(number[0]);
+                        if(ppsBlock._jInd>3||ppsBlock._jInd<1){
+                            MessagePrinter::PrintErrorInLineNumber(linenum);
+                            msg="j-index="+to_string(ppsBlock._jInd)+" is invalid";
+                            MessagePrinter::PrintErrorTxt(msg);
+                            MessagePrinter::AsFem_Exit();
+                        }
+                    }
+                }
+                else if(str.compare(0,10,"component=")==0){
+                    if(!HasPPSType){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no 'type=' found in ["+ppsBlock._PPSBlockName+"] sub block, 'component=' must be given after 'type=' in [bcs] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                    }
+                    number=StringUtils::SplitStrNum(str);
+                    if(number.size()<1){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no component value found in ["+ppsBlock._PPSBlockName+"] sub block, 'component=integer' should be given in [postprocess] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        ppsBlock._Component=static_cast<int>(number[0]);
+                        if(ppsBlock._Component>3||ppsBlock._Component<1){
+                            MessagePrinter::PrintErrorInLineNumber(linenum);
+                            msg="component="+to_string(ppsBlock._Component)+" is invalid";
+                            MessagePrinter::PrintErrorTxt(msg);
+                            MessagePrinter::AsFem_Exit();
+                        }
                     }
                 }
                 else if(str.find("[end]")!=string::npos){

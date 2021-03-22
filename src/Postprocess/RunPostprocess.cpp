@@ -20,7 +20,7 @@ void Postprocess::RunPostprocess(const double &time,const Mesh &mesh,const DofHa
     }
     PostprocessType ppstype;
     int nodeid,elmtid;
-    string dofname;
+    string dofname,projvarname;
     vector<string> sidenamelist,domainnamelsit;
     for(int i=0;i<_nPostProcessBlocks;i++){
         ppstype=_PostProcessBlockList[i]._PostprocessType;
@@ -29,6 +29,7 @@ void Postprocess::RunPostprocess(const double &time,const Mesh &mesh,const DofHa
         sidenamelist=_PostProcessBlockList[i]._BoundaryNameList;
         domainnamelsit=_PostProcessBlockList[i]._DomainNameList;
         dofname=_PostProcessBlockList[i]._VariableName;
+        projvarname=_PostProcessBlockList[i]._ProjVariableName;
         switch (ppstype) {
             case PostprocessType::NULLPPS:
                 break;
@@ -46,6 +47,9 @@ void Postprocess::RunPostprocess(const double &time,const Mesh &mesh,const DofHa
                 break;
             case PostprocessType::VOLUMEPPS:
                 _PPSValues[i]=VolumePostProcess(domainnamelsit,mesh,fe);
+                break;
+            case PostprocessType::PROJVARIABLESIDEINTEGRALPPS:
+                _PPSValues[i]=ProjVariableSideIntegralPostProcess(sidenamelist,projvarname,mesh,fe,solutionSystem);
                 break;
             default:
                 MessagePrinter::PrintErrorTxt("unsupported postprocess type in RunPostprocess, please check your input file");

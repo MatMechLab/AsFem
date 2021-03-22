@@ -19,7 +19,7 @@ name=d ux uy
 [mates]
   [myfracmate]
     type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.015 1.0e-6
+    params=121.15 80.77 2.7e-3 0.02 1.0e-7
     //     lambda mu    Gc     L     viscosity
   [end]
 [end]
@@ -27,7 +27,7 @@ name=d ux uy
 [nonlinearsolver]
   type=nr
   maxiters=50
-  r_rel_tol=1.0e-9
+  r_rel_tol=5.0e-10
   r_abs_tol=4.6e-7
   solver=superlu
 [end]
@@ -50,11 +50,11 @@ name=d ux uy
   dt=1.0e-5
   time=2.0e-1
   adaptive=true
-  optiters=4
+  optiters=3
   growthfactor=1.1
   cutfactor=0.85
   dtmin=1.0e-12
-  dtmax=2.5e-4
+  dtmax=1.0e-4
 [end]
 
 [bcs]
@@ -75,6 +75,29 @@ name=d ux uy
     dof=ux
     value=1.0*t
     boundary=top
+  [end]
+[end]
+
+[projection]
+name=reacforce_x reacforce_y
+scalarmate=vonMises
+rank2mate=stress
+[end]
+
+[postprocess]
+  [area]
+    type=area
+    side=bottom
+  [end]
+  [fx]
+    type=projvariablesideintegral
+    projvariable=reacforce_x
+    side=top
+  [end]
+  [fy]
+    type=projvariablesideintegral
+    projvariable=reacforce_y
+    side=top
   [end]
 [end]
 

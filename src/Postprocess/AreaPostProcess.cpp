@@ -29,6 +29,7 @@ double Postprocess::AreaPostProcess(vector<string> sidenamelist,const Mesh &mesh
         for(e=1;e<=mesh.GetBulkMeshElmtsNumViaPhysicalName(sidename);e++){
             nDim=mesh.GetBulkMeshDimViaPhyName(sidename);
             nNodesPerBCElmt=mesh.GetBulkMeshNodesNumPerElmtViaPhysicalName(sidename);
+            //cout<<"nNodesPerBCElmt="<<nNodesPerBCElmt<<endl;
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(sidename,e);
             if(nDim==0){
                 MessagePrinter::PrintErrorTxt("you can not get the 'area' of a point, the dimension for area postprocess must be 2 or 3");

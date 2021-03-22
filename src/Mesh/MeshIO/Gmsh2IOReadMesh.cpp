@@ -458,6 +458,22 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkconn));
     }
 
+    mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().clear();
+    int dim;string phyname;
+    for(int i=0;i<_nPhysicGroups;i++){
+        phyname=mesh.GetBulkMeshPhysicalGroupNameListPtr()[i];
+        dim=mesh.GetBulkMeshPhysicalGroupDimListPtr()[i];
+        if(dim==1){
+            mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(phyname,_nNodesPerLineElmt));
+        }
+        else if(dim==2){
+            mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(phyname,_nNodesPerSurfaceElmt));
+        }
+        else if(dim==3){
+            mesh.GetBulkMeshPhysicalGroupName2NodesNumPerElmtListPtr().push_back(make_pair(phyname,_nNodesPerBulkElmt));
+        }
+    }
+
     if(_nNodeSetPhysicalGroups>static_cast<int>(NodeSetPhyID2NodeIDsList.size())){
         // the number of node-set physical group should not beyond the number of physical id you give in your $Elements block for all the nodes
         // the node-set physical group number could be greater than the one you defined in your $Physical block !!!
@@ -465,7 +481,6 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
         MessagePrinter::AsFem_Exit();
     }
     int phyid;
-    string phyname;
     bool HasNodePhyID;
     for(int i=0;i<_nNodeSetPhysicalGroups;i++){
         phyid=mesh.GetBulkMeshNodeSetPhysicalIDListPtr()[i];

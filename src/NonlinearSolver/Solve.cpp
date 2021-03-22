@@ -15,7 +15,6 @@
 
 #include "NonlinearSolver/NonlinearSolver.h"
 
-
 //***************************************************************
 //*** here we define a monitor to print out the iteration info
 //***************************************************************

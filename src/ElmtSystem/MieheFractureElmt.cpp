@@ -51,8 +51,8 @@ void BulkElmtSystem::MieheFractureElmt(const FECalcType &calctype,
     double Gc=ScalarMaterials.at("Gc");
     double L=ScalarMaterials.at("L");
     double Hist=ScalarMaterials.at("Hist");
-    RankTwoTensor Stress=Rank2Materials.at("Stress");
-    RankTwoTensor dStressdD=Rank2Materials.at("dStressdD");
+    RankTwoTensor Stress=Rank2Materials.at("stress");
+    RankTwoTensor dStressdD=Rank2Materials.at("dstressdD");
     RankTwoTensor dHdstrain=Rank2Materials.at("dHdstrain");
 
     switch (calctype){
@@ -122,16 +122,10 @@ void BulkElmtSystem::MieheFractureElmt(const FECalcType &calctype,
                 localK(4,1)=dStressdD.IthRow(3)*grad_test*trial*ctan[0];
             }
             break;
-        case FECalcType::InitHistoryVariable:
-            fill(gpHist.begin(),gpHist.end(),0.0);
-            break;
-        case FECalcType::UpdateHistoryVariable:
-            gpHistOld=gpHist;
-            break;
         case FECalcType::Projection:
-            gpProj["fx"]=Stress.IthRow(1)*grad_test;// reaction force-x
-            gpProj["fy"]=Stress.IthRow(2)*grad_test;// reaction force-y
-            gpProj["fz"]=Stress.IthRow(3)*grad_test;// reaction force-z
+            gpProj["reacforce_x"]=Stress.IthRow(1)*grad_test;// reaction force-x
+            gpProj["reacforce_y"]=Stress.IthRow(2)*grad_test;// reaction force-y
+            gpProj["reacforce_z"]=Stress.IthRow(3)*grad_test;// reaction force-z
             break;
         default:
             MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Miehe fracture element");

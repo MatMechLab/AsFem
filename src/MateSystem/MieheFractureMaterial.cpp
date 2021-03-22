@@ -84,6 +84,8 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     }
     Eps=(GradU+GradU.Transpose())*0.5;
 
+    _Rank2Materials["strain"]=Eps;
+
     ProjPos=Eps.GetPostiveProjTensor();
     I4Sym.SetToIdentitySymmetric4();
     ProjNeg=I4Sym-ProjPos;
@@ -110,8 +112,19 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     StressPos=I*lambda*BracketPos(trEps)+EpsPos*2*mu;
     StressNeg=I*lambda*BracketNeg(trEps)+EpsNeg*2*mu;
 
-    _Rank2Materials["Stress"]=StressPos*(g+k)+StressNeg;
-    _Rank2Materials["dStressdD"]=StressPos*dg;
+    _Rank2Materials["stress"]=StressPos*(g+k)+StressNeg;
+    _Rank2Materials["dstressdD"]=StressPos*dg;
+
+    // for vonMises stress
+    RankTwoTensor devStress;
+    double trace;
+    I.SetToIdentity();
+    trace=_Rank2Materials["stress"].Trace();
+    devStress=_Rank2Materials["stress"]-I*(trace/3.0);
+    // vonMises stress, taken from:
+    // https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
+    // vonMises=sqrt(1.5*sij*sij)
+    _ScalarMaterials["vonMises"]=sqrt(1.5*devStress.DoubleDot(devStress));
 
     if(psipos>gpHistOld[0]){
         _ScalarMaterials["Hist"]=psipos;
