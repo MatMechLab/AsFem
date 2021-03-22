@@ -38,6 +38,7 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
     vector<double> number;
     vector<string> strlist;
     string msg;
+    int interval=1;
 
     ppsBlock.Init();
     // now the str is [elmts]
@@ -433,7 +434,28 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                 return false;
             }
         }
+        else if(str.find("interval=")!=string::npos){
+            number=StringUtils::SplitStrNum(str);
+            if(number.size()<1){
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                msg="no interval value found in [projection] block, 'interval=integer' should be given";
+                MessagePrinter::PrintErrorTxt(msg);
+                MessagePrinter::AsFem_Exit();
+                return false;
+            }
+            else{
+                interval=static_cast<int>(number[0]);
+                if(interval<1){
+                    MessagePrinter::PrintErrorInLineNumber(linenum);
+                    msg="interval="+to_string(interval)+" is invalid";
+                    MessagePrinter::PrintErrorTxt(msg);
+                    MessagePrinter::AsFem_Exit();
+                }
+            }
+        }
     }
+
+    postprocess.SetOutputInterval(interval);
 
     return true;
 }

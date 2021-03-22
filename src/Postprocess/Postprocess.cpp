@@ -23,10 +23,13 @@ Postprocess::Postprocess(){
     _CSVFileName.clear();
     _VariableNameList.clear();
     _PPSValues.clear();
+    _OutputInterval=1;
 }
 //************************************************************
 void Postprocess::PrintPostprocessInfo()const{
     MessagePrinter::PrintNormalTxt("Postprocess system information summary:");
+    MessagePrinter::PrintNormalTxt("  output interval="+to_string(GetOutputIntervalNum())
+                                      +", number of postprocessor="+to_string(_nPostProcessBlocks));
     for(auto it:_PostProcessBlockList){
         it.PrintInfo();
     }

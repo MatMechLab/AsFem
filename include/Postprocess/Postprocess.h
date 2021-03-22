@@ -38,6 +38,8 @@ public:
     Postprocess();
 
     void SetInputFileName(string inputfilename);
+    void SetOutputInterval(const int &interval){_OutputInterval=interval;}
+    inline int GetOutputIntervalNum()const{return _OutputInterval;}
     void AddPostprocessBlock(PostprocessBlock &postprocessblock);
 
     void InitPPSOutput();
@@ -89,6 +91,7 @@ private:
     string _InputFileName;
     vector<string> _VariableNameList;
     vector<double> _PPSValues;
+    int _OutputInterval;
 
 private:
     //*************************************************

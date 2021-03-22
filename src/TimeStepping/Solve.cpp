@@ -68,21 +68,23 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
     }
 
 
+    if(user->_fectrlinfo.IsProjection){
+        user->_feSystem.FormBulkFE(FECalcType::Projection,time,dt,user->_fectrlinfo.ctan,
+                                   user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
+                                   user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
+    }
     if(step%user->_outputSystem.GetIntervalNum()==0){
-        if(user->_fectrlinfo.IsProjection){
-            user->_feSystem.FormBulkFE(FECalcType::Projection,time,dt,user->_fectrlinfo.ctan,
-            user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
-            user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
-
-        }
         user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,user->_solutionSystem);
         user->_outputSystem.WriteResultToPVDFile(time,user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();
 
+    }
+    if(step%user->_postprocess.GetOutputIntervalNum()==0){
         user->_postprocess.RunPostprocess(time,user->_mesh,user->_dofHandler,user->_fe,user->_solutionSystem);
     }
+
 
     // update history variable
     user->_feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,time,dt,user->_fectrlinfo.ctan,
