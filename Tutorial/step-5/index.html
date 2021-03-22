@@ -1,0 +1,769 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.0.6">
+    
+    
+      
+        <title>Step 5 - Solve the CahnHilliard equation - AsFem</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2c0c5eaf.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.7fa14f5b.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#introduction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AsFem
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Step 5 - Solve the CahnHilliard equation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="md-header__options">
+      
+    </div>
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    AsFem
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        Tutorial
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-0/" class="md-nav__link">
+        Step-0
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-1/" class="md-nav__link">
+        Step-1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-2/" class="md-nav__link">
+        Step-2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-3/" class="md-nav__link">
+        Step-3
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-4/" class="md-nav__link">
+        Step-4
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Step-5
+      </a>
+      
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Document
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Document" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Document
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-mesh/" class="md-nav__link">
+        mesh block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-dofs/" class="md-nav__link">
+        dofs block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-elmts/" class="md-nav__link">
+        elmts block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-mates/" class="md-nav__link">
+        mate block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-bcs/" class="md-nav__link">
+        bcs block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-ics/" class="md-nav__link">
+        ics block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-qpoint/" class="md-nav__link">
+        qpoint block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
+        nonlinear solver block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-timestepping/" class="md-nav__link">
+        timestepping block
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release/" class="md-nav__link">
+        Release
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="introduction">Introduction</h1>
+<p>In this step, we will try to solve the <a href="https://en.wikipedia.org/wiki/Cahn%E2%80%93Hilliard_equation">CahnHilliard</a> equation for the spinodal decomposition problem.</p>
+<h1 id="the-cahnhilliard-equation">The CahnHilliard equation</h1>
+<p>The CahnHilliard equation can be read as follows:
+$$
+\begin{equation}
+\frac{\partial c}{\partial t}=\nabla\cdot(M(c)\nabla\mu)
+\label{eq:ch-c}
+\tag{1}
+\end{equation}
+$$
+and
+$$
+\begin{equation}
+\mu=\frac{\delta f}{\delta c}
+\label{eq:ch-mu}
+\tag{2}
+\end{equation}
+$$
+where <span class="arithmatex">\(c\)</span> and <span class="arithmatex">\(\mu\)</span> denote the concentration and chemical potential, respectively. <span class="arithmatex">\(M(c)\)</span> is the concentration dependent mobility, in this model we use <span class="arithmatex">\(M(c)=Dc(1-c)\)</span>, where <span class="arithmatex">\(D\)</span> is the diffusion coefficient.</p>
+<h2 id="free-energy">Free energy</h2>
+<p>In this model, we use the following free energy:
+$$
+\begin{equation}
+f=c\ln(c)+(1-c)\ln(1-c)+\chi c(1-c)+\kappa|\nabla c|^{2}
+\label{eq:free-energy}
+\tag{3}
+\end{equation}
+$$
+thereby, the chemical potential <span class="arithmatex">\(\mu\)</span> can be expressed as:
+$$
+\begin{equation}
+\mu=\ln(c)-\ln(1-c)+\chi(1-c)-\nabla^{2}c
+\label{eq:mu}
+\tag{4}
+\end{equation}
+$$
+where <span class="arithmatex">\(\chi\)</span> denotes the interaction between two phases. <span class="arithmatex">\(\kappa\)</span> represents the interface energy contribution, which is proportional to the thickness of the phase interface.</p>
+<p>The related boundary conditions can be read as:
+<span class="arithmatex">\(<span class="arithmatex">\(\begin{equation}
+-D\nabla c\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}
+\label{eq:flux}
+\tag{5}
+\end{equation}\)</span>\)</span>
+where the zero flux (<em>Neumann</em>) boundary condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>.</p>
+<h1 id="define-the-mesh">Define the mesh</h1>
+<p>We use a square domain here for our calculation, and then the <code>[mesh]</code> block can be given as:</p>
+<pre><code>[mesh]
+  type=asfem
+  dim=2
+  xmax=4.0
+  ymax=4.0
+  nx=100
+  ny=100
+  meshtype=quad4
+[end]
+</code></pre>
+<p>where a <span class="arithmatex">\(4\times4\)</span> mesh is defined.</p>
+<h2 id="gauss-point-integration-optional">Gauss point integration (optional)</h2>
+<p>If one wants to use second order mesh, for instance <code>meshtype=quad9</code>, then one need to use a higher order gauss points. This can be implemented via:</p>
+<pre><code>[qpoint]
+  type=gauss
+  order=3
+[end]
+</code></pre>
+<p>Normally, you don't need this block!</p>
+<h1 id="define-the-dofs">Define the DoFs</h1>
+<p>In order to solve the 4th order equation, we split the CH equation into two second-order equations. Therefore, the DoFs used in this step are the concentration <span class="arithmatex">\(c\)</span> and the chemical potential <span class="arithmatex">\(\mu\)</span>. Then the <code>[dofs]</code> block can be read as:</p>
+<pre><code>[dofs]
+name=c mu
+[end]
+</code></pre>
+<h1 id="element-for-the-cahnhilliard-equation">Element for the CahnHilliard equation</h1>
+<p>The model in Eq.<span class="arithmatex">\(\eqref{eq:ch-c}\)</span> and <span class="arithmatex">\(\eqref{eq:ch-mu}\)</span> can be applied in the following lines</p>
+<pre><code>[elmts]
+  [mych]
+    type=cahnhilliard
+    dofs=c mu
+    mate=myf
+  [end]
+[end]
+</code></pre>
+<p>where <code>type=cahnhilliard</code> option specifies the element we want to use for the CahnHilliard equation. Moreover, we will use the <code>free energy</code>(<span class="arithmatex">\(F\)</span>), the <code>first order</code> derivative of free energy(<span class="arithmatex">\(\frac{\partial F}{\partial c}\)</span>), and the <code>second order</code> derivative of free energy(<span class="arithmatex">\(\frac{\partial^{2}f}{\partial c^{2}}\)</span>) material properties. Therefore, the related material definition will be given in <code>myf</code> block.</p>
+<h2 id="free-energy-material">free energy material</h2>
+<p>Via the following lines in your <code>[mates]</code> block, the material properties, i.e. <span class="arithmatex">\(F\)</span>, <span class="arithmatex">\(\frac{\partial F}{\partial c}\)</span>, and <span class="arithmatex">\(\frac{\partial^{2}F}{\partial c^{2}}\)</span> can be easily defined:</p>
+<pre><code>[mates]
+  [myf]
+    type=cahnhilliard
+    params=1.0 2.5 0.005
+  [end]
+[end]
+</code></pre>
+<p>where <code>type=cahnhilliard</code> specifies constant diffusivity material type. Don't worry, here we used the same name as the <code>type=</code> in <code>[elmts]</code> block. But AsFem knows that they belong to two different blocks, so it's fine. <code>params=</code> defines the diffusivity <span class="arithmatex">\(D=1.0\)</span>, the phase interaction constant <span class="arithmatex">\(\chi=2.5\)</span>, and the interface parameter <span class="arithmatex">\(\kappa=0.02\)</span>. If you are using a coarse mesh, please increase <span class="arithmatex">\(\kappa\)</span> to a larger value, i.e. 0.02 or even higher.</p>
+<h1 id="boundary-conditions">Boundary conditions</h1>
+<p>Since the zero flux boundary condition is applied, we don't need any <code>[bcs]</code> block. If Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span> is nonzero, then you will definitely need the <code>[bcs]</code> block.</p>
+<h1 id="transient-analysis">Transient analysis</h1>
+<p>Again, we need a <code>[job]</code> block to start the FEM calculation, which can be given as follows:</p>
+<pre><code>[job]
+  type=transient
+  debug=dep
+[end]
+</code></pre>
+<h1 id="timestepping">Timestepping</h1>
+<p>In this case, we will use the adaptive time stepping to speed up our simulation. The layout of our <code>[timestepping]</code> block looks like below:</p>
+<pre><code>[timestepping]
+  type=be
+  dt=1.0e-5
+  time=1.0e3
+  adaptive=true
+  optiters=3
+  growthfactor=1.1
+  cutfactor=0.85
+[end]
+</code></pre>
+<p>where <code>type=be</code> specifies the <em>Backward-Euler</em> (be) method for implicit time integration. <code>dt=1.0e-5</code> defines that the initial <span class="arithmatex">\(\Delta_{t}\)</span> and <code>time=1.0e3</code> means the final time is 1000.0. <code>adaptive=true</code> enables the adaptive time stepping. <code>optiters=3</code> indicates that if the nonlinear iterations is not greater than 3, then AsFem will increase the new delta t to be <span class="arithmatex">\(\Delta_{t}=\Delta_{t,\mathrm{old}}*\alpha_{\mathrm{growth}}\)</span>. Otherwise, the new delta t will be reduced as <span class="arithmatex">\(\Delta_{t}=\Delta_{t,\mathrm{old}}*\alpha_{\mathrm{cut}}\)</span>. <code>growthfactor</code> and <code>cutfactor</code> represent <span class="arithmatex">\(\alpha_{\mathrm{growth}}\)</span> and <span class="arithmatex">\(\alpha_{\mathrm{cut}}\)</span>, respectively.</p>
+<h1 id="initial-condition">Initial condition</h1>
+<p>Now, in order to allow the phase separation to take place, we must add the random value to the concentration. As follows, the random concentration value can be applied through the'[ics]' block:</p>
+<pre><code>[ics]
+  [ic1]
+    type=random
+    dof=c
+    params=0.6 0.66
+  [end]
+[end]
+</code></pre>
+<p>where the random value is applied via the <code>type=random</code> option. <code>dof=</code> indicates which DoF will be used. <code>params=</code> represent the parameters used in the initial condition calculation. For the <code>type=random</code> case, 0.6 and 0.66 are the min and max value of the random numbers.</p>
+<h1 id="parallel-solver">Parallel solver</h1>
+<p>In order to further speed up our simulation, we involve the parallel solver from either <a href="http://mumps.enseeiht.fr/">mumps</a> or <a href="https://portal.nersc.gov/project/sparse/superlu/">superlu_dist</a>. This can be defined via the <code>[nonlinearsolver]</code> block:</p>
+<pre><code>[nonlinearsolver]
+  type=nr
+  solver=superlu
+[end]
+</code></pre>
+<p>where <code>type=nr</code> indicates the newton-raphson method. <code>solver=</code> determines the name of the parallel solver, in this case, the superlu_dist solver is used. It should be noted that, if external solvers, i.e. <code>mumps</code> and <code>superlu</code>, are not compiled within your PETSc, then you can only use the built-in solver. In short, this option doesn’t make sense to you.</p>
+<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<p>Now, let's try your fourth example in AsFem. You can create a new text file and name it as step5.i or whatever you like. Then copy the following lines into your input file:</p>
+<pre><code>[mesh]
+  type=asfem
+  dim=2
+  xmax=4.0
+  ymax=4.0
+  nx=100
+  ny=100
+  meshtype=quad4
+[end]
+
+[dofs]
+name=c mu
+[end]
+
+[elmts]
+  [mych]
+    type=cahnhilliard
+    dofs=c mu
+    mate=myf
+  [end]
+[end]
+
+[mates]
+  [myf]
+    type=cahnhilliard
+    params=1.0 2.5 0.005
+    //     D   Chi Kappa
+  [end]
+[end]
+
+[timestepping]
+  type=be
+  dt=1.0e-5
+  time=3.0e3
+  adaptive=true
+  optiters=3
+  growthfactor=1.1
+  cutfactor=0.85
+[end]
+
+[nonlinearsolver]
+  type=nr
+  solver=superlu
+[end]
+
+[ics]
+  [ic1]
+    type=random
+    dof=c
+    params=0.6 0.66
+  [end]
+[end]
+
+[job]
+  type=transient
+  debug=dep
+[end]
+</code></pre>
+<p>You can also find the complete input file in <code>examples/tutorial/step5.i</code>.</p>
+<p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
+<img alt="middle" src="step5-middle.jpeg" /></p>
+<p><img alt="final" src="step5-final.jpeg" /></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../step-4/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Step-4
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../../Document/block-mesh/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              mesh block
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fb4a9340.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a1c7c35e.min.js"></script>
+      
+        <script src="../../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

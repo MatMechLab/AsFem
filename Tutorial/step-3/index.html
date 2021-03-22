@@ -1,0 +1,797 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.0.6">
+    
+    
+      
+        <title>Step 3 - Solve the linear elasticity problem - AsFem</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2c0c5eaf.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.7fa14f5b.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#introduction" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AsFem
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Step 3 - Solve the linear elasticity problem
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="md-header__options">
+      
+    </div>
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    AsFem
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        About
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      <label class="md-nav__link" for="__nav_3">
+        Tutorial
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorial
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-0/" class="md-nav__link">
+        Step-0
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-1/" class="md-nav__link">
+        Step-1
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-2/" class="md-nav__link">
+        Step-2
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Step-3
+      </a>
+      
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-4/" class="md-nav__link">
+        Step-4
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-5/" class="md-nav__link">
+        Step-5
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      <label class="md-nav__link" for="__nav_4">
+        Document
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+      <nav class="md-nav" aria-label="Document" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Document
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-mesh/" class="md-nav__link">
+        mesh block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-dofs/" class="md-nav__link">
+        dofs block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-elmts/" class="md-nav__link">
+        elmts block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-mates/" class="md-nav__link">
+        mate block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-bcs/" class="md-nav__link">
+        bcs block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-ics/" class="md-nav__link">
+        ics block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-qpoint/" class="md-nav__link">
+        qpoint block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
+        nonlinear solver block
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-timestepping/" class="md-nav__link">
+        timestepping block
+      </a>
+    </li>
+  
+
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release/" class="md-nav__link">
+        Release
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="introduction">Introduction</h1>
+<p>In this step, we will try to solve the linear elasticity problem.</p>
+<h1 id="the-stress-equilibrium-equation">The stress equilibrium equation</h1>
+<p>The problem we want to solve is the equation of stress equilibrium that reads as follows:
+$$
+\begin{equation}
+\mathbf{\nabla}\cdot\mathbf{\sigma}=\mathbf{0}
+\label{eq:stress-eq}
+\tag{1}
+\end{equation}
+$$
+where <span class="arithmatex">\(\mathbf{\sigma}\)</span> denotes Cauchy stress tensor. The constitutive laws for the stress and strain of the small deformation case are below:
+$$
+\begin{equation}
+\mathbf{\sigma}=\mathbb{C}:\mathbf{\epsilon}
+\label{eq:stress}
+\tag{2}
+\end{equation}
+$$
+and
+$$
+\begin{equation}
+\mathbf{\epsilon}=\frac{1}{2}(\nabla\mathbf{u}+\nabla \mathbf{u}^{T})
+\label{eq:dirichlet}
+\tag{3}
+\end{equation}
+$$
+where <span class="arithmatex">\(\mathbf{u}\)</span> is the displacement vector. <span class="arithmatex">\(\mathbb{C}\)</span> represents the elasticity tensor, which is a function of the Youngs modulus <span class="arithmatex">\(E\)</span> and Poisson ratio <span class="arithmatex">\(\nu\)</span>.</p>
+<p>The related boundary conditions can be read as:
+$$
+\begin{equation}
+\mathbf{t}\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}
+\label{eq:traction}
+\tag{4}
+\end{equation}
+$$
+and
+$$
+\begin{equation}
+\mathbf{u}=\mathbf{u}_{0}\qquad\mathrm{on}\quad\partial\Omega_{D}
+\label{eq:disp}
+\tag{5}
+\end{equation}
+$$
+where the traction free condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:traction}\)</span></p>
+<h1 id="define-a-mesh">Define a mesh</h1>
+<p>For our calculation, we use a rectangular domain here, and then the <code>[mesh]</code> block can be given as:</p>
+<pre><code>[mesh]
+  type=asfem
+  dim=2
+  xmax=5.0
+  ymax=5.0
+  nx=50
+  ny=50
+  meshtype=quad4
+[end]
+</code></pre>
+<p>where a <span class="arithmatex">\(50\times50\)</span> mesh is defined.</p>
+<h1 id="define-the-dofs">Define the DoFs</h1>
+<p>The DoFs used in this step is the displacement vector, namely <span class="arithmatex">\(u_{x}\)</span> and <span class="arithmatex">\(u_{y}\)</span>. Then the <code>[dofs]</code> block can be read as:</p>
+<pre><code>[dofs]
+name=ux uy
+[end]
+</code></pre>
+<h1 id="element-for-stress-equilibrium-equation">Element for stress equilibrium equation</h1>
+<p>The model in Eq.<span class="arithmatex">\(\eqref{eq:stress-eq}\)</span> can be applied in the following lines</p>
+<pre><code>[elmts]
+  [mysolid]
+    type=mechanics
+    dofs=ux uy
+    mate=mymate
+  [end]
+[end]
+</code></pre>
+<p>where <code>type=mechanics</code> option specifies the element we want to use for solid mechanics problem. Moreover, we will use the linear elasticity material property, therefore, the related material definition will be given in <code>mymate</code> block.</p>
+<h2 id="linear-elasticity-material">Linear elasticity material</h2>
+<p>Via the following lines in your <code>[mates]</code> block, the linear elasticity material can be easily defined:</p>
+<pre><code>[mates]
+  [mymate]
+    type=linearelastic
+    params=210.0 0.3
+  [end]
+[end]
+</code></pre>
+<p>where <code>type=linearelastic</code> specifies linear elasticity material type. <code>params=</code> defines the Youngs modulus (<span class="arithmatex">\(E=210GPa\)</span>) and Poisson ratio (<span class="arithmatex">\(\nu=0.3\)</span>)</p>
+<h1 id="boundary-conditions">Boundary conditions</h1>
+<p>The boundary conditions, as mentioned in Eq.<span class="arithmatex">\(\eqref{eq:disp}\)</span>, can be applied via the <code>[bcs]</code> block. In our case, the <em>traction</em> boundary condition in Eq.<span class="arithmatex">\(\eqref{eq:traction}\)</span> is zero, therefore, only the <em>displacement</em> boundary condition needs to be considered:</p>
+<pre><code>[bcs]
+  [fixbottomX]
+    type=dirichlet
+    dof=ux
+    value=0.0
+    boundary=bottom
+  [end]
+  [fixbottomY]
+    type=dirichlet
+    dof=uy
+    value=0.0
+    boundary=bottom
+  [end]
+  [loadY]
+    type=dirichlet
+    dof=uy
+    value=0.1
+    boundary=top
+  [end]
+[end]
+</code></pre>
+<p>where we fix the <span class="arithmatex">\(u_{x}\)</span> and <span class="arithmatex">\(u_{y}\)</span> to be zero at the bottom edge. While <span class="arithmatex">\(u_{y}=0.1\)</span> is applied at the top edge of the domain.</p>
+<h1 id="static-analysis">Static analysis</h1>
+<p>Again, we need a <code>[job]</code> block to start the FEM calculation, which can be given as follows:</p>
+<pre><code>[job]
+  type=static
+  debug=dep
+[end]
+</code></pre>
+<h1 id="projection">Projection</h1>
+<p>Wait for a minute, where are the stresses and strain? How can I output them? Noooo worries, the <code>[projection]</code> block can help you to project the quantities on each <code>Gauss point</code> to the <code>Nodal point</code> of your mesh. So, if we want to check how the vonMises stress, <span class="arithmatex">\(\sigma_{xx}\)</span>, <span class="arithmatex">\(\sigma_{yy}\)</span>, <span class="arithmatex">\(\sigma_{xy}\)</span> looks like, we can use:</p>
+<pre><code>[projection]
+name=vonMises stress_xx stress_yy stress_xy
+[end]
+</code></pre>
+<p>Done!</p>
+<h2 id="explanation-of-projection">Explanation of projection</h2>
+<p>There is no magic for <code>[projection]</code> block, if you take a look at our <code>MechanicsElmt.cpp</code> in the <code>ElmtSystem</code> class, you will find the following code:</p>
+<pre><code>gpProj[0]=ScalarMaterials.at(&quot;vonMises&quot;);
+gpProj[1]=Rank2Materials.at(&quot;stress&quot;)(1,1);//sigma_xx
+if(nDim==2){
+    gpProj[2]=Rank2Materials.at(&quot;stress&quot;)(2,2);//sigma_yy
+    gpProj[3]=Rank2Materials.at(&quot;stress&quot;)(1,2);//sigma_xy
+
+    gpProj[4]=Rank2Materials.at(&quot;strain&quot;)(1,1);//epsilon_xx
+    gpProj[5]=Rank2Materials.at(&quot;strain&quot;)(2,2);//epsilon_yy
+    gpProj[6]=Rank2Materials.at(&quot;strain&quot;)(1,2);//epsilon_xy
+}
+else if(nDim==3){
+    gpProj[2]=Rank2Materials.at(&quot;stress&quot;)(2,2);//sigma_yy
+    gpProj[3]=Rank2Materials.at(&quot;stress&quot;)(3,3);//sigma_zz
+    gpProj[4]=Rank2Materials.at(&quot;stress&quot;)(2,3);//sigma_yz
+    gpProj[5]=Rank2Materials.at(&quot;stress&quot;)(1,3);//sigma_xz
+    gpProj[6]=Rank2Materials.at(&quot;stress&quot;)(1,2);//sigma_xy
+
+    gpProj[7] =Rank2Materials.at(&quot;strain&quot;)(1,1);//epsilon_xx
+    gpProj[8] =Rank2Materials.at(&quot;strain&quot;)(2,2);//epsilon_yy
+    gpProj[9] =Rank2Materials.at(&quot;strain&quot;)(3,3);//epsilon_zz
+    gpProj[10]=Rank2Materials.at(&quot;strain&quot;)(2,3);//epsilon_yz
+    gpProj[11]=Rank2Materials.at(&quot;strain&quot;)(1,3);//epsilon_xz
+    gpProj[12]=Rank2Materials.at(&quot;strain&quot;)(1,2);//epsilon_xy
+}
+</code></pre>
+<p>Yelp, the order of the name you give in your <code>[projection]</code> block is related to the <code>gpProj</code> quantities in your element. So, if you want to project the quantities in a 3D case, then you will need:</p>
+<pre><code>[projection]
+name=vonMises stress_xx stress_yy stress_zz stress_yz stress_xz stress_xy
+[end]
+</code></pre>
+<p>Hold on, where is my strain tensor in 2D case? Take it easy, here it is:</p>
+<pre><code>[projection]
+name=vonMises stress_xx stress_yy stress_xy epsilon_xx epsilon_yy epsilon_xy
+[end]
+</code></pre>
+<p>Done!</p>
+<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<p>Now, let's try your third example in AsFem. You can create a new text file and name it as step3.i or whatever you like. Then copy the following lines into your input file:</p>
+<pre><code>[mesh]
+  type=asfem
+  dim=2
+  xmax=5.0
+  ymax=5.0
+  nx=50
+  ny=50
+  meshtype=quad4
+[end]
+
+[dofs]
+name=ux uy
+[end]
+
+[elmts]
+  [mysolid]
+    type=mechanics
+    dofs=ux uy
+    mate=mymate
+  [end]
+[end]
+
+[mates]
+  [mymate]
+    type=linearelastic
+    params=210.0 0.3
+  [end]
+[end]
+
+[bcs]
+  [fixbottomX]
+    type=dirichlet
+    dof=ux
+    value=0.0
+    boundary=bottom
+  [end]
+  [fixbottomY]
+    type=dirichlet
+    dof=uy
+    value=0.0
+    boundary=bottom
+  [end]
+  [loadY]
+    type=dirichlet
+    dof=uy
+    value=0.1
+    boundary=top
+  [end]
+[end]
+
+[projection]
+name=vonMises stress_xx stress_yy stress_xy
+[end]
+
+[job]
+  type=static
+  debug=dep
+[end]
+</code></pre>
+<p>You can also find the complete input file in <code>examples/tutorial/step3.i</code>.</p>
+<p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
+<img alt="" src="step3-2d-uy.jpeg" />
+<img alt="" src="step3-2d-vonMises.jpeg" /></p>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        <a href="../step-2/" class="md-footer__link md-footer__link--prev" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Step-2
+            </div>
+          </div>
+        </a>
+      
+      
+        <a href="../step-4/" class="md-footer__link md-footer__link--next" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Step-4
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fb4a9340.min.js", "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.a1c7c35e.min.js"></script>
+      
+        <script src="../../javascripts/config.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
