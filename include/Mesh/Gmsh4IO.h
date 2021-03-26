@@ -51,7 +51,7 @@ private:
     int _nPhysicGroups=0;
     int _nNodeSetPhysicalGroups=0;
     int _nNodes=0,_nElmts=0;
-    int _nBulkElmts=0,_nSurfaceElmts=0,_nLineElmts=0;
+    int _nBulkElmts=0,_nSurfaceElmts=0,_nLineElmts=0,_nPointElmts=0;
 
     double _Xmax,_Xmin,_Ymax,_Ymin,_Zmax,_Zmin;
 

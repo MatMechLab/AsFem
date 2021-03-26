@@ -159,6 +159,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                     mesh.GetBulkMeshNodeSetPhysicalIDListPtr().push_back(phyid);
                     mesh.GetBulkMeshNodeSetPhysicalID2NameListPtr().push_back(make_pair(phyid,phyname));
                     mesh.GetBulkMeshNodeSetPhysicalName2IDListPtr().push_back(make_pair(phyname,phyid));
+                    mesh.SetBulkMeshNodeSetPhysicalGroupNums(_nNodeSetPhysicalGroups);
                 }
             }
         } // end-of-physical group information
@@ -246,7 +247,6 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 getline(_in,str);
                 numbers=StringUtils::SplitStrNum(str);
                 if(numbers.size()!=4){
-                    cout<<"wokr, str="<<str<<endl;
                     MessagePrinter::PrintErrorTxt("invalid node entities in your msh4 file inside the $Nodes block");
                     MessagePrinter::AsFem_Exit();
                 }
@@ -305,6 +305,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             maxElementTag=static_cast<int>(numbers[4-1]);
 
             nElmts=0;
+            _nPointElmts=0;
             _nLineElmts=0;
             _nSurfaceElmts=0;
             _nBulkElmts=0;
@@ -360,15 +361,19 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                     }
                 }
 
+                if(entityDim==0){
+                    _nPointElmts+=numElementsInBlock;
+                }
                 if(entityDim==1){
-                    _nLineElmts+=1;
+                    _nLineElmts+=numElementsInBlock;
                     _nNodesPerLineElmt=GetElmtNodesNumFromGmshElmtType(elementType);
                 }
                 if(entityDim==2){
-                    _nSurfaceElmts+=1;
+                    _nSurfaceElmts+=numElementsInBlock;
                     _nNodesPerSurfaceElmt=GetElmtNodesNumFromGmshElmtType(elementType);
                 }
                 if(entityDim==3){
+                    _nBulkElmts+=numElementsInBlock;
                     _nNodesPerBulkElmt=GetElmtNodesNumFromGmshElmtType(elementType);
                 }
 
@@ -421,11 +426,13 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             if(_nMaxDim==1){
                 mesh.SetBulkMeshBulkElmtsNum(_nLineElmts);
                 mesh.SetBulkMeshNodesNumPerBulkElmt(_nNodesPerLineElmt);
+                _nBulkElmts=_nLineElmts;
             }
             else if(_nMaxDim==2){
                 mesh.SetBulkMeshBulkElmtsNum(_nSurfaceElmts);
                 mesh.SetBulkMeshNodesNumPerBulkElmt(_nNodesPerSurfaceElmt);
                 mesh.SetBulkMeshNodesNumPerLineElmt(_nNodesPerLineElmt);
+                _nBulkElmts=_nSurfaceElmts;
             }
             else if(_nMaxDim==3){
                 mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
@@ -511,15 +518,9 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair(phyname,phyid));
             }
         }
-        _nBulkElmts=0;
-        _nSurfaceElmts=0;
-        _nLineElmts=0;
-
-
         bulkconn.clear();
         for(int e=0;e<_nElmts;e++){
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
-                _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
                 for(int j=0;j<static_cast<int>(phy2conn.size());j++){
                     if(mesh.GetBulkMeshIthElmtPhyID(e+1)==UniquePhyDim2IDList[j].second){
@@ -528,20 +529,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                     }
                 }
             }
-            else{
-                // for lower dimension elements
-                if(mesh.GetBulkMeshIthElmtDim(e+1)==2){
-                    _nSurfaceElmts+=1;
-                }
-                else if(mesh.GetBulkMeshIthElmtPhyID(e+1)==1){
-                    _nLineElmts+=1;
-                }
-            }
         }
-
-        mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
-        mesh.SetBulkMeshSurfaceElmtsNum(_nSurfaceElmts);
-        mesh.SetBulkMeshLineElmtsNum(_nLineElmts);
 
         for(int j=0;j<static_cast<int>(phy2conn.size());j++){
             phyname=mesh.GetBulkMeshIthPhysicalName(j+1);
@@ -559,23 +547,14 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
     }
     else if(_nPhysicGroups==1&&UniquePhyDim2IDList.size()==1){
         // for the case where only 1 physical group is defined
-        _nBulkElmts=0;
-        _nSurfaceElmts=0;
-        _nLineElmts=0;
         bulkconn.clear();
         int maxid=-1;
         for(int e=0;e<_nElmts;e++){
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
-                _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
                 if(mesh.GetBulkMeshIthElmtPhyID(e+1)>maxid) maxid=mesh.GetBulkMeshIthElmtPhyID(e+1);
             }
         }
-
-        mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
-        mesh.SetBulkMeshSurfaceElmtsNum(_nSurfaceElmts);
-        mesh.SetBulkMeshLineElmtsNum(_nLineElmts);
-
         mesh.SetBulkMeshPhysicalGroupNums(2);
         mesh.GetBulkMeshPhysicalGroupNameListPtr().push_back("alldomain");
         mesh.GetBulkMeshPhysicalGroupIDListPtr().push_back(maxid+1);
@@ -584,16 +563,11 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
 
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair(mesh.GetBulkMeshIthPhysicalName(1),bulkconn));
         mesh.GetBulkMeshPhysicalName2ElmtIDsListPtr().push_back(make_pair("alldomain",bulkconn));
-
     }
     else{
         string phyname;
         bulkconn.clear();
         phy2conn.resize(_nPhysicGroups,vector<int>(0));
-
-        _nBulkElmts=0;
-        _nSurfaceElmts=0;
-        _nLineElmts=0;
 
         for(int e=0;e<_nElmts;e++){
             for(int j=0;j<static_cast<int>(phy2conn.size());j++){
@@ -603,23 +577,9 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 }
             }
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
-                _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
             }
-            else{
-                // for lower dimension elements
-                if(mesh.GetBulkMeshIthElmtDim(e+1)==2){
-                    _nSurfaceElmts+=1;
-                }
-                else if(mesh.GetBulkMeshIthElmtPhyID(e+1)==1){
-                    _nLineElmts+=1;
-                }
-            }
         }
-
-        mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
-        mesh.SetBulkMeshSurfaceElmtsNum(_nSurfaceElmts);
-        mesh.SetBulkMeshLineElmtsNum(_nLineElmts);
 
         for(int j=0;j<static_cast<int>(phy2conn.size());j++){
             phyname=mesh.GetBulkMeshIthPhysicalName(j+1);
@@ -661,7 +621,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
         phyid=mesh.GetBulkMeshNodeSetPhysicalIDListPtr()[i];
         phyname=mesh.GetBulkMeshNodeSetPhysicalNameListPtr()[i];
         HasNodePhyID=false;
-        for(auto it:NodeSetPhyID2NodeIDsList){
+        for(const auto &it:NodeSetPhyID2NodeIDsList){
             if(phyid==it.first){
                 mesh.GetBulkMeshNodeSetPhysicalName2NodeIDsListPtr().push_back(make_pair(phyname,it.second));
                 HasNodePhyID=true;
