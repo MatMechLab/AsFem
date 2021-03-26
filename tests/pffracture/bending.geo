@@ -1,16 +1,17 @@
 //+
 SetFactory("OpenCASCADE");
 
-dx=0.15;
+dx=0.05;
 w=4.0;
-dw=0.1;
-dw1=0.04;
+dw=1.0e-1;
+dw1=0.06;
+dw2=0.05;
 
-n1=181; // for middle line
-n2=221; // for middle-two-side lines
-n3=21;  // for top-two-lines
-n4=5;   // for bottom-two-lines
-n5=51;  // for bottom-two-slope line
+n1=261; // for middle line
+n2=301; // for middle-two-side lines
+n3=6;  // for top-two-lines
+n4=3;   // for bottom-two-lines
+n5=41;  // for bottom-two-slope line
 
 
 
@@ -27,8 +28,8 @@ Point(8)={w+w,2.0,0.0,dx};
 Point(9)={w  ,2.0,0.0,dx};
 Point(10)={0.0,2.0,0.0,dx};
 
-Point(11)={w-dw-dw1,2.0,0.0,dx};
-Point(12)={w+dw+dw1,2.0,0.0,dx};//+
+Point(11)={w-dw2,2.0,0.0,dx};
+Point(12)={w+dw2,2.0,0.0,dx};//+
 Line(1) = {1, 2};
 //+
 Line(2) = {2, 3};
@@ -85,7 +86,9 @@ Physical Curve("left") = {12};
 //+
 Physical Curve("right") = {7};
 //+
-Physical Curve("top") = {11, 10, 9, 8};
+Physical Curve("top") = {11, 8};
+//+
+Physical Curve("topload") = {10, 9};
 //+
 Physical Surface("block") = {1, 2, 3, 4};
 //+

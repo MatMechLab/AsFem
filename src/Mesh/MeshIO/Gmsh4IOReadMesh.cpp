@@ -159,9 +159,10 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                     mesh.GetBulkMeshNodeSetPhysicalIDListPtr().push_back(phyid);
                     mesh.GetBulkMeshNodeSetPhysicalID2NameListPtr().push_back(make_pair(phyid,phyname));
                     mesh.GetBulkMeshNodeSetPhysicalName2IDListPtr().push_back(make_pair(phyname,phyid));
-                    mesh.SetBulkMeshNodeSetPhysicalGroupNums(_nNodeSetPhysicalGroups);
+
                 }
             }
+            mesh.SetBulkMeshNodeSetPhysicalGroupNums(_nNodeSetPhysicalGroups);
         } // end-of-physical group information
         else if(str.find("$Entities")!=string::npos){
             // read the entities block
@@ -177,10 +178,11 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             numSurfaces=static_cast<int>(numbers[3-1]);
             numVolumes=static_cast<int>(numbers[4-1]);
 
-            _PointsEntityPhyIDs.resize(numPoints);
-            _CurvesEntityPhyIDS.resize(numCurves);
-            _SurfaceEntityPhyIDs.resize(numSurfaces);
-            _VolumesEntityPhyIDs.resize(numVolumes);
+            // factor=10 to avoid the unordered entitie index(especially the nodal entities)
+            _PointsEntityPhyIDs.resize(numPoints*10,0);
+            _CurvesEntityPhyIDS.resize(numCurves*10,0);
+            _SurfaceEntityPhyIDs.resize(numSurfaces*10,0);
+            _VolumesEntityPhyIDs.resize(numVolumes*10,0);
 
             int i;
             int nodeid,curveid,surfaceid,volumeid;
@@ -328,6 +330,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             MeshType meshtype;
             bool IsUnique;
             order=0;
+
             for(int nBlocks=0;nBlocks<numEntityBlocks;nBlocks++){
                 getline(_in,str);//get current element entities
                 //entityDim(int) entityTag(int) elementType(int; see below) numElementsInBlock(size_t)

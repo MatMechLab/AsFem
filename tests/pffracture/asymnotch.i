@@ -1,6 +1,6 @@
 [mesh]
   type=gmsh
-  file=bending.msh
+  file=asymmnotch.msh
 [end]
 
 
@@ -19,7 +19,7 @@ name=d ux uy
 [mates]
   [myfracmate]
     type=miehefracmate
-    params=12.0   8.0 5.0e-4 0.03 1.0e-6
+    params=12.0   8.0 1.0e-3 0.025 1.0e-6
     //     lambda mu  Gc     L     viscosity
   [end]
 [end]
@@ -74,7 +74,7 @@ name=d ux uy
     type=dirichlet
     dof=uy
     value=-1.0*t
-    boundary=topload
+    boundary=toppoint
   [end]
 [end]
 
@@ -89,14 +89,14 @@ rank2mate=stress
     rank2mate=stress
     iindex=1
     jindex=1
-    side=top topload
+    side=top
   [end]
   [fy]
     type=rank2matesideintegral
     rank2mate=stress
     iindex=2
     jindex=2
-    side=top topload
+    side=top
   [end]
   [ux]
     type=sideintegral
