@@ -344,6 +344,10 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 vtktype=GetElmtVTKCellTypeFromGmshElmtType(elementType);
                 meshtype=GetElmtMeshTypeFromGmshElmtType(elementType);
                 order=GetElmtOrderFromGmshElmtType(elementType);
+                if(entityDim>0){
+                    mesh.SetBulkMeshMeshType(meshtype);
+                    mesh.SetBulkMeshMeshTypeName(GetElmtTypeNameFromGmshElmtType(elementType));
+                }
 
                 if(UniquePhyDim2IDList.size()==0){
                     UniquePhyDim2IDList.push_back(make_pair(entityDim,phyid));

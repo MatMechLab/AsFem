@@ -8,6 +8,11 @@
 name=phi
 [end]
 
+[qpoint]
+type=gauss
+order=3
+[end]
+
 [elmts]
   [poisson]
     type=poisson
@@ -27,7 +32,7 @@ name=phi
   [fixright]
     type=dirichlet
     dof=phi
-    value=5.0
+    value=2.0
     boundary=right
   [end]
   [fixleft]
@@ -39,7 +44,7 @@ name=phi
   [fixpoint]
     type=nodaldirichlet
     dof=phi
-    value=-10.0
+    value=-5.0
     boundary=bottompoint
   [end]
 [end]
