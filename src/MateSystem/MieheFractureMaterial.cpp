@@ -42,7 +42,7 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     int UseHist=0;
     double d;
     double g,dg;// for the degradation function
-    const double k=1.0e-6; // for stabilizer
+    const double k=1.0e-4; // for stabilizer
 
     const double lambda=InputParams[0];
     const double mu=InputParams[1];
