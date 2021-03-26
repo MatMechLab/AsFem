@@ -139,6 +139,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                     mesh.GetBulkMeshNodeSetPhysicalIDListPtr().push_back(phyid);
                     mesh.GetBulkMeshNodeSetPhysicalID2NameListPtr().push_back(make_pair(phyid,phyname));
                     mesh.GetBulkMeshNodeSetPhysicalName2IDListPtr().push_back(make_pair(phyname,phyid));
+                    mesh.SetBulkMeshNodeSetPhysicalGroupNums(_nNodeSetPhysicalGroups);
                 }
             }
         }//end-of-physical-group-information
@@ -298,12 +299,15 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
             mesh.SetBulkMeshSurfaceElmtsNum(nSurfaceElmts);
             if(_nMaxDim==1){
                 mesh.SetBulkMeshBulkElmtsNum(nLineElmts);
+                _nBulkElmts=nLineElmts;
             }
             else if(_nMaxDim==2){
                 mesh.SetBulkMeshBulkElmtsNum(nSurfaceElmts);
+                _nBulkElmts=nSurfaceElmts;
             }
             else if(_nMaxDim==3){
                 mesh.SetBulkMeshBulkElmtsNum(nBulkElmts);
+                _nBulkElmts=nBulkElmts;
             }
             
         }//end-of-read-element-info
@@ -334,15 +338,9 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                 mesh.GetBulkMeshPhysicalGroupName2IDListPtr().push_back(make_pair(phyname,phyid));
             }
         }
-        _nBulkElmts=0;
-        _nSurfaceElmts=0;
-        _nLineElmts=0;
-        
-
         bulkconn.clear();
         for(int e=0;e<_nElmts;e++){
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
-                _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
                 for(int j=0;j<static_cast<int>(phy2conn.size());j++){
                     if(mesh.GetBulkMeshIthElmtPhyID(e+1)==UniquePhyDim2IDList[j].second){
@@ -351,20 +349,7 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                     }
                 }
             }
-            else{
-                // for lower dimension elements
-                if(mesh.GetBulkMeshIthElmtDim(e+1)==2){
-                    _nSurfaceElmts+=1;
-                }
-                else if(mesh.GetBulkMeshIthElmtPhyID(e+1)==1){
-                    _nLineElmts+=1;
-                }
-            }
         }
-
-        mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
-        mesh.SetBulkMeshSurfaceElmtsNum(_nSurfaceElmts);
-        mesh.SetBulkMeshLineElmtsNum(_nLineElmts);
 
         for(int j=0;j<static_cast<int>(phy2conn.size());j++){
             phyname=mesh.GetBulkMeshIthPhysicalName(j+1);
@@ -382,22 +367,14 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
     }
     else if(_nPhysicGroups==1&&UniquePhyDim2IDList.size()==1){
         // for the case where only 1 physical group is defined
-        _nBulkElmts=0;
-        _nSurfaceElmts=0;
-        _nLineElmts=0;
         bulkconn.clear();
         int maxid=-1;
         for(int e=0;e<_nElmts;e++){
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
-                _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
                 if(mesh.GetBulkMeshIthElmtPhyID(e+1)>maxid) maxid=mesh.GetBulkMeshIthElmtPhyID(e+1);
             }
         }
-
-        mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
-        mesh.SetBulkMeshSurfaceElmtsNum(_nSurfaceElmts);
-        mesh.SetBulkMeshLineElmtsNum(_nLineElmts);
 
         mesh.SetBulkMeshPhysicalGroupNums(2);
         mesh.GetBulkMeshPhysicalGroupNameListPtr().push_back("alldomain");
@@ -414,10 +391,6 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
         bulkconn.clear();
         phy2conn.resize(_nPhysicGroups,vector<int>(0));
 
-        _nBulkElmts=0;
-        _nSurfaceElmts=0;
-        _nLineElmts=0;
-
         for(int e=0;e<_nElmts;e++){
             for(int j=0;j<static_cast<int>(phy2conn.size());j++){
                 if(mesh.GetBulkMeshIthElmtPhyID(e+1)==mesh.GetBulkMeshIthPhysicalID(j+1)){
@@ -426,23 +399,9 @@ bool Gmsh2IO::ReadMeshFromFile(Mesh &mesh){
                 }
             }
             if(mesh.GetBulkMeshIthElmtDim(e+1)==_nMaxDim){
-                _nBulkElmts+=1;
                 bulkconn.push_back(e+1);
             }
-            else{
-                // for lower dimension elements
-                if(mesh.GetBulkMeshIthElmtDim(e+1)==2){
-                    _nSurfaceElmts+=1;
-                }
-                else if(mesh.GetBulkMeshIthElmtPhyID(e+1)==1){
-                    _nLineElmts+=1;
-                }
-            }
         }
-
-        mesh.SetBulkMeshBulkElmtsNum(_nBulkElmts);
-        mesh.SetBulkMeshSurfaceElmtsNum(_nSurfaceElmts);
-        mesh.SetBulkMeshLineElmtsNum(_nLineElmts);
 
         for(int j=0;j<static_cast<int>(phy2conn.size());j++){
             phyname=mesh.GetBulkMeshIthPhysicalName(j+1);
