@@ -93,7 +93,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
 
     _Xmax=-1.0e16;_Xmin=1.0e16;
     _Ymax=-1.0e16;_Ymin=1.0e16;
-    _Ymax=-1.0e16;_Ymin=1.0e16;
+    _Zmax=-1.0e16;_Zmin=1.0e16;
 
     map<int,vector<int>> NodeSetPhyID2NodeIDsList;
     //*****************************************************
