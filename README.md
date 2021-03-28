@@ -8,10 +8,10 @@ A simple finite element method program, which is short for **AsFem**. AsFem is w
 ```
 git clone https://github.com/yangbai90/AsFem.git
 ```
-For the detailed installation and usage, one is referred to [AsFem Page](https://yangbai90.github.io/AsFem/) .
+For the detailed usage, one is referred to [AsFem Page](https://yangbai90.github.io/AsFem/) .
 
-## installation
-The installation details of AsFem can be found here [AsFem-Install](https://yangbai90.github.io/AsFem/install) .
+## Installation
+The installation details of AsFem can be found here [AsFem-Installation](https://yangbai90.github.io/AsFem/install) .
 
 # Demos
 AsFem has several demos, you can visit them either on [Bilibili](https://space.bilibili.com/100272198/channel/detail?cid=90241) or on [Youtube](https://www.youtube.com/playlist?list=PLVEpIo_wvYmaLPoLjj5Lg93YvYy9flkN8).
