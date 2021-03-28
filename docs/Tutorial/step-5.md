@@ -57,11 +57,13 @@ $$
 where $\chi$ denotes the interaction between two phases. $\kappa$ represents the interface energy contribution, which is proportional to the thickness of the phase interface.
 
 The related boundary conditions can be read as:
-$$\begin{equation}
+$$
+\begin{equation}
 -D\nabla c\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}
 \label{eq:flux}
 \tag{5}
-\end{equation}$$
+\end{equation}
+$$
 where the zero flux (*Neumann*) boundary condition is assumed in Eq.$\eqref{eq:flux}$.
 
 # Define the mesh

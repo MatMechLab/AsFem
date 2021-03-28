@@ -15,6 +15,7 @@ theme:
 nav:
   - Home: index.md
   - About: about.md
+  - Installation: install.md
   - Tutorial:
     - Step-0: Tutorial/step-0.md
     - Step-1: Tutorial/step-1.md
