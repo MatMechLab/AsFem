@@ -1,21 +1,22 @@
 All the release can be download from here [AsFem-Release](https://github.com/yangbai90/AsFem/releases)
 
+## 🌟 Version `v0.5` is released!
+
 ## 💥 Breaking Changes
 
-- Upgrade [PETSc](https://www.mcs.anl.gov/petsc/) to 3.14.3 for the better nonlinear solver and efficient parallelization
-- Simplify the user element coding
+- Name-based material properties accessing
+- Further simplify the user element coding, nodal loop is required anymore
+- Citation is available in Zenodo
 
 
 ## ⭐ Features
 
-- Full implicit solver for coupled PDEs
-- Easy to code your own model
-- Straightforward tensor calculation
+- Material properties projection
+- Postprocesses for elemental and side DoFs/Materials integral
 
 ## 🐞 Bug Fixes
 
-- Remove incorrect APIs for PETSc
+- Fix setting errors in Gmsh2IO and Gmsh4IO
 
 ## 🛠 Improvements
-- Better nonlinear equation solvability from SNES in PETSc
-- Improved time stepping
+- Error detector for the boundary condition system
