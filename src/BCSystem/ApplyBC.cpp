@@ -29,9 +29,17 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
         if(it._BCType==BCType::DIRICHLETBC){
             ApplyDirichletBC(mesh,dofHandler,calctype,DofIndex,bcvalue,bcnamelist,U,AMATRIX,RHS);
         }
+        else if(it._BCType==BCType::NODALDIRICHLETBC){
+            ApplyNodalDirichletBC(mesh,dofHandler,calctype,DofIndex,bcvalue,bcnamelist,U,AMATRIX,RHS);
+        }
         else if(it._BCType==BCType::NEUMANNBC){
             if(calctype==FECalcType::ComputeResidual){
                 ApplyNeumannBC(mesh,dofHandler,fe,DofIndex,bcvalue,bcnamelist,RHS);
+            }
+        }
+        else if(it._BCType==BCType::NODALNEUMANNBC){
+            if(calctype==FECalcType::ComputeResidual){
+                ApplyNodalNeumannBC(mesh,dofHandler,fe,DofIndex,bcvalue,bcnamelist,RHS);
             }
         }
         else if(it._BCType==BCType::NULLBC){

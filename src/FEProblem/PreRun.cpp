@@ -18,6 +18,7 @@ void FEProblem::ReadInputFile(){
     _inputSystem.ReadInputFile(_mesh,_dofHandler,
     _elmtSystem,_mateSystem,_bcSystem,_icSystem,_fe,
     _solutionSystem,_outputSystem,
+    _postprocessSystem,
     _nonlinearSolver,_timestepping,
     _feJobBlock);
 }
@@ -25,6 +26,7 @@ void FEProblem::ReadInputFile(){
 void FEProblem::InitAllComponents(){
 
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
+    MPI_Comm_size(PETSC_COMM_WORLD,&_size);
     char buff[70];
     string str;
 
@@ -35,6 +37,10 @@ void FEProblem::InitAllComponents(){
     _elmtSystem.InitBulkElmtMateInfo(_mateSystem);// set mate index for each elmt block
     _mateSystem.InitBulkMateSystem();// clean all the materials variables
     _bcSystem.InitBCSystem(_mesh);
+    if(!_bcSystem.CheckAppliedBCNameIsValid(_mesh)){
+        MessagePrinter::PrintErrorTxt("your boundary condition is not correct, please check the boundary name or your mesh file or your input file");
+        MessagePrinter::AsFem_Exit();
+    }
 
 
     snprintf(buff,70,"Start to creat dof map ...");
@@ -174,7 +180,11 @@ void FEProblem::InitAllComponents(){
     str=buff;
     MessagePrinter::PrintNormalTxt(str);
 
+    _postprocessSystem.InitPPSOutput();
+    _postprocessSystem.CheckWhetherPPSIsValid(_mesh);
 
+    MessagePrinter::PrintStars();
+    MessagePrinter::PrintDashLine();
     MessagePrinter::PrintNormalTxt("Now all the components are ready, we can start the simulation !");
     MessagePrinter::PrintDashLine();
     MessagePrinter::PrintStars();
@@ -196,6 +206,8 @@ void FEProblem::InitAllComponents(){
 
     _outputSystem.PrintInfo();
 
+    _postprocessSystem.PrintPostprocessInfo();
+
     _nonlinearSolver.PrintInfo();
 
 
@@ -209,5 +221,11 @@ void FEProblem::InitAllComponents(){
     }
 
     _feJobBlock.PrintJobInfo();
+
+    MessagePrinter::PrintStars();
+    snprintf(buff,70,"++++++ %8d CPUs will be used for the simulation      ++++++!",_size);
+    str=buff;
+    MessagePrinter::PrintNormalTxt(str);
+    MessagePrinter::PrintStars();
 
 }

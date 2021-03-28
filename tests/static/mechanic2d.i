@@ -46,7 +46,7 @@ name=disp_x disp_y
 [end]
 
 [projection]
-name=vonMises sigma_xx sigma_yy sigma_xy epsilon_xx epsilon_yy epsilon_xy
+name=reacforce_x reacforce_y
 [end]
 
 [bcs]

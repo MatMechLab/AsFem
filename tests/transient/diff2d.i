@@ -36,11 +36,11 @@ name=c
 [timestepping]
   type=be
   dt=1.0e-5
-  time=1.0e-2
+  time=1.0e-4
 [end]
 
 [projection]
-name=projc dcx dcy
+name=dcdx dcdy
 [end]
 
 [ics]

@@ -64,6 +64,28 @@ bool LagrangeMesh::Create1DLagrangeMesh(){
         _IsMeshCreated=false;
         return _IsMeshCreated;
     }
+
+
+    _nPhysicalGroups=0;
+    _NodeCoords.clear();
+    _ElmtConn.clear();
+    _PhysicalGroupNameList.clear();
+    _PhysicalGroupIDList.clear();
+    _PhysicalGroupDimList.clear();
+
+    _PhysicalGroupID2NameList.clear();
+    _PhysicalGroupName2IDList.clear();
+    _PhysicalGroupName2DimList.clear();
+    _PhysicalGroupName2NodesNumPerElmtList.clear();
+    _PhysicalName2ElmtIDsList.clear();
+    _ElmtVTKCellTypeList.clear();
+    //*** for node set physical groups
+    _nNodeSetPhysicalGroups=0;
+    _NodeSetPhysicalGroupNameList.clear();
+    _NodeSetPhysicalGroupIDList.clear();
+    _NodeSetPhysicalGroupID2NameList.clear();
+    _NodeSetPhysicalGroupName2IDList.clear();
+    _NodeSetPhysicalName2NodeIDsList.clear();
     
     _nBulkElmts=_Nx;
     _nElmts=_nBulkElmts+2;
@@ -121,11 +143,35 @@ bool LagrangeMesh::Create1DLagrangeMesh(){
     rightnodeids.clear();rightnodeids.push_back(_nNodes);
     allnodeids.resize(_nNodes,0);
     iota(allnodeids.begin(),allnodeids.end(),1);
-    
-    _PhysicalName2NodeIDsList.clear();
-    _PhysicalName2NodeIDsList.push_back(make_pair("left",leftnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("right",rightnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("alldomain",allnodeids));
+
+    //******************************************************************************
+    // add nodal sets
+    _nNodeSetPhysicalGroups=3;
+    _NodeSetPhysicalGroupNameList.clear();
+    _NodeSetPhysicalGroupNameList.push_back("left");
+    _NodeSetPhysicalGroupNameList.push_back("right");
+    _NodeSetPhysicalGroupNameList.push_back("alldomain");
+    //***
+    _NodeSetPhysicalGroupIDList.clear();
+    _NodeSetPhysicalGroupIDList.push_back(1);
+    _NodeSetPhysicalGroupIDList.push_back(2);
+    _NodeSetPhysicalGroupIDList.push_back(3);
+    //***
+    _NodeSetPhysicalGroupID2NameList.clear();
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(1,"left"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(2,"right"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(3,"alldomain"));
+    //***
+    _NodeSetPhysicalGroupName2IDList.clear();
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("left",1));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("right",2));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("alldomain",3));
+    //***
+    _NodeSetPhysicalName2NodeIDsList.clear();
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("left",leftnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("right",rightnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("alldomain",allnodeids));
+    //******************************************************************************
 
     _nPhysicalGroups=3;
     _PhysicalGroupNameList.clear();

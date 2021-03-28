@@ -75,6 +75,20 @@ bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSys
                 MessagePrinter::AsFem_Exit();
             }
         }
+        else if(str.find("interval=")!=string::npos||
+                str.find("Interval=")!=string::npos||
+                str.find("INTERVAL=")!=string::npos){
+            numbers=StringUtils::SplitStrNum(str);
+            if(numbers.size()<1){
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                msg="unsupported output interval= option in the [output] block, option=integer is expected";
+                MessagePrinter::PrintErrorTxt(msg);
+                MessagePrinter::AsFem_Exit();
+            }
+            else{
+                outputblock._Interval=static_cast<int>(numbers[0]);
+            }
+        }
         else if((str.find("folder=")!=string::npos||
                  str.find("Folder=")!=string::npos)&&
                  str.find("FOLDER")==string::npos){

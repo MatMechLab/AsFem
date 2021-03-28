@@ -17,6 +17,7 @@
 
 void FESystem::AssembleSubResidualToLocalResidual(const int &ndofspernode,const int &dofs,const int &iInd,
                                             const VectorXd &subR,VectorXd &localR){
+    // TODO: we need a better assemble algorithm for complex coupling case !!!
     for(int i=1;i<=dofs;i++){
         localR((iInd-1)*ndofspernode+i)+=subR(i);
     }
@@ -57,4 +58,12 @@ void FESystem::AccumulateLocalJacobian(const int &dofs,const vector<double> &dof
 void FESystem::AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vector<int> &dofindex,
                                             const vector<double> &jacobian,Mat &K){
     MatSetValues(K,ndofs,dofindex.data(),ndofs,dofindex.data(),jacobian.data(),ADD_VALUES);
+}
+//**********************************************************************
+void FESystem::AssembleLocalHistToGlobal(const int &e,const int &nhist,const int &ngp,const int &gpInd,const vector<double> &localHist,Vec &Hist){
+    int i,j;
+    for(i=1;i<=nhist;i++){
+        j=(e-1)*nhist*ngp+(gpInd-1)*nhist+i-1;
+        VecSetValue(Hist,j,localHist[i-1],ADD_VALUES);
+    }
 }

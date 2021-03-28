@@ -27,7 +27,7 @@ void BulkElmtSystem::BodySourceElmt(const FECalcType &calctype,
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR){
     //*******************************************************
     //*** to get rid of the warning for unused variables  ***
@@ -59,10 +59,6 @@ void BulkElmtSystem::BodySourceElmt(const FECalcType &calctype,
         gpHistOld=gpHist;
         break;
     case FECalcType::Projection:
-        gpProj[0]=gpU[0];
-        gpProj[1]=gpGradU[0](1);
-        gpProj[2]=gpGradU[0](2);
-        gpProj[3]=gpGradU[0](3);
         break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Laplace element");

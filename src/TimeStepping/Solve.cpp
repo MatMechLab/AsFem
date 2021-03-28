@@ -56,6 +56,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
     user->time=time;
     user->step=step;
     user->dt=dt;
+    VecCopy(U,user->_solutionSystem._Unew);
     
     snprintf(buff,68,"Time step=%8d, time=%13.5e, dt=%13.5e",step,time,dt);
     str=buff;
@@ -66,23 +67,29 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
         MessagePrinter::PrintNormalTxt(str);
     }
 
-    if(step%user->_outputSystem.GetIntervalNum()==0){
-        if(user->_fectrlinfo.IsProjection){
-            user->_feSystem.FormBulkFE(FECalcType::Projection,time,dt,user->_fectrlinfo.ctan,
-            user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
-            U,user->_solutionSystem._V,user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
-            user->_solutionSystem._Proj,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
-            user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U,
-            user->_solutionSystem.GetProjNumPerNode(),user->_solutionSystem.GetProjNameVec(),
-            user->_solutionSystem._Proj);
-        }
-        else{
-            user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,U);
-        }
+    if(user->_fectrlinfo.IsProjection){
+        user->_feSystem.FormBulkFE(FECalcType::Projection,time,dt,user->_fectrlinfo.ctan,
+                                   user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
+                                   user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
+
+    }
+    if(step%user->_outputSystem.GetIntervalNum()==0){
+        user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,user->_solutionSystem);
+        user->_outputSystem.WriteResultToPVDFile(time,user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
         MessagePrinter::PrintDashLine();
+
     }
+    if(step%user->_postprocess.GetOutputIntervalNum()==0){
+        user->_postprocess.RunPostprocess(time,user->_mesh,user->_dofHandler,user->_fe,user->_solutionSystem);
+    }
+
+
+    // update history variable
+    user->_feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,time,dt,user->_fectrlinfo.ctan,
+                               user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
+                               user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
     if(user->IsAdaptive&&step>=1){
         if(user->iters+1<=user->OptiIters){
@@ -108,13 +115,14 @@ PetscErrorCode ComputeIResidual(TS ts,PetscReal t,Vec U,Vec V,Vec RHS,void *ctx)
     // apply the initial dirichlet boundary condition
     user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,t,U);
 
+    VecCopy(U,user->_solutionSystem._Unew);
+    VecCopy(V,user->_solutionSystem._V);
+
     user->_feSystem.FormBulkFE(FECalcType::ComputeResidual,
                         t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                         user->_mesh,user->_dofHandler,user->_fe,
                         user->_elmtSystem,user->_mateSystem,
-                        U,V,
-                        user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
-                        user->_solutionSystem._Proj,
+                        user->_solutionSystem,
                         user->_equationSystem._AMATRIX,RHS);
     
     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
@@ -135,6 +143,9 @@ PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,
     user->_feSystem.ResetMaxAMatrixValue();// we reset the penalty factor
     user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,t,U);
 
+    VecCopy(U,user->_solutionSystem._Unew);
+    VecCopy(V,user->_solutionSystem._V);
+
     user->_fectrlinfo.ctan[0]=1.0;
     user->_fectrlinfo.ctan[1]=s;// dUdot/dU
 
@@ -142,9 +153,7 @@ PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,
                         t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
                         user->_mesh,user->_dofHandler,user->_fe,
                         user->_elmtSystem,user->_mateSystem,
-                        U,V,
-                        user->_solutionSystem._Hist,user->_solutionSystem._HistOld,
-                        user->_solutionSystem._Proj,
+                        user->_solutionSystem,
                         A,user->_equationSystem._RHS);
     
     if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){
@@ -176,6 +185,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             SolutionSystem &solutionSystem,EquationSystem &equationSystem,
             FE &fe,FESystem &feSystem,
             OutputSystem &outputSystem,
+            Postprocess &postprocessSystem,
             FEControlInfo &fectrlinfo){
 
     _appctx=TSAppCtx{mesh,dofHandler,
@@ -184,6 +194,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                    solutionSystem,equationSystem,
                    fe,feSystem,
                    outputSystem,
+                   postprocessSystem,
                    fectrlinfo,
                    //*****************
                    0.0,0.0,
@@ -202,7 +213,11 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
 
 
     _appctx._icSystem.ApplyIC(_appctx._mesh,_appctx._dofHandler,_appctx._solutionSystem._Unew);
-    _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,1.0,_appctx._solutionSystem._Unew);
+    _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,0.0,_appctx._solutionSystem._Unew);
+    _appctx._feSystem.FormBulkFE(FECalcType::InitHistoryVariable,_appctx._fectrlinfo.t,_appctx._fectrlinfo.dt,_appctx._fectrlinfo.ctan,
+                                 _appctx._mesh,_appctx._dofHandler,_appctx._fe,_appctx._elmtSystem,_appctx._mateSystem,
+                                 _appctx._solutionSystem,
+                                 _appctx._equationSystem._AMATRIX,_appctx._equationSystem._RHS);
 
     TSSetIFunction(_ts,_appctx._equationSystem._RHS,ComputeIResidual,&_appctx);
     TSSetIJacobian(_ts,_appctx._equationSystem._AMATRIX,_appctx._equationSystem._AMATRIX,ComputeIJacobian,&_appctx);
@@ -216,7 +231,13 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     TSSetFromOptions(_ts);
 
+    //***************************************************
+    //*** before solve,we need to write some basic info
+    //*** to pvd file
+    //***************************************************
+    _appctx._outputSystem.WritePVDFileHeader();
     TSSolve(_ts,_appctx._solutionSystem._Unew);
+    _appctx._outputSystem.WritePVDFileEnd();
 
     return true;
 }

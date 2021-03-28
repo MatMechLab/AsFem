@@ -13,7 +13,6 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
-
 #include "Mesh/MeshIOBase.h"
 #include "Mesh/MeshType.h"
 
@@ -48,6 +47,7 @@ private:
 
     int _nMaxDim=-1,_nMinDim=4;
     int _nPhysicGroups=0;
+    int _nNodeSetPhysicalGroups=0;
     int _nNodes=0,_nElmts=0;
     int _nBulkElmts=0,_nSurfaceElmts=0,_nLineElmts=0;
     
@@ -57,5 +57,6 @@ private:
     int _nNodesPerLineElmt=0;
     int _nNodesPerSurfaceElmt=0;
     int _nOrder=1;
+
 
 };

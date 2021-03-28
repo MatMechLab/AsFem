@@ -42,6 +42,7 @@
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
+#include "Postprocess/Postprocess.h"
 #include "FEProblem/FEJobBlock.h"
 
 
@@ -56,6 +57,7 @@ public:
                        FE &fe,
                        SolutionSystem &solutionSystem,
                        OutputSystem &outputSystem,
+                       Postprocess &postProcessSystem,
                        NonlinearSolver &nonlinearSolver,
                        TimeStepping &timestepping,
                        FEJobBlock &feJobBlock);
@@ -83,9 +85,14 @@ private:
     bool ReadQPointBlock(ifstream &in,string str,int &linenum,FE &fe);
 
     //******************************************************
-    //*** functions for reading [qpoint]
+    //*** functions for reading [output]
     //******************************************************
     bool ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSystem &outputSystem);
+
+    //******************************************************
+    //*** functions for reading [postprocess]
+    //******************************************************
+    bool ReadPostprocessBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,Postprocess &postprocess,DofHandler &dofHandler);
 
     //******************************************************
     //*** functions for reading [projection]

@@ -9,7 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
 set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
-set(MPI_DIR "/home/by/Programs/mpich/3.4")
+set(MPI_DIR "/home/by/Programs/openmpi/4.1.0")
 
 ###############################################
 ### For your PETSc library file  (edit)     ###
@@ -91,6 +91,8 @@ set(inc ${inc} include/Utils/VectorXd.h)
 set(src ${src} src/Utils/MathUtils/VectorXd.cpp)
 set(inc ${inc} include/Utils/MatrixXd.h)
 set(src ${src} src/Utils/MathUtils/MatrixXd.cpp)
+### for general mathematic functions
+set(inc ${inc} include/Utils/MathFuns.h)
 
 #############################################################
 ### For inputystem                                        ###
@@ -105,6 +107,7 @@ set(src ${src} src/InputSystem/ReadBCBlock.cpp)
 set(src ${src} src/InputSystem/ReadICBlock.cpp)
 set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
 set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
+set(src ${src} src/InputSystem/ReadPostprocessBlock.cpp)
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
 set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
 set(src ${src} src/InputSystem/ReadTimeSteppingBlock.cpp)
@@ -114,11 +117,18 @@ set(src ${src} src/InputSystem/ReadFEJobBlock.cpp)
 ### For Mesh class                                        ###
 #############################################################
 ### For mesh io class
+### for gmsh2 io
 set(inc ${inc} include/Mesh/MeshIOBase.h include/Mesh/Gmsh2IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh2IOReadMesh.cpp src/Mesh/MeshIO/Gmsh2IOGetFuns.cpp)
+### for gmsh4 io
 set(src ${src} include/Mesh/Gmsh4IO.h)
 set(src ${src} src/Mesh/MeshIO/Gmsh4IOReadMesh.cpp src/Mesh/MeshIO/Gmsh4IOGetFuns.cpp)
+set(src ${src} src/Mesh/MeshIO/Gmsh4IOUtilFuns.cpp)
 set(src ${src} include/Mesh/MeshIO.h src/Mesh/MeshIO/MeshIO.cpp src/Mesh/MeshIO/MeshIOJudgeFun.cpp)
+### for abaqus io
+set(inc ${inc} include/Mesh/AbaqusIO.h)
+set(src ${src} src/Mesh/MeshIO/AbaqusIOGetFuns.cpp)
+set(src ${src} src/Mesh/MeshIO/AbaqusIOReadMesh.cpp)
 ### define the basic mesh type and geometry
 set(inc ${inc} include/Mesh/MeshType.h include/Mesh/Nodes.h)
 ### for the bulk mesh class
@@ -172,6 +182,14 @@ set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
 set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### for diffusion equation
 set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
+### for Miehe's fracture model
+set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
+### for User1 element
+set(src ${src} src/ElmtSystem/User1Elmt.cpp)
+### for User2 element
+set(src ${src} src/ElmtSystem/User2Elmt.cpp)
+### for User3 element
+set(src ${src} src/ElmtSystem/User3Elmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
@@ -189,6 +207,10 @@ set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
 set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
+### for Miehe's phase field fracture materials
+set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+### for UMAT
+set(src ${src} src/MateSystem/User1Material.cpp)
 
 #############################################################
 ### For Boundary condition system in AsFem                ###
@@ -197,10 +219,13 @@ set(inc ${inc} include/BCSystem/BCType.h)
 set(inc ${inc} include/BCSystem/BCBlock.h)
 set(inc ${inc} include/BCSystem/BCSystem.h)
 set(src ${src} src/BCSystem/BCSystem.cpp)
+set(src ${src} src/BCSystem/CheckAppliedBCNameIsValid.cpp)
 set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
 set(src ${src} src/BCSystem/ApplyBC.cpp)
 set(src ${src} src/BCSystem/ApplyDirichletBC.cpp)
+set(src ${src} src/BCSystem/ApplyNodalDirichletBC.cpp)
 set(src ${src} src/BCSystem/ApplyNeumannBC.cpp)
+set(src ${src} src/BCSystem/ApplyNodalNeumannBC.cpp)
 set(src ${src} src/BCSystem/RunBCLibs.cpp)
 set(src ${src} src/BCSystem/User1BC.cpp)
 
@@ -293,6 +318,7 @@ set(inc ${inc} include/OutputSystem/OutputSystem.h)
 set(src ${src} src/OutputSystem/OutputSystem.cpp)
 set(src ${src} src/OutputSystem/WriteResultToFile.cpp)
 set(src ${src} src/OutputSystem/WriteResult2VTU.cpp)
+set(src ${src} src/OutputSystem/WritePVDFile.cpp)
 
 #############################################################
 ### For FE system in AsFem                                ###
@@ -303,6 +329,28 @@ set(src ${src} src/FESystem/FESystem.cpp src/FESystem/InitBulkFESystem.cpp)
 set(src ${src} src/FESystem/FormBulkFE.cpp)
 set(src ${src} src/FESystem/FEAssemble.cpp)
 set(src ${src} src/FESystem/FEProjection.cpp)
+
+#############################################################
+### For postprocess system in AsFem                       ###
+#############################################################
+set(inc ${inc} include/Postprocess/PostprocessType.h)
+set(inc ${inc} include/Postprocess/PostprocessBlock.h)
+set(inc ${inc} include/Postprocess/Postprocess.h)
+set(src ${src} src/Postprocess/Postprocess.cpp)
+### for settings check
+set(src ${src} src/Postprocess/CheckWhetherPPSIsValid.cpp)
+set(src ${src} src/Postprocess/RunPostprocess.cpp)
+### for node pps
+set(src ${src} src/Postprocess/NodeValuePostProcess.cpp)
+### for elmt pps
+set(src ${src} src/Postprocess/ElementValuePostProcess.cpp)
+set(src ${src} src/Postprocess/AreaPostProcess.cpp)
+set(src ${src} src/Postprocess/VolumePostProcess.cpp)
+set(src ${src} src/Postprocess/ElementalIntegralPostProcess.cpp)
+### for side-integral of projected variables
+set(src ${src} src/Postprocess/SideIntegralPostProcess.cpp)
+set(src ${src} src/Postprocess/ProjVariableSideIntegralPostProcess.cpp)
+set(src ${src} src/Postprocess/Rank2MateSideIntegralPostProcess.cpp)
 
 #############################################################
 ### For FEProblem in AsFem  (top level)                   ###

@@ -17,6 +17,7 @@
 
 #include "Mesh/Gmsh2IO.h"
 #include "Mesh/Gmsh4IO.h"
+#include "Mesh/AbaqusIO.h"
 
 
 enum class MeshIOType{
@@ -29,7 +30,7 @@ enum class MeshIOType{
     VTK
 };
 
-class MeshIO:public Gmsh2IO,public Gmsh4IO{
+class MeshIO:public Gmsh2IO,public Gmsh4IO, public AbaqusIO{
 public:
     MeshIO();
     virtual bool ReadMeshFromFile(Mesh &mesh) override;

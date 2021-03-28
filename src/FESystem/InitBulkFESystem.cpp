@@ -58,10 +58,8 @@ void FESystem::InitBulkFESystem(const Mesh &mesh,
         _gpHist.push_back(0.0);
         _gpHistOld.push_back(0.0);
     }
-    _gpProj.reserve(20);
-    for(int i=0;i<20;++i){
-        _gpProj.push_back(0.0);
-    }
+
+    _gpProj.clear();
     
 
     _nGPoints=fe._BulkQPoint.GetQpPointsNum();
@@ -85,7 +83,7 @@ void FESystem::InitBulkFESystem(const Mesh &mesh,
     double w,xi,eta,zeta,DetJac,JxW;
     int nDim=mesh.GetDim();
     _KMatrixFactor=1.0e16;
-    int einc=int(1.0*mesh.GetBulkMeshBulkElmtsNum()/200);
+    int einc=int(1.0*mesh.GetBulkMeshBulkElmtsNum()/500);
     if(einc<1) einc=1;
     _BulkVolumes=0.0;
     for(e=1;e<=mesh.GetBulkMeshBulkElmtsNum();e+=einc){

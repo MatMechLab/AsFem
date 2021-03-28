@@ -38,11 +38,10 @@ bool MeshIO::ReadMeshFromFile(Mesh &mesh){
         return Gmsh4IO::ReadMeshFromFile(mesh);
         break;
     case MeshIOType::NETGEN:
-        // cout<<"using netgen"<<endl;
+        MessagePrinter::PrintErrorTxt("Netgen mesh is not supported yet!");
         return false;
     case MeshIOType::ABAQUS:
-        // cout<<"using abaqus"<<endl;
-        return false;
+        return AbaqusIO::ReadMeshFromFile(mesh);
     default:
         return false;
     }
@@ -60,12 +59,12 @@ void MeshIO::SetMeshFileName(string filename){
         _MeshIOType=MeshIOType::NETGEN;
     }
     else if(IsAbaqusMeshFile(filename)){
+        AbaqusIO::SetMeshFileName(filename);
         _MeshIOType=MeshIOType::ABAQUS;
     }
     else{
-        // PetscPrintf(PETSC_COMM_WORLD,"*** Error: can\'t read mesh file(=%20s)          !!!   ***\n",filename.c_str());
-        // PetscPrintf(PETSC_COMM_WORLD,"***        unsupported mesh file type                           !!!   ***\n");
-        // Msg_AsFem_Exit();
+        MessagePrinter::PrintErrorTxt("can\'t read mesh file(="+filename+")!!!, the mesh file type is not supported yet");
+        MessagePrinter::AsFem_Exit();
     }
 }
 string MeshIO::GetMeshFileName()const{
@@ -76,6 +75,9 @@ string MeshIO::GetMeshFileName()const{
         break;
     case MeshIOType::GMSH4:
         return Gmsh4IO::GetMeshFileName();
+        break;
+    case MeshIOType::ABAQUS:
+        return AbaqusIO::GetMeshFileName();
         break;
     default:
         return "";

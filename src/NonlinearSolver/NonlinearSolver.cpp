@@ -27,7 +27,7 @@ NonlinearSolver::NonlinearSolver(){
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
-    _LinearSolverName="ksp";
+    _LinearSolverName="petsc";
     _PCTypeName="lu";
 }
 

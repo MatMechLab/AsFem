@@ -36,6 +36,7 @@
 #include "EquationSystem/EquationSystem.h"
 
 #include "OutputSystem/OutputSystem.h"
+#include "Postprocess/Postprocess.h"
 
 #include "NonlinearSolver/NonlinearSolverBlock.h"
 
@@ -60,6 +61,7 @@ typedef struct{
     FE _fe;
     FESystem _feSystem;
     OutputSystem _outputSystem;
+    Postprocess _postprocess;
     FEControlInfo _fectrlinfo;
     //********************************
     PetscReal rnorm,rnorm0;
@@ -104,6 +106,7 @@ public:
             SolutionSystem &solutionSystem,EquationSystem &equationSystem,
             FE &fe,FESystem &feSystem,
             OutputSystem &outputSystem,
+            Postprocess &postprocessSystem,
             FEControlInfo &fectrlinfo);
 
     void ReleaseMem();

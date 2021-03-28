@@ -31,7 +31,15 @@ bool LagrangeMesh::Create3DLagrangeMesh(){
 
     _PhysicalGroupName2NodesNumPerElmtList.clear();
     _PhysicalName2ElmtIDsList.clear();
-    _PhysicalName2NodeIDsList.clear();
+
+
+    //*** for node set physical groups
+    _nNodeSetPhysicalGroups=0;
+    _NodeSetPhysicalGroupNameList.clear();
+    _NodeSetPhysicalGroupIDList.clear();
+    _NodeSetPhysicalGroupID2NameList.clear();
+    _NodeSetPhysicalGroupName2IDList.clear();
+    _NodeSetPhysicalName2NodeIDsList.clear();
 
 
     _nNodesPerBulkElmt=0;_nNodesPerSurfaceElmt=0;_nNodesPerLineElmt=0;
@@ -999,14 +1007,57 @@ bool LagrangeMesh::Create3DLagrangeMesh(){
     allnodeids.resize(_nNodes,0);
     iota(allnodeids.begin(),allnodeids.end(),1);
 
-    _PhysicalName2NodeIDsList.clear();
-    _PhysicalName2NodeIDsList.push_back(make_pair("left",leftnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("right",rightnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("bottom",bottomnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("top",topnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("back",backnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("front",frontnodeids));
-    _PhysicalName2NodeIDsList.push_back(make_pair("alldomain",allnodeids));
+
+
+    //********************************************************************
+    //*** for nodeset physical group information
+    // add nodal sets
+    _nNodeSetPhysicalGroups=6+1;
+    _NodeSetPhysicalGroupNameList.clear();
+    _NodeSetPhysicalGroupNameList.push_back("left");
+    _NodeSetPhysicalGroupNameList.push_back("right");
+    _NodeSetPhysicalGroupNameList.push_back("bottom");
+    _NodeSetPhysicalGroupNameList.push_back("top");
+    _NodeSetPhysicalGroupNameList.push_back("back");
+    _NodeSetPhysicalGroupNameList.push_back("front");
+    _NodeSetPhysicalGroupNameList.push_back("alldomain");
+    //***
+    _NodeSetPhysicalGroupIDList.clear();
+    _NodeSetPhysicalGroupIDList.push_back(1);
+    _NodeSetPhysicalGroupIDList.push_back(2);
+    _NodeSetPhysicalGroupIDList.push_back(3);
+    _NodeSetPhysicalGroupIDList.push_back(4);
+    _NodeSetPhysicalGroupIDList.push_back(5);
+    _NodeSetPhysicalGroupIDList.push_back(6);
+    _NodeSetPhysicalGroupIDList.push_back(7);
+    //***
+    _NodeSetPhysicalGroupID2NameList.clear();
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(1,"left"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(2,"right"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(3,"bottom"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(4,"top"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(5,"back"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(6,"front"));
+    _NodeSetPhysicalGroupID2NameList.push_back(make_pair(7,"alldomain"));
+    //***
+    _NodeSetPhysicalGroupName2IDList.clear();
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("left",1));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("right",2));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("bottom",3));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("top",4));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("back",5));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("front",6));
+    _NodeSetPhysicalGroupName2IDList.push_back(make_pair("alldomain",7));
+    //***
+    _NodeSetPhysicalName2NodeIDsList.clear();
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("left",leftnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("right",rightnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("bottom",bottomnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("top",topnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("back",backnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("front",frontnodeids));
+    _NodeSetPhysicalName2NodeIDsList.push_back(make_pair("alldomain",allnodeids));
+    //********************************************************************
 
     _PhysicalName2ElmtIDsList.clear();
     _PhysicalName2ElmtIDsList.push_back(make_pair("left",left));

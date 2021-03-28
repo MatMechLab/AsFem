@@ -26,7 +26,7 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                         const VectorMateType &VectorMaterials,
                         const Rank2MateType &Rank2Materials,
                         const Rank4MateType &Rank4Materials,
-                        vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                        vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                         MatrixXd &localK,VectorXd &localR){
     switch (elmtytype)
     {
@@ -77,6 +77,38 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
                       ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
                       gpHist,gpHistOld,gpProj,
                       localK,localR);
+        break;
+    case ElmtType::MIEHEFRACELMT:
+        MieheFractureElmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
+                      gpCoords,gpU,gpV,gpGradU,gpGradV,
+                      test,trial,grad_test,grad_trial,
+                      ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                      gpHist,gpHistOld,gpProj,
+                      localK,localR);
+        break;
+    case ElmtType::USER1ELMT:
+        User1Elmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
+                          gpCoords,gpU,gpV,gpGradU,gpGradV,
+                          test,trial,grad_test,grad_trial,
+                          ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                          gpHist,gpHistOld,gpProj,
+                          localK,localR);
+        break;
+    case ElmtType::USER2ELMT:
+        User2Elmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
+                  gpCoords,gpU,gpV,gpGradU,gpGradV,
+                  test,trial,grad_test,grad_trial,
+                  ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                  gpHist,gpHistOld,gpProj,
+                  localK,localR);
+        break;
+    case ElmtType::USER3ELMT:
+        User3Elmt(calctype,nDim,nNodes,nDofs,t,dt,ctan,
+                  gpCoords,gpU,gpV,gpGradU,gpGradV,
+                  test,trial,grad_test,grad_trial,
+                  ScalarMaterials,VectorMaterials,Rank2Materials,Rank4Materials,
+                  gpHist,gpHistOld,gpProj,
+                  localK,localR);
         break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported element type in ElmtSystem, please check your code or your input file");

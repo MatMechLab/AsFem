@@ -18,8 +18,7 @@
 void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const double &dt,const double (&ctan)[2],
                 Mesh &mesh,const DofHandler &dofHandler,FE &fe,
                 ElmtSystem &elmtSystem,MateSystem &mateSystem,
-                const Vec &U,const Vec &V,
-                Vec &Hist,const Vec &HistOld,Vec &Proj,
+                SolutionSystem &solutionSystem,
                 Mat &AMATRIX,Vec &RHS){
     
     if(calctype==FECalcType::ComputeResidual){
@@ -28,11 +27,15 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     else if(calctype==FECalcType::ComputeJacobian){
         MatZeroEntries(AMATRIX);
     }
-    else if(calctype==FECalcType::InitHistoryVariable){
-        VecSet(Hist,0.0);
+    else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
+        VecSet(solutionSystem._Hist,0.0);
     }
     else if(calctype==FECalcType::Projection){
-        VecSet(Proj,0.0);
+        VecSet(solutionSystem._Proj,0.0);
+        VecSet(solutionSystem._ProjScalarMate,0.0);
+        VecSet(solutionSystem._ProjVectorMate,0.0);
+        VecSet(solutionSystem._ProjRank2Mate,0.0);
+        VecSet(solutionSystem._ProjRank4Mate,0.0);
     }
     else{
         MessagePrinter::PrintErrorTxt("unsupported calculation type in FormBulkFE, please check your code");
@@ -43,25 +46,22 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     MPI_Comm_size(PETSC_COMM_WORLD,&_size);
 
     // we can get the correct value on the ghosted node!
-    VecScatterCreateToAll(U,&_scatteru,&_Useq);
-    VecScatterBegin(_scatteru,U,_Useq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatteru,U,_Useq,INSERT_VALUES,SCATTER_FORWARD);
+    // please keep in mind, we will always use Unew and V in SNES and TS !!!
+    VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);
+    VecScatterBegin(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
 
-    VecScatterCreateToAll(V,&_scatterv,&_Vseq);
-    VecScatterBegin(_scatterv,V,_Vseq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatterv,V,_Vseq,INSERT_VALUES,SCATTER_FORWARD);
-    // //*** for proj and hist variables
-    // VecScatterCreateToAll(Proj,&_scatterproj,&_ProjSeq);
-    // VecScatterBegin(_scatterproj,Proj,_ProjSeq,INSERT_VALUES,SCATTER_FORWARD);
-    // VecScatterEnd(_scatterproj,Proj,_ProjSeq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterCreateToAll(solutionSystem._V,&_scatterv,&_Vseq);
+    VecScatterBegin(_scatterv,solutionSystem._V,_Vseq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatterv,solutionSystem._V,_Vseq,INSERT_VALUES,SCATTER_FORWARD);
 
-    VecScatterCreateToAll(Hist,&_scatterhist,&_HistSeq);
-    VecScatterBegin(_scatterhist,Hist,_HistSeq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatterhist,Hist,_HistSeq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterCreateToAll(solutionSystem._Hist,&_scatterhist,&_HistSeq);
+    VecScatterBegin(_scatterhist,solutionSystem._Hist,_HistSeq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatterhist,solutionSystem._Hist,_HistSeq,INSERT_VALUES,SCATTER_FORWARD);
 
-    VecScatterCreateToAll(HistOld,&_scatterhistold,&_HistOldSeq);
-    VecScatterBegin(_scatterhistold,HistOld,_HistOldSeq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatterhistold,HistOld,_HistOldSeq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterCreateToAll(solutionSystem._HistOld,&_scatterhistold,&_HistOldSeq);
+    VecScatterBegin(_scatterhistold,solutionSystem._HistOld,_HistOldSeq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatterhistold,solutionSystem._HistOld,_HistOldSeq,INSERT_VALUES,SCATTER_FORWARD);
 
 
     int rankne=mesh.GetBulkMeshBulkElmtsNum()/_size;
@@ -76,7 +76,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     nDim=mesh.GetDim();
 
     _BulkVolumes=0.0;
-    
     for(int ee=eStart;ee<eEnd;++ee){
         e=ee+1;
         mesh.GetBulkMeshIthBulkElmtNodes(e,_elNodes);
@@ -97,7 +96,10 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             fill(_K.begin(),_K.end(),0.0);
         }
         else if(calctype==FECalcType::Projection){
-            fill(_gpProj.begin(),_gpProj.end(),0.0);
+            for(auto &it:_gpProj) it.second=0.0;
+        }
+        else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
+            fill(_gpHist.begin(),_gpHist.end(),0.0);
         }
         
         xi=0.0;eta=0.0;zeta=0.0;DetJac=1.0;w=1.0;
@@ -105,10 +107,12 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         for(gpInd=1;gpInd<=fe._BulkQPoint.GetQpPointsNum();++gpInd){
             // init all the local K&R array/matrix
             // get local history(old) value on each gauss point
-            for(i=1;i<=_nHist;++i){
-                _gpHist[i-1]=0.0;
-                j=(e-1)*_nHist*fe._BulkQPoint.GetQpPointsNum()+(gpInd-1)*_nHist+i-1;
-                VecGetValues(_HistOldSeq,1,&j,&_gpHistOld[i-1]);
+            if(calctype!=FECalcType::InitMaterialAndProjection){
+                for(i=1;i<=_nHist;++i){
+                    _gpHist[i-1]=0.0;
+                    j=(e-1)*_nHist*fe._BulkQPoint.GetQpPointsNum()+(gpInd-1)*_nHist+i-1;
+                    VecGetValues(_HistOldSeq,1,&j,&_gpHistOld[i-1]);
+                }
             }
             // calculate the current shape funs on each gauss point
             if(nDim==1){
@@ -150,7 +154,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 _localK.setZero();
             }
             else if(calctype==FECalcType::Projection){
-                fill(_gpProj.begin(),_gpProj.end(),0.0);
+                for(auto &it:_gpProj) it.second=0.0;
             }
             // now we do the loop for local element, *local element could have multiple contributors according
             // to your model, i.e. one element (or one domain) can be assigned by multiple [elmt] sub block in your input file !!!
@@ -160,7 +164,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 localDofIndex=dofHandler.GetIthBulkElmtJthKernelDofIndex(e,ielmt);
                 mateindex=dofHandler.GetIthBulkElmtJthKernelMateIndex(e,ielmt);
                 nDofsPerSubElmt=static_cast<int>(localDofIndex.size());
-                
+
                 // now we calculate the local dofs and their derivatives
                 // *this is only the local one, which means, i.e., if current element use dofs=u v
                 // then we only calculate u v and their derivatives on each gauss point,
@@ -194,12 +198,10 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 else if(calctype==FECalcType::ComputeJacobian){
                     _subK.setZero();
                 }
-
                 //*****************************************************
                 //*** For user material calculation(UMAT)
                 //*****************************************************
                 mateSystem.RunBulkMateLibs(matetype,mateindex,nDim,t,dt,_gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,_gpHist,_gpHistOld);
-
                 //*****************************************************
                 //*** For user element calculation(UEL)
                 //*****************************************************
@@ -214,7 +216,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
                             _gpHist,_gpHistOld,_gpProj,_subK,_subR);
-
                         AssembleSubResidualToLocalResidual(nDofsPerNode,nDofsPerSubElmt,i,_subR,_localR);
                     }
                 }
@@ -230,7 +231,6 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                             mateSystem.GetRank2MatePtr(),
                             mateSystem.GetRank4MatePtr(),
                             _gpHist,_gpHistOld,_gpProj,_subK,_subR);
-                            
                             AssembleSubJacobianToLocalJacobian(nDofsPerNode,i,j,_subK,_localK);
                         }
                     }
@@ -263,7 +263,15 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 AccumulateLocalJacobian(nDofs,_elDofsActiveFlag,JxW,_localK,_K);
             }
             else if(calctype==FECalcType::Projection){
-                AssembleLocalProjectionToGlobal(nNodes,JxW,fe._BulkShp,_gpProj,Proj);
+                AssembleLocalProjectionToGlobal(nNodes,JxW,fe._BulkShp,_gpProj,
+                                                mateSystem.GetScalarMatePtr(),
+                                                mateSystem.GetVectorMatePtr(),
+                                                mateSystem.GetRank2MatePtr(),
+                                                mateSystem.GetRank4MatePtr(),
+                                                solutionSystem);
+            }
+            else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
+                AssembleLocalHistToGlobal(e,_nHist,fe._BulkQPoint.GetQpPointsNum(),gpInd,_gpHist,solutionSystem._Hist);
             }
         }//----->end of gauss point loop
         mesh.SetBulkMeshIthBulkElmtVolume(e,elVolume);
@@ -290,12 +298,14 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         MatAssemblyEnd(AMATRIX,MAT_FINAL_ASSEMBLY);
     }
     else if(calctype==FECalcType::Projection){
-        Projection(mesh.GetBulkMeshNodesNum(),_nProj,Proj);
+        Projection(mesh.GetBulkMeshNodesNum(),solutionSystem);
     }
     else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
-        VecAssemblyBegin(Hist);
-        VecAssemblyEnd(Hist);
+        VecAssemblyBegin(solutionSystem._Hist);
+        VecAssemblyEnd(solutionSystem._Hist);
+        VecCopy(solutionSystem._Hist,solutionSystem._HistOld);
     }
+
 
 
 

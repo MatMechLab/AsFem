@@ -92,6 +92,27 @@ public:
         temp(3)=(*this)(3,i);
         return temp;
     }
+    inline double GetIthVoigtComponent(const int &i)const{
+        if(i==1){
+            return (*this)(1,1);
+        }
+        else if(i==2){
+            return (*this)(2,2);
+        }
+        else if(i==3){
+            return (*this)(3,3);
+        }
+        else if(i==4){
+            return(*this)(2,3);
+        }
+        else if(i==5){
+            return (*this)(1,3);
+        }
+        else if(i==6){
+            return (*this)(1,2);
+        }
+        return 0;
+    }
     //**************************************************
     //*** for some basic mathematic operators
     //**************************************************
@@ -303,6 +324,7 @@ public:
     //********************************************************
     void CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec) const;
     RankFourTensor CalcPostiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const;
+    RankFourTensor GetPostiveProjTensor() const;
     //*******************************************************************
     //*** some setting functions
     //*******************************************************************
@@ -330,6 +352,7 @@ public:
         }
     }
     // for deformation gradient based calculation(or similar calculation)
+    void SetFromGradU(const Vector3d &gradUx);
     void SetFromGradU(const Vector3d &gradUx,const Vector3d &gradUy);
     void SetFromGradU(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz);
     void SetFromVoigt(const double &v11,const double &v22,const double &v12);// for 2D

@@ -18,6 +18,9 @@
 bool MeshIO::IsGmsh2MeshFile(string filename){
     _in.open(filename.c_str(),ios::in);
     if(!_in.is_open()){
+        string str="can\'t read the .msh file(="+filename+"), please make sure your mesh file name is correct";
+        MessagePrinter::PrintErrorTxt(str);
+        MessagePrinter::AsFem_Exit();
         return false;
     }
     double version;
@@ -48,6 +51,9 @@ bool MeshIO::IsGmsh2MeshFile(string filename){
 bool MeshIO::IsGmsh4MeshFile(string filename){
     _in.open(filename.c_str(),ios::in);
     if(!_in.is_open()){
+        string str="can\'t read the .msh file(="+filename+"), please make sure your mesh file name is correct";
+        MessagePrinter::PrintErrorTxt(str);
+        MessagePrinter::AsFem_Exit();
         return false;
     }
     double version;

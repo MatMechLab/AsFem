@@ -76,6 +76,10 @@ public:
     inline double& operator[](const int &i){
         return _vals[i-1];
     }
+    inline double GetIthVoigtComponent(const int &i)const{
+        // TODO: implement efficient voigt access!!!
+        return _vals[i];
+    }
     //*** for =
     inline RankFourTensor& operator=(const double &a){
         for(int i=0;i<_N4;++i) _vals[i]=a;

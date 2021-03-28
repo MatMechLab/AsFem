@@ -110,6 +110,11 @@ RankTwoTensor::RankTwoTensor(const double &v11,const double &v12,const double &v
 //**********************************************************
 //*** Some setting functions (set from F)
 //**********************************************************
+void RankTwoTensor::SetFromGradU(const Vector3d &gradUx){
+    (*this)(1,1)=gradUx(1);(*this)(1,2)=0.0;(*this)(1,3)=0.0;
+    (*this)(2,1)=        0.0;(*this)(2,2)=0.0;(*this)(2,3)=0.0;
+    (*this)(3,1)=        0.0;(*this)(3,2)=0.0;(*this)(3,3)=0.0;
+}
 void RankTwoTensor::SetFromGradU(const Vector3d &gradUx,const Vector3d &gradUy){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=gradUx(2);(*this)(1,3)=0.0;
     (*this)(2,1)=gradUy(1);(*this)(2,2)=gradUy(2);(*this)(2,3)=0.0;
@@ -379,6 +384,71 @@ RankFourTensor RankTwoTensor::CalcPostiveProjTensor(double (&eigval)[3],RankTwoT
     // remember, the eigen vec and eigen value should be used in your material
     // code to calculate the stress and the related constitutive law
 
+    // Algorithm is taken from:
+    // C. Miehe and M. Lambrecht, Commun. Numer. Meth. Engng 2001; 17:337~353
+    // https://onlinelibrary.wiley.com/doi/epdf/10.1002/cnm.404
+
+    CalcEigenValueAndEigenVectors(eigval,eigvec);
+
+    // C=F^T F=lambda_i M_i where M_i=n_i x n_i
+    //         lambda_i-->eigenvalue  n_i--> the eigenvector
+
+    double epos[3],diag[3];
+    for(int i=0;i<_N;++i){
+        epos[i]=0.5*(abs(eigval[i])+eigval[i]);
+        diag[i]=0.0;
+        if(eigval[i]>0.0){
+            diag[i]=1.0;
+        }
+    }
+    RankFourTensor ProjPos(0.0);
+    RankTwoTensor Ma(0.0),Mb(0.0);
+
+    ProjPos.SetToZeros();
+
+    // calculate Ma defined in Eq.(9)-2
+    // Ma=n_a x n_a
+    for(int i=1;i<=_N;++i){
+        Ma.VectorCrossDot(eigvec.IthCol(i),eigvec.IthCol(i));
+        // Eq.(19), first term on the right side
+        ProjPos+=Ma.CrossDot(Ma)*diag[i-1];
+    }
+
+    // Now we calculate the Gab and Gba
+    // We need a new rank-2 tensor Mb(same defination as Ma)
+    double theta_ab;// defined in Eq.(21)-1
+    RankFourTensor Gab(0.0),Gba(0.0);
+    const double tol=1.0e-13;
+    for(int a=0;a<_N;++a){
+        for(int b=0;b<a;++b){
+            Ma.VectorCrossDot(eigvec.IthCol(a+1),eigvec.IthCol(a+1));// Eq.(12)
+            Mb.VectorCrossDot(eigvec.IthCol(b+1),eigvec.IthCol(b+1));// change the order of Eq.(12)
+
+            Gab=Ma.IkJlDot(Mb)+Ma.IlJkDot(Mb);
+            Gba=Mb.IkJlDot(Ma)+Mb.IlJkDot(Ma);
+            // since only positive term is involved
+            // e_a=0.5*(abs(lambda_a)+lambda_a)
+            // P is defined as: 2dE/dC in Eq.(8)-2
+            //  but 2dM/dC=(Gab+Gba)/(lambda_a-lambda_b)
+            // E(C)=sum(e_a*M_a)
+            // P=2dE(C)/dC=2(dE(C)/dM)*(dM/dC)
+            if(abs(eigval[a]-eigval[b])<=tol){
+                //if limit lambda_a to lambda_b in Eq.(24)
+                theta_ab=0.5*(diag[a]+diag[b])/2.0;
+            }
+            else{
+                // ea(lambda_a)=(1/2)*(lambda_a-1)
+                // m=2 for green strain case in Eq.(16)
+                theta_ab=0.5*(epos[a]-epos[b])/(eigval[a]-eigval[b]);// Eq.(21)-1
+            }
+            ProjPos+=theta_ab*(Gab+Gba);
+        }
+    }
+    return ProjPos;
+}
+
+RankFourTensor RankTwoTensor::GetPostiveProjTensor() const{
+    double eigval[3];RankTwoTensor eigvec;
     // Algorithm is taken from:
     // C. Miehe and M. Lambrecht, Commun. Numer. Meth. Engng 2001; 17:337~353
     // https://onlinelibrary.wiley.com/doi/epdf/10.1002/cnm.404

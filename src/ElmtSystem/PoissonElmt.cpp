@@ -26,7 +26,7 @@ void BulkElmtSystem::PoissonElmt(const FECalcType &calctype,
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR){
     //*******************************************************
     //*** to get rid of the warning for unused variables  ***
@@ -39,25 +39,36 @@ void BulkElmtSystem::PoissonElmt(const FECalcType &calctype,
     
     switch (calctype){
     case FECalcType::ComputeResidual:
-        localR(1)=ScalarMaterials.at("sigma")*(gpGradU[1]*grad_test)
-                 +ScalarMaterials.at("f")*test;
+        try{
+            localR(1)=ScalarMaterials.at("sigma")*(gpGradU[1]*grad_test)
+                      +ScalarMaterials.at("f")*test;
+        }
+        catch(...) {
+            MessagePrinter::PrintErrorTxt("some of your scalar materials(sigma, f) are not defined yet");
+            MessagePrinter::AsFem_Exit();
+        }
         break;
     case FECalcType::ComputeJacobian:
-        localK(1,1)=ScalarMaterials.at("dsigmadu")*trial*(gpGradU[1]*grad_test)*ctan[0]
-                   +ScalarMaterials.at("sigma")*grad_trial*grad_test*ctan[0]
-                   +ScalarMaterials.at("dfdu")*trial*test*ctan[0];
+        try{
+            localK(1,1)=ScalarMaterials.at("dsigmadu")*trial*(gpGradU[1]*grad_test)*ctan[0]
+                        +ScalarMaterials.at("sigma")*grad_trial*grad_test*ctan[0]
+                        +ScalarMaterials.at("dfdu")*trial*test*ctan[0];
+        }
+        catch (...){
+            MessagePrinter::PrintErrorTxt("some of your scalar materials(dsigmadu, dfdu) are not defined yet");
+            MessagePrinter::AsFem_Exit();
+        }
         break;
     case FECalcType::InitHistoryVariable:
-        gpHist[0]=0.0;
+        fill(gpHist.begin(),gpHist.end(),0.0);
         break;
     case FECalcType::UpdateHistoryVariable:
         gpHistOld=gpHist;
         break;
     case FECalcType::Projection:
-        gpProj[0]=gpU[1];
-        gpProj[1]=gpGradU[1](1);
-        gpProj[2]=gpGradU[1](2);
-        gpProj[3]=gpGradU[1](3);
+        gpProj["dudx"]=gpGradU[1](1);
+        gpProj["dudy"]=gpGradU[1](2);
+        gpProj["dudz"]=gpGradU[1](3);
         break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Poisson element");

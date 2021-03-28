@@ -50,7 +50,7 @@ void BulkMateSystem::LinearElasticMaterial(const int &nDim, const double &t, con
     RankTwoTensor GradU;
     GradU.SetToZeros();
     if(nDim==1){
-        GradU(1,1)=gpGradU[1](1);// dUx/dx
+        GradU.SetFromGradU(gpGradU[1]);
     }
     else if(nDim==2){
         GradU.SetFromGradU(gpGradU[1],gpGradU[2]);

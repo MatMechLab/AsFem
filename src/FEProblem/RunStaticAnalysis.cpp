@@ -35,17 +35,11 @@ void FEProblem::RunStaticAnalysis(){
         if(_feCtrlInfo.IsProjection){
             _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
                 _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,
-                _solutionSystem._Unew,_solutionSystem._V,
-                _solutionSystem._Hist,_solutionSystem._HistOld,_solutionSystem._Proj,
+                _solutionSystem,
                 _equationSystem._AMATRIX,_equationSystem._RHS);
-
-        
-            _outputSystem.WriteResultToFile(_mesh,_dofHandler,
-            _solutionSystem._Unew,_solutionSystem.GetProjNumPerNode(),_solutionSystem.GetProjNameVec(),_solutionSystem._Proj);
         }
-        else{
-             _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem._Unew);
-        }
+        _outputSystem.WriteResultToFile(_mesh,_dofHandler,_solutionSystem);
+        _postprocessSystem.RunPostprocess(0.0,_mesh,_dofHandler,_fe,_solutionSystem);
         MessagePrinter::PrintStars();
         MessagePrinter::PrintNormalTxt("Write result to "+_outputSystem.GetOutputFileName());
         MessagePrinter::PrintStars();

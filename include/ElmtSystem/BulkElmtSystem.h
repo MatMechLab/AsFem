@@ -61,7 +61,7 @@ public:
                         const VectorMateType &VectorMaterials,
                         const Rank2MateType &Rank2Materials,
                         const Rank4MateType &Rank4Materials,
-                        vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                        vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                         MatrixXd &localK,VectorXd &localR);
 
     void PrintBulkElmtInfo()const;
@@ -69,7 +69,6 @@ public:
 protected:
     int _nBulkElmtBlocks;
     vector<ElmtBlock> _BulkElmtBlockList;
-
 
 protected:
     //****************************************************************************
@@ -89,7 +88,7 @@ protected:
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
     //*** the body source means  int(f*test)dV
     void BodySourceElmt(const FECalcType &calctype,
@@ -104,7 +103,7 @@ protected:
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for general time derivative
@@ -121,7 +120,7 @@ protected:
                      const VectorMateType &VectorMaterials,
                      const Rank2MateType &Rank2Materials,
                      const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                      MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for general poisson element
@@ -138,7 +137,7 @@ protected:
                 const VectorMateType &VectorMaterials,
                 const Rank2MateType &Rank2Materials,
                 const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                 MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -156,7 +155,7 @@ protected:
                      const VectorMateType &VectorMaterials,
                      const Rank2MateType &Rank2Materials,
                      const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                      MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
     //*** for Cahn-Hilliard element in mixed-formula
@@ -173,7 +172,7 @@ protected:
                        const VectorMateType &VectorMaterials,
                        const Rank2MateType &Rank2Materials,
                        const Rank4MateType &Rank4Materials,
-                       vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                       vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                        MatrixXd &localK,VectorXd &localR);
 
     //************************************************************************************
@@ -191,7 +190,78 @@ protected:
                           const VectorMateType &VectorMaterials,
                           const Rank2MateType &Rank2Materials,
                           const Rank4MateType &Rank4Materials,
-                          vector<double> &gpHist,vector<double> &gpHistOld,vector<double> &gpProj,
+                          vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                           MatrixXd &localK,VectorXd &localR);
+
+    //************************************************************************************
+    //*** for Miehe's phase field fracture model
+    //************************************************************************************
+    void MieheFractureElmt(const FECalcType &calctype,
+                       const int &nDim,const int &nNodes,const int &nDofs,
+                       const double &t,const double &dt,const double (&ctan)[2],
+                       const Vector3d &gpCoords,
+                       const vector<double> &gpU,const vector<double> &gpV,
+                       const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                       const double &test,const double &trial,
+                       const Vector3d &grad_test,const Vector3d &grad_trial,
+                       const ScalarMateType &ScalarMaterials,
+                       const VectorMateType &VectorMaterials,
+                       const Rank2MateType &Rank2Materials,
+                       const Rank4MateType &Rank4Materials,
+                       vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
+                       MatrixXd &localK,VectorXd &localR);
+
+    //************************************************************************************
+    //*** for User-defined element 1
+    //************************************************************************************
+    void User1Elmt(const FECalcType &calctype,
+                           const int &nDim,const int &nNodes,const int &nDofs,
+                           const double &t,const double &dt,const double (&ctan)[2],
+                           const Vector3d &gpCoords,
+                           const vector<double> &gpU,const vector<double> &gpV,
+                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                           const double &test,const double &trial,
+                           const Vector3d &grad_test,const Vector3d &grad_trial,
+                           const ScalarMateType &ScalarMaterials,
+                           const VectorMateType &VectorMaterials,
+                           const Rank2MateType &Rank2Materials,
+                           const Rank4MateType &Rank4Materials,
+                           vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
+                           MatrixXd &localK,VectorXd &localR);
+    //************************************************************************************
+    //*** for User-defined element 2
+    //************************************************************************************
+    void User2Elmt(const FECalcType &calctype,
+                   const int &nDim,const int &nNodes,const int &nDofs,
+                   const double &t,const double &dt,const double (&ctan)[2],
+                   const Vector3d &gpCoords,
+                   const vector<double> &gpU,const vector<double> &gpV,
+                   const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                   const double &test,const double &trial,
+                   const Vector3d &grad_test,const Vector3d &grad_trial,
+                   const ScalarMateType &ScalarMaterials,
+                   const VectorMateType &VectorMaterials,
+                   const Rank2MateType &Rank2Materials,
+                   const Rank4MateType &Rank4Materials,
+                   vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
+                   MatrixXd &localK,VectorXd &localR);
+
+    //************************************************************************************
+    //*** for User-defined element 2
+    //************************************************************************************
+    void User3Elmt(const FECalcType &calctype,
+                   const int &nDim,const int &nNodes,const int &nDofs,
+                   const double &t,const double &dt,const double (&ctan)[2],
+                   const Vector3d &gpCoords,
+                   const vector<double> &gpU,const vector<double> &gpV,
+                   const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
+                   const double &test,const double &trial,
+                   const Vector3d &grad_test,const Vector3d &grad_trial,
+                   const ScalarMateType &ScalarMaterials,
+                   const VectorMateType &VectorMaterials,
+                   const Rank2MateType &Rank2Materials,
+                   const Rank4MateType &Rank4Materials,
+                   vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
+                   MatrixXd &localK,VectorXd &localR);
 
 };

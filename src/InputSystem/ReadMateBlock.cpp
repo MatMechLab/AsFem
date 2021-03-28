@@ -127,6 +127,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::LINEARELASTICPFFRACTUREMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("miehefracmate")!=string::npos&&substr.length()==13){
+                        mateBlock._MateTypeName="miehefracmate";
+                        mateBlock._MateType=MateType::MIEHEFRACTUREMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("elasticch")!=string::npos&&substr.length()==9){
                         mateBlock._MateTypeName="elasticch";
                         mateBlock._MateType=MateType::ELASTICCAHNHILLIARDMATE;

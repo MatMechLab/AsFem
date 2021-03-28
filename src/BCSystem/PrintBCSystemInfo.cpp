@@ -49,7 +49,7 @@ void BCSystem::PrintBCSystemInfo()const{
         //*
         str="   boundary name       =";
         for(auto bcname:it._BoundaryNameList){
-            str+=bcname;
+            str+=bcname+" ";
         }
         MessagePrinter::PrintNormalTxt(str);
     }

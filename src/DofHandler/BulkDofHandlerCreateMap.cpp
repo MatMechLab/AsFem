@@ -59,19 +59,25 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
 
     //*** firstly, we check whether all the domain has been assigned an [elmt] block
     bool DomainHasElmtBlock=false;
+    bool UseAllDomain,UseSpeceficDomain;
     for(i=1;i<=mesh.GetBulkMeshPhysicalGroupNum();i++){
-        DomainHasElmtBlock=false;
+        DomainHasElmtBlock=false;UseAllDomain=false;UseSpeceficDomain=false;
         if(mesh.GetBulkMeshIthPhysicalDim(i)==_nMaxDim){// only check the bulk elmts
-            DomainHasElmtBlock=false;
             for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
                 if(mesh.GetBulkMeshIthPhysicalName(i)==elmtSystem.GetIthBulkElmtBlock(j)._DomainName){
-                    DomainHasElmtBlock=true;
+                    if(elmtSystem.GetIthBulkElmtBlock(j)._DomainName=="alldomain"){
+                        UseAllDomain=true;UseSpeceficDomain=false;
+                    }
+                    else{
+                        UseAllDomain=false;UseSpeceficDomain=true;
+                    }
                     break;
                 }
             }
-            if(!DomainHasElmtBlock){
-                break;
-            }
+        }
+        if(UseAllDomain||UseSpeceficDomain){
+            DomainHasElmtBlock=true;
+            break;
         }
     }
     if(!DomainHasElmtBlock){
@@ -79,6 +85,33 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
         str=buff;
         MessagePrinter::PrintErrorTxt(str);
         MessagePrinter::PrintErrorTxt("please check your input file carefully, all the domain should be assigned at least one [elmt] block!");
+        MessagePrinter::AsFem_Exit();
+    }
+
+    //*** secondly, we check whether all the DoFs have been assigned an [elmt] block
+    bool DofHasElmtBlock=false;
+    string dofname;
+    for(i=1;i<=GetDofsNumPerNode();i++){
+        DofHasElmtBlock=false;
+        dofname=GetIthDofName(i);
+        for(j=1;j<=elmtSystem.GetBulkElmtBlockNums();j++){
+            for(const auto &name:elmtSystem.GetIthBulkElmtBlock(j)._DofsNameList){
+                if(name==dofname){
+                    DofHasElmtBlock=true;
+                    break;
+                }
+            }
+            if(DofHasElmtBlock){
+                break;
+            }
+        }
+        if(!DofHasElmtBlock){
+            break;
+        }
+    }
+    if(!DofHasElmtBlock){
+        str="DoF->"+dofname+" has not been assigned to any [elmts] block! Please check your input file carefully";
+        MessagePrinter::PrintErrorTxt(str);
         MessagePrinter::AsFem_Exit();
     }
 

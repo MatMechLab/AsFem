@@ -54,6 +54,7 @@ public:
     inline int GetBCBlockNums()const{return _nBCBlocks;}
     inline BCBlock GetIthBCBlock(const int &i)const{return _BCBlockList[i-1];}
 
+    bool CheckAppliedBCNameIsValid(const Mesh &mesh);
     //**************************************************************
     //*** add basic settings
     //**************************************************************
@@ -81,6 +82,12 @@ private:
     //**************************************************************
     void ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
     void ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
+
+    //**************************************************************
+    //*** for nodal type boundary conditions
+    //**************************************************************
+    void ApplyNodalDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
+    void ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
 
     //**************************************************************
     //*** for other general boundary conditions
