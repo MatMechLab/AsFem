@@ -197,6 +197,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../../install/" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -204,14 +219,14 @@
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
-      <label class="md-nav__link" for="__nav_3">
+      <label class="md-nav__link" for="__nav_4">
         Tutorial
         <span class="md-nav__icon md-icon"></span>
       </label>
       <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
-        <label class="md-nav__title" for="__nav_3">
+        <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
           Tutorial
         </label>
@@ -315,14 +330,14 @@
     <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
-      <label class="md-nav__link" for="__nav_4">
+      <label class="md-nav__link" for="__nav_5">
         Document
         <span class="md-nav__icon md-icon"></span>
       </label>
       <nav class="md-nav" aria-label="Document" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
+        <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
           Document
         </label>
@@ -525,11 +540,13 @@ $$
 $$
 where <span class="arithmatex">\(\chi\)</span> denotes the interaction between two phases. <span class="arithmatex">\(\kappa\)</span> represents the interface energy contribution, which is proportional to the thickness of the phase interface.</p>
 <p>The related boundary conditions can be read as:
-<span class="arithmatex">\(<span class="arithmatex">\(\begin{equation}
+$$
+\begin{equation}
 -D\nabla c\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}
 \label{eq:flux}
 \tag{5}
-\end{equation}\)</span>\)</span>
+\end{equation}
+$$
 where the zero flux (<em>Neumann</em>) boundary condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>.</p>
 <h1 id="define-the-mesh">Define the mesh</h1>
 <p>We use a square domain here for our calculation, and then the <code>[mesh]</code> block can be given as:</p>
