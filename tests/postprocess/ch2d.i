@@ -3,8 +3,8 @@
 [mesh]
   type=asfem
   dim=2
-  xmax=2.0
-  ymax=2.0
+  xmax=1.0
+  ymax=1.0
   nx=50
   ny=50
   meshtype=quad9
@@ -37,8 +37,8 @@ name=c mu
 
 [timestepping]
   type=be
-  dt=1.0e-4
-  time=1.0e0
+  dt=1.0e-5
+  time=2.0e-5
   optiters=3
   growthfactor=1.2
   adaptive=true
@@ -78,10 +78,12 @@ name=dcdx dcdy
   [end]
   [nodec]
     type=nodevalue
+    dof=c
     nodeid=315
   [end]
   [elmtc]
     type=elementvalue
+    dof=c
     elmtid=20
   [end]
 [end]

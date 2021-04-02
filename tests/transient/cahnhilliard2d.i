@@ -37,8 +37,8 @@ name=c mu
 
 [timestepping]
   type=be
-  dt=1.0e-4
-  time=1.0e2
+  dt=1.0e-5
+  time=2.0e-5
   optiters=3
   growthfactor=1.2
   adaptive=true

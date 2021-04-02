@@ -11,5 +11,5 @@
 [end]
 
 [dofs]
-name=
+name=u
 [end]

@@ -48,7 +48,6 @@ name=d ux uy uz
 [timestepping]
   type=be
   dt=1.0e-5
-  //time=3.3e-2
   time=2.0e-5
   adaptive=true
   optiters=3

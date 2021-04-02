@@ -1,12 +1,12 @@
 //+
 SetFactory("OpenCASCADE");
 
-dx=0.25;
+dx=0.8;
 dh=5.0e-3;
 dz=1.2;
 
-n1=101;// two long notched edges
-n2=31;// two short notched edges
+n1=31;// two long notched edges
+n2=11;// two short notched edges
 
 Point(1)={0.0,0.0,0.0,dx};
 Point(2)={5.0,0.0,0.0,dx};

@@ -1,14 +1,14 @@
 //+
 SetFactory("OpenCASCADE");
 
-dx=0.1;
+dx=0.5;
 w=10.0;
 dh=1.0e-5;
 
-n1=61;//top-two lines
-n2=81;// bottom circle
-n3=41;// left-right lines
-n4=51;// bottom-notch two lines
+n1=11;//top-two lines
+n2=21;// bottom circle
+n3=11;// left-right lines
+n4=16;// bottom-notch two lines
 
 Point(1)={0.0,0.0,0.0,dx};
 Point(2)={1.0,0.0,0.0,dx};

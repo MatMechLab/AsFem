@@ -54,7 +54,7 @@ name=c ux uy
 [timestepping]
   type=be
   dt=1.0e-5
-  time=1.0e-2
+  time=2.0e-5
   adaptive=true
   optiters=3
   growthfactor=1.1
