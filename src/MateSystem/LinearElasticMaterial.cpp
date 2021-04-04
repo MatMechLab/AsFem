@@ -8,72 +8,74 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.30
-//+++ Purpose: Calculate the linear elastic material properties
-//+++          required by mechanics element
-//+++          In this code, we can define:
-//+++           1) stress
-//+++           2) strain
-//+++           3) vonMises stress
-//+++           4) elasticity tensor
+//+++ Date   : 2021.04.04
+//+++ Purpose: Implement the calculation for linear elastic material
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/BulkMateSystem.h"
+#include "MateSystem/LinearElasticMaterial.h"
 
-void BulkMateSystem::LinearElasticMaterial(const int &nDim, const double &t, const double &dt,
-                                           const vector<double> &InputParams, const Vector3d &gpCoord,
-                                           const vector<double> &gpU, const vector<double> &gpV,
-                                           const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradV,
-                                           vector<double> &gpHist, const vector<double> &gpHistOld) {
+void LinearElasticMaterial::InitMaterialProperties(const double &t, const double &dt,const int &nDim,
+                                                   const Vector3d &gpCoord,const vector<double> &InputParams,
+                                                   const vector<double> &gpU,const vector<double> &gpUdot,
+                                                   const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
+                                                   Materials &Mate) {
+    // Here we do not consider any initial internal strains, stress
+    if(t||dt||nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
+       gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){
 
-    //*****************************************************************************
-    //*** just to get rid of warnings, normal users dont need to do this
-    //*****************************************************************************
-    if(nDim||t||dt||InputParams.size()||
-       gpCoord(1)||gpU.size()||gpV.size()||gpGradU.size()||gpGradV.size()||
-       gpHist.size()||gpHistOld.size()){}
+    }
+}
+
+
+void LinearElasticMaterial::ComputeStrain(const int &nDim,const vector<Vector3d> &GradDisp, RankTwoTensor &Strain) {
+    if(nDim==1){
+        _GradU.SetFromGradU(GradDisp[1]);
+    }
+    else if(nDim==2){
+        _GradU.SetFromGradU(GradDisp[1],GradDisp[2]);
+    }
+    else if(nDim==3){
+        _GradU.SetFromGradU(GradDisp[1],GradDisp[2],GradDisp[3]);
+    }
+    Strain=(_GradU+_GradU.Transpose())*0.5;
+}
+
+void LinearElasticMaterial::ComputeStressAndJacobian(const vector<double> &InputParams,const RankTwoTensor &Strain,
+                                                     RankTwoTensor &Stress,RankFourTensor &Jacobian) {
+
+    const double E=InputParams[0];
+    const double nu=InputParams[1];
+
+    Jacobian.SetToZeros();
+    Jacobian.SetFromEandNu(E,nu);
+    Stress=Jacobian.DoubleDot(Strain);
+}
+
+void LinearElasticMaterial::ComputeMaterialProperties(const double &t, const double &dt,const int &nDim,
+                                                      const Vector3d &gpCoord,const vector<double> &InputParams,
+                                                      const vector<double> &gpU,const vector<double> &gpUOld,
+                                                      const vector<double> &gpUdot,const vector<double> &gpUdotOld,
+                                                      const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
+                                                      const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
+                                                      const Materials &MateOld, Materials &Mate) {
+
+    if(t||dt||gpCoord(1)||gpU[0]||gpUOld[0]||
+    gpUdot[0]||gpUdotOld[0]||gpGradU[0](1)||gpGradUOld[0](1)||
+    gpGradUdot[0](1)||gpGradUdotOld[0](1)||MateOld.ScalarMaterials.size()){}// get rid of unused warning
 
     if(InputParams.size()<2){
         MessagePrinter::PrintErrorTxt("for linear elastic material, two parameters are required, you need to give: E and nu");
         MessagePrinter::AsFem_Exit();
     }
 
-    const double E=InputParams[0];
-    const double nu=InputParams[1];
+    ComputeStrain(nDim,gpGradU,_Strain);
+    ComputeStressAndJacobian(InputParams,_Strain,_Stress,_Jac);
 
-    // for our elasticity tensor
-    _Rank4Materials["elasticity_tensor"].SetToZeros();
-    _Rank4Materials["elasticity_tensor"].SetFromEandNu(E,nu);
+    _I.SetToIdentity();
+    _devStress=_Stress-_I*(_Stress.Trace()/3.0);
+    Mate.ScalarMaterials["vonMises"]=sqrt(1.5*_devStress.DoubleDot(_devStress));
+    Mate.Rank2Materials["strain"]=_Strain;
+    Mate.Rank2Materials["stress"]=_Stress;
+    Mate.Rank4Materials["jacobian"]=_Jac;
 
-    // for our small strain
-    _Rank2Materials["strain"].SetToZeros();
-    RankTwoTensor GradU;
-    GradU.SetToZeros();
-    if(nDim==1){
-        GradU.SetFromGradU(gpGradU[1]);
-    }
-    else if(nDim==2){
-        GradU.SetFromGradU(gpGradU[1],gpGradU[2]);
-    }
-    else if(nDim==3){
-        GradU.SetFromGradU(gpGradU[1],gpGradU[2],gpGradU[3]);
-    }
-    // epsilon_ij=0.5*(Ui,j+Uj,i)
-    _Rank2Materials["strain"]=(GradU+GradU.Transpose())*0.5;
-
-    // our stress
-    _Rank2Materials["stress"]=_Rank4Materials["elasticity_tensor"].DoubleDot(_Rank2Materials["strain"]);
-
-    // for vonMises stress
-    RankTwoTensor I,devStress;
-    double trace;
-    I.SetToIdentity();
-    trace=_Rank2Materials["stress"].Trace();
-
-    devStress=_Rank2Materials["stress"]-I*(trace/3.0);
-    // vonMises stress, taken from:
-    // https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
-    // vonMises=sqrt(1.5*sij*sij)
-    _ScalarMaterials["vonMises"]=sqrt(1.5*devStress.DoubleDot(devStress));
 }
-

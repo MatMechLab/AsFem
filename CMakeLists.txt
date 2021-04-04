@@ -201,6 +201,10 @@ set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
 ### for bulk materials
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
+set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
+# for elastic material
+set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
+
 set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)

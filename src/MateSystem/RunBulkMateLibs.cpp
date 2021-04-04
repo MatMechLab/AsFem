@@ -37,10 +37,10 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,
         CahnHilliardMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
         break;
-    case MateType::LINEARELASTICMATE:
-        LinearElasticMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
-        break;
+//    case MateType::LINEARELASTICMATE:
+//        LinearElasticMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+//                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+//        break;
     case MateType::MIEHEFRACTUREMATE:
         MieheFractureMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
                               gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
