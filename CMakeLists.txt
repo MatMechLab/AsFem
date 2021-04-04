@@ -204,7 +204,11 @@ set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
 # for elastic material
 set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
-
+### For free energy based materials
+set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
+#   for double well free energy materials
+set(inc ${inc} include/MateSystem/DoubleWellFreeEnergyMaterial.h)
+set(src ${src} src/MateSystem/DoubleWellFreeEnergyMaterial.cpp)
 set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
