@@ -34,7 +34,7 @@ public:
                                            const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
                                            const Materials &MateOld, Materials &Mate) override;
 
-protected:
+private:
     virtual void ComputeF(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt,vector<double> &F) override;
     virtual void ComputedFdU(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt, vector<double> &dF) override;
     virtual void Computed2FdU2(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt, vector<double> &d2F) override;
@@ -42,5 +42,7 @@ protected:
 private:
     double c;
     vector<double> _F,_dFdc,_d2Fdc2;
+
+
 };
 

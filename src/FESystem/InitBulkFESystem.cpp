@@ -38,13 +38,19 @@ void FESystem::InitBulkFESystem(const Mesh &mesh,
 
     _gpU.reserve(dofHandler.GetDofsNumPerNode()+1);
     _gpV.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpUOld.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpVOld.reserve(dofHandler.GetDofsNumPerNode()+1);
     _gpGradU.reserve(dofHandler.GetDofsNumPerNode()+1);
     _gpGradV.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpGradUOld.reserve(dofHandler.GetDofsNumPerNode()+1);
+    _gpGradVOld.reserve(dofHandler.GetDofsNumPerNode()+1);
     for(int i=0;i<dofHandler.GetDofsNumPerNode()+1;++i){
-        _gpU.push_back(0.0);
-        _gpV.push_back(0.0);
+        _gpU.push_back(0.0);_gpUOld.push_back(0.0);
+        _gpV.push_back(0.0);_gpVOld.push_back(0.0);
         _gpGradU.push_back(Vector3d(0.0));
         _gpGradV.push_back(Vector3d(0.0));
+        _gpGradUOld.push_back(Vector3d(0.0));
+        _gpGradVOld.push_back(Vector3d(0.0));
     }
 
     

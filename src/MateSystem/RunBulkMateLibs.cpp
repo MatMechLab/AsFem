@@ -16,39 +16,42 @@
 #include "MateSystem/BulkMateSystem.h"
 
 void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,const int &nDim,
-                    const double &t,const double &dt,
-                    const Vector3d &gpCoord,
-                    const vector<double> &gpU,const vector<double> &gpV,
-                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                    vector<double> &gpHist,const vector<double> &gpHistOld){
+                                     const double &t,const double &dt,const Vector3d &gpCoord,
+                                     const vector<double> &gpU,const vector<double> &gpUOld,
+                                     const vector<double> &gpUdot,const vector<double> &gpUdotOld,
+                                     const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
+                                     const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld){
     switch (imate){
     case MateType::NULLMATE:
         return;
         break;
-    case MateType::CONSTPOISSONMATE:
-        ConstPoissonMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-            gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
-        break;
-    case MateType::CONSTDIFFUSIONMATE:
-        ConstDiffusionMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-                               gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
-        break;
+//    case MateType::CONSTPOISSONMATE:
+//        ConstPoissonMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+//            gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+//        break;
+//    case MateType::CONSTDIFFUSIONMATE:
+//        ConstDiffusionMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+//                               gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+//        break;
     case MateType::CAHNHILLIARDMATE:
-        CahnHilliardMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-                             gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+        DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(t,dt,nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
+                                                                gpU,gpUOld,gpUdot,gpUdotOld,
+                                                                gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,
+                                                                _MaterialsOld,_Materials);
         break;
 //    case MateType::LINEARELASTICMATE:
 //        LinearElasticMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
 //                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
 //        break;
-    case MateType::MIEHEFRACTUREMATE:
-        MieheFractureMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
-        break;
-    case MateType::USER1MATE:
-        User1Material(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
-                      gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
-        break;
+//    case MateType::MIEHEFRACTUREMATE:
+//        MieheFractureMaterial(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+//                              gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+//        break;
+//        break;
+//    case MateType::USER1MATE:
+//        User1Material(nDim,t,dt,_BulkMateBlockList[mateindex-1]._Parameters,
+//                      gpCoord,gpU,gpV,gpGradU,gpGradV,gpHist,gpHistOld);
+//        break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of MateSystem, please check either your code or your input file");
         MessagePrinter::AsFem_Exit();

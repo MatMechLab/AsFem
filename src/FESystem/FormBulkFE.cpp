@@ -201,7 +201,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 //*****************************************************
                 //*** For user material calculation(UMAT)
                 //*****************************************************
-                mateSystem.RunBulkMateLibs(matetype,mateindex,nDim,t,dt,_gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,_gpHist,_gpHistOld);
+                //mateSystem.RunBulkMateLibs(matetype,mateindex,nDim,t,dt,_gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,_gpHist,_gpHistOld);
+                mateSystem.RunBulkMateLibs(matetype,mateindex,nDim,t,dt,_gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,
+                                           _gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld);
                 //*****************************************************
                 //*** For user element calculation(UEL)
                 //*****************************************************

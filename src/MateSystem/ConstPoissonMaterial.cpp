@@ -45,9 +45,9 @@ void BulkMateSystem::ConstPoissonMaterial(const int &nDim,const double &t,const 
     //**** MateVals[1]-->store dsigma/dphi(for constant case, it is zero)
     //**** MateVals[2]-->store F
     //**** MateVals[3]-->store dF/dphi (for constant case, it is zero)
-    _ScalarMaterials["sigma"]=InputParams[0];// sigma
-    _ScalarMaterials["dsigmadu"]=0.0;// dsigma/dphi
-    _ScalarMaterials["f"]=InputParams[1];// F
-    _ScalarMaterials["dfdu"]=0.0;// dF/dphi
+    //_ScalarMaterials["sigma"]=InputParams[0];// sigma
+    //_ScalarMaterials["dsigmadu"]=0.0;// dsigma/dphi
+    //_ScalarMaterials["f"]=InputParams[1];// F
+    //_ScalarMaterials["dfdu"]=0.0;// dF/dphi
 }
 

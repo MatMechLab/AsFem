@@ -77,7 +77,7 @@ void DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(const double &t, co
     Mate.ScalarMaterials["dMdc"]=InputParams[0]*(1-2*c);// dM/dc
 
     Mate.ScalarMaterials["F"]=_F[0];
-    Mate.ScalarMaterials["dFc"]=_dFdc[0];
+    Mate.ScalarMaterials["dFdc"]=_dFdc[0];
     Mate.ScalarMaterials["d2Fdc2"]=_d2Fdc2[0];
 
     Mate.ScalarMaterials["Kappa"]=InputParams[2];

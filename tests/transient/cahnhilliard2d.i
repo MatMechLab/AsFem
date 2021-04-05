@@ -31,7 +31,7 @@ name=c mu
 [mates]
   [mate1]
     type=cahnhilliard
-    params=1.0 2.5 0.0005
+    params=1.0 2.5 0.005
   [end]
 [end]
 

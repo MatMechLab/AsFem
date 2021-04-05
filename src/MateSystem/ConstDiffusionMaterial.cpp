@@ -40,7 +40,7 @@ void BulkMateSystem::ConstDiffusionMaterial(const int &nDim, const double &t, co
     //*** div(sigma*grad(phi))=F
     //**** MateVals[0]-->store D
     //**** MateVals[1]-->store dD/dc(for constant case, it is zero)
-    _ScalarMaterials["D"]=InputParams[0];// sigma
-    _ScalarMaterials["dDdc"]=0.0;// dsigma/dphi
+    //_ScalarMaterials["D"]=InputParams[0];// sigma
+    //_ScalarMaterials["dDdc"]=0.0;// dsigma/dphi
 }
 

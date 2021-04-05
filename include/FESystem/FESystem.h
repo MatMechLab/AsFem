@@ -150,9 +150,11 @@ private:
     vector<double> _elDofsActiveFlag;
     vector<double> _elU,_elV;
     vector<double> _gpU,_gpV;
+    vector<double> _gpUOld,_gpVOld;
     vector<double> _gpHist,_gpHistOld;
     map<string,double> _gpProj;
     vector<Vector3d> _gpGradU,_gpGradV;
+    vector<Vector3d> _gpGradUOld,_gpGradVOld;
     vector<double> _MaterialValues;
     Vector3d _gpCoord;
     int _nHist,_nProj,_nGPoints;

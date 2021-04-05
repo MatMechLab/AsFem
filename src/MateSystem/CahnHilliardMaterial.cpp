@@ -39,13 +39,13 @@ void BulkMateSystem::CahnHilliardMaterial(const int &nDim, const double &t, cons
         MessagePrinter::AsFem_Exit();
     }
 
-    double c;
-    c=gpU[1];
-    _ScalarMaterials["M"]=InputParams[0]*c*(1-c);// M
-    _ScalarMaterials["dMdc"]=InputParams[0]*(1-2*c);// dM/dc
-    _ScalarMaterials["F"]=c*log(c)+(1-c)*log(1-c)+InputParams[1]*c*(1-c);
-    _ScalarMaterials["dFdc"]=log(c)-log(1-c)+InputParams[1]*(1-2*c);
-    _ScalarMaterials["d2Fdc2"]=1.0/c+1.0/(1-c)-2*InputParams[1];
-    _ScalarMaterials["Kappa"]=InputParams[2];
+    //double c;
+    //c=gpU[1];
+    //_ScalarMaterials["M"]=InputParams[0]*c*(1-c);// M
+    //_ScalarMaterials["dMdc"]=InputParams[0]*(1-2*c);// dM/dc
+    //_ScalarMaterials["F"]=c*log(c)+(1-c)*log(1-c)+InputParams[1]*c*(1-c);
+    //_ScalarMaterials["dFdc"]=log(c)-log(1-c)+InputParams[1]*(1-2*c);
+    //_ScalarMaterials["d2Fdc2"]=1.0/c+1.0/(1-c)-2*InputParams[1];
+    //_ScalarMaterials["Kappa"]=InputParams[2];
 }
 

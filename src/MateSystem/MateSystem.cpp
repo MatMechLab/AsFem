@@ -19,8 +19,14 @@
 MateSystem::MateSystem(){
     _nBulkMateBlocks=0;
     _BulkMateBlockList.clear();
-    _ScalarMaterials.clear();
-    _VectorMaterials.clear();
-    _Rank2Materials.clear();
-    _Rank4Materials.clear();
+
+    _Materials.ScalarMaterials.clear();
+    _Materials.VectorMaterials.clear();
+    _Materials.Rank2Materials.clear();
+    _Materials.Rank4Materials.clear();
+
+    _MaterialsOld.ScalarMaterials.clear();
+    _MaterialsOld.VectorMaterials.clear();
+    _MaterialsOld.Rank2Materials.clear();
+    _MaterialsOld.Rank4Materials.clear();
 }
