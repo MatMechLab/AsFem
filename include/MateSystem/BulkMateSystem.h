@@ -39,8 +39,10 @@
 
 //*** For all the materials classes
 #include "MateSystem/DoubleWellFreeEnergyMaterial.h"
+#include "MateSystem/LinearElasticMaterial.h"
 
-class BulkMateSystem: public DoubleWellFreeEnergyMaterial{
+class BulkMateSystem: public DoubleWellFreeEnergyMaterial,
+        public LinearElasticMaterial{
 public:
     BulkMateSystem();
     void InitBulkMateSystem();

@@ -87,25 +87,25 @@ void MechanicsElmt::ComputeJacobian(const int &nDim, const int &nNodes, const in
 
     // for the stiffness matrix of mechanics problem
     // K_ux,ux
-    localK(1,1)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(1,1,grad_test,grad_trial)*ctan[0];
+    localK(1,1)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(1,1,grad_test,grad_trial)*ctan[0];
     if(nDim>=2){
         // K_ux,uy
-        localK(1,2)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(1,2,grad_test,grad_trial)*ctan[0];
+        localK(1,2)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(1,2,grad_test,grad_trial)*ctan[0];
         // K_uy,ux
-        localK(2,1)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(2,1,grad_test,grad_trial)*ctan[0];
+        localK(2,1)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(2,1,grad_test,grad_trial)*ctan[0];
         // K_uy,uy
-        localK(2,2)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(2,2,grad_test,grad_trial)*ctan[0];
+        localK(2,2)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(2,2,grad_test,grad_trial)*ctan[0];
         if(nDim==3){
             // K_ux,uz
-            localK(1,3)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(1,3,grad_test,grad_trial)*ctan[0];
+            localK(1,3)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(1,3,grad_test,grad_trial)*ctan[0];
             // K_uy,uz
-            localK(2,3)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(2,3,grad_test,grad_trial)*ctan[0];
+            localK(2,3)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(2,3,grad_test,grad_trial)*ctan[0];
             // K_uz,ux
-            localK(3,1)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(3,1,grad_test,grad_trial)*ctan[0];
+            localK(3,1)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(3,1,grad_test,grad_trial)*ctan[0];
             // K_uz,uy
-            localK(3,2)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(3,2,grad_test,grad_trial)*ctan[0];
+            localK(3,2)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(3,2,grad_test,grad_trial)*ctan[0];
             // K_uz,uz
-            localK(3,3)=Mate.Rank4Materials.at("elasticity_tensor").GetIKjlComponent(3,3,grad_test,grad_trial)*ctan[0];
+            localK(3,3)=Mate.Rank4Materials.at("jacobian").GetIKjlComponent(3,3,grad_test,grad_trial)*ctan[0];
         }
     }
 }

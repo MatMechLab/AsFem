@@ -31,7 +31,7 @@ public:
                                            const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
                                            const Materials &MateOld, Materials &Mate) override;
 
-protected:
+private:
     virtual void ComputeStrain(const int &nDim,const vector<Vector3d> &GradDisp, RankTwoTensor &Strain) override;
     virtual void ComputeStressAndJacobian(const vector<double> &InputParams,const RankTwoTensor &Strain,RankTwoTensor &Stress,RankFourTensor &Jacobian) override;
 
