@@ -31,12 +31,14 @@
 
 // for all the user-defined-elements
 #include "ElmtSystem/MechanicsElmt.h"
+#include "ElmtSystem/CahnHilliardElmt.h"
 
 using namespace std;
 
 class MateSystem;
 
-class BulkElmtSystem:public MechanicsElmt{
+class BulkElmtSystem:public MechanicsElmt,
+        public CahnHilliardElmt{
 public:
     BulkElmtSystem();
 

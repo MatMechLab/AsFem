@@ -173,7 +173,9 @@ set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
 ### For Mechanics element implementation
 set(inc ${inc} include/ElmtSystem/MechanicsElmt.h)
 set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
-
+### For CahnHilliard element implementation
+set(inc ${inc} include/ElmtSystem/CahnHilliardElmt.h)
+set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### for laplace operator
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 ### for body source term
@@ -184,8 +186,6 @@ set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
 set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
 ### for diffusion equation
 set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
-### for diffusion equation
-set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### for Miehe's fracture model
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### for User1 element
