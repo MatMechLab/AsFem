@@ -210,14 +210,11 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 if(calctype==FECalcType::ComputeResidual){
                     for(i=1;i<=nNodes;i++){
                         elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
-                            _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
+                            _gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,_gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld,
                             fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
                             fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
-                            mateSystem.GetScalarMatePtr(),
-                            mateSystem.GetVectorMatePtr(),
-                            mateSystem.GetRank2MatePtr(),
-                            mateSystem.GetRank4MatePtr(),
-                            _gpHist,_gpHistOld,_gpProj,_subK,_subR);
+                            mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),
+                            _gpProj,_subK,_subR);
                         AssembleSubResidualToLocalResidual(nDofsPerNode,nDofsPerSubElmt,i,_subR,_localR);
                     }
                 }
@@ -225,14 +222,11 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                     for(i=1;i<=nNodes;i++){
                         for(j=1;j<=nNodes;j++){
                             elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
-                            _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
+                            _gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,_gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld,
                             fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(j),
                             fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(j),
-                            mateSystem.GetScalarMatePtr(),
-                            mateSystem.GetVectorMatePtr(),
-                            mateSystem.GetRank2MatePtr(),
-                            mateSystem.GetRank4MatePtr(),
-                            _gpHist,_gpHistOld,_gpProj,_subK,_subR);
+                            mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),
+                            _gpProj,_subK,_subR);
                             AssembleSubJacobianToLocalJacobian(nDofsPerNode,i,j,_subK,_localK);
                         }
                     }
@@ -240,14 +234,11 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 else if(calctype==FECalcType::Projection){
                     for(i=1;i<=nNodes;i++){
                         elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
-                        _gpCoord,_gpU,_gpV,_gpGradU,_gpGradV,
+                        _gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,_gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld,
                         fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
                         fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
-                        mateSystem.GetScalarMatePtr(),
-                        mateSystem.GetVectorMatePtr(),
-                        mateSystem.GetRank2MatePtr(),
-                        mateSystem.GetRank4MatePtr(),
-                        _gpHist,_gpHistOld,_gpProj,_subK,_subR);
+                        mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),
+                        _gpProj,_subK,_subR);
                     }
                     // here we should not assemble the local projection, because the JxW should not be accumulated
                     // inside the element-loop, but the gpProj should be.

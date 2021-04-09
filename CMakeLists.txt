@@ -170,6 +170,9 @@ set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 ### For bulk element base class
 set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
+### For Mechanics element implementation
+set(inc ${inc} include/ElmtSystem/MechanicsElmt.h)
+set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
 
 ### for laplace operator
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
@@ -183,8 +186,6 @@ set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
 set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
 ### for diffusion equation
 set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
-### for diffusion equation
-set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
 ### for Miehe's fracture model
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### for User1 element

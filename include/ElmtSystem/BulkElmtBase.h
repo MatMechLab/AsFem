@@ -36,18 +36,18 @@
 
 class BulkElmtBase{
 public:
-    void ComputeAll(const FECalcType &calctype,const int &nDim,const int &nNodes,const int &nDofs,
-                    const double &t,const double &dt,const double (&ctan)[2],
-                    const Vector3d &gpCoords,
-                    const vector<double> &gpU,const vector<double> &gpUold,
-                    const vector<double> &gpV,const vector<double> &gpVold,
-                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUold,
-                    const vector<Vector3d> &gpGradV,const vector<Vector3d> &gpGradVold,
-                    const double &test,const double &trial,
-                    const Vector3d &grad_test,const Vector3d &grad_trial,
-                    const Materials &Mate,const Materials &MateOld,
-                    map<string,double> &gpProj,
-                    MatrixXd &localK,VectorXd &localR)=0;
+    virtual void ComputeAll(const FECalcType &calctype,const int &nDim,const int &nNodes,const int &nDofs,
+                            const double &t,const double &dt,const double (&ctan)[2],
+                            const Vector3d &gpCoords,
+                            const vector<double> &gpU,const vector<double> &gpUold,
+                            const vector<double> &gpV,const vector<double> &gpVold,
+                            const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUold,
+                            const vector<Vector3d> &gpGradV,const vector<Vector3d> &gpGradVold,
+                            const double &test,const double &trial,
+                            const Vector3d &grad_test,const Vector3d &grad_trial,
+                            const Materials &Mate,const Materials &MateOld,
+                            map<string,double> &gpProj,
+                            MatrixXd &localK,VectorXd &localR)=0;
 
 protected:
     virtual void ComputeResidual(const int &nDim,const int &nNodes,const int &nDofs,
