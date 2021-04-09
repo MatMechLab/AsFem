@@ -168,6 +168,9 @@ set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
 set(inc ${inc} include/ElmtSystem/BulkElmtSystem.h)
 set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
+### For bulk element base class
+set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
+
 ### for laplace operator
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 ### for body source term
