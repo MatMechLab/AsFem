@@ -40,9 +40,11 @@
 //*** For all the materials classes
 #include "MateSystem/DoubleWellFreeEnergyMaterial.h"
 #include "MateSystem/LinearElasticMaterial.h"
+#include "MateSystem/MieheFractureMaterial.h"
 
 class BulkMateSystem: public DoubleWellFreeEnergyMaterial,
-        public LinearElasticMaterial{
+        public LinearElasticMaterial,
+        public MieheFractureMaterial{
 public:
     BulkMateSystem();
     void InitBulkMateSystem();
@@ -161,6 +163,10 @@ public:
                     const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
                     const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld);
 
+    void InitBulkMateLibs(const MateType &imate,const int &mateindex,const int &nDim,const Vector3d &gpCoord,
+                          const vector<double> &gpU,const vector<double> &gpUdot,
+                          const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot);
+
 
 
     void PrintBulkMateSystemInfo()const;
@@ -214,25 +220,6 @@ protected:
                                 const vector<double> &gpU,const vector<double> &gpV,
                                 const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                                 vector<double> &gpHist,const vector<double> &gpHistOld);
-    //******************************************************************************
-    //*** for linear elastic material
-    //******************************************************************************
-//    void LinearElasticMaterial(const int &nDim,const double &t,const double &dt,
-//                              const vector<double> &InputParams,
-//                              const Vector3d &gpCoord,
-//                              const vector<double> &gpU,const vector<double> &gpV,
-//                              const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-//                              vector<double> &gpHist,const vector<double> &gpHistOld);
-
-    //******************************************************************************
-    //*** for Miehe's phase field fracture material
-    //******************************************************************************
-    void MieheFractureMaterial(const int &nDim,const double &t,const double &dt,
-                               const vector<double> &InputParams,
-                               const Vector3d &gpCoord,
-                               const vector<double> &gpU,const vector<double> &gpV,
-                               const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                               vector<double> &gpHist,const vector<double> &gpHistOld);
 
     //******************************************************************************
     //*** for User-Defined-Materials (UMAT)

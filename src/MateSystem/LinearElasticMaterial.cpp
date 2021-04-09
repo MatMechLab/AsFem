@@ -14,13 +14,12 @@
 
 #include "MateSystem/LinearElasticMaterial.h"
 
-void LinearElasticMaterial::InitMaterialProperties(const double &t, const double &dt,const int &nDim,
-                                                   const Vector3d &gpCoord,const vector<double> &InputParams,
+void LinearElasticMaterial::InitMaterialProperties(const int &nDim,const Vector3d &gpCoord,const vector<double> &InputParams,
                                                    const vector<double> &gpU,const vector<double> &gpUdot,
                                                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
                                                    Materials &Mate) {
     // Here we do not consider any initial internal strains, stress
-    if(t||dt||nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
+    if(nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
        gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){
 
     }

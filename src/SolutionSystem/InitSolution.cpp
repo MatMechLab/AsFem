@@ -25,6 +25,10 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     VecSetSizes(_U,PETSC_DECIDE,ndofs);
     VecSetUp(_U);// must call this, otherwise PETSc will have memory segmentation error!!!
 
+    VecCreate(PETSC_COMM_WORLD,&_Uold);
+    VecSetSizes(_Uold,PETSC_DECIDE,ndofs);
+    VecSetUp(_Uold);// must call this, otherwise PETSc will have memory segmentation error!!!
+
     VecCreate(PETSC_COMM_WORLD,&_Unew);
     VecSetSizes(_Unew,PETSC_DECIDE,ndofs);
     VecSetUp(_Unew);
@@ -36,13 +40,19 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
 
     VecSet(_Unew,0.0);
     VecSet(_U,0.0);
+    VecSet(_Uold,0.0);
     VecSet(_dU,0.0);
     //*******************************
     VecCreate(PETSC_COMM_WORLD,&_V);
     VecSetSizes(_V,PETSC_DECIDE,ndofs);
     VecSetUp(_V);
 
+    VecCreate(PETSC_COMM_WORLD,&_Vold);
+    VecSetSizes(_Vold,PETSC_DECIDE,ndofs);
+    VecSetUp(_Vold);
+
     VecSet(_V,0.0);
+    VecSet(_Vold,0.0);
     //*****************************************************
     //*** For projection array and history variable 
     //*****************************************************
@@ -120,14 +130,18 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     VecSet(_ProjRank4Mate,0.0);
 
 
-    VecCreate(PETSC_COMM_WORLD,&_Hist);
-    VecSetSizes(_Hist,PETSC_DECIDE,_nElmts*(_nGPointsPerBulkElmt*_nHistPerGPoint));
-    VecSetUp(_Hist);
-    VecSet(_Hist,0.0);
+    // initialize the size of material properties on each gauss point
+    _ScalarMaterials.resize(_nElmts*_nGPointsPerBulkElmt);
+    _ScalarMaterialsOld.resize(_nElmts*_nGPointsPerBulkElmt);
 
-    VecDuplicate(_Hist,&_HistOld);
+    _VectorMaterials.resize(_nElmts*_nGPointsPerBulkElmt);
+    _VectorMaterialsOld.resize(_nElmts*_nGPointsPerBulkElmt);
 
-    VecSet(_HistOld,0.0);
+    _Rank2TensorMaterials.resize(_nElmts*_nGPointsPerBulkElmt);
+    _Rank2TensorMaterialsOld.resize(_nElmts*_nGPointsPerBulkElmt);
+
+    _Rank4TensorMaterials.resize(_nElmts*_nGPointsPerBulkElmt);
+    _Rank4TensorMaterialsOld.resize(_nElmts*_nGPointsPerBulkElmt);
 
     
     _IsInit=true;

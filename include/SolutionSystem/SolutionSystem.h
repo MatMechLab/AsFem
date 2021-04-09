@@ -23,6 +23,8 @@
 
 #include "petsc.h"
 
+#include "MateSystem/MateTypeDefine.h"
+
 #include "Utils/MessagePrinter.h"
 
 using namespace std;
@@ -141,10 +143,20 @@ public:
 public:
     Vec _Unew,_U,_V;
     Vec _dU;
+    Vec _Uold,_Vold;
 
-    Vec _Hist,_HistOld;
     Vec _Proj;// this is used for projection quantities in each element
     Vec _ProjScalarMate,_ProjVectorMate,_ProjRank2Mate,_ProjRank4Mate;// this is used for the material properties
+
+    // store all the material properties on each gauss point
+    // this is different from the ProjMaterials, the ProjMaterials
+    // store the nodal material properties(projected from gauss point to nodal point for output)
+    // while this one stores all the properties on each gauss point !!!
+    vector<ScalarMateType> _ScalarMaterials,_ScalarMaterialsOld;
+    vector<VectorMateType> _VectorMaterials,_VectorMaterialsOld;
+    vector<Rank2MateType> _Rank2TensorMaterials,_Rank2TensorMaterialsOld;
+    vector<Rank4MateType> _Rank4TensorMaterials,_Rank4TensorMaterialsOld;
+
 
 private:
     bool _IsInit=false,_IsProjection=false;

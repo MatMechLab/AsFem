@@ -28,8 +28,7 @@ using namespace std;
 
 class BulkMaterialBase{
 public:
-    virtual void InitMaterialProperties(const double &t,const double &dt,const int &nDim,
-                                        const Vector3d &gpCoord,const vector<double> &InputParams,
+    virtual void InitMaterialProperties(const int &nDim,const Vector3d &gpCoord,const vector<double> &InputParams,
                                         const vector<double> &gpU,const vector<double> &gpUdot,
                                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
                                         Materials &Mate)=0;// initial material properties

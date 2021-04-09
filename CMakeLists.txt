@@ -206,22 +206,26 @@ set(src ${src} src/MateSystem/MateSystem.cpp)
 ### for bulk materials
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
+set(inc ${inc} include/MateSystem/PhaseFieldFractureMaterialBase.h)
 # for elastic material
 set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
+set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
 ### For free energy based materials
 set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 #   for double well free energy materials
 set(inc ${inc} include/MateSystem/DoubleWellFreeEnergyMaterial.h)
 set(src ${src} src/MateSystem/DoubleWellFreeEnergyMaterial.cpp)
+### For Miehe's linear elastic phase field fracture model
+set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
+set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+#
 set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
+set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
 set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
-set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
-### for Miehe's phase field fracture materials
-set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
 ### for UMAT
 set(src ${src} src/MateSystem/User1Material.cpp)
 

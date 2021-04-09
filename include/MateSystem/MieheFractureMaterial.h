@@ -8,25 +8,29 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.04.04
-//+++ Purpose: Calculate the free energy, chemical potential and its
-//+++          derivatives of double well free energy material
+//+++ Date   : 2021.04.09
+//+++ Purpose: Calculate the material properties required by Miehe's
+//+++          phase field fracture model
+//+++           1) viscosity
+//+++           2) Gc
+//+++           3) L
+//+++           4) H
+//+++           5) dHdstrain
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include "MateSystem/FreeEnergyMaterialBase.h"
+#include "MateSystem/PhaseFieldFractureMaterialBase.h"
 
-class DoubleWellFreeEnergyMaterial: public FreeEnergyMaterialBase{
+class MieheFractureMaterial:public PhaseFieldFractureMaterialBase{
 public:
-    DoubleWellFreeEnergyMaterial();
     virtual void InitMaterialProperties(const int &nDim,const Vector3d &gpCoord,const vector<double> &InputParams,
                                         const vector<double> &gpU,const vector<double> &gpUdot,
                                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
                                         Materials &Mate) override;
 
-    virtual void ComputeMaterialProperties(const double &t, const double &dt,const int &nDim,
-                                           const Vector3d &gpCoord,const vector<double> &InputParams,
+    virtual void ComputeMaterialProperties(const double &t, const double &dt,const int &nDim, const Vector3d &gpCoord,
+                                           const vector<double> &InputParams,
                                            const vector<double> &gpU,const vector<double> &gpUOld,
                                            const vector<double> &gpUdot,const vector<double> &gpUdotOld,
                                            const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
@@ -34,14 +38,17 @@ public:
                                            const Materials &MateOld, Materials &Mate) override;
 
 private:
-    virtual void ComputeF(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt,vector<double> &F) override;
-    virtual void ComputedFdU(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt, vector<double> &dF) override;
-    virtual void Computed2FdU2(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt, vector<double> &d2F) override;
+    virtual void ComputeStrain(const int &nDim, const vector<Vector3d> &GradDisp,RankTwoTensor &strain) override;
+
+    virtual void ComputeConstitutiveLaws(const vector<double> &InputParams,const RankTwoTensor &strain,const double &damage,
+                                         const Materials &MateOld, Materials &Mate) override;
+
+    virtual double DegradationFun(const double &x) override;
+    virtual double DegradationFunDeriv(const double &x) override;
 
 private:
-    double c;
-    vector<double> _F,_dFdc,_d2Fdc2;
-
+    RankTwoTensor I,StressPos,StressNeg,DevStress,GradU;
+    RankTwoTensor Strain,EpsPos,EpsNeg;
+    RankFourTensor I4Sym,ProjPos,ProjNeg;
 
 };
-

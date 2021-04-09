@@ -21,13 +21,12 @@ DoubleWellFreeEnergyMaterial::DoubleWellFreeEnergyMaterial() {
     _d2Fdc2.resize(1,0.0);
 }
 
-void DoubleWellFreeEnergyMaterial::InitMaterialProperties(const double &t, const double &dt, const int &nDim,
-                                                          const Vector3d &gpCoord, const vector<double> &InputParams,
+void DoubleWellFreeEnergyMaterial::InitMaterialProperties(const int &nDim,const Vector3d &gpCoord, const vector<double> &InputParams,
                                                           const vector<double> &gpU, const vector<double> &gpUdot,
                                                           const vector<Vector3d> &gpGradU,
                                                           const vector<Vector3d> &gpGradUdot, Materials &Mate) {
     // Here we do not consider any initial internal stats
-    if(t||dt||nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
+    if(nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
        gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){
 
     }

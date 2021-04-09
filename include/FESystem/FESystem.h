@@ -127,8 +127,8 @@ private:
     //*********************************************************
     //*** for history variables
     //*********************************************************
-    void AssembleLocalHistToGlobal(const int &elmtid,const int &gpInd,const vector<double> &gpHist,Vec &Hist);
-    void AssembleLocalHistToGlobal(const int &e,const int &nhist,const int &ngp,const int &gpInd,const vector<double> &localHist,Vec &Hist);
+    void AssembleSubHistToLocal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem);
+    void AssembleLocalHistToGlobal(const int &e,const int &ngp,SolutionSystem &solutionSystem);
     
 
 public:
@@ -149,6 +149,7 @@ private:
     vector<int> _elConn,_elDofs;
     vector<double> _elDofsActiveFlag;
     vector<double> _elU,_elV;
+    vector<double> _elUold,_elVold;
     vector<double> _gpU,_gpV;
     vector<double> _gpUOld,_gpVOld;
     vector<double> _gpHist,_gpHistOld;
@@ -169,8 +170,8 @@ private:
     //************************************
     //*** For PETSc related vairables
     PetscMPIInt _rank,_size;
-    VecScatter _scatteru,_scatterv,_scatterproj,_scatterhist,_scatterhistold;
-    Vec _Useq;// this can contain the ghost node from other processor
-    Vec _Vseq;
-    Vec _ProjSeq,_HistSeq,_HistOldSeq;
+    VecScatter _scatteru,_scatterv,_scatterproj,_scatteruold,_scattervold;
+    Vec _Useq,_Uoldseq;// this can contain the ghost node from other processor
+    Vec _Vseq,_Voldseq;
+    Vec _ProjSeq;
 };

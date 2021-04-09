@@ -36,6 +36,12 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,
                                                          gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,
                                                          _MaterialsOld,_Materials);
         break;
+    case MateType::MIEHEFRACTUREMATE:
+        MieheFractureMaterial::ComputeMaterialProperties(t,dt,nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
+                                                         gpU,gpUOld,gpUdot,gpUdotOld,
+                                                         gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,
+                                                         _MaterialsOld,_Materials);
+        break;
     default:
         MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of MateSystem, please check either your code or your input file");
         MessagePrinter::AsFem_Exit();

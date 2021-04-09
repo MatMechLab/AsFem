@@ -29,11 +29,15 @@ void FESystem::InitBulkFESystem(const Mesh &mesh,
     _elDofsActiveFlag.reserve(dofHandler.GetMaxDofsNumPerBulkElmt());
     _elU.reserve(dofHandler.GetMaxDofsNumPerBulkElmt());
     _elV.reserve(dofHandler.GetMaxDofsNumPerBulkElmt());
+    _elUold.reserve(dofHandler.GetMaxDofsNumPerBulkElmt());
+    _elVold.reserve(dofHandler.GetMaxDofsNumPerBulkElmt());
     for(int i=0;i<dofHandler.GetMaxDofsNumPerBulkElmt();++i){
         _elDofs.push_back(0);
         _elDofsActiveFlag.push_back(1.0);
         _elU.push_back(0.0);
         _elV.push_back(0.0);
+        _elUold.push_back(0.0);
+        _elVold.push_back(0.0);
     }
 
     _gpU.reserve(dofHandler.GetDofsNumPerNode()+1);
