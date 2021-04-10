@@ -12,7 +12,8 @@ import shutil
 currentdir=os.getcwd()
 print('We are in folder:%s\n'%(currentdir))
 
-ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0;metafile=0;csvfile=0
+ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0
+metafile=0;csvfile=0;valgrind=0
 cmake=0
 for subdir,dirs,files in os.walk(currentdir):
     if ('external/eigen' in subdir) or ('.git' in subdir) or ('figures' in subdir):
@@ -31,6 +32,13 @@ for subdir,dirs,files in os.walk(currentdir):
         elif ('ASFEM' in file) or ('asfem' in file):
             try:
                 ASFEM+=1
+                removepath=subdir+'/'+file
+                os.remove(removepath)
+            except:
+                print('%s is not here'%(file))
+        elif 'vgcore.' in file:
+            try:
+                valgrind+=1
                 removepath=subdir+'/'+file
                 os.remove(removepath)
             except:
@@ -90,6 +98,7 @@ print('Remove %4d ASFEM files!'%(ASFEM))
 print('Remove %4d vtu files!'%(vtu))
 print('Remove %4d csv files!'%(csvfile))
 print('Remove %4d .o files!'%(o))
+print('Remove %4d valgrind file!'%(valgrind))
 print('Remove %4d meta files!'%(metafile))
 print('Remove %4d .idea folder!'%(ideafolder))
 print('Remove %4d cmake file!'%(cmake))
