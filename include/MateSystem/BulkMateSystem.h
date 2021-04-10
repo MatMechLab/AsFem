@@ -38,11 +38,13 @@
 #include "Utils/RankFourTensor.h"
 
 //*** For all the materials classes
+#include "MateSystem/ConstPoissonMaterial.h"
 #include "MateSystem/DoubleWellFreeEnergyMaterial.h"
 #include "MateSystem/LinearElasticMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
 
-class BulkMateSystem: public DoubleWellFreeEnergyMaterial,
+class BulkMateSystem: public ConstPoissonMaterial,
+        public DoubleWellFreeEnergyMaterial,
         public LinearElasticMaterial,
         public MieheFractureMaterial{
 public:
@@ -192,16 +194,6 @@ protected:
 
 protected:
     //******************************************************************************
-    //*** Here we list all of the built-in materials as well as UMAT
-    //******************************************************************************
-    void ConstPoissonMaterial(const int &nDim,const double &t,const double &dt,
-                        const vector<double> &InputParams,
-                        const Vector3d &gpCoord,
-                        const vector<double> &gpU,const vector<double> &gpV,
-                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                        vector<double> &gpHist,const vector<double> &gpHistOld);
-
-    //******************************************************************************
     //*** for constant diffusivity material
     //******************************************************************************
     void ConstDiffusionMaterial(const int &nDim,const double &t,const double &dt,
@@ -210,7 +202,6 @@ protected:
                               const vector<double> &gpU,const vector<double> &gpV,
                               const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                               vector<double> &gpHist,const vector<double> &gpHistOld);
-
     //******************************************************************************
     //*** for cahnhilliard material
     //******************************************************************************
