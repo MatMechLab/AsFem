@@ -176,6 +176,9 @@ set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
 ### For CahnHilliard element implementation
 set(inc ${inc} include/ElmtSystem/CahnHilliardElmt.h)
 set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
+### For Miehe's phase field fracture element
+set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
+set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### for laplace operator
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 ### for body source term
@@ -186,8 +189,6 @@ set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
 set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
 ### for diffusion equation
 set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
-### for Miehe's fracture model
-set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### for User1 element
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
 ### for User2 element
