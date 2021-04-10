@@ -16,6 +16,7 @@
 #pragma once
 
 #include <iostream>
+#include <cstdlib>
 #include <iomanip>
 #include <cmath>
 
@@ -46,9 +47,9 @@ public:
     }
     void setRandom(){
         srand(time(0));
-        _vals[0]=static_cast<double>(1.0*random()/RAND_MAX);
-        _vals[1]=static_cast<double>(1.0*random()/RAND_MAX);
-        _vals[2]=static_cast<double>(1.0*random()/RAND_MAX);
+        _vals[0]=static_cast<double>(1.0*rand()/RAND_MAX);
+        _vals[1]=static_cast<double>(1.0*rand()/RAND_MAX);
+        _vals[2]=static_cast<double>(1.0*rand()/RAND_MAX);
     }
     //***********************************************
     //*** for some basic math operators 
