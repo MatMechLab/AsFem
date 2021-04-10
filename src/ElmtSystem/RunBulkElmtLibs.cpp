@@ -40,6 +40,11 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
     case ElmtType::TIMEDERIVELMT:
         break;
     case ElmtType::DIFFUSIONELMT:
+        DiffusionElmt::ComputeAll(calctype,nDim,nNodes,nDofs,t,dt,ctan,
+                                  gpCoords,gpU,gpUold,gpV,gpVold,
+                                  gpGradU,gpGradUold,gpGradV,gpGradVold,
+                                  test,trial,grad_test,grad_trial,
+                                  Mate,MateOld,gpProj,localK,localR);
         break;
     case ElmtType::CAHNHILLIARDELMT:
         CahnHilliardElmt::ComputeAll(calctype,nDim,nNodes,nDofs,t,dt,ctan,

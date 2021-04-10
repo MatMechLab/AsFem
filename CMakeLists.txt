@@ -173,6 +173,9 @@ set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
 ### For linear poisson element
 set(inc ${inc} include/ElmtSystem/PoissonElmt.h)
 set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
+### For diffusion elmt
+set(inc ${inc} include/ElmtSystem/DiffusionElmt.h)
+set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
 ### For Mechanics element implementation
 set(inc ${inc} include/ElmtSystem/MechanicsElmt.h)
 set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
@@ -188,8 +191,6 @@ set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
 ### for poisson equation
 set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
-### for diffusion equation
-set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
 ### for User1 element
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
 ### for User2 element
@@ -212,6 +213,9 @@ set(inc ${inc} include/MateSystem/PhaseFieldFractureMaterialBase.h)
 ### For constant poisson material
 set(inc ${inc} include/MateSystem/ConstPoissonMaterial.h)
 set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
+### For constant diffusion material
+set(inc ${inc} include/MateSystem/ConstDiffusionMaterial.h)
+set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 # for elastic material
 set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
@@ -228,7 +232,6 @@ set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
-set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 ### for UMAT
 set(src ${src} src/MateSystem/User1Material.cpp)

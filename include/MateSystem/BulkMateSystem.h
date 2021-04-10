@@ -39,14 +39,16 @@
 
 //*** For all the materials classes
 #include "MateSystem/ConstPoissonMaterial.h"
+#include "MateSystem/ConstDiffusionMaterial.h"
 #include "MateSystem/DoubleWellFreeEnergyMaterial.h"
 #include "MateSystem/LinearElasticMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
 
 class BulkMateSystem: public ConstPoissonMaterial,
-        public DoubleWellFreeEnergyMaterial,
-        public LinearElasticMaterial,
-        public MieheFractureMaterial{
+                      public ConstDiffusionMaterial,
+                      public DoubleWellFreeEnergyMaterial,
+                      public LinearElasticMaterial,
+                      public MieheFractureMaterial{
 public:
     BulkMateSystem();
     void InitBulkMateSystem();
@@ -193,15 +195,6 @@ protected:
 
 
 protected:
-    //******************************************************************************
-    //*** for constant diffusivity material
-    //******************************************************************************
-    void ConstDiffusionMaterial(const int &nDim,const double &t,const double &dt,
-                              const vector<double> &InputParams,
-                              const Vector3d &gpCoord,
-                              const vector<double> &gpU,const vector<double> &gpV,
-                              const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                              vector<double> &gpHist,const vector<double> &gpHistOld);
     //******************************************************************************
     //*** for cahnhilliard material
     //******************************************************************************

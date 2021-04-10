@@ -31,6 +31,7 @@
 
 // for all the user-defined-elements
 #include "ElmtSystem/PoissonElmt.h"
+#include "ElmtSystem/DiffusionElmt.h"
 #include "ElmtSystem/MechanicsElmt.h"
 #include "ElmtSystem/CahnHilliardElmt.h"
 #include "ElmtSystem/MieheFractureElmt.h"
@@ -39,7 +40,8 @@ using namespace std;
 
 class MateSystem;
 
-class BulkElmtSystem:public PoissonElmt,
+class BulkElmtSystem: public PoissonElmt,
+        public DiffusionElmt,
         public MechanicsElmt,
         public CahnHilliardElmt,
         public MieheFractureElmt{
@@ -117,23 +119,6 @@ protected:
     //*** for general time derivative
     //************************************************************************************
     void TimeDerivElmt(const FECalcType &calctype,
-                     const int &nDim,const int &nNodes,const int &nDofs,
-                     const double &t,const double &dt,const double (&ctan)[2],
-                     const Vector3d &gpCoords,
-                     const vector<double> &gpU,const vector<double> &gpV,
-                     const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                     const double &test,const double &trial,
-                     const Vector3d &grad_test,const Vector3d &grad_trial,
-                     const ScalarMateType &ScalarMaterials,
-                     const VectorMateType &VectorMaterials,
-                     const Rank2MateType &Rank2Materials,
-                     const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                     MatrixXd &localK,VectorXd &localR);
-    //************************************************************************************
-    //*** for general diffusion element
-    //************************************************************************************
-    void DiffusionElmt(const FECalcType &calctype,
                      const int &nDim,const int &nNodes,const int &nDofs,
                      const double &t,const double &dt,const double (&ctan)[2],
                      const Vector3d &gpCoords,

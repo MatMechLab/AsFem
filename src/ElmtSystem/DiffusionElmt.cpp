@@ -8,58 +8,92 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.30
+//+++ Date   : 2021.04.10
 //+++ Purpose: implement the residual and jacobian for general
 //+++          diffusion equation:
 //+++          dc/dt=div(D*grad(c))
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "ElmtSystem/BulkElmtSystem.h"
+#include "ElmtSystem/DiffusionElmt.h"
 
-void BulkElmtSystem::DiffusionElmt(const FECalcType &calctype,
-                                   const int &nDim,const int &nNodes,const int &nDofs,
-                                   const double &t,const double &dt, const double (&ctan)[2],
-                                   const Vector3d &gpCoords,
-                                   const vector<double> &gpU, const vector<double> &gpV,
-                                   const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradV, const double &test,
-                                   const double &trial, const Vector3d &grad_test, const Vector3d &grad_trial,
-                                   const ScalarMateType &ScalarMaterials, const VectorMateType &VectorMaterials,
-                                   const Rank2MateType &Rank2Materials, const Rank4MateType &Rank4Materials,
-                                   vector<double> &gpHist, vector<double> &gpHistOld,map<string,double> &gpProj,
-                                   MatrixXd &localK, VectorXd &localR) {
-    //*******************************************************
-    //*** to get rid of the warning for unused variables  ***
-    //*** for normal users, you dont need to do this      ***
-    //*******************************************************
-    if(nDim||nNodes||nDofs||t||dt||ctan[0]||gpCoords(1)||gpU.size()||gpV.size()||
-       gpGradU.size()||gpGradV.size()||test||trial||grad_test(1)||grad_trial(1)||
-       ScalarMaterials.size()||VectorMaterials.size()||Rank2Materials.size()||Rank4Materials.size()||
-       gpHist.size()||gpHistOld.size()||gpProj.size()){}
-
-    switch (calctype){
-        case FECalcType::ComputeResidual:
-            localR(1)=gpV[1]*test
-                       +ScalarMaterials.at("D")*(gpGradU[1]*grad_test);
-            break;
-        case FECalcType::ComputeJacobian:
-            localK(1,1)=trial*test*ctan[1]
-                           +ScalarMaterials.at("dDdc")*trial*(gpGradU[1]*grad_test)*ctan[0]
-                           +ScalarMaterials.at("D")*grad_trial*grad_test*ctan[0];
-            break;
-        case FECalcType::InitHistoryVariable:
-            gpHist[0]=0.0;
-            break;
-        case FECalcType::UpdateHistoryVariable:
-            gpHistOld=gpHist;
-            break;
-        case FECalcType::Projection:
-            gpProj["dcdx"]=gpGradU[1](1);
-            gpProj["dcdy"]=gpGradU[1](2);
-            gpProj["dcdz"]=gpGradU[1](3);
-            break;
-        default:
-            MessagePrinter::PrintErrorTxt("unsupported FEM calculation type in Diffusion element");
-            MessagePrinter::AsFem_Exit();
-            break;
+void DiffusionElmt::ComputeAll(const FECalcType &calctype, const int &nDim, const int &nNodes, const int &nDofs,
+                               const double &t, const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
+                               const vector<double> &gpU, const vector<double> &gpUold, const vector<double> &gpV,
+                               const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
+                               const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
+                               const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
+                               const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
+                               const Materials &MateOld, map<string, double> &gpProj, MatrixXd &localK,
+                               VectorXd &localR) {
+    if(calctype==FECalcType::ComputeResidual){
+        ComputeResidual(nDim,nNodes,nDofs,t,dt,gpCoords,gpU,gpUold,gpV,gpVold,gpGradU,gpGradUold,gpGradV,gpGradVold,test,grad_test,
+                        Mate,MateOld,localR);
     }
+    else if(calctype==FECalcType::ComputeJacobian){
+        ComputeJacobian(nDim,nNodes,nDofs,t,dt,ctan,gpCoords,gpU,gpUold,gpV,gpVold,gpGradU,gpGradUold,gpGradV,gpGradVold,
+                        test,trial,grad_test,grad_trial,Mate,MateOld,localK);
+    }
+    else if(calctype==FECalcType::Projection){
+        ComputeProjection(nDim,nNodes,nDofs,t,dt,ctan,gpCoords,gpU,gpUold,gpV,gpVold,gpGradU,gpGradUold,gpGradV,gpGradVold,
+                          test,grad_test,Mate,MateOld,gpProj);
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("unsupported calculation type in DiffusionElmt, please check your related code");
+        MessagePrinter::AsFem_Exit();
+    }
+}
+//****************************************************************
+void DiffusionElmt::ComputeResidual(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
+                                    const double &dt, const Vector3d &gpCoords, const vector<double> &gpU,
+                                    const vector<double> &gpUold, const vector<double> &gpV,
+                                    const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
+                                    const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
+                                    const vector<Vector3d> &gpGradVold, const double &test, const Vector3d &grad_test,
+                                    const Materials &Mate, const Materials &MateOld, VectorXd &localR) {
+    //***********************************************************
+    //*** get rid of unused warning
+    //***********************************************************
+    if(nDim||nNodes||nDofs||t||dt||gpCoords(1)||gpU[0]||gpUold[0]||gpV[0]||gpVold[0]||
+       gpGradU[0](1)||gpGradUold[0](1)||gpGradV[0](1)||gpGradVold[0](1)||
+       test||grad_test(1)||
+       Mate.ScalarMaterials.size()||MateOld.ScalarMaterials.size()){}
+
+    localR(1)=gpV[1]*test+Mate.ScalarMaterials.at("D")*(gpGradU[1]*grad_test);
+}
+//****************************************************************************
+void DiffusionElmt::ComputeJacobian(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
+                                    const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
+                                    const vector<double> &gpU, const vector<double> &gpUold, const vector<double> &gpV,
+                                    const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
+                                    const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
+                                    const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
+                                    const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
+                                    const Materials &MateOld, MatrixXd &localK) {
+    //***********************************************************
+    //*** get rid of unused warning
+    //***********************************************************
+    if(nDim||nNodes||nDofs||t||dt||ctan[0]||gpCoords(1)||gpU[0]||gpUold[0]||gpV[0]||gpVold[0]||
+       gpGradU[0](1)||gpGradUold[0](1)||gpGradV[0](1)||gpGradVold[0](1)||
+       test||trial||grad_test(1)||grad_trial(1)||
+       Mate.VectorMaterials.size()||MateOld.ScalarMaterials.size()){}
+
+    localK(1,1)=trial*test*ctan[1]+Mate.ScalarMaterials.at("dDdc")*trial*(gpGradU[1]*grad_test)*ctan[0]
+            +Mate.ScalarMaterials.at("D")*grad_trial*grad_test*ctan[0];
+}
+//**************************************************************************
+void DiffusionElmt::ComputeProjection(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
+                                      const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
+                                      const vector<double> &gpU, const vector<double> &gpUold,
+                                      const vector<double> &gpV, const vector<double> &gpVold,
+                                      const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
+                                      const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
+                                      const double &test, const Vector3d &grad_test, const Materials &Mate,
+                                      const Materials &MateOld, map<string, double> &gpProj) {
+    //***********************************************************
+    //*** get rid of unused warning
+    //***********************************************************
+    if(nDim||nNodes||nDofs||t||dt||ctan[0]||gpCoords(1)||gpU[0]||gpUold[0]||gpV[0]||gpVold[0]||
+       gpGradU[0](1)||gpGradUold[0](1)||gpGradV[0](1)||gpGradVold[0](1)||
+       test||grad_test(1)||gpProj.size()||
+       Mate.VectorMaterials.size()||MateOld.ScalarMaterials.size()){}
 }

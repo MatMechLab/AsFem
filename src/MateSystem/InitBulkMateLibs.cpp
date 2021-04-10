@@ -25,6 +25,10 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate,const int &mateindex
             ConstPoissonMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                          gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
             break;
+        case MateType::CONSTDIFFUSIONMATE:
+            ConstDiffusionMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
+                                                           gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
+            break;
         case MateType::CAHNHILLIARDMATE:
             DoubleWellFreeEnergyMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                                  gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
