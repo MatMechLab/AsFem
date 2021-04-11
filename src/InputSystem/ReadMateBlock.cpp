@@ -122,6 +122,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::PLASTIC1DMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("j2plasticity")!=string::npos&&substr.length()==12){
+                        mateBlock._MateTypeName="j2plasticity";
+                        mateBlock._MateType=MateType::J2PLASTICITYMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("constwave")!=string::npos&&substr.length()==9){
                         mateBlock._MateTypeName="constwave";
                         mateBlock._MateType=MateType::CONSTWAVEMATE;

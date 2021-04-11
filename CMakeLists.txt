@@ -229,6 +229,9 @@ set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
 ### For 1D plastic material with linear hardening
 set(inc ${inc} include/MateSystem/Plastic1DMaterial.h)
 set(src ${src} src/MateSystem/Plastic1DMaterial.cpp)
+### For J2 Plasticity material
+set(inc ${inc} include/MateSystem/J2PlasticityMaterial.h)
+set(inc ${inc} src/MateSystem/J2PlasticityMaterial.cpp)
 ### For free energy based materials
 set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 #   for double well free energy materials

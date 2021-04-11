@@ -49,6 +49,10 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate,const int &mateindex
             Plastic1DMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                       gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
             break;
+        case MateType::J2PLASTICITYMATE:
+            J2PlasticityMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
+                                                         gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
+            break;
         case MateType::MIEHEFRACTUREMATE:
             MieheFractureMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                           gpU,gpUdot,gpGradU,gpGradUdot,_Materials);

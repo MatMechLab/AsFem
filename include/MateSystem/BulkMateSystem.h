@@ -45,6 +45,7 @@
 #include "MateSystem/IncrementSmallStrainMaterial.h"
 #include "MateSystem/NeoHookeanMaterial.h"
 #include "MateSystem/Plastic1DMaterial.h"
+#include "MateSystem/J2PlasticityMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
 
 class BulkMateSystem: public ConstPoissonMaterial,
@@ -54,6 +55,7 @@ class BulkMateSystem: public ConstPoissonMaterial,
                       public IncrementSmallStrainMaterial,
                       public NeoHookeanMaterial,
                       public Plastic1DMaterial,
+                      public J2PlasticityMaterial,
                       public MieheFractureMaterial{
 public:
     BulkMateSystem();
