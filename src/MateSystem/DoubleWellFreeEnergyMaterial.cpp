@@ -80,4 +80,7 @@ void DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(const double &t, co
     Mate.ScalarMaterials["d2Fdc2"]=_d2Fdc2[0];
 
     Mate.ScalarMaterials["Kappa"]=InputParams[2];
+
+    Mate.VectorMaterials["gradc"]=gpGradU[1];
+    Mate.VectorMaterials["gradmu"]=gpGradU[2];
 }

@@ -62,4 +62,5 @@ void ConstPoissonMaterial::ComputeMaterialProperties(const double &t, const doub
     Mate.ScalarMaterials["dsigmadu"]=0.0;// dsigma/dphi
     Mate.ScalarMaterials["f"]=InputParams[1];// F
     Mate.ScalarMaterials["dfdu"]=0.0;// dF/dphi
+    Mate.VectorMaterials["gradu"]=gpGradU[1];
 }

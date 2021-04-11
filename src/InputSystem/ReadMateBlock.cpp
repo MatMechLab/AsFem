@@ -87,9 +87,9 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::NLDIFFUSIONMATE;
                         HasElmt=true;
                     }
-                    else if(substr.find("cahnhilliard")!=string::npos&&substr.length()==12){
-                        mateBlock._MateTypeName="cahnhilliard";
-                        mateBlock._MateType=MateType::CAHNHILLIARDMATE;
+                    else if(substr.find("doublewellpotential")!=string::npos&&substr.length()==19){
+                        mateBlock._MateTypeName="doublewellpotential";
+                        mateBlock._MateType=MateType::DOUBLEWELLFREENERGYMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("linearelastic")!=string::npos&&substr.length()==13){

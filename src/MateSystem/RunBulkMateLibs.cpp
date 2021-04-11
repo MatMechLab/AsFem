@@ -36,7 +36,7 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,
                                                           gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,
                                                           _MaterialsOld,_Materials);
             break;
-        case MateType::CAHNHILLIARDMATE:
+        case MateType::DOUBLEWELLFREENERGYMATE:
             DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(t,dt,nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                                 gpU,gpUOld,gpUdot,gpUdotOld,
                                                                 gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,

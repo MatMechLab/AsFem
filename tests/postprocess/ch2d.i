@@ -30,7 +30,7 @@ name=c mu
 
 [mates]
   [mate1]
-    type=cahnhilliard
+    type=doublewellpotential
     params=1.0 2.5 0.002
   [end]
 [end]
@@ -55,7 +55,7 @@ name=c mu
 [end]
 
 [projection]
-name=dcdx dcdy
+vectormate=gradc
 [end]
 
 [ics]

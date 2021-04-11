@@ -69,7 +69,7 @@ rank2mate=stress strain
 [timestepping]
   type=be
   dt=1.0e-3
-  endtime=2.0e0
+  endtime=5.0e-3
   adaptive=true
   optiters=3
   dtmax=1.0e-1

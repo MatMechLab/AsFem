@@ -51,7 +51,7 @@ name=u
 [end]
 
 [projection]
-name=dudx dudy dudz
+vectormate=gradu
 [end]
 
 [job]

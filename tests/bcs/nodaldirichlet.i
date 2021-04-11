@@ -38,7 +38,7 @@ name=c
 [end]
 
 [projection]
-name=dcdx dcdy
+vectormate=gradc
 [end]
 
 

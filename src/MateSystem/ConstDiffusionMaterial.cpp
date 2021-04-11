@@ -51,5 +51,7 @@ void ConstDiffusionMaterial::ComputeMaterialProperties(const double &t, const do
 
     Mate.ScalarMaterials["D"]=InputParams[0];// D
     Mate.ScalarMaterials["dDdc"]=0.0;        // dD/dc
+
+    Mate.VectorMaterials["gradc"]=gpGradU[1];
 }
 
