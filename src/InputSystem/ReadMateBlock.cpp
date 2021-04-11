@@ -117,6 +117,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::MOONEYRIVLINMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("plastic1d")!=string::npos&&substr.length()==9){
+                        mateBlock._MateTypeName="plastic1d";
+                        mateBlock._MateType=MateType::PLASTIC1DMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("constwave")!=string::npos&&substr.length()==9){
                         mateBlock._MateTypeName="constwave";
                         mateBlock._MateType=MateType::CONSTWAVEMATE;

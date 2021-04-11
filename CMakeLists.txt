@@ -210,6 +210,7 @@ set(src ${src} src/MateSystem/MateSystem.cpp)
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
 set(inc ${inc} include/MateSystem/PhaseFieldFractureMaterialBase.h)
+set(inc ${inc} include/MateSystem/PlasticMaterialBase.h)
 ### For constant poisson material
 set(inc ${inc} include/MateSystem/ConstPoissonMaterial.h)
 set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
@@ -225,6 +226,9 @@ set(src ${src} src/MateSystem/IncrementSmallStrainMaterial.cpp)
 ### For NeoHookean material
 set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
 set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
+### For 1D plastic material with linear hardening
+set(inc ${inc} include/MateSystem/Plastic1DMaterial.h)
+set(src ${src} src/MateSystem/Plastic1DMaterial.cpp)
 ### For free energy based materials
 set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 #   for double well free energy materials

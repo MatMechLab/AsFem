@@ -60,6 +60,12 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate,const int &mateindex,
                                                       gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,
                                                       _MaterialsOld,_Materials);
             break;
+        case MateType::PLASTIC1DMATE:
+            Plastic1DMaterial::ComputeMaterialProperties(t,dt,nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
+                                                         gpU,gpUOld,gpUdot,gpUdotOld,
+                                                         gpGradU,gpGradUOld,gpGradUdot,gpGradUdotOld,
+                                                         _MaterialsOld,_Materials);
+            break;
         case MateType::MIEHEFRACTUREMATE:
             MieheFractureMaterial::ComputeMaterialProperties(t,dt,nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                          gpU,gpUOld,gpUdot,gpUdotOld,
