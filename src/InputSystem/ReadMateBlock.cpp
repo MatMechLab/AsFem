@@ -97,6 +97,11 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::LINEARELASTICMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("incresmallstrain")!=string::npos&&substr.length()==16){
+                        mateBlock._MateTypeName="incresmallstrain";
+                        mateBlock._MateType=MateType::INCREMENTSMALLSTRAINMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("saintvenant")!=string::npos&&substr.length()==11){
                         mateBlock._MateTypeName="saintvenant";
                         mateBlock._MateType=MateType::SAINTVENANTMATE;

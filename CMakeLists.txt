@@ -219,6 +219,9 @@ set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 # for elastic material
 set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
+### For incremental small strain material
+set(inc ${inc} include/MateSystem/IncrementSmallStrainMaterial.h)
+set(src ${src} src/MateSystem/IncrementSmallStrainMaterial.cpp)
 ### For NeoHookean material
 set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
 set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
