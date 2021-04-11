@@ -52,10 +52,9 @@ void NeoHookeanMaterial::ComputeStressAndJacobian(const vector<double> &InputPar
     double mu=EE/(2*(1+nu));
     double J=_F.Det();
 
-    Stress=(_I-_Cinv)*mu+_Cinv*lambda*(J-1)*J;
-    Jacobian=_Cinv.ODot(_Cinv)*mu*2.0
-            +_Cinv.CrossDot(_Cinv)*lambda*(2*J-1)*J
-            -_Cinv.ODot(_Cinv)*lambda*(J-1)*J*2;
+    Stress=(_I-_Cinv)*mu+_Cinv*lambda*log(J);
+    Jacobian=_Cinv.ODot(_Cinv)*(mu-lambda*log(J))*2
+            +_Cinv.CrossDot(_Cinv)*lambda;
 }
 //*****************************************************
 void NeoHookeanMaterial::ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
