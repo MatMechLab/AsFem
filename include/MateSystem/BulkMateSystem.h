@@ -42,12 +42,14 @@
 #include "MateSystem/ConstDiffusionMaterial.h"
 #include "MateSystem/DoubleWellFreeEnergyMaterial.h"
 #include "MateSystem/LinearElasticMaterial.h"
+#include "MateSystem/NeoHookeanMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
 
 class BulkMateSystem: public ConstPoissonMaterial,
                       public ConstDiffusionMaterial,
                       public DoubleWellFreeEnergyMaterial,
                       public LinearElasticMaterial,
+                      public NeoHookeanMaterial,
                       public MieheFractureMaterial{
 public:
     BulkMateSystem();

@@ -219,6 +219,9 @@ set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 # for elastic material
 set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
+### For NeoHookean material
+set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
+set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
 ### For free energy based materials
 set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 #   for double well free energy materials

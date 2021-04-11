@@ -37,6 +37,10 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate,const int &mateindex
             LinearElasticMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                           gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
             break;
+        case MateType::NEOHOOKEANMATE:
+            NeoHookeanMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
+                                                       gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
+            break;
         case MateType::MIEHEFRACTUREMATE:
             MieheFractureMaterial::InitMaterialProperties(nDim,gpCoord,_BulkMateBlockList[mateindex-1]._Parameters,
                                                           gpU,gpUdot,gpGradU,gpGradUdot,_Materials);
