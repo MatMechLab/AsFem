@@ -272,6 +272,11 @@ public:
               +(*this)(1,3)*(*this)(2,1)*(*this)(3,2)
               -(*this)(1,3)*(*this)(2,2)*(*this)(3,1);
     }
+    inline double Norm() const{
+        double sum=0.0;
+        for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
+        return sqrt(sum);
+    }
     //*** for the different invariants of stress(strain)
     inline double FirstInvariant() const{
         return Trace();
