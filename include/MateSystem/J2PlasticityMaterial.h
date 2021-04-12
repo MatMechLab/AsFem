@@ -54,8 +54,8 @@ private:
 private:
     RankTwoTensor _GradU,_Stress,_Strain,_I;
     RankTwoTensor _devStress,_devStrain;
-    RankTwoTensor _back_stress_old,_plastic_strain_old;
-    RankTwoTensor _STrial,_XiTrial,_N;
+    RankTwoTensor _plastic_strain_old;
+    RankTwoTensor _STrial,_N;
     RankFourTensor _Jac,_I4Sym;
     double _E,_nu,_Lambda,_Mu,_Effect_Plastic_Strain_Old;
     double _F,_DeltaGamma;

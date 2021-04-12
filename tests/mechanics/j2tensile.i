@@ -1,13 +1,8 @@
 *** This is an input file for the compressive neohookean model
 
 [mesh]
-  type=asfem
-  dim=2
-  xmax=5.0
-  ymax=5.0
-  nx=50
-  ny=50
-  meshtype=quad4
+  type=gmsh
+  file=sample.msh
 [end]
 
 
@@ -44,20 +39,20 @@ rank2mate=stress strain
   [FixUx]
     type=dirichlet
     dof=ux
-    boundary=left right
+    boundary=left
     value=0.0
   [end]
   [FixUy]
     type=dirichlet
     dof=uy
-    boundary=bottom
+    boundary=left
     value=0.0
   [end]
   [loadUx]
     type=dirichlet
-    dof=uy
+    dof=ux
     value=1.0*t
-    boundary=top
+    boundary=right
   [end]
 [end]
 
@@ -68,12 +63,20 @@ interval=5
 
 [timestepping]
   type=be
-  dt=2.0e-4
-  endtime=1.0e-1
+  dt=5.0e-4
+  endtime=5.0e-1
   adaptive=true
-  optiters=3
+  optiters=9
   dtmax=1.0e-1
-  dtmin=1.0e-4
+  dtmin=5.0e-4
+[end]
+
+[nonlinearsolver]
+  type=nr
+  maxiters=80
+  r_rel_tol=5.0e-8
+  r_abs_tol=4.5e-7
+  solver=mumps
 [end]
 
 [job]

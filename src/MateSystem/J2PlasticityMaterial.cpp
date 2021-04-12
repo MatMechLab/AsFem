@@ -25,7 +25,6 @@ void J2PlasticityMaterial::InitMaterialProperties(const int &nDim, const Vector3
        gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){}
 
     Mate.Rank2Materials["plastic_strain"].SetToZeros();
-    Mate.Rank2Materials["back_stress"].SetToZeros();
     Mate.ScalarMaterials["effective_plastic_strain"]=0;
 }
 //********************************************************
@@ -47,7 +46,7 @@ double J2PlasticityMaterial::ComputeYieldFunction(const vector<double> &InputPar
     // parameters should be: E, nu, yield stress, hardening modulus
     const double YieldStress=InputParams[3-1];
     const double Hardening=InputParams[4-1];
-    return trial_strss-(YieldStress+effect_plastic_strain*Hardening);
+    return trial_strss-sqrt(2.0/3.0)*(YieldStress+effect_plastic_strain*Hardening);
 }
 //****************************************************************
 void J2PlasticityMaterial::ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
@@ -79,17 +78,19 @@ void J2PlasticityMaterial::ComputeMaterialProperties(const double &t, const doub
     _Lambda=_E*_nu/((1+_nu)*(1-2*_nu));
     _Mu=_E/(2*(1+_nu));
 
+    // for the variables in previous step
     _plastic_strain_old=MateOld.Rank2Materials.at("plastic_strain");
-    _back_stress_old=MateOld.Rank2Materials.at("back_stress");
     _Effect_Plastic_Strain_Old=MateOld.ScalarMaterials.at("effective_plastic_strain");
 
-    ComputeStrain(nDim,gpGradU,_Strain);
     _I.SetToIdentity();
-    _devStrain=_Strain-_I*(_Strain.Trace()/3.0);
-    _STrial=(_devStrain-_plastic_strain_old)*2*_Mu;
-    _XiTrial=_STrial-_back_stress_old;
+    _I4Sym.SetToIdentitySymmetric4();
 
-    _F= ComputeYieldFunction(InputParams,_XiTrial.Norm(),_Effect_Plastic_Strain_Old);
+    ComputeStrain(nDim,gpGradU,_Strain);
+
+    _devStrain=_Strain-_I*(_Strain.Trace()/3.0);
+    _STrial=(_devStrain-_plastic_strain_old)*2.0*_Mu;
+
+    _F= ComputeYieldFunction(InputParams,_STrial.Norm(),_Effect_Plastic_Strain_Old);
 
     if(_F<=0.0){
         // for elastic case
@@ -99,9 +100,9 @@ void J2PlasticityMaterial::ComputeMaterialProperties(const double &t, const doub
     }
     else{
         // for plastic case
-        _DeltaGamma=_F/(3*_Mu+_hardening_modulus);
-        _N=_XiTrial/_XiTrial.Norm();
-        _theta=1.0-2.0*_Mu*_DeltaGamma/_XiTrial.Norm();
+        _DeltaGamma=_F/(2*_Mu+2*_hardening_modulus/3.0);
+        _N=_STrial/_STrial.Norm();
+        _theta=1.0-2.0*_Mu*_DeltaGamma/_STrial.Norm();
         _thetabar=1.0/(1.0+_hardening_modulus/(3*_Mu))-(1-_theta);
         _Jac=_I.CrossDot(_I)*_Lambda
                 +(_I4Sym-_I.CrossDot(_I)*(1.0/3.0))*2*_Mu*_theta
@@ -110,7 +111,6 @@ void J2PlasticityMaterial::ComputeMaterialProperties(const double &t, const doub
     // update all the variables
     Mate.ScalarMaterials["effective_plastic_strain"]=_Effect_Plastic_Strain_Old+sqrt(2.0/3.0)*_DeltaGamma;
     Mate.Rank2Materials["plastic_strain"]=_plastic_strain_old+_N*_DeltaGamma;
-    Mate.Rank2Materials["back_stress"]=_back_stress_old;
     Mate.Rank2Materials["stress"]=_I*_Lambda*_Strain.Trace()
             +_STrial-_N*2*_Mu*_DeltaGamma;
     _Stress=_I*_Lambda*_Strain.Trace()+_STrial-_N*2*_Mu*_DeltaGamma;
