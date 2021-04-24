@@ -57,7 +57,7 @@ for subdir,dirs,files in os.walk(TestDir):
                 sys.stdout.write("\033[0;0m")  # reset
 
 print('**********************************************************************************')
-print('*** Test finished, test files=%d, sucess=%d, failed=%d !'%(nFiles,nSucess,nFiles-nSucess))
+print('*** Test finished, test files=%d, success=%d, failed=%d !'%(nFiles,nSucess,nFiles-nSucess))
 if len(FailedFileList)>0:
     print('*** The failed input files are:')
     print(FailedFileList)

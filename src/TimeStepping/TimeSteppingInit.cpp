@@ -17,7 +17,9 @@
 void TimeStepping::Init(){
     TSCreate(PETSC_COMM_WORLD,&_ts);
     TSSetProblemType(_ts,TS_NONLINEAR);// in AsFem, we only consider the implicit problem
-    TSSetEquationType(_ts,TS_EQ_IMPLICIT);
+//    TSSetEquationType(_ts,TS_EQ_IMPLICIT);
+    TSSetEquationType(_ts,TS_EQ_DAE_IMPLICIT_INDEX3);
+//    TSSetEquationType(_ts,TS_EQ_ODE_IMPLICIT);
     //***************************************************
     //*** for the different time stepping methods
     //***************************************************
@@ -69,6 +71,9 @@ void TimeStepping::Init(){
         PCSetType(_pc,PCLU);
         KSPSetType(_ksp,KSPPREONLY);
         PCFactorSetMatSolverType(_pc,MATSOLVERSUPERLU_DIST);
+    }
+    else{
+        PCSetType(_pc,PCLU);
     }
 
     PCFactorSetReuseOrdering(_pc,PETSC_TRUE);

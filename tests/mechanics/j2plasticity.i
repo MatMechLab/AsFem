@@ -69,7 +69,7 @@ interval=5
 [timestepping]
   type=be
   dt=2.0e-4
-  endtime=1.0e-1
+  endtime=3.0e-4
   adaptive=true
   optiters=3
   dtmax=1.0e-1
