@@ -96,7 +96,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
                                user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
     if(user->IsAdaptive&&step>=1){
-        if(user->iters+1<=user->OptiIters){
+        if(user->iters<=user->OptiIters){
             dt=user->dt*user->GrowthFactor;
             if(dt>user->DtMax) dt=user->DtMax;
         }
