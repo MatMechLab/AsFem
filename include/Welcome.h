@@ -30,7 +30,7 @@ void Welcome(const PetscInt &year,const PetscInt &month,const PetscInt &day,cons
     char buff[50];
     string str;
     
-    MessagePrinter::PrintStars();
+    MessagePrinter::PrintStars(MessageColor::CYAN);
     MessagePrinter::PrintWelcomeTxt("Welcome to use AsFem");
     MessagePrinter::PrintWelcomeTxt("A Simple Finite Element Method Program");
 
@@ -49,5 +49,5 @@ void Welcome(const PetscInt &year,const PetscInt &month,const PetscInt &day,cons
     MessagePrinter::PrintWelcomeTxt("QQ Group: 879908352");
     MessagePrinter::PrintWelcomeTxt("Website: https://github.com/yangbai90/AsFem");
     MessagePrinter::PrintWelcomeTxt("Feel free to use and discuss  .:.");
-    MessagePrinter::PrintStars();
+    MessagePrinter::PrintStars(MessageColor::CYAN);
 }

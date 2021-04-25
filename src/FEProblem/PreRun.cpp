@@ -15,12 +15,16 @@
 #include "FEProblem/FEProblem.h"
 
 void FEProblem::ReadInputFile(){
+    MessagePrinter::PrintStars();
+    MessagePrinter::PrintNormalTxt("Start to read the input file ...");
     _inputSystem.ReadInputFile(_mesh,_dofHandler,
     _elmtSystem,_mateSystem,_bcSystem,_icSystem,_fe,
     _solutionSystem,_outputSystem,
     _postprocessSystem,
     _nonlinearSolver,_timestepping,
     _feJobBlock);
+    MessagePrinter::PrintNormalTxt("Input file reading is done !");
+    MessagePrinter::PrintStars();
 }
 //******************************************
 void FEProblem::InitAllComponents(){
@@ -183,11 +187,11 @@ void FEProblem::InitAllComponents(){
     _postprocessSystem.InitPPSOutput();
     _postprocessSystem.CheckWhetherPPSIsValid(_mesh);
 
-    MessagePrinter::PrintStars();
-    MessagePrinter::PrintDashLine();
-    MessagePrinter::PrintNormalTxt("Now all the components are ready, we can start the simulation !");
-    MessagePrinter::PrintDashLine();
-    MessagePrinter::PrintStars();
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintDashLine(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("Now all the components are ready, AsFem will start the simulation!",MessageColor::BLUE);
+    MessagePrinter::PrintDashLine(MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
 
     _mesh.PrintMeshInfo();
     _dofHandler.PrintAllDofInfo();
@@ -222,10 +226,15 @@ void FEProblem::InitAllComponents(){
 
     _feJobBlock.PrintJobInfo();
 
-    MessagePrinter::PrintStars();
-    snprintf(buff,70,"++++++ %8d CPUs will be used for the simulation      ++++++!",_size);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    if(_size==1){
+        snprintf(buff,70,"++++++ %8d CPU will be used for the simulation      ++++++!",_size);
+    }
+    else{
+        snprintf(buff,70,"++++++ %8d CPUs will be used for the simulation      ++++++!",_size);
+    }
     str=buff;
-    MessagePrinter::PrintNormalTxt(str);
-    MessagePrinter::PrintStars();
+    MessagePrinter::PrintNormalTxt(str,MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
 
 }

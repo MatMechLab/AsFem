@@ -72,7 +72,7 @@ set(src ${src} src/Utils/StringUtils.cpp)
 #############################################################
 ### For message printer utils                             ###
 #############################################################
-set(inc ${inc} include/Utils/MessagePrinter.h)
+set(inc ${inc} include/Utils/MessagePrinter.h include/Utils/MessageColor.h)
 set(src ${src} src/Utils/MessagePrinter.cpp)
 
 #############################################################

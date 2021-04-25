@@ -23,6 +23,8 @@
 
 #include "petsc.h"
 
+#include "Utils/MessageColor.h"
+
 using namespace std;
 
 
@@ -30,17 +32,17 @@ class MessagePrinter{
 public:
     MessagePrinter();
 
-    static void PrintTxt(string str);
-    static void PrintShortTxt(string str);
-    static void PrintLongTxt(string str);
+    static void PrintTxt(string str,MessageColor color=MessageColor::WHITE);
+    static void PrintShortTxt(string str,MessageColor color=MessageColor::WHITE);
+    static void PrintLongTxt(string str,MessageColor color=MessageColor::WHITE);
     static void PrintErrorTxt(string str,bool flag=true);
     static void PrintWarningTxt(string str,bool flag=true);
 
-    static void PrintNormalTxt(string str);
+    static void PrintNormalTxt(string str,MessageColor color=MessageColor::WHITE);
     
     static void PrintWelcomeTxt(string str);
-    static void PrintStars();
-    static void PrintDashLine();
+    static void PrintStars(MessageColor color=MessageColor::WHITE);
+    static void PrintDashLine(MessageColor color=MessageColor::WHITE);
 
     //***********************************
     //*** for input file read
@@ -49,9 +51,12 @@ public:
 
     static void AsFem_Exit();
 
+    static void SetColor(const MessageColor &color);
+
 private:
     static const int _nWords=77;
     vector<string> SplitStr2Vec(string str);
     vector<string> SplitErrorStr2Vec(string str);
     vector<string> SplitNormalStr2Vec(string str);
+
 };
