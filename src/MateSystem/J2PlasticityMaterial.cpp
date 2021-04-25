@@ -74,9 +74,9 @@ void J2PlasticityMaterial::ComputeMaterialProperties(const double &t, const doub
     _nu=InputParams[2-1];
     _hardening_modulus=InputParams[4-1];
 
-    // for lame constants
-    _Lambda=_E*_nu/((1+_nu)*(1-2*_nu));
-    _Mu=_E/(2*(1+_nu));
+    // for bulk modulus and shear modulus
+    _Lambda=_E/(3*(1-2*_nu)); // bulk modulus, not the first lame constant!!!
+    _Mu=_E/(2*(1+_nu));       // shear modulus
 
     // for the variables in previous step
     _plastic_strain_old=MateOld.Rank2Materials.at("plastic_strain");
