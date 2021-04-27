@@ -28,16 +28,14 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo We start to test AsFem
-      
       - name: Install mpi
         run: |
           apt-get update 
           apt-get install -y openmpi-bin
       - name: Install petsc
-      - run: |
+        run: |
           apt-get update
           apt-get install -y petsc-dev
-
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
         run: |
