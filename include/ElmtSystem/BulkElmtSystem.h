@@ -29,11 +29,22 @@
 #include "Utils/RankTwoTensor.h"
 #include "Utils/RankFourTensor.h"
 
+// for all the user-defined-elements
+#include "ElmtSystem/PoissonElmt.h"
+#include "ElmtSystem/DiffusionElmt.h"
+#include "ElmtSystem/MechanicsElmt.h"
+#include "ElmtSystem/CahnHilliardElmt.h"
+#include "ElmtSystem/MieheFractureElmt.h"
+
 using namespace std;
 
 class MateSystem;
 
-class BulkElmtSystem{
+class BulkElmtSystem: public PoissonElmt,
+        public DiffusionElmt,
+        public MechanicsElmt,
+        public CahnHilliardElmt,
+        public MieheFractureElmt{
 public:
     BulkElmtSystem();
 
@@ -50,19 +61,18 @@ public:
 
 
     void RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                        const int &nDim,const int &nNodes,const int &nDofs,
-                        const double &t,const double &dt,const double (&ctan)[2],
-                        const Vector3d &gpCoords,
-                        const vector<double> &gpU,const vector<double> &gpV,
-                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                        const double &test,const double &trial,
-                        const Vector3d &grad_test,const Vector3d &grad_trial,
-                        const ScalarMateType &ScalarMaterials,
-                        const VectorMateType &VectorMaterials,
-                        const Rank2MateType &Rank2Materials,
-                        const Rank4MateType &Rank4Materials,
-                        vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                        MatrixXd &localK,VectorXd &localR);
+                         const int &nDim,const int &nNodes,const int &nDofs,
+                         const double &t,const double &dt,const double (&ctan)[2],
+                         const Vector3d &gpCoords,
+                         const vector<double> &gpU,const vector<double> &gpUold,
+                         const vector<double> &gpV,const vector<double> &gpVold,
+                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUold,
+                         const vector<Vector3d> &gpGradV,const vector<Vector3d> &gpGradVold,
+                         const double &test,const double &trial,
+                         const Vector3d &grad_test,const Vector3d &grad_trial,
+                         const Materials &Mate,const Materials &MateOld,
+                         map<string,double> &gpProj,
+                         MatrixXd &localK,VectorXd &localR);
 
     void PrintBulkElmtInfo()const;
 
@@ -123,95 +133,6 @@ protected:
                      vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                      MatrixXd &localK,VectorXd &localR);
     //************************************************************************************
-    //*** for general poisson element
-    //************************************************************************************
-    void PoissonElmt(const FECalcType &calctype,
-                const int &nDim,const int &nNodes,const int &nDofs,
-                const double &t,const double &dt,const double (&ctan)[2],
-                const Vector3d &gpCoords,
-                const vector<double> &gpU,const vector<double> &gpV,
-                const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                const ScalarMateType &ScalarMaterials,
-                const VectorMateType &VectorMaterials,
-                const Rank2MateType &Rank2Materials,
-                const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                MatrixXd &localK,VectorXd &localR);
-
-    //************************************************************************************
-    //*** for general diffusion element
-    //************************************************************************************
-    void DiffusionElmt(const FECalcType &calctype,
-                     const int &nDim,const int &nNodes,const int &nDofs,
-                     const double &t,const double &dt,const double (&ctan)[2],
-                     const Vector3d &gpCoords,
-                     const vector<double> &gpU,const vector<double> &gpV,
-                     const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                     const double &test,const double &trial,
-                     const Vector3d &grad_test,const Vector3d &grad_trial,
-                     const ScalarMateType &ScalarMaterials,
-                     const VectorMateType &VectorMaterials,
-                     const Rank2MateType &Rank2Materials,
-                     const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                     MatrixXd &localK,VectorXd &localR);
-    //************************************************************************************
-    //*** for Cahn-Hilliard element in mixed-formula
-    //************************************************************************************
-    void CahnHilliardElmt(const FECalcType &calctype,
-                       const int &nDim,const int &nNodes,const int &nDofs,
-                       const double &t,const double &dt,const double (&ctan)[2],
-                       const Vector3d &gpCoords,
-                       const vector<double> &gpU,const vector<double> &gpV,
-                       const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                       const double &test,const double &trial,
-                       const Vector3d &grad_test,const Vector3d &grad_trial,
-                       const ScalarMateType &ScalarMaterials,
-                       const VectorMateType &VectorMaterials,
-                       const Rank2MateType &Rank2Materials,
-                       const Rank4MateType &Rank4Materials,
-                       vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                       MatrixXd &localK,VectorXd &localR);
-
-    //************************************************************************************
-    //*** for mechanics element
-    //************************************************************************************
-    void MechanicsElmt(const FECalcType &calctype,
-                          const int &nDim,const int &nNodes,const int &nDofs,
-                          const double &t,const double &dt,const double (&ctan)[2],
-                          const Vector3d &gpCoords,
-                          const vector<double> &gpU,const vector<double> &gpV,
-                          const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                          const double &test,const double &trial,
-                          const Vector3d &grad_test,const Vector3d &grad_trial,
-                          const ScalarMateType &ScalarMaterials,
-                          const VectorMateType &VectorMaterials,
-                          const Rank2MateType &Rank2Materials,
-                          const Rank4MateType &Rank4Materials,
-                          vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                          MatrixXd &localK,VectorXd &localR);
-
-    //************************************************************************************
-    //*** for Miehe's phase field fracture model
-    //************************************************************************************
-    void MieheFractureElmt(const FECalcType &calctype,
-                       const int &nDim,const int &nNodes,const int &nDofs,
-                       const double &t,const double &dt,const double (&ctan)[2],
-                       const Vector3d &gpCoords,
-                       const vector<double> &gpU,const vector<double> &gpV,
-                       const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                       const double &test,const double &trial,
-                       const Vector3d &grad_test,const Vector3d &grad_trial,
-                       const ScalarMateType &ScalarMaterials,
-                       const VectorMateType &VectorMaterials,
-                       const Rank2MateType &Rank2Materials,
-                       const Rank4MateType &Rank4Materials,
-                       vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                       MatrixXd &localK,VectorXd &localR);
-
-    //************************************************************************************
     //*** for User-defined element 1
     //************************************************************************************
     void User1Elmt(const FECalcType &calctype,
@@ -245,7 +166,6 @@ protected:
                    const Rank4MateType &Rank4Materials,
                    vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
                    MatrixXd &localK,VectorXd &localR);
-
     //************************************************************************************
     //*** for User-defined element 2
     //************************************************************************************

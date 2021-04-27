@@ -32,13 +32,13 @@ name=c
 [timestepping]
   type=be
   dt=1.0e-5
-  time=1.0e-3
-  adaptive=true
+  time=2.0e-5
+  adaptive=false
   optiters=3
 [end]
 
 [projection]
-name=dcdx dcdy
+vectormate=gradc
 [end]
 
 

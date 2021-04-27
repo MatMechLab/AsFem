@@ -49,7 +49,7 @@ name=disp_x disp_y
 name=reacforce_x reacforce_y
 scalarmate=vonMises
 rank2mate=stress strain
-rank4mate=elasticity_tensor
+rank4mate=jacobian
 [end]
 
 [bcs]

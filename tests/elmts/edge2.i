@@ -43,8 +43,8 @@ name=u
 [end]
 
 [projection]
-name=dudx
 scalarmate=f dfdu
+vectormate=gradu
 [end]
 
 [qpoint]

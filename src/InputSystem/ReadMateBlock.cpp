@@ -87,14 +87,19 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                         mateBlock._MateType=MateType::NLDIFFUSIONMATE;
                         HasElmt=true;
                     }
-                    else if(substr.find("cahnhilliard")!=string::npos&&substr.length()==12){
-                        mateBlock._MateTypeName="cahnhilliard";
-                        mateBlock._MateType=MateType::CAHNHILLIARDMATE;
+                    else if(substr.find("doublewellpotential")!=string::npos&&substr.length()==19){
+                        mateBlock._MateTypeName="doublewellpotential";
+                        mateBlock._MateType=MateType::DOUBLEWELLFREENERGYMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("linearelastic")!=string::npos&&substr.length()==13){
                         mateBlock._MateTypeName="linearelastic";
                         mateBlock._MateType=MateType::LINEARELASTICMATE;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("incresmallstrain")!=string::npos&&substr.length()==16){
+                        mateBlock._MateTypeName="incresmallstrain";
+                        mateBlock._MateType=MateType::INCREMENTSMALLSTRAINMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("saintvenant")!=string::npos&&substr.length()==11){
@@ -110,6 +115,16 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                     else if(substr.find("mooneyrivlin")!=string::npos&&substr.length()==12){
                         mateBlock._MateTypeName="mooneyrivlin";
                         mateBlock._MateType=MateType::MOONEYRIVLINMATE;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("plastic1d")!=string::npos&&substr.length()==9){
+                        mateBlock._MateTypeName="plastic1d";
+                        mateBlock._MateType=MateType::PLASTIC1DMATE;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("j2plasticity")!=string::npos&&substr.length()==12){
+                        mateBlock._MateTypeName="j2plasticity";
+                        mateBlock._MateType=MateType::J2PLASTICITYMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("constwave")!=string::npos&&substr.length()==9){

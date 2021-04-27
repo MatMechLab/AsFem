@@ -37,7 +37,26 @@
 #include "Utils/RankTwoTensor.h"
 #include "Utils/RankFourTensor.h"
 
-class BulkMateSystem{
+//*** For all the materials classes
+#include "MateSystem/ConstPoissonMaterial.h"
+#include "MateSystem/ConstDiffusionMaterial.h"
+#include "MateSystem/DoubleWellFreeEnergyMaterial.h"
+#include "MateSystem/LinearElasticMaterial.h"
+#include "MateSystem/IncrementSmallStrainMaterial.h"
+#include "MateSystem/NeoHookeanMaterial.h"
+#include "MateSystem/Plastic1DMaterial.h"
+#include "MateSystem/J2PlasticityMaterial.h"
+#include "MateSystem/MieheFractureMaterial.h"
+
+class BulkMateSystem: public ConstPoissonMaterial,
+                      public ConstDiffusionMaterial,
+                      public DoubleWellFreeEnergyMaterial,
+                      public LinearElasticMaterial,
+                      public IncrementSmallStrainMaterial,
+                      public NeoHookeanMaterial,
+                      public Plastic1DMaterial,
+                      public J2PlasticityMaterial,
+                      public MieheFractureMaterial{
 public:
     BulkMateSystem();
     void InitBulkMateSystem();
@@ -51,16 +70,34 @@ public:
 
 
     inline ScalarMateType& GetScalarMatePtr(){
-        return _ScalarMaterials;
+        return _Materials.ScalarMaterials;
+    }
+    inline ScalarMateType& GetScalarMateOldPtr(){
+        return _MaterialsOld.ScalarMaterials;
     }
     inline VectorMateType& GetVectorMatePtr(){
-        return _VectorMaterials;
+        return _Materials.VectorMaterials;
+    }
+    inline VectorMateType& GetVectorMateOldPtr(){
+        return _MaterialsOld.VectorMaterials;
     }
     inline Rank2MateType& GetRank2MatePtr(){
-        return _Rank2Materials;
+        return _Materials.Rank2Materials;
+    }
+    inline Rank2MateType& GetRank2MateOldPtr(){
+        return _MaterialsOld.Rank2Materials;
     }
     inline Rank4MateType& GetRank4MatePtr(){
-        return _Rank4Materials;
+        return _Materials.Rank4Materials;
+    }
+    inline Rank4MateType& GetRank4MateOldPtr(){
+        return _MaterialsOld.Rank4Materials;
+    }
+    inline Materials& GetMaterialsPtr(){
+        return _Materials;
+    }
+    inline Materials& GetMaterialsOldPtr(){
+        return _MaterialsOld;
     }
     //***************************************************************************
     //*** for each materials getting functions
@@ -68,75 +105,80 @@ public:
     inline vector<string> GetScalarMateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_ScalarMaterials)temp.push_back(it.first);
+        for(const auto &it:_Materials.ScalarMaterials)temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInScalarMate(string matename)const{
-        for(const auto &it:_ScalarMaterials){
+        for(const auto &it:_Materials.ScalarMaterials){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetScalarMateNums()const{
-        return static_cast<int>(_ScalarMaterials.size());
+        return static_cast<int>(_Materials.ScalarMaterials.size());
     }
-    //****
+    //*** For vector materials
     inline vector<string> GetVectorMateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_VectorMaterials)temp.push_back(it.first);
+        for(const auto &it:_Materials.VectorMaterials) temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInVectorMate(string matename)const{
-        for(const auto &it:_VectorMaterials){
+        for(const auto &it:_Materials.VectorMaterials){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetVectorMateNums()const{
-        return static_cast<int>(_VectorMaterials.size());
+        return static_cast<int>(_Materials.VectorMaterials.size());
     }
-    //****
+    //*** For rank-2 materials
     inline vector<string> GetRank2MateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_Rank2Materials)temp.push_back(it.first);
+        for(const auto &it:_Materials.Rank2Materials)temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInRank2Mate(string matename)const{
-        for(const auto &it:_Rank2Materials){
+        for(const auto &it:_Materials.Rank2Materials){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetRank2MateNums()const{
-        return static_cast<int>(_Rank2Materials.size());
+        return static_cast<int>(_Materials.Rank2Materials.size());
     }
-    //***
+    //*** For rank-4 materials
     inline vector<string> GetRank4MateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_Rank4Materials)temp.push_back(it.first);
+        for(const auto &it:_Materials.Rank4Materials)temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInRank4Mate(string matename)const{
-        for(const auto &it:_Rank4Materials){
+        for(const auto &it:_Materials.Rank4Materials){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetRank4MateNums()const{
-        return static_cast<int>(_Rank4Materials.size());
+        return static_cast<int>(_Materials.Rank4Materials.size());
     }
     //***************************************************************************
     //*** For AsFem's built-in materials and User-Defined-Materials (UMAT)    ***
     //***************************************************************************
     void RunBulkMateLibs(const MateType &imate,const int &mateindex,const int &nDim,
-                    const double &t,const double &dt,
-                    const Vector3d &gpCoord,
-                    const vector<double> &gpU,const vector<double> &gpV,
-                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                    vector<double> &gpHist,const vector<double> &gpHistOld);
+                    const double &t,const double &dt,const Vector3d &gpCoord,
+                    const vector<double> &gpU,const vector<double> &gpUOld,
+                    const vector<double> &gpUdot,const vector<double> &gpUdotOld,
+                    const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
+                    const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld);
+
+    void InitBulkMateLibs(const MateType &imate,const int &mateindex,const int &nDim,const Vector3d &gpCoord,
+                          const vector<double> &gpU,const vector<double> &gpUdot,
+                          const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot);
+
 
 
     void PrintBulkMateSystemInfo()const;
@@ -157,33 +199,10 @@ protected:
     //***  3) Rank-2 tensor type materials, i.e. stresses and strains
     //***  4) Rank-4 tensor type materials, i.e. elasticity tensor
     //****************************************************************************
-    ScalarMateType _ScalarMaterials;
-    VectorMateType _VectorMaterials;
-    Rank2MateType  _Rank2Materials;
-    Rank4MateType  _Rank4Materials;
+    Materials _Materials,_MaterialsOld;
 
 
 protected:
-    //******************************************************************************
-    //*** Here we list all of the built-in materials as well as UMAT
-    //******************************************************************************
-    void ConstPoissonMaterial(const int &nDim,const double &t,const double &dt,
-                        const vector<double> &InputParams,
-                        const Vector3d &gpCoord,
-                        const vector<double> &gpU,const vector<double> &gpV,
-                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                        vector<double> &gpHist,const vector<double> &gpHistOld);
-
-    //******************************************************************************
-    //*** for constant diffusivity material
-    //******************************************************************************
-    void ConstDiffusionMaterial(const int &nDim,const double &t,const double &dt,
-                              const vector<double> &InputParams,
-                              const Vector3d &gpCoord,
-                              const vector<double> &gpU,const vector<double> &gpV,
-                              const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                              vector<double> &gpHist,const vector<double> &gpHistOld);
-
     //******************************************************************************
     //*** for cahnhilliard material
     //******************************************************************************
@@ -193,25 +212,6 @@ protected:
                                 const vector<double> &gpU,const vector<double> &gpV,
                                 const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
                                 vector<double> &gpHist,const vector<double> &gpHistOld);
-    //******************************************************************************
-    //*** for linear elastic material
-    //******************************************************************************
-    void LinearElasticMaterial(const int &nDim,const double &t,const double &dt,
-                              const vector<double> &InputParams,
-                              const Vector3d &gpCoord,
-                              const vector<double> &gpU,const vector<double> &gpV,
-                              const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                              vector<double> &gpHist,const vector<double> &gpHistOld);
-
-    //******************************************************************************
-    //*** for Miehe's phase field fracture material
-    //******************************************************************************
-    void MieheFractureMaterial(const int &nDim,const double &t,const double &dt,
-                               const vector<double> &InputParams,
-                               const Vector3d &gpCoord,
-                               const vector<double> &gpU,const vector<double> &gpV,
-                               const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                               vector<double> &gpHist,const vector<double> &gpHistOld);
 
     //******************************************************************************
     //*** for User-Defined-Materials (UMAT)

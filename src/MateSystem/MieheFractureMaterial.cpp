@@ -8,7 +8,7 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.30
+//+++ Date   : 2021.04.09
 //+++ Purpose: Calculate the material properties required by Miehe's
 //+++          phase field fracture model
 //+++           1) viscosity
@@ -18,28 +18,47 @@
 //+++           5) dHdstrain
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/BulkMateSystem.h"
-#include "Utils/MathFuns.h"
+#include "MateSystem/MieheFractureMaterial.h"
 
-void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, const double &dt,
-                                          const vector<double> &InputParams, const Vector3d &gpCoord,
-                                          const vector<double> &gpU, const vector<double> &gpV,
-                                          const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradV,
-                                          vector<double> &gpHist, const vector<double> &gpHistOld) {
 
-    //*****************************************************************************
-    //*** just to get rid of warnings, normal users dont need to do this
-    //*****************************************************************************
-    if(nDim||t||dt||InputParams.size()||
-       gpCoord(1)||gpU.size()||gpV.size()||gpGradU.size()||gpGradV.size()||
-       gpHist.size()||gpHistOld.size()){}
-
-    if(InputParams.size()<5){
-        MessagePrinter::PrintErrorTxt("for Miehe's phase field fracture materials, at least 5 parameters are required, you need to give: lambda, mu, Gc, L, viscosity");
-        MessagePrinter::AsFem_Exit();
+void MieheFractureMaterial::InitMaterialProperties(const int &nDim,const Vector3d &gpCoord, const vector<double> &InputParams,
+                                                   const vector<double> &gpU, const vector<double> &gpUdot,
+                                                   const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUdot,
+                                                   Materials &Mate) {
+    // get rid of unused warning
+    if(nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
+       gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){
     }
 
-    int UseHist=0;
+    Mate.ScalarMaterials["Hist"]=0.0;
+}
+//***********************************************************
+double MieheFractureMaterial::DegradationFun(const double &x) {
+    return (1-x)*(1-x);
+}
+double MieheFractureMaterial::DegradationFunDeriv(const double &x) {
+    return 2*(x-1);
+}
+//************************************************************
+void MieheFractureMaterial::ComputeStrain(const int &nDim, const vector<Vector3d> &GradDisp, RankTwoTensor &strain) {
+    // here we assume the first dof is d, then the following dofs are ux, uy and uz
+    if(nDim==1){
+        MessagePrinter::PrintErrorTxt("Miehe's phase field fracture model only works for 2D and 3D case");
+        MessagePrinter::AsFem_Exit();
+    }
+    else if(nDim==2){
+        // DoFs: d ux uy
+        GradU.SetFromGradU(GradDisp[2],GradDisp[3]);
+    }
+    else if(nDim==3){
+        // DoFs: d ux uy uz
+        GradU.SetFromGradU(GradDisp[2],GradDisp[3],GradDisp[4]);
+    }
+    strain=(GradU+GradU.Transpose())*0.5;
+}
+//************************************************************
+void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputParams,const RankTwoTensor &strain,const double &damage,
+                                                    const Materials &MateOld, Materials &Mate) {
     double d;
     double g,dg;// for the degradation function
     const double k=1.0e-5; // for stabilizer
@@ -50,94 +69,74 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     const double L=InputParams[3];
     const double viscosity=InputParams[4];
 
+    Mate.ScalarMaterials["viscosity"]=viscosity;
+    Mate.ScalarMaterials["Gc"]=Gc;
+    Mate.ScalarMaterials["L"]=L;
 
-    _ScalarMaterials["viscosity"]=viscosity;
-    _ScalarMaterials["Gc"]=Gc;
-    _ScalarMaterials["L"]=L;
-
-
-    UseHist=0;
+    int UseHist=0;
     if(InputParams.size()>=6){
         UseHist=static_cast<int>(InputParams[6-1]);
         if(UseHist<0) UseHist=0;
     }
 
+    d=damage;
+    g= DegradationFun(d);
+    dg= DegradationFunDeriv(d);   // derivative of g
 
-    d=gpU[1];
-    g=(1-d)*(1-d);// degradation
-    dg=2*(d-1);   // derivative of g
+    I4Sym.SetToIdentitySymmetric4();
 
-    RankTwoTensor Eps,EpsPos,EpsNeg,GradU;
-    RankFourTensor ProjPos,ProjNeg;
-    RankFourTensor I4Sym(RankFourTensor::InitIdentitySymmetric4);
+    Mate.Rank2Materials["strain"]=strain;
 
-    GradU.SetToZeros();
-    if(nDim==1){
-        MessagePrinter::PrintErrorTxt("Miehe's phase field fracture model works only for 2D and 3D case");
-        MessagePrinter::AsFem_Exit();
-    }
-    else if(nDim==2){
-        GradU.SetFromGradU(gpGradU[2],gpGradU[3]);
-    }
-    else if(nDim==3){
-        GradU.SetFromGradU(gpGradU[2],gpGradU[3],gpGradU[4]);
-    }
-    Eps=(GradU+GradU.Transpose())*0.5;
-
-    _Rank2Materials["strain"]=Eps;
-
-    ProjPos=Eps.GetPostiveProjTensor();
+    ProjPos=strain.GetPostiveProjTensor();
     I4Sym.SetToIdentitySymmetric4();
     ProjNeg=I4Sym-ProjPos;
 
     // for the positive and negative strain
-    EpsPos=ProjPos.DoubleDot(Eps);
-    EpsNeg=Eps-EpsPos;
+    EpsPos=ProjPos.DoubleDot(strain);
+    EpsNeg=strain-EpsPos;
 
     double trEps,signpos,signneg;
     double psi,psipos,psineg;
 
-    trEps=Eps.Trace();
+    trEps=strain.Trace();
     psipos=0.5*lambda*BracketPos(trEps)*BracketPos(trEps)+mu*(EpsPos*EpsPos).Trace();
     psineg=0.5*lambda*BracketNeg(trEps)*BracketNeg(trEps)+mu*(EpsNeg*EpsNeg).Trace();
     psi=(g+k)*psipos+psineg;
 
-    _ScalarMaterials["Psi"]=psi;
-    _ScalarMaterials["PsiPos"]=psipos;
-    _ScalarMaterials["PsiNeg"]=psineg;
+    Mate.ScalarMaterials["Psi"]=psi;
+    Mate.ScalarMaterials["PsiPos"]=psipos;
+    Mate.ScalarMaterials["PsiNeg"]=psineg;
 
-    RankTwoTensor StressPos,StressNeg,I;
 
     I.SetToIdentity();
     StressPos=I*lambda*BracketPos(trEps)+EpsPos*2*mu;
     StressNeg=I*lambda*BracketNeg(trEps)+EpsNeg*2*mu;
 
-    _Rank2Materials["stress"]=StressPos*(g+k)+StressNeg;
-    _Rank2Materials["dstressdD"]=StressPos*dg;
+    Mate.Rank2Materials["stress"]=StressPos*(g+k)+StressNeg;
+    Mate.Rank2Materials["dstressdD"]=StressPos*dg;
 
     // for vonMises stress
-    RankTwoTensor devStress;
     double trace;
     I.SetToIdentity();
-    trace=_Rank2Materials["stress"].Trace();
-    devStress=_Rank2Materials["stress"]-I*(trace/3.0);
+    trace=Mate.Rank2Materials["stress"].Trace();
+    DevStress=Mate.Rank2Materials["stress"]-I*(trace/3.0);
     // vonMises stress, taken from:
     // https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
     // vonMises=sqrt(1.5*sij*sij)
-    _ScalarMaterials["vonMises"]=sqrt(1.5*devStress.DoubleDot(devStress));
+    Mate.ScalarMaterials["vonMises"]=sqrt(1.5*DevStress.DoubleDot(DevStress));
 
-    if(psipos>gpHistOld[0]){
-        _ScalarMaterials["Hist"]=psipos;
-        _Rank2Materials["dHdstrain"]=StressPos;
+    if(psipos>MateOld.ScalarMaterials.at("Hist")){
+        Mate.ScalarMaterials["Hist"]=psipos;
+        Mate.Rank2Materials["dHdstrain"]=StressPos;
     }
     else{
-        _ScalarMaterials["Hist"]=gpHistOld[0];
-        _Rank2Materials["dHdstrain"].SetToZeros();
+        Mate.ScalarMaterials["Hist"]=MateOld.ScalarMaterials.at("Hist");
+        Mate.Rank2Materials["dHdstrain"].SetToZeros();
     }
 
     if(UseHist){
-        _ScalarMaterials["Hist"]=gpHistOld[0];
-        _Rank2Materials["dHdstrain"].SetToZeros();
+        Mate.ScalarMaterials["Hist"]=MateOld.ScalarMaterials.at("Hist");
+        Mate.Rank2Materials["dHdstrain"].SetToZeros();
     }
 
     signpos=0.0;
@@ -146,10 +145,35 @@ void BulkMateSystem::MieheFractureMaterial(const int &nDim, const double &t, con
     signneg=0.0;
     if(BracketNeg(trEps)<0) signneg=1.0;
 
-    _Rank4Materials["elasticity_tensor"].SetToZeros();
-    _Rank4Materials["elasticity_tensor"]=(I.CrossDot(I)*lambda*signpos+ProjPos*2*mu)*(g+k)
-                                         +I.CrossDot(I)*lambda*signneg+ProjNeg*2*mu;
-
-
+    Mate.Rank4Materials["jacobian"].SetToZeros();
+    Mate.Rank4Materials["jacobian"]=(I.CrossDot(I)*lambda*signpos+ProjPos*2*mu)*(g+k)
+            +I.CrossDot(I)*lambda*signneg+ProjNeg*2*mu;
 }
+//************************************************************
+void MieheFractureMaterial::ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
+                                                      const Vector3d &gpCoord, const vector<double> &InputParams,
+                                                      const vector<double> &gpU, const vector<double> &gpUOld,
+                                                      const vector<double> &gpUdot, const vector<double> &gpUdotOld,
+                                                      const vector<Vector3d> &gpGradU,
+                                                      const vector<Vector3d> &gpGradUOld,
+                                                      const vector<Vector3d> &gpGradUdot,
+                                                      const vector<Vector3d> &gpGradUdotOld, const Materials &MateOld,
+                                                      Materials &Mate) {
+    if(t||dt||nDim||gpCoord(1)||InputParams.size()||
+       gpU[0]||gpUOld[0]||gpUdot[0]||gpUdotOld[0]||
+       gpGradU[0](1)||gpGradUOld[0](1)||gpGradUdot[0](1)||gpGradUdotOld[0](1)||
+       Mate.ScalarMaterials.size()||MateOld.ScalarMaterials.size()){}
 
+    if(InputParams.size()<5){
+        MessagePrinter::PrintErrorTxt("for Miehe's phase field fracture materials, at least 5 parameters are required, you need to give: lambda, mu, Gc, L, viscosity");
+        MessagePrinter::AsFem_Exit();
+    }
+
+    // 1st dof: damage
+    // 2nd dof: ux
+    // 3rd dof: uy
+    // 4th dof: uz
+
+    ComputeStrain(nDim,gpGradU,Strain);
+    ComputeConstitutiveLaws(InputParams,Strain,gpU[1],MateOld,Mate);
+}

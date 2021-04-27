@@ -87,7 +87,7 @@ void InputSystem::InitInputSystem(int args,char *argv[]){
         _MeshFileName.clear();
         _HasInputFileName=false;
         _IsBuiltInMesh=true;
-        _IsReadOnly=true;
+        _IsReadOnly=false;
     }
     else if(args==3){
         _InputFileName.clear();

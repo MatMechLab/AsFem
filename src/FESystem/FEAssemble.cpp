@@ -60,10 +60,17 @@ void FESystem::AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vect
     MatSetValues(K,ndofs,dofindex.data(),ndofs,dofindex.data(),jacobian.data(),ADD_VALUES);
 }
 //**********************************************************************
-void FESystem::AssembleLocalHistToGlobal(const int &e,const int &nhist,const int &ngp,const int &gpInd,const vector<double> &localHist,Vec &Hist){
-    int i,j;
-    for(i=1;i<=nhist;i++){
-        j=(e-1)*nhist*ngp+(gpInd-1)*nhist+i-1;
-        VecSetValue(Hist,j,localHist[i-1],ADD_VALUES);
+void FESystem::AssembleSubHistToLocal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem){
+    solutionSystem._ScalarMaterials[(e-1)*ngp+gpInd-1]=mate.ScalarMaterials;
+    solutionSystem._VectorMaterials[(e-1)*ngp+gpInd-1]=mate.VectorMaterials;
+    solutionSystem._Rank2TensorMaterials[(e-1)*ngp+gpInd-1]=mate.Rank2Materials;
+    solutionSystem._Rank4TensorMaterials[(e-1)*ngp+gpInd-1]=mate.Rank4Materials;
+}
+void FESystem::AssembleLocalHistToGlobal(const int &e,const int &ngp,SolutionSystem &solutionSystem){
+    for(int gpInd=0;gpInd<ngp;gpInd++){
+        solutionSystem._ScalarMaterialsOld[(e-1)*ngp+gpInd]=solutionSystem._ScalarMaterials[(e-1)*ngp+gpInd];
+        solutionSystem._VectorMaterialsOld[(e-1)*ngp+gpInd]=solutionSystem._VectorMaterials[(e-1)*ngp+gpInd];
+        solutionSystem._Rank2TensorMaterialsOld[(e-1)*ngp+gpInd]=solutionSystem._Rank2TensorMaterials[(e-1)*ngp+gpInd];
+        solutionSystem._Rank4TensorMaterialsOld[(e-1)*ngp+gpInd]=solutionSystem._Rank4TensorMaterials[(e-1)*ngp+gpInd];
     }
 }

@@ -20,28 +20,61 @@ MessagePrinter::MessagePrinter(){
 }
 
 void MessagePrinter::AsFem_Exit(){
-    PrintStars();
-    PrintTxt("AsFem exit due to some errors");
-    PrintStars();
+    PrintStars(MessageColor::RED);
+    PrintTxt("AsFem exit due to some errors",MessageColor::RED);
+    PrintStars(MessageColor::RED);
     PetscEnd();
 }
 
-void MessagePrinter::PrintDashLine(){
+void MessagePrinter::SetColor(const MessageColor &color){
+    switch (color) {
+        case MessageColor::WHITE:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;37m");// set color to white
+            break;
+        case MessageColor::RED:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;91m");// set color to bright red
+            break;
+        case MessageColor::BLUE:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;94m");// set color to bright blue
+            break;
+        case MessageColor::GREEN:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;32m");// set color to green
+            break;
+        case MessageColor::YELLOW:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;33m");// set color to white
+            break;
+        case MessageColor::MAGENTA:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;35m");// set color to white
+            break;
+        case MessageColor::CYAN:
+            PetscPrintf(PETSC_COMM_WORLD,"\033[1;36m");// set color to white
+            break;
+        default:
+            break;
+    }
+}
+
+void MessagePrinter::PrintDashLine(MessageColor color){
+    SetColor(color);
     PetscPrintf(PETSC_COMM_WORLD,"***");
     for(int i=0;i<_nWords-6;i++){
         PetscPrintf(PETSC_COMM_WORLD,"-");
     }
     PetscPrintf(PETSC_COMM_WORLD,"***\n");
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //*********************************************
-void MessagePrinter::PrintStars(){
+void MessagePrinter::PrintStars(MessageColor color){
+    SetColor(color);
     for(int i=0;i<_nWords;i++){
         PetscPrintf(PETSC_COMM_WORLD,"*");
     }
     PetscPrintf(PETSC_COMM_WORLD,"\n");
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //*********************************************
-void MessagePrinter::PrintTxt(string str){
+void MessagePrinter::PrintTxt(string str,MessageColor color){
+    SetColor(color);
     string _Head="*** ";
     string _End=" !!! ***";
     if(str.length()<=_nWords-_Head.length()-_End.length()){
@@ -75,9 +108,11 @@ void MessagePrinter::PrintTxt(string str){
         }
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
     }
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //**********************************************************
-void MessagePrinter::PrintShortTxt(string str){
+void MessagePrinter::PrintShortTxt(string str,MessageColor color){
+    SetColor(color);
     string _Head="*** ";
     string _End=" !!! ***";
     if(str.length()<=_nWords-_Head.length()-_End.length()){
@@ -93,18 +128,23 @@ void MessagePrinter::PrintShortTxt(string str){
         }
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
     }
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //**********************************************************
-void MessagePrinter::PrintLongTxt(string str){
+void MessagePrinter::PrintLongTxt(string str,MessageColor color){
+    SetColor(color);
     MessagePrinter printer;
     vector<string> strvec;
     strvec=printer.SplitStr2Vec(str);
     for(const auto &it:strvec){
-        PrintShortTxt(it);
+        PrintShortTxt(it,color);
     }
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //**********************************************************
 void MessagePrinter::PrintWelcomeTxt(string str){
+    SetColor(MessageColor::CYAN);
+
     string _Head="*** ";
     string _End =" ***";
     
@@ -118,7 +158,9 @@ void MessagePrinter::PrintWelcomeTxt(string str){
     for(int i=0;i<_nWords-i1-i2-i3;i++){
         PetscPrintf(PETSC_COMM_WORLD," ");
     }
-    PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str()); 
+    PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //****************************************
 vector<string> MessagePrinter::SplitStr2Vec(string str){
@@ -203,6 +245,7 @@ vector<string> MessagePrinter::SplitErrorStr2Vec(string str){
 }
 //****************************************************
 void MessagePrinter::PrintErrorTxt(string str,bool flag){
+    SetColor(MessageColor::RED);
     string _Head ="***       ";
     string _Head1="*** Error:";
     string _End=" !!! ***";
@@ -210,14 +253,16 @@ void MessagePrinter::PrintErrorTxt(string str,bool flag){
     int i2=static_cast<int>(_End.size());
     int i3=static_cast<int>(str.size());
     if(i3<=_nWords-i1-i2){
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::RED);
+        SetColor(MessageColor::RED);
         PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
         for(int i=0;i<_nWords-i1-i2-i3;i++){
             PetscPrintf(PETSC_COMM_WORLD," ");
         }
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::RED);
+        SetColor(MessageColor::RED);
     }
     else{
         string substr1,substr2;
@@ -225,7 +270,8 @@ void MessagePrinter::PrintErrorTxt(string str,bool flag){
         substr1=str.substr(0,_nWords-i1-i2);
         substr2=str.substr(_nWords-i1-i2);
         // for the first line
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::RED);
+        SetColor(MessageColor::RED);
         PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
@@ -243,11 +289,14 @@ void MessagePrinter::PrintErrorTxt(string str,bool flag){
             }
             PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
         }
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::RED);
+        SetColor(MessageColor::RED);
     }
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //************************************************
 void MessagePrinter::PrintWarningTxt(string str,bool flag){
+    SetColor(MessageColor::YELLOW);
     string _Head ="***         ";
     string _Head1="*** Warning:";
     string _End=" !!! ***";
@@ -255,14 +304,16 @@ void MessagePrinter::PrintWarningTxt(string str,bool flag){
     int i2=static_cast<int>(_End.size());
     int i3=static_cast<int>(str.size());
     if(i3<=_nWords-i1-i2){
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::YELLOW);
+        SetColor(MessageColor::YELLOW);
         PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
         for(int i=0;i<_nWords-i1-i2-i3;i++){
             PetscPrintf(PETSC_COMM_WORLD," ");
         }
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::YELLOW);
+        SetColor(MessageColor::YELLOW);
     }
     else{
         string substr1,substr2;
@@ -270,7 +321,8 @@ void MessagePrinter::PrintWarningTxt(string str,bool flag){
         substr1=str.substr(0,_nWords-i1-i2);
         substr2=str.substr(_nWords-i1-i2);
         // for the first line
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::YELLOW);
+        SetColor(MessageColor::YELLOW);
         PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
         PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
@@ -288,8 +340,10 @@ void MessagePrinter::PrintWarningTxt(string str,bool flag){
             }
             PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
         }
-        if(flag) PrintStars();
+        if(flag) PrintStars(MessageColor::YELLOW);
+        SetColor(MessageColor::YELLOW);
     }
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //**********************************************
 vector<string> MessagePrinter::SplitNormalStr2Vec(string str){
@@ -330,7 +384,8 @@ vector<string> MessagePrinter::SplitNormalStr2Vec(string str){
     }
     return strvec;
 }
-void MessagePrinter::PrintNormalTxt(string str){
+void MessagePrinter::PrintNormalTxt(string str,MessageColor color){
+    SetColor(color);
     string _Head="*** ";
     string _End =" ***";
     int i1=static_cast<int>(_Head.size());
@@ -368,9 +423,11 @@ void MessagePrinter::PrintNormalTxt(string str){
             PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
         }
     }
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //******************************************
 void MessagePrinter::PrintErrorInLineNumber(const int &linenumber){
+    SetColor(MessageColor::RED);
     string _Head="*** Error:";
     string _End =" ***";
     char buff[35];
@@ -386,4 +443,5 @@ void MessagePrinter::PrintErrorInLineNumber(const int &linenumber){
         PetscPrintf(PETSC_COMM_WORLD," ");
     }
     PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
+    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }

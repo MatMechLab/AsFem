@@ -5,8 +5,8 @@
   dim=2
   xmax=5.0
   ymax=5.0
-  nx=100
-  ny=100
+  nx=20
+  ny=20
   meshtype=quad9
 [end]
 

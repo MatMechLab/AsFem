@@ -72,7 +72,7 @@ set(src ${src} src/Utils/StringUtils.cpp)
 #############################################################
 ### For message printer utils                             ###
 #############################################################
-set(inc ${inc} include/Utils/MessagePrinter.h)
+set(inc ${inc} include/Utils/MessagePrinter.h include/Utils/MessageColor.h)
 set(src ${src} src/Utils/MessagePrinter.cpp)
 
 #############################################################
@@ -168,22 +168,29 @@ set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
 set(inc ${inc} include/ElmtSystem/BulkElmtSystem.h)
 set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
+### For bulk element base class
+set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
+### For linear poisson element
+set(inc ${inc} include/ElmtSystem/PoissonElmt.h)
+set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
+### For diffusion elmt
+set(inc ${inc} include/ElmtSystem/DiffusionElmt.h)
+set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
+### For Mechanics element implementation
+set(inc ${inc} include/ElmtSystem/MechanicsElmt.h)
+set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
+### For CahnHilliard element implementation
+set(inc ${inc} include/ElmtSystem/CahnHilliardElmt.h)
+set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
+### For Miehe's phase field fracture element
+set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
+set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### for laplace operator
 set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
 ### for body source term
 set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
 ### for poisson equation
-set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
-### for poisson equation
 set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
-### for diffusion equation
-set(src ${src} src/ElmtSystem/DiffusionElmt.cpp)
-### for diffusion equation
-set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
-### for diffusion equation
-set(src ${src} src/ElmtSystem/MechanicsElmt.cpp)
-### for Miehe's fracture model
-set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### for User1 element
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
 ### for User2 element
@@ -200,15 +207,45 @@ set(inc ${inc} include/MateSystem/MateBlock.h)
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
 ### for bulk materials
+set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
+set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
+set(inc ${inc} include/MateSystem/PhaseFieldFractureMaterialBase.h)
+set(inc ${inc} include/MateSystem/PlasticMaterialBase.h)
+### For constant poisson material
+set(inc ${inc} include/MateSystem/ConstPoissonMaterial.h)
+set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
+### For constant diffusion material
+set(inc ${inc} include/MateSystem/ConstDiffusionMaterial.h)
+set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
+# for elastic material
+set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
+set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
+### For incremental small strain material
+set(inc ${inc} include/MateSystem/IncrementSmallStrainMaterial.h)
+set(src ${src} src/MateSystem/IncrementSmallStrainMaterial.cpp)
+### For NeoHookean material
+set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
+set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
+### For 1D plastic material with linear hardening
+set(inc ${inc} include/MateSystem/Plastic1DMaterial.h)
+set(src ${src} src/MateSystem/Plastic1DMaterial.cpp)
+### For J2 Plasticity material
+set(inc ${inc} include/MateSystem/J2PlasticityMaterial.h)
+set(inc ${inc} src/MateSystem/J2PlasticityMaterial.cpp)
+### For free energy based materials
+set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
+#   for double well free energy materials
+set(inc ${inc} include/MateSystem/DoubleWellFreeEnergyMaterial.h)
+set(src ${src} src/MateSystem/DoubleWellFreeEnergyMaterial.cpp)
+### For Miehe's linear elastic phase field fracture model
+set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
+set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+#
 set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
+set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
-set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
-set(src ${src} src/MateSystem/ConstDiffusionMaterial.cpp)
 set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
-set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
-### for Miehe's phase field fracture materials
-set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
 ### for UMAT
 set(src ${src} src/MateSystem/User1Material.cpp)
 

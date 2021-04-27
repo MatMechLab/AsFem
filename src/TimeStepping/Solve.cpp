@@ -56,6 +56,10 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
     user->time=time;
     user->step=step;
     user->dt=dt;
+    // update previous solution
+    VecCopy(user->_solutionSystem._Unew,user->_solutionSystem._Uold);
+    VecCopy(user->_solutionSystem._V,user->_solutionSystem._Vold);
+    // update current solution
     VecCopy(U,user->_solutionSystem._Unew);
     
     snprintf(buff,68,"Time step=%8d, time=%13.5e, dt=%13.5e",step,time,dt);
@@ -92,7 +96,7 @@ PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
                                user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
 
     if(user->IsAdaptive&&step>=1){
-        if(user->iters+1<=user->OptiIters){
+        if(user->iters<=user->OptiIters){
             dt=user->dt*user->GrowthFactor;
             if(dt>user->DtMax) dt=user->DtMax;
         }

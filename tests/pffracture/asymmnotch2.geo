@@ -1,7 +1,7 @@
 //+
 SetFactory("OpenCASCADE");
 
-dx=0.8;
+dx=1.2;
 w=10.0;
 dh=1.0e-5;
 
@@ -11,10 +11,10 @@ h2=20-1.0;
 dh=1.0e-6;
 dh1=3.0;
 
-n1=51;//short notch edge
-n2=201;//long in plane edge
-n3=11;// short side edges
-n4=21;//long side edges
+n1=21;//short notch edge
+n2=81;//long in plane edge
+n3=5;// short side edges
+n4=9;//long side edges
 
 Point(1)={0.0,0.0,0.0,dx};
 Point(2)={w*2,0.0,0.0,dx};

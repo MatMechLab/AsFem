@@ -30,15 +30,15 @@ name=c mu
 
 [mates]
   [mate1]
-    type=cahnhilliard
-    params=1.0 2.5 0.0005
+    type=doublewellpotential
+    params=1.0 2.5 0.005
   [end]
 [end]
 
 [timestepping]
   type=be
-  dt=1.0e-4
-  time=1.0e2
+  dt=1.0e-5
+  time=2.0e-5
   optiters=3
   growthfactor=1.2
   adaptive=true
@@ -55,7 +55,7 @@ name=c mu
 [end]
 
 [projection]
-name=dcdx dcdy
+vectormate=gradc
 [end]
 
 [ics]

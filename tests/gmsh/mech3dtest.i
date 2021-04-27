@@ -68,8 +68,7 @@ name=ux uy uz
 [projection]
 name=reacforce_x reacforce_y reacforce_z
 scalarmate=vonMises
-vectormate=test
-rank2mate=stress strain pp
+rank2mate=stress strain
 [end]
 
 
