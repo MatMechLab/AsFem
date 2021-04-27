@@ -28,6 +28,10 @@ jobs:
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
+      
+      - name: Check enviroment settings
+        run: echo $CC
+        run: which mpicc
 
       # Runs a set of commands using the runners shell
       - name: Run a multi-line script
