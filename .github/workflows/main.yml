@@ -66,7 +66,7 @@ jobs:
           echo "*** Setup mpi and petsc bash profile"
           echo "******************************************************"
           export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
-          export PATH=$PATH:$mpi/bin
+          export PATH=$PATH:$MPI_DIR/bin
           export OMP_NUM_THREADS=1
           export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
