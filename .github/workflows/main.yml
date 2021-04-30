@@ -24,6 +24,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       # Runs a single command using the runners shell
+      - name: show CPU information
+        run: cat /proc/cpuinfo
       - name: show file structure
         run: |
           echo "*********************************************************************"
@@ -77,11 +79,11 @@ jobs:
           tar -xf openmpi-4.1.0.tar.gz
           cd openmpi-4.1.0
           ./configure --prefix=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
-          make -j8
+          make -j8 > mymake.log
           echo "******************************************************"
           echo "*** Make -j8 is done for openmpi-4.1.0"
           echo "******************************************************"
-          make install
+          make install > mymakeinstall.log
           echo "******************************************************"
           echo "*** Make install is done for openmpi-4.1.0"
           echo "******************************************************"
@@ -127,11 +129,11 @@ jobs:
           echo "******************************************************"
           echo "*** Make petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.14.3 PETSC_ARCH=arch-linux-c-opt all
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.14.3 PETSC_ARCH=arch-linux-c-opt all > mymake.log
           echo "******************************************************"
           echo "*** Install petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.14.3 PETSC_ARCH=arch-linux-c-opt install
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.14.3 PETSC_ARCH=arch-linux-c-opt install > mymakeinstall.log
       - name: compile AsFem
         run: |
           cd /home/runner/work/AsFem/AsFem
@@ -151,7 +153,7 @@ jobs:
           echo "*********************************************************************"
           echo "*** Make AsFem"
           echo "*********************************************************************"
-          make -j8
+          make -j8 > mymake.log
           echo "*********************************************************************"
           echo "*** AsFem is successuflly installed !"
           echo "*********************************************************************"
@@ -205,7 +207,7 @@ jobs:
         run: |
           rm -rf temp
           rm -rf AsFemLibs
-          ./script/Clean.py
+          ./scripts/Clean.py
           ls -l
           echo "*********************************************************************"
           echo "*** All the files are clean !"
