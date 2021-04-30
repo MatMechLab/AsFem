@@ -3,46 +3,87 @@ project(AsFem)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if(UNIX)
+    message ("We are running on linux system ...")
+elseif(MSVC)
+    message("We are running on windows system (MSVC) ...")
+endif()
+
 ###############################################
-### Set your Eigen/PETSc/MPI path here      ###
+### Set your PETSc/MPI path here or bashrc  ###
 ### The only things to modify is the        ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
-set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
-set(MPI_DIR "/home/by/Programs/openmpi/4.1.0")
+
+
+if(EXISTS $ENV{MPI_DIR})
+    set(MPI_DIR $ENV{MPI_DIR})
+    message("MPI dir is: ${MPI_DIR}")
+else()
+    message (WARNING "MPI location (MPI_DIR) is not defined in your PATH, AsFem will use the one defined in CMakeLists.txt")
+    set(MPI_DIR "/home/by/Programs/openmpi/4.1.0")
+    message("MPI dir set to be: ${MPI_DIR}")
+    message (WARNING "If the path is not correct, you should modify line-25 in your CMakeLists.txt")
+endif()
+
+
+if(EXISTS $ENV{PETSC_DIR})
+    set(PETSC_DIR $ENV{PETSC_DIR})
+    message("PETSC dir is: ${MPI_DIR}")
+else()
+    message (WARNING "PETSc location (PETSC_DIR) is not defined in your PATH, AsFem will use the one defined in CMakeLists.txt")
+    set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
+    message("PETSc dir set to be:${PETSC_DIR}")
+    message (WARNING "If the path is not correct, you should modify line-36 in your CMakeLists.txt")
+endif()
+
 
 ###############################################
-### For your PETSc library file  (edit)     ###
+### For include files of PETSc and mpi      ###
 ###############################################
 include_directories("${PETSC_DIR}/include")
-link_libraries("${PETSC_DIR}/lib/libpetsc.so")
-###############################################
-### For your MPI library file (edit)        ###
-###############################################
 include_directories("${MPI_DIR}/include")
-link_libraries("${MPI_DIR}/lib/libmpi.so")
+if(UNIX)
+    link_libraries("${PETSC_DIR}/lib/libpetsc.so")
+    link_libraries("${MPI_DIR}/lib/libmpi.so")
+elseif(MSVC)
+    link_libraries("${PETSC_DIR}/lib/libpetsc.lib")
+endif()
 
 ###############################################
 # For Eigen                                 ###
 ###############################################
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/external/eigen")
 
-###############################################
-### For debug mode                          ###
-###############################################
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
 
 ###############################################
-### For release mode                        ###
+### set debug or release mode               ###
 ###############################################
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
+if (CMAKE_BUILD_TYPE STREQUAL "")
+    # user should use -DCMAKE_BUILD_TYPE=Release[Debug] option
+    set (CMAKE_BUILD_TYPE "Debug")
+endif ()
+
+###############################################
+### For linux platform                      ###
+###############################################
+if(UNIX)
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
+    else()
+        message (FATAL_ERROR "Unknown compiler flags (CMAKE_CXX_FLAGS)")
+    endif()
+elseif(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /W1 /arch:AVX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GL /openmp")
+endif()
+
+message("AsFem will be compiled in ${CMAKE_BUILD_TYPE} mode !")
 
 
-###############################################
-### For release mode in Windows (VS2019)    ###
-###############################################
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 /W1 /arch:AVX")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GL /openmp")
+
 
 
 ###############################################
