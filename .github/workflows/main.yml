@@ -26,45 +26,118 @@ jobs:
       # Runs a single command using the runners shell
       - name: show file structure
         run: |
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Current path is:"
           pwd
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Current folders are:"
           ls -l
       - name: check gcc/gfortran/cmake version
         run: |
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Check the version of gnu-c,c++,fortran compiler"
-          echo "******************************************************"
+          echo "*********************************************************************"
           gcc --version
           g++ --version
           gfortran --version
           cmake --version
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Version check is done !"
-          echo "******************************************************"
+          echo "*********************************************************************"
       - name: create temp folder and lib folder
         run: |
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Current folder structure is:"
           ls -l
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Now we start to create folder"
-          echo "******************************************************"
+          echo "*********************************************************************"
           mkdir temp && mkdir AsFemLibs
           ls -l
           cd AsFemLibs && mkdir openmpi && mkdir petsc
           pwd
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Now we have the following folders:"
           ls -l
+      - name: download openmpi
+        run: |
+          cd temp
+          ls -l
+          curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.0.tar.gz
+          echo "******************************************************"
+          echo "*** Openmpi 4.1.0 is download !"
+          echo "******************************************************"
+          ls -l
+      - name: compile and install openmpi
+        run: |
+          echo "******************************************************"
+          echo "*** Start to compile openmpi-4.1.0"
+          echo "******************************************************"
+          cd temp
+          tar -xf openmpi-4.1.0.tar.gz
+          cd openmpi-4.1.0
+          ./configure --prefix=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          make -j8
+          echo "******************************************************"
+          echo "*** Make -j8 is done for openmpi-4.1.0"
+          echo "******************************************************"
+          make install
+          echo "******************************************************"
+          echo "*** Make install is done for openmpi-4.1.0"
+          echo "******************************************************"
+      - name: check openmpi version
+        run: |
+          cd /home/runner/work/AsFem/AsFem/AsFemLibs/openmpi/bin
+          echo "******************************************************"
+          echo "*** Now we check the version of mpicc and mpicxx"
+          ./mpicc --version
+          ./mpicxx --version
+          echo "******************************************************"
+      - name: downlaod PETSc
+        run: |
+          echo "******************************************************"
+          echo "*** download petsc"
+          echo "******************************************************"
+          cd /home/runner/work/AsFem/AsFem/temp
+          curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.14.3.tar.gz
+          tar -xf petsc-lite-3.14.3.tar.gz
+      - name: compile and install PETSc
+        run: |
+          cd /home/runner/work/AsFem/AsFem/temp/petsc-3.14.3
+          echo "******************************************************"
+          echo "*** Config petsc ..."
+          echo "******************************************************"
+          ./configure \
+          --prefix=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc \
+          --with-debugging=0 \
+          --with-ssl=0 \
+          --with-pic=1 \
+          --with-mpi-dir=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi \
+          --with-shared-libraries=1 \
+          --with-cxx-dialect=C++14 \
+          --with-fortran-bindings=0 \
+          --with-sowing=0 \
+          --download-scalapack=1 \
+          --download-superlu_dist=1 \
+          --download-mumps=1 \
+          COPTFLAGS='-fPIC -O3 ' \
+          CXXOPTFLAGS='-fPIC -O3 ' \
+          FOPTFLAGS='-fPIC -O3 ' \
+          PETSC_DIR=`pwd`
+          echo "******************************************************"
+          echo "*** Make petsc ..."
+          echo "******************************************************"
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.14.3 PETSC_ARCH=arch-linux-c-opt all
+          echo "******************************************************"
+          echo "*** Install petsc ..."
+          echo "******************************************************"
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.14.3 PETSC_ARCH=arch-linux-c-opt install
       - name: compile AsFem
         run: |
           cd /home/runner/work/AsFem/AsFem
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Setup mpi and petsc bash profile"
-          echo "******************************************************"
+          echo "*********************************************************************"
           export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
           export OMP_NUM_THREADS=1
@@ -74,29 +147,66 @@ jobs:
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          echo $MPI_DIR
-          echo $PETSC_DIR
           cmake CMakeLists.txt
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Make AsFem"
-          echo "******************************************************""
+          echo "*********************************************************************"
           make -j8
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** AsFem is successuflly installed !"
-          echo "******************************************************"
+          echo "*********************************************************************"
       - name: run AsFem test script
         run: |
           cd /home/runner/work/AsFem/AsFem
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** Start to run AsFem autotest"
-          echo "******************************************************"
+          echo "*********************************************************************"
           ./scripts/AutoTest.py
-      - name: clean all the folder and files
+      - name: run step2.i in parallel
+        run: |
+          cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export PATH=$PATH:$MPI_DIR/bin
+          export OMP_NUM_THREADS=1
+          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
+          export FPATH=$mpi/include:$FPATH
+          export MANPATH=$mpi/share/man:$MANPATH
+          export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
+          mpirun -np 2 /home/runner/work/AsFem/AsFem/bin/asfem -i step2.i
+      - name: run step2-3d in parallel
+        run: |
+          cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export PATH=$PATH:$MPI_DIR/bin
+          export OMP_NUM_THREADS=1
+          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
+          export FPATH=$mpi/include:$FPATH
+          export MANPATH=$mpi/share/man:$MANPATH
+          export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
+          mpirun -np 2 /home/runner/work/AsFem/AsFem/bin/asfem -i step2-3d.i
+      - name: run step-3 in parallel
+        run: |
+          cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export PATH=$PATH:$MPI_DIR/bin
+          export OMP_NUM_THREADS=1
+          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
+          export FPATH=$mpi/include:$FPATH
+          export MANPATH=$mpi/share/man:$MANPATH
+          export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
+          mpirun -np 2 /home/runner/work/AsFem/AsFem/bin/asfem -i step3.i
+      - name: clean all folders and files
         run: |
           rm -rf temp
           rm -rf AsFemLibs
           ./script/Clean.py
           ls -l
-          echo "******************************************************"
+          echo "*********************************************************************"
           echo "*** All the files are clean !"
-          echo "******************************************************"
+          echo "*********************************************************************"

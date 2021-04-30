@@ -23,18 +23,18 @@ else()
     message (WARNING "MPI location (MPI_DIR) is not defined in your PATH, AsFem will use the one defined in CMakeLists.txt")
     set(MPI_DIR "/home/by/Programs/openmpi/4.1.0")
     message("MPI dir set to be: ${MPI_DIR}")
-    message (WARNING "If the path is not correct, you should modify line-25 in your CMakeLists.txt")
+    message (WARNING "If the path is not correct, you should modify line-24 in your CMakeLists.txt")
 endif()
 
 
 if(EXISTS $ENV{PETSC_DIR})
     set(PETSC_DIR $ENV{PETSC_DIR})
-    message("PETSC dir is: ${MPI_DIR}")
+    message("PETSC dir is: ${PETSC_DIR}")
 else()
     message (WARNING "PETSc location (PETSC_DIR) is not defined in your PATH, AsFem will use the one defined in CMakeLists.txt")
     set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
     message("PETSc dir set to be:${PETSC_DIR}")
-    message (WARNING "If the path is not correct, you should modify line-36 in your CMakeLists.txt")
+    message (WARNING "If the path is not correct, you should modify line-35 in your CMakeLists.txt")
 endif()
 
 
@@ -445,4 +445,3 @@ set(src ${src} src/FEProblem/RunTransientAnalysis.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
-
