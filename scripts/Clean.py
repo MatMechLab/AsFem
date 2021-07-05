@@ -27,7 +27,7 @@ for subdir,dirs,files in os.walk(currentdir):
                 os.remove(removepath)
             except:
                 print('%s is not here'%(file))
-        elif ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.inp' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.jpeg' in file) or ('.png' in file) or ('.gif' in file) or ('.pdf' in file) or ('.doc' in file) or ('.docx' in file) or ('.json' in file) or ('.f03' in file) or ('.f08' in file) or ('.f90' in file) or ('.f' in file) or ('.xlsx' in file):
+        elif ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.inp' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.jpeg' in file) or ('.png' in file) or ('.gif' in file) or ('.pdf' in file) or ('.doc' in file) or ('.docx' in file) or ('.f03' in file) or ('.f08' in file) or ('.f90' in file) or ('.f' in file) or ('.xlsx' in file) or ('Doxyfile' in file):
             continue
         elif ('ASFEM' in file) or ('asfem' in file):
             try:
@@ -39,6 +39,13 @@ for subdir,dirs,files in os.walk(currentdir):
         elif 'vgcore.' in file:
             try:
                 valgrind+=1
+                removepath=subdir+'/'+file
+                os.remove(removepath)
+            except:
+                print('%s is not here'%(file))
+        elif 'compile_commands.json' in file:
+            try:
+                cmake+=1
                 removepath=subdir+'/'+file
                 os.remove(removepath)
             except:
@@ -82,6 +89,26 @@ for subdir,dirs,files in os.walk(currentdir):
                 IdeaRemove=True
             except:
                 if(not IdeaRemove):
+                    print('%s is not here'%(dir))
+        elif '.clangd' in dir:
+            try:
+                ideafolder+=1
+                removepath=subdir+'/'+dir
+                print('remove folder: ',dir)
+                shutil.rmtree(removepath)
+                ClangRemove=True
+            except:
+                if(not ClangRemove):
+                    print('%s is not here'%(dir))
+        elif 'document' in dir:
+            try:
+                cmakefolder+=1
+                removepath=subdir+'/'+dir
+                print('remove document folder:',dir)
+                shutil.rmtree(removepath)
+                DocumentRemove=True
+            except:
+                if(not DocumentRemove):
                     print('%s is not here'%(dir))
         elif ('cmake-build-debug' in dir) or ('build' in dir) or ('CMakeFiles' in dir):
             try:
