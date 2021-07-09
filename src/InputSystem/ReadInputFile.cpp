@@ -88,13 +88,14 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         if(StringUtils::IsCommentLine(str)||str.size()<1) continue;
 
         if(str.find("[mesh]")!=string::npos){
+
             if(!StringUtils::IsBracketMatch(in,linenum)){
                 MessagePrinter::PrintErrorTxt("[mesh]/[end] bracket pair dosen\'t match, please check your input file");
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
             if(ReadMeshBlock(in,str,linenum,mesh)){
-                HasMeshBlock=true;
+                HasMateBlock=true;
             }
             else{
                 MessagePrinter::PrintErrorTxt("some errors detected in the [mesh] block, please check your input file");

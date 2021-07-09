@@ -24,11 +24,16 @@
 
 #include "petsc.h"
 
-//**************************************
-//*** For AsFem's own header file
-//**************************************
+/**
+ * For the utils of message print and string tools
+ */
 #include "Utils/StringUtils.h"
 #include "Utils/MessagePrinter.h"
+
+/**
+ * For different block readers related to each block in the input file
+ */
+#include "InputSystem/MeshBlockReader.h"
 
 #include "Mesh/Mesh.h"
 #include "Mesh/MeshIO.h"
@@ -46,7 +51,7 @@
 #include "FEProblem/FEJobBlock.h"
 
 
-class InputSystem{
+class InputSystem:public MeshBlockReader{
 public:
     InputSystem(int args,char *argv[]);
     InputSystem();
@@ -68,7 +73,6 @@ private:
     //******************************************************
     //*** functions for reading each block
     //******************************************************
-    bool ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh);
     bool ReadDofsBlock(ifstream &in,string str,int &linenum,DofHandler &dofHandler);
     bool ReadElmtBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ElmtSystem &elmtSystem,DofHandler &dofHandler);
     bool ReadMateBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,MateSystem &mateSystem);

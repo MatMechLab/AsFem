@@ -139,8 +139,10 @@ set(inc ${inc} include/Utils/MathFuns.h)
 ### For inputystem                                        ###
 #############################################################
 set(inc ${inc} include/InputSystem/InputSystem.h)
+set(inc ${inc} include/InputSystem/SingleBlockReader.h)
+set(inc ${inc} include/InputSystem/MeshBlockReader.h)
+set(src ${src} src/InputSystem/MeshBlockReader.cpp)
 set(src ${src} src/InputSystem/InputSystem.cpp src/InputSystem/ReadInputFile.cpp)
-set(src ${src} src/InputSystem/ReadMeshBlock.cpp)
 set(src ${src} src/InputSystem/ReadDofsBlock.cpp)
 set(src ${src} src/InputSystem/ReadElmtBlock.cpp)
 set(src ${src} src/InputSystem/ReadMateBlock.cpp)
