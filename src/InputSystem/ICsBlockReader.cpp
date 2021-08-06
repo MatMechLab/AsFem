@@ -8,23 +8,34 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.11
-//+++ Purpose: This function can read the [ics] block and its 
-//+++          subblock from our input file.
+//+++ Date   : 2021.08.05
+//+++ Purpose: Implement the reader for [ics] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/ICsBlockReader.h"
 
-bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ICSystem &icSystem,DofHandler &dofHandler){
-    // each bc block should looks like:
-    //   [ic1]
-    //     type=const [random,user1,user2,user3...]
-    //     dof=u1
-    //     params=1.0 [default is 0.0, so it is not necessary to be given!!!]
-    //     block=block_name [i.e. all]
-    //   [end]
-    // important: now , str already contains [bcs] !!!
 
+void ICsBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [ics] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[ics]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [ic-1]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=ic-type-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dof=dof-name-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    params=val1 val2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    domain=domain-name-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [ic-2]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=ic-type-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dof=dof-name-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    params=val3 val4",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    domain=domain-name-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+//**********************************************************
+bool ICsBlockReader::ReadICBlock(ifstream &in, string str, const int &lastendlinenum, int &linenum, ICSystem &icSystem, DofHandler &dofHandler){
     bool HasICBlock=false;
     ICBlock icblock;
     string tempstr,str0,stro;
@@ -76,7 +87,12 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
                 stro=str;
                 str=StringUtils::StrToLower(stro);
                 if(StringUtils::IsCommentLine(str)||str.size()<1) continue;
-                if(str.find("type=")!=string::npos){
+                
+                if(str.find("helper")!=string::npos){
+                    PrintHelper();
+                    return false;
+                }
+                else if(str.find("type=")!=string::npos){
                     string substr=str.substr(str.find('=')+1);
                     if(substr.find("const")!=string::npos&&substr.length()==5){
                         icblock._ICTypeName="const";
@@ -112,12 +128,12 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
                         number=StringUtils::SplitStrNum(str);
                         if(number.size()<1){
                             MessagePrinter::PrintErrorInLineNumber(linenum);
-                            msg="no user number found 'type=user' in the ["+icblock._ICBlockName+"] sub block, 'type=user1,user2,...,user10' is expected";
+                            msg="no user number found in 'type=user' in the ["+icblock._ICBlockName+"] sub block, 'type=user1,user2,...,user10' is expected";
                             MessagePrinter::PrintErrorTxt(msg,false);
                             MessagePrinter::AsFem_Exit();
                             return false;
                         }
-                        
+
                         if(int(number[0])<1||int(number[0])>10){
                             MessagePrinter::PrintErrorInLineNumber(linenum);
                             msg="user number is invalid in the ["+icblock._ICBlockName+"] sub block, 'type=user1,user2,...,user10' is expected";
@@ -190,7 +206,7 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
                             msg="invalid dof name found in ["+icblock._ICBlockName+"] sub block, it must be one of the names list in the [dofs] block";
                             MessagePrinter::PrintErrorTxt(msg,false);
                             MessagePrinter::AsFem_Exit();
-                            
+
                             return false;
                         }
                         icblock._DofID=dofHandler.GetDofIDviaDofName(icblock._DofName);
@@ -283,7 +299,7 @@ bool InputSystem::ReadICBlock(ifstream &in,string str,const int &lastendlinenum,
                 }
 
                 if(!HasDof){
-                    msg="no dof found in ["+icblock._ICBlockName+"] sub block, ' dof=dof_name' must be given in each [ics] sub block";
+                    msg="no dof name found in ["+icblock._ICBlockName+"] sub block, ' dof=dof-name' must be given in each [ics] sub block";
                     MessagePrinter::PrintErrorTxt(msg,false);
                     MessagePrinter::AsFem_Exit();
                 }

@@ -8,20 +8,29 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
-//+++ Purpose: This function can read the [output] block from our
-//+++          input file.
+//+++ Date   : 2021.08.05
+//+++ Purpose: Implement the reader for [output] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/OutputBlockReader.h"
 
-bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSystem &outputSystem){
-    // format:
-    // [output]
-    //   type=vtu[vtk,csv,txt]
-    //   folder=foldername[default is empty]
-    // [end]
 
+void OutputBlockReader::PrintHelper(){
+    
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [output] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[output]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  type=vtk",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  folder=foldername[default is empty]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  interval=5",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+
+}
+
+//***************************************************
+bool OutputBlockReader::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSystem &outputSystem){
+    
     bool HasType;
     vector<double> numbers;
     OutputBlock outputblock;
@@ -29,12 +38,13 @@ bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSys
     // now str already contains [dofs]
     getline(in,str);linenum+=1;
     str=StringUtils::StrToLower(str);
+    str=StringUtils::RemoveStrSpace(str);
     numbers.clear();
 
     HasType=false;
 
     outputblock.Init();
-    
+
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
         if(StringUtils::IsCommentLine(str)||str.length()<1){
@@ -43,26 +53,26 @@ bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSys
             continue;
         }
         str=StringUtils::RemoveStrSpace(str);
-        
-        if(str.find("type=")!=string::npos||
-           str.find("TYPE=")!=string::npos){
+
+        if(str.find("helper")!=string::npos){
+            PrintHelper();
+            return false;
+        }
+        else if(str.find("type=")!=string::npos){
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
             substr=StringUtils::RemoveStrSpace(substr);
-            if((substr.find("vtu")!=string::npos||
-               substr.find("VTU")!=string::npos)&&substr.size()==3){
+            if(substr.find("vtu")!=string::npos&&substr.size()==3){
                    outputblock._OutputType=OutputType::VTU;
                    outputblock._OutputFormatName="vtu";
                    HasType=true;
             }
-            else if((substr.find("vtk")!=string::npos||
-                    substr.find("VTK")!=string::npos)&&substr.size()==3){
+            else if(substr.find("vtk")!=string::npos&&substr.size()==3){
                    outputblock._OutputType=OutputType::VTK;
                    outputblock._OutputFormatName="vtk";
                    HasType=true;
             }
-            else if((substr.find("csv")!=string::npos||
-               substr.find("CSV")!=string::npos)&&substr.size()==3){
+            else if(substr.find("csv")!=string::npos&&substr.size()==3){
                    outputblock._OutputType=OutputType::CSV;
                    outputblock._OutputFormatName="csv";
                    HasType=true;
@@ -75,9 +85,7 @@ bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSys
                 MessagePrinter::AsFem_Exit();
             }
         }
-        else if(str.find("interval=")!=string::npos||
-                str.find("Interval=")!=string::npos||
-                str.find("INTERVAL=")!=string::npos){
+        else if(str.find("interval=")!=string::npos){
             numbers=StringUtils::SplitStrNum(str);
             if(numbers.size()<1){
                 MessagePrinter::PrintErrorInLineNumber(linenum);
@@ -89,9 +97,7 @@ bool InputSystem::ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSys
                 outputblock._Interval=static_cast<int>(numbers[0]);
             }
         }
-        else if((str.find("folder=")!=string::npos||
-                 str.find("Folder=")!=string::npos)&&
-                 str.find("FOLDER")==string::npos){
+        else if(str.find("folder=")!=string::npos){
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
             substr=StringUtils::RemoveStrSpace(substr);

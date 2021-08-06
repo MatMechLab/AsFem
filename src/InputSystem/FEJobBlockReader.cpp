@@ -8,30 +8,38 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.29
-//+++ Purpose: This function can read the [job] block from our
-//+++          input file.
+//+++ Date   : 2021.08.06
+//+++ Purpose: Implement the reader for [job] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
 
-bool InputSystem::ReadFEJobBlock(ifstream &in,string str,int &linenum,FEJobBlock &feJobBlock){
-    // dof block format:
-    // [job]
-    //   type=static[transient]
-    //   debug=true[false,dep]
-    // [end]
+#include "InputSystem/FEJobBlockReader.h"
+
+void FEJobBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [job] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[job]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  type=static,transient",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  debug=true,false,dep",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+//****************************************************************
+bool FEJobBlockReader::ReadFEJobBlock(ifstream &in, string str, int &linenum, FEJobBlock &feJobBlock){
     char buff[55];
     bool HasType=false;
     vector<string> namelist;
     // now str already contains [job]
     getline(in,str);linenum+=1;
-    
+    str=StringUtils::RemoveStrSpace(str);
+    str=StringUtils::StrToLower(str);
+
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
         if(StringUtils::IsCommentLine(str)||str.length()<1){
             getline(in,str);linenum+=1;
-            // str=StrToLower(str);
+            str=StringUtils::RemoveStrSpace(str);
+            str=StringUtils::StrToLower(str);
             continue;
         }
         if(str.find("type=")!=string::npos||
@@ -44,7 +52,11 @@ bool InputSystem::ReadFEJobBlock(ifstream &in,string str,int &linenum,FEJobBlock
                 MessagePrinter::AsFem_Exit();
             }
             string substr=str.substr(i+1,str.length());
-            if(substr.find("static")!=string::npos||
+            if(substr.find("helper")!=string::npos){
+                PrintHelper();
+                return false;
+            }
+            else if(substr.find("static")!=string::npos||
                substr.find("STATIC")!=string::npos){
                 feJobBlock._jobType=FEJobType::STATIC;
                 feJobBlock._jobTypeName="static";
@@ -60,15 +72,19 @@ bool InputSystem::ReadFEJobBlock(ifstream &in,string str,int &linenum,FEJobBlock
                 HasType=false;
                 snprintf(buff,55,"line-%d has some errors",linenum);
                 MessagePrinter::PrintErrorTxt(string(buff));
-                MessagePrinter::PrintErrorTxt(" no type name found in the [job] block, type=static[transient] is expected");
+                MessagePrinter::PrintErrorTxt("unsupported type name found in the [job] block, type=static[transient] is expected");
                 MessagePrinter::AsFem_Exit();
             }
-            
+
         }
         else if(str.find("debug=")!=string::npos){
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
-            if(substr.find("true")!=string::npos||
+            if(substr.find("false")!=string::npos){
+                feJobBlock._IsDebug=false;
+                feJobBlock._IsDepDebug=false;
+            }
+            else if(substr.find("true")!=string::npos||
                substr.find("TRUE")!=string::npos){
                 feJobBlock._IsDebug=true;
                 feJobBlock._IsDepDebug=false;
@@ -99,6 +115,7 @@ bool InputSystem::ReadFEJobBlock(ifstream &in,string str,int &linenum,FEJobBlock
         }
         getline(in,str);linenum+=1;
         str=StringUtils::StrToLower(str);
+        str=StringUtils::RemoveStrSpace(str);
     }
     if(!HasType){
         MessagePrinter::PrintErrorTxt(" no type name found in the [job] block, type=static[transient] is expected");

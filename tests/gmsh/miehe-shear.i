@@ -34,6 +34,7 @@ name=d ux uy
 
 [ics]
   [constd]
+    //type=helper
     type=const
     dof=d
     params=0.0
@@ -41,6 +42,7 @@ name=d ux uy
 [end]
 
 [output]
+  //type=helper
   type=vtu
   interval=3
 [end]

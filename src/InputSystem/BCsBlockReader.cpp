@@ -8,23 +8,36 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.10
-//+++ Purpose: This function can read the [bcs] block and its 
-//+++          subblock from our input file.
+//+++ Date   : 2021.08.05
+//+++ Purpose: Implement the reader for [bcs] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/BCsBlockReader.h"
 
-bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,BCSystem &bcSystem,DofHandler &dofHandler){
-    // each bc block should looks like:
-    //   [bc1]
-    //     type=dirichlet [neumann,user1,user2,user3...]
-    //     dof=u1
-    //     value=1.0 [default is 0.0, so it is not necessary to be given!!!]
-    //     boundary=side_name [i.e. left,right]
-    //   [end]
-    // important: now , str already contains [bcs] !!!
+#include "DofHandler/DofHandler.h"
 
+void BCsBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [bcs] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[bcs]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [bc-1]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=bc-type-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dof=dof1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    value=bc-value-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    boundary=boundary-name-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [bc-2]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=bc-type-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dof=dof2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    value=bc-value-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    boundary=boundary-name-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+
+//******************************************************
+bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlinenum, int &linenum, BCSystem &bcSystem, DofHandler &dofHandler){
     bool HasBCBlock=false;
     BCBlock bcblock;
     string tempstr,str0;
@@ -52,12 +65,12 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
         HasBoundary=false;
         HasDof=false;
 
-        
+
 
         if((str.find('[')!=string::npos&&str.find(']')!=string::npos)&&
           (str.find("[end]")==string::npos&&str.find("[END]")==string::npos)){
             HasBCBlock=false;
-            tempstr=StringUtils::RemoveStrSpace(str);
+            tempstr=StringUtils::RemoveStrSpace(str0);
             if(tempstr.size()<3){
                 MessagePrinter::PrintErrorInLineNumber(linenum);
                 MessagePrinter::PrintErrorTxt("no boundary block name can be found in [bcs] sub block");
@@ -75,7 +88,12 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                 str=StringUtils::RemoveStrSpace(str0);
                 str=StringUtils::StrToLower(str);
                 if(StringUtils::IsCommentLine(str)||str.size()<1) continue;
-                if(str.find("type=")!=string::npos){
+
+                if(str.find("helper")!=string::npos){
+                    PrintHelper();
+                    return false;
+                }
+                else if(str.find("type=")!=string::npos){
                     string substr=str.substr(str.find_first_of('=')+1);
                     if(substr.find("dirichlet")!=string::npos && substr.length()==9){
                         bcblock._BCTypeName="dirichlet";
@@ -106,12 +124,12 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                         number=StringUtils::SplitStrNum(str);
                         if(number.size()<1){
                             MessagePrinter::PrintErrorInLineNumber(linenum);
-                            msg="no user number found umat in ["+bcblock._BCBlockName+"] sub block, 'type=user1,user2,...,user10' is expected";
+                            msg="no user number found in ["+bcblock._BCBlockName+"] sub block, 'type=user1,user2,...,user10' is expected";
                             MessagePrinter::PrintErrorTxt(msg);
                             MessagePrinter::AsFem_Exit();
                             return false;
                         }
-                        
+
                         if(int(number[0])<1||int(number[0])>10){
                             MessagePrinter::PrintErrorInLineNumber(linenum);
                             msg="user number is invalid in ["+bcblock._BCBlockName+"] sub block, 'type=user1,user2,...,user10' is expected";
@@ -190,7 +208,7 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                             return false;
                         }
                         bcblock._DofID=dofHandler.GetDofIDviaDofName(bcblock._DofName);
-                        
+
                         HasDof=true;
                     }
                 }
@@ -212,8 +230,7 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                         int i=str0.find_first_of('=');
                         string substr=str0.substr(i+1,str0.length());
                         bclist=StringUtils::SplitStr(substr,' ');
-                        if(bclist.size()>0)
-                        {
+                        if(bclist.size()>0){
                             if(StringUtils::IsUniqueStrVec(bclist)){
                                 bcblock._BoundaryNameList=bclist;
                                 HasBoundary=true;
@@ -275,11 +292,23 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                         }
                     }
                 }
+                else if(str.find("[end]")!=string::npos){
+                    break;
+                }
+                else{
+                    MessagePrinter::PrintStars();
+                    MessagePrinter::PrintErrorInLineNumber(linenum);
+                    MessagePrinter::PrintErrorTxt("unknown options in ["+bcblock._BCBlockName+"] sub block",false);
+                    MessagePrinter::PrintStars();
+                    MessagePrinter::AsFem_Exit();
+                    return false;
+                }
             }
             if(HasDof&&HasBoundary&&HasElmt&&HasBCBlock){
                 HasBCBlock=true;
                 if(!HasValue) bcblock._BCValue=0.0;
                 bcSystem.AddBCBlock2List(bcblock);
+                bcblock.Init();
             }
             else{
                 msg="information is not complete in [bcs] sub block, some information is missing in ["+bcblock._BCBlockName+"]";
@@ -293,7 +322,7 @@ bool InputSystem::ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,
                     msg="no dof found in ["+bcblock._BCBlockName+"] sub block, 'dof=dof_name' must be given in each [bcs] sub block";
                     MessagePrinter::PrintErrorTxt(msg);
                 }
-               
+
                 if(!HasBoundary){
                     msg="no boundary found in ["+bcblock._BCBlockName+"] sub block, 'boundary=bcname' must be given in each [bcs] sub block";
                     MessagePrinter::PrintErrorTxt(msg);

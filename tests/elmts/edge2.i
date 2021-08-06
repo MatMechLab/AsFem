@@ -48,6 +48,7 @@ vectormate=gradu
 [end]
 
 [qpoint]
+  //type=helper
   type=gauss
   order=6
 [end]

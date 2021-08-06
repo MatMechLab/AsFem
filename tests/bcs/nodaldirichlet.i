@@ -16,6 +16,7 @@ name=c
 
 [elmts]
   [elmt1]
+    //type=helper
     type=diffusion
     dofs=c
     mate=mate1
@@ -44,14 +45,22 @@ vectormate=gradc
 
 [bcs]
   [fix]
+    //type=helper
     type=nodaldirichlet
     dof=c
     value=1.0
     boundary=left bottom
   [end]
+  [fix1]
+    type=nodaldirichlet
+    dof=c
+    value=2.0
+    boundary=left bottom
+  [end]
 [end]
 
 [job]
+  //type=helper
   type=transient
   debug=dep
 [end]

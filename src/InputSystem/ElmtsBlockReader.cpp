@@ -8,23 +8,35 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.01
-//+++ Purpose: This function can read the [elmts] block and its 
-//+++          subblock from our input file.
+//+++ Date   : 2021.08.05
+//+++ Purpose: Implement the reader for [elmts] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/ElmtsBlockReader.h"
 
-bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ElmtSystem &elmtSystem,DofHandler &dofHandler){
-    // elmt block format
-    // [elmt]
-    //  [solid]
-    //    type=solid2d
-    //    dofs=u1 u2
-    //    mate=mate1 [can be ignored]
-    //    block=all  [can be ignored]
-    //  [end]
-    // [end]
+
+void ElmtsBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [elmts] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[elmts]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [elmt-1]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=element-type-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dofs=dof1 dof2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    mate=material-block-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    domain=domain-name-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [elmt-2]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=element-type-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dofs=dof1 dof2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    mate=material-block-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    domain=domain-name-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+
+}
+//*************************************************************
+bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &lastendlinenum, int &linenum, ElmtSystem &elmtSystem, DofHandler &dofHandler){
     bool HasElmtBlock=false;
     bool HasElmtType=false;
     bool HasDofs=false;
@@ -68,20 +80,25 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                 elmtBlock._ElmtBlockName=tempstr.substr(tempstr.find_first_of('[')+1,tempstr.find_first_of(']')-1);
                 HasElmtBlock=true;
             }
-            while(str.find("[end]")==string::npos&&str.find("[END]")==string::npos){
+
+            // start to read each sub block
+            while(str.find("[end]")==string::npos){
                 getline(in,str);linenum+=1;
                 str0=str;
                 str=StringUtils::StrToLower(str0);
                 str=StringUtils::RemoveStrSpace(str);
 
                 if(StringUtils::IsCommentLine(str)||str.size()<1) {
-                    //cout<<"str="<<str<<endl;
                     continue;
                 }
 
                 if(str.find("type=")!=string::npos){
                     substr=str.substr(str.find_first_of('=')+1);
-                    if(substr.find("poisson")!=string::npos && substr.length()==7){
+                    if(substr.find("helper")!=string::npos){
+                        PrintHelper();
+                        return false;
+                    }
+                    else if(substr.find("poisson")!=string::npos && substr.length()==7){
                         elmtBlock._ElmtTypeName="poisson";
                         elmtBlock._ElmtType=ElmtType::POISSONELMT;
                         HasElmtType=true;
@@ -222,7 +239,7 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         }
                     }
                     else{
-                        msg="unsupported element type in [elmts] block, type="+substr+" is invalid";
+                        msg="unsupported element type in [elmts] sub block, type="+substr+" is invalid";
                         MessagePrinter::PrintErrorTxt(msg);
                         MessagePrinter::AsFem_Exit();
                         return false;
@@ -241,7 +258,7 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                         substr=str0.substr(str0.find_first_of('=')+1);
                         vector<string> strtmp=StringUtils::SplitStr(substr,' ');
                         if(!dofHandler.IsValidDofNameVec(strtmp)){
-                            MessagePrinter::PrintErrorTxt("dof name is not valid in [elmts] sub block,the name should be the one list in the [dofs] block");
+                            MessagePrinter::PrintErrorTxt("dofs name is not valid in your [elmts] sub block,the name should be one of the name list in the [dofs] block");
                             return false;
                         }
                         if(StringUtils::IsUniqueStrVec(strtmp)){
@@ -254,7 +271,7 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                             HasDofs=false;
                             MessagePrinter::PrintStars();
                             MessagePrinter::PrintErrorInLineNumber(linenum);
-                            MessagePrinter::PrintErrorTxt("duplicated dof name found in [elmts] sub block, 'dofs=dof1 dof2 ...' is expected",false);
+                            MessagePrinter::PrintErrorTxt("duplicated dofs name found in your [elmts] sub block, 'dofs=dof1 dof2 ...' is expected",false);
                             MessagePrinter::PrintStars();
                             MessagePrinter::AsFem_Exit();
                             return false;
@@ -265,7 +282,7 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                     if(str.size()<5){
                         MessagePrinter::PrintStars();
                         MessagePrinter::PrintErrorInLineNumber(linenum);
-                        MessagePrinter::PrintErrorTxt("material block name not found in [elmts] sub block, 'mate=name_of_material_block' is expected",false);
+                        MessagePrinter::PrintErrorTxt("material block name is not found in your [elmts] sub block, 'mate=-block-name' is expected",false);
                         MessagePrinter::PrintStars();
                         MessagePrinter::AsFem_Exit();
                         return false;
@@ -307,9 +324,10 @@ bool InputSystem::ReadElmtBlock(ifstream &in,string str,const int &lastendlinenu
                 }
                 if(!HasBlock) elmtBlock._DomainName="alldomain";
                 elmtSystem.AddBulkElmtBlock2List(elmtBlock);
+                elmtBlock.Init();// re-init the elmt block for next reading
             }
             else{
-                msg="information in [elmts] sub block is not complete, information is missing in ["+elmtBlock._ElmtBlockName+"]";
+                msg="information in your [elmts] sub block is not complete, information is missing in ["+elmtBlock._ElmtBlockName+"]";
                 MessagePrinter::PrintErrorTxt(msg,false);
                 if(!HasElmtType){
                     msg="no 'type=' option can be found in ["+elmtBlock._ElmtBlockName+"] sub block";

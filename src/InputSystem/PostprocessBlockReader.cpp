@@ -8,25 +8,38 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.02.22
-//+++ Purpose: This function can read the [postprocess] block and its
-//+++          subblock from our input file.
+//+++ Date   : 2021.08.06
+//+++ Purpose: Implement the reader for [postprocess] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/PostprocessBlockReader.h"
 
-bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,Postprocess &postprocess,DofHandler &dofHandler){
-    // postprocess block format
-    // [postprocess]
-    //  [pps1]
-    //    type=ppstypename
-    //    dof=u1 u2
-    //    elmtid=mate1 [can be ignored]
-    //    nodeid=all  [can be ignored]
-    //    side=side1 side2
-    //    domain=domain1 domain2
-    //  [end]
-    // [end]
+void PostprocessBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [postprocess] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[postprocess]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [postprocess-1]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=postprocess-type-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dof=dof-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    projvariable=proj-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    scalarmate=mate-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    vectormate=mate-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    rank2mate=mate-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    side=side-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    domain=domain-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    elmtid=element-id-number",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    nodeid=node-id-number",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    iindex=I-index for rank-2 tensor",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    jindex=J-index for rank-2 tensor",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    component=component-number(1,2,3)",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintDashLine(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("Your only need part of those options list above",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+//**************************************************
+bool PostprocessBlockReader::ReadPostprocessBlock(ifstream &in, string str, const int &lastendlinenum, int &linenum, Postprocess &postprocess, DofHandler &dofHandler){
     bool HasPPSBlock=false;
     bool HasPPSType=false;
     bool HasDof=false;
@@ -83,7 +96,11 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
 
                 if(str.compare(0,5,"type=")==0){
                     substr=str.substr(str.find_first_of('=')+1);
-                    if(substr.find("nodevalue")!=string::npos && substr.length()==9){
+                    if(substr.find("helper")!=string::npos){
+                        PrintHelper();
+                        return false;
+                    }
+                    else if(substr.find("nodevalue")!=string::npos && substr.length()==9){
                         ppsBlock._PostprocessType=PostprocessType::NODALVALUEPPS;
                         ppsBlock._PostprocessTypeName="nodevalue";
                         HasPPSType=true;
@@ -457,6 +474,18 @@ bool InputSystem::ReadPostprocessBlock(ifstream &in,string str,const int &lasten
                     MessagePrinter::AsFem_Exit();
                 }
             }
+        }
+        else if(str.find("[end]")!=string::npos){
+            break;
+        }
+        else{
+            MessagePrinter::PrintStars();
+            MessagePrinter::PrintErrorInLineNumber(linenum);
+            MessagePrinter::PrintErrorTxt("unknown options in [postprocess] block",false);
+            MessagePrinter::PrintStars();
+            MessagePrinter::AsFem_Exit();
+            return false;
+
         }
     }
 

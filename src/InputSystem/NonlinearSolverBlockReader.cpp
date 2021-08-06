@@ -8,37 +8,46 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
+//+++ Date   : 2020.08.06
 //+++ Purpose: This function can read the [nonlinearsolver] block 
 //+++          from our input file.
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/NonlinearSolverBlockReader.h"
 
-bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,NonlinearSolver &nonlinearSolver){
-    // dof block format:
-    // [linearsolver]
-    //   type=lu [gmres]
-    //   maxiters=10000
-    //   tol=1.0e-9
-    // [end]
-    
 
+void NonlinearSolverBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [nonlinearsolver] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[nonlinearsolver]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  type=nr",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  maxiters=maximum-nonlinear-iterations",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  r_rel_tol=relative-error-of-residual",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  r_abs_tol=absolute-error-of-residual",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  stol=error-of-delta-U",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  solver=ksp,mumps,superlu",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+
+//*******************************************************
+bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string str, int &linenum, NonlinearSolver &nonlinearSolver){
     bool HasType=false;
     vector<double> numbers;
     string namelist;
     // now str already contains [dofs]
     getline(in,str);linenum+=1;
 
-    
+
 
     _nonlinearSolverBlock.Init();// use the default value
-    
+
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
         if(StringUtils::IsCommentLine(str)||str.length()<1){
             getline(in,str);linenum+=1;
             str=StringUtils::StrToLower(str);
+            str=StringUtils::RemoveStrSpace(str);
             continue;
         }
         if(str.find("type=")!=string::npos||
@@ -46,7 +55,11 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
             substr=StringUtils::RemoveStrSpace(substr);
-            if((substr.find("nr")!=string::npos||substr.find("NR")!=string::npos)&&
+            if(substr.find("helper")!=string::npos){
+                PrintHelper();
+                return false;
+            }
+            else if((substr.find("nr")!=string::npos||substr.find("NR")!=string::npos)&&
                substr.length()==2){
                 HasType=true;
                 _nonlinearSolverBlock._SolverTypeName="newton-raphson";
@@ -229,6 +242,6 @@ bool InputSystem::ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,
     }
 
     nonlinearSolver.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
-    
+
     return HasType;
 }

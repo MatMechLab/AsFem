@@ -139,22 +139,48 @@ set(inc ${inc} include/Utils/MathFuns.h)
 ### For inputystem                                        ###
 #############################################################
 set(inc ${inc} include/InputSystem/InputSystem.h)
+set(src ${src} src/InputSystem/InputSystem.cpp src/InputSystem/ReadInputFile.cpp)
 set(inc ${inc} include/InputSystem/SingleBlockReader.h)
+### for mesh block
 set(inc ${inc} include/InputSystem/MeshBlockReader.h)
 set(src ${src} src/InputSystem/MeshBlockReader.cpp)
-set(src ${src} src/InputSystem/InputSystem.cpp src/InputSystem/ReadInputFile.cpp)
-set(src ${src} src/InputSystem/ReadDofsBlock.cpp)
-set(src ${src} src/InputSystem/ReadElmtBlock.cpp)
-set(src ${src} src/InputSystem/ReadMateBlock.cpp)
-set(src ${src} src/InputSystem/ReadBCBlock.cpp)
-set(src ${src} src/InputSystem/ReadICBlock.cpp)
-set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
-set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
-set(src ${src} src/InputSystem/ReadPostprocessBlock.cpp)
-set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
-set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
-set(src ${src} src/InputSystem/ReadTimeSteppingBlock.cpp)
-set(src ${src} src/InputSystem/ReadFEJobBlock.cpp)
+### for dof block
+set(inc ${inc} include/InputSystem/DofsBlockReader.h)
+set(src ${src} src/InputSystem/DofsBlockReader.cpp)
+### for elmts block
+set(inc ${inc} include/InputSystem/ElmtsBlockReader.h)
+set(src ${src} src/InputSystem/ElmtsBlockReader.cpp)
+### for mate block
+set(inc ${inc} include/InputSystem/MatesBlockReader.h)
+set(src ${src} src/InputSystem/MatesBlockReader.cpp)
+### for bcs block
+set(inc ${inc} include/InputSystem/BCsBlockReader.h)
+set(src ${src} src/InputSystem/BCsBlockReader.cpp)
+### for ics block
+set(inc ${inc} include/InputSystem/ICsBlockReader.h)
+set(src ${src} src/InputSystem/ICsBlockReader.cpp)
+### for qpoint block
+set(inc ${inc} include/InputSystem/QPointBlockReader.h)
+set(src ${src} src/InputSystem/QPointBlockReader.cpp)
+### for output block
+set(inc ${inc} include/InputSystem/OutputBlockReader.h)
+set(src ${src} src/InputSystem/OutputBlockReader.cpp)
+### for postprocess block 
+set(inc ${inc} include/InputSystem/PostprocessBlockReader.h)
+set(src ${src} src/InputSystem/PostprocessBlockReader.cpp)
+### for projection block
+set(inc ${inc} include/InputSystem/ProjectionBlockReader.h)
+set(src ${src} src/InputSystem/ProjectionBlockReader.cpp)
+### for nonlinear solver block
+set(inc ${inc} include/InputSystem/NonlinearSolverBlockReader.h)
+set(src ${src} src/InputSystem/NonlinearSolverBlockReader.cpp)
+### for time stepping block
+set(inc ${inc} include/InputSystem/TimeSteppingBlockReader.h)
+set(src ${src} src/InputSystem/TimeSteppingBlockReader.cpp)
+### for FEJob block
+set(inc ${inc} include/InputSystem/FEJobBlockReader.h)
+set(src ${src} src/InputSystem/FEJobBlockReader.cpp)
+
 
 #############################################################
 ### For Mesh class                                        ###

@@ -8,14 +8,30 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
-//+++ Purpose: This function can read the [projection] block from our
-//+++          input file.
+//+++ Date   : 2021.08.06
+//+++ Purpose: Implement the reader for [projection] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/ProjectionBlockReader.h"
 
-bool InputSystem::ReadProjectionBlock(ifstream &in,string str,int &linenum,SolutionSystem &solutionSystem){
+
+void ProjectionBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [projection] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[projection]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  name=projection-property-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  scalarmate=scalar-material-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  vectormate=vector-material-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  rank2mate=rank2-material-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  rank4mate=rank4-material-name",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintDashLine(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("Your only need part of those options list above",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+
+//************************************************************
+bool ProjectionBlockReader::ReadProjectionBlock(ifstream &in, string str, int &linenum, SolutionSystem &solutionSystem){
     bool HasName=false;
     vector<string> namelist;
     namelist.clear();
@@ -33,7 +49,12 @@ bool InputSystem::ReadProjectionBlock(ifstream &in,string str,int &linenum,Solut
         if(StringUtils::IsCommentLine(str)||str.length()<1){
             continue;
         }
-        if(str.compare(0,5,"name=")==0){
+        
+        if(str.find("type=helper")!=string::npos){
+            PrintHelper();
+            return false;
+        }
+        else if(str.compare(0,5,"name=")==0){
             int i=str0.find_first_of('=');
             string substr=str0.substr(i+1,str0.length());
             namelist=StringUtils::SplitStr(substr,' ');

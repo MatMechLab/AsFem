@@ -8,14 +8,33 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.01
-//+++ Purpose: This function can read the [mates] block and its 
-//+++          subblock from our input file.
+//+++ Date   : 2021.08.05
+//+++ Purpose: Implement the reader for [mates] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/MatesBlockReader.h"
 
-bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,MateSystem &mateSystem){
+
+void MatesBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [mates] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[mates]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [mate-1]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=mate-type-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    params=val1 val2 ...",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [mate-2]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    type=mate-type-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    params=val3 val4",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+
+}
+
+//*******************************************************************
+bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &lastendlinenum, int &linenum, MateSystem &mateSystem){
     // each bc block should looks like:
     //   [mate1]
     //     type=elastic
@@ -35,16 +54,17 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
 
     mateBlock.Init();
 
-    // now str="[mate]"
+    // now str="[mates]"
     while (linenum<=lastendlinenum){
         getline(in,str);linenum+=1;
+        str0=str;
         str=StringUtils::StrToLower(str);
         str=StringUtils::RemoveStrSpace(str);
         if(StringUtils::IsCommentLine(str)||str.size()<1) continue;
 
         if((str.find('[')!=string::npos&&str.find(']')!=string::npos)&&
           (str.find("[end]")==string::npos&&str.find("[END]")==string::npos)){
-            tempstr=StringUtils::RemoveStrSpace(str);
+            tempstr=StringUtils::RemoveStrSpace(str0);
             mateBlock.Init();
             HasElmt=false;
             HasValue=false;
@@ -64,8 +84,15 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                 str=StringUtils::StrToLower(str);
                 str0=str;
                 str=StringUtils::RemoveStrSpace(str0);
+                
                 if(StringUtils::IsCommentLine(str)||str.size()<1) continue;
-                if(str.find("type=")!=string::npos){
+                
+                
+                if(str.find("helper")!=string::npos){
+                    PrintHelper();
+                    return false;
+                }
+                else if(str.find("type=")!=string::npos){
                     string substr=str.substr(str.find_first_of('=')+1);
                     if(substr.find("constpoisson")!=string::npos&&substr.length()==12){
                         mateBlock._MateTypeName="constpoisson";
@@ -166,7 +193,7 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                             MessagePrinter::AsFem_Exit();
                             return false;
                         }
-                        
+
                         if(int(number[0])<1||int(number[0])>20){
                             MessagePrinter::PrintErrorInLineNumber(linenum);
                             msg="user number is invalid in the ["+mateBlock._MateBlockName+"] block, 'type=user1,user2,...,user20' is expected";
@@ -279,6 +306,7 @@ bool InputSystem::ReadMateBlock(ifstream &in,string str,const int &lastendlinenu
                 }
                 mateSystem.AddBulkMateBlock2List(mateBlock);
                 HasMateBlock=true;
+                mateBlock.Init();
             }
             else{
                 msg="information is not complete in [mates] sub block, some information is missing in ["+mateBlock._MateBlockName+"]";

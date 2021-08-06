@@ -8,65 +8,70 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
-//+++ Purpose: This function can read the [qpoint] block from our
-//+++          input file.
+//+++ Date   : 2021.08.05
+//+++ Purpose: Implement the reader for [qpoint] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
+#include "InputSystem/QPointBlockReader.h"
 
-bool InputSystem::ReadQPointBlock(ifstream &in,string str,int &linenum,FE &fe){
-    // format:
-    // [qpoint]
-    //   type=gauss[gausslobatto]
-    //   order=2
-    //   bcorder=1
-    // [end]
 
+void QPointBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [qpoint] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[qpoint]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  type=gauss,gausslobatto",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  order=2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  bcorder=1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+
+//**********************************************************
+bool QPointBlockReader::ReadQPointBlock(ifstream &in, string str, int &linenum, FE &fe){
     bool HasType;
     vector<double> numbers;
     // now str already contains [dofs]
     getline(in,str);linenum+=1;
+    str=StringUtils::RemoveStrSpace(str);
     str=StringUtils::StrToLower(str);
     numbers.clear();
 
     HasType=false;
-    
+
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
         if(StringUtils::IsCommentLine(str)||str.length()<1){
             getline(in,str);linenum+=1;
+            str=StringUtils::RemoveStrSpace(str);
             str=StringUtils::StrToLower(str);
             continue;
         }
         str=StringUtils::RemoveStrSpace(str);
-        
-        if(str.find("type=")!=string::npos||
-           str.find("TYPE=")!=string::npos){
+
+        if(str.find("helper")!=string::npos){
+            PrintHelper();
+            return false;
+        }
+        else if(str.find("type=")!=string::npos){
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
             substr=StringUtils::RemoveStrSpace(substr);
-            if((substr.find("gauss")!=string::npos||
-               substr.find("GAUSS")!=string::npos)&&substr.size()==5){
+            if(substr.find("gauss")!=string::npos && substr.size()==5){
                    fe.SetQPointType(QPointType::GAUSSLEGENDRE);
                    HasType=true;
             }
-            else if((substr.find("gausslobatto")!=string::npos||
-                    substr.find("GAUSSLOBATTO")!=string::npos)&&substr.size()==12){
+            else if(substr.find("gausslobatto")!=string::npos && substr.size()==12){
                    fe.SetQPointType(QPointType::GAUSSLOBATTO);
                    HasType=true;
             }
             else{
                 HasType=false;
                 MessagePrinter::PrintErrorInLineNumber(linenum);
-                MessagePrinter::PrintErrorTxt("unsupported gauss point type in the [qpoint] block, type=gauss[gausslobatto] is expected in the [qpoint] block",false);
+                MessagePrinter::PrintErrorTxt("unsupported type option in the [qpoint] block, type=gauss[gausslobatto] is expected in the [qpoint] block",false);
                 MessagePrinter::AsFem_Exit();
             }
         }
-        else if((str.find("order=")!=string::npos||
-                 str.find("ORDER=")!=string::npos)&&
-                 str.find("bcorder")==string::npos&&
-                 str.find("BCORDER")==string::npos){
+        else if(str.find("order=")!=string::npos && str.find("bcorder")==string::npos){
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
             substr=StringUtils::RemoveStrSpace(substr);
@@ -124,6 +129,6 @@ bool InputSystem::ReadQPointBlock(ifstream &in,string str,int &linenum,FE &fe){
         fe.SetQPointType(QPointType::GAUSSLEGENDRE);
         HasType=true;
     }
-    
+
     return HasType;
 }

@@ -94,8 +94,9 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 MessagePrinter::AsFem_Exit();
                 return false;
             }
+            SetMeshBlockReaderInputFileName(_InputFileName);
             if(ReadMeshBlock(in,str,linenum,mesh)){
-                HasMateBlock=true;
+                HasMeshBlock=true;
             }
             else{
                 MessagePrinter::PrintErrorTxt("some errors detected in the [mesh] block, please check your input file");
@@ -125,7 +126,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
             }
             int lastendlinenum;
             if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadElmtBlock(in,str,lastendlinenum,linenum,elmtSystem,dofHandler)){
+                if(ReadElmtsBlock(in,str,lastendlinenum,linenum,elmtSystem,dofHandler)){
                     HasElmtBlock=true;
                 }
                 else{
@@ -143,7 +144,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         else if(str.find("[mates]")!=string::npos){
             int lastendlinenum;
             if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
-                if(ReadMateBlock(in,str,lastendlinenum,linenum,mateSystem)){
+                if(ReadMatesBlock(in,str,lastendlinenum,linenum,mateSystem)){
                     HasMateBlock=true;
                 }
                 else{
@@ -230,6 +231,7 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
         else if((str.find("[output]")!=string::npos)&&str.length()==8){
             int lastendlinenum;
             if(StringUtils::IsBracketMatch(in,linenum,lastendlinenum)){
+                SetOutputBlockReaderInputFileName(_InputFileName);
                 if(ReadOutputBlock(in,str,linenum,outputSystem)){
                     HasOutputBlock=true;
                 }

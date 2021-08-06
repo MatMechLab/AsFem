@@ -8,27 +8,30 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.30
-//+++ Purpose: This function can read the [timestepping] block 
-//+++          from our input file.
+//+++ Date   : 2021.08.06
+//+++ Purpose: Implement the reader for [timestepping] block
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "InputSystem/InputSystem.h"
-#include "TimeStepping/TimeSteppingBlock.h"
+#include "InputSystem/TimeSteppingBlockReader.h"
 
-bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,TimeStepping &timestepping){
-    // dof block format:
-    // [timestepping]
-    //   type=be[cn,alpha,...]
-    //   dt=1.0e-5
-    //   time=1.0e-3
-    //   optiters=3
-    //   adaptive=true[false]
-    //   growthfactor=1.1
-    //   cutfactor=0.85
-    // [end]
-    
 
+void TimeSteppingBlockReader::PrintHelper(){
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("The complete information for [timestepping] block:",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[timestepping]",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  type=be",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  dt=1.0e-6",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  adaptive=true",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  optiters=4",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  dtmin=1.0e-10",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  dtmax=1.0e-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  growthfactor=1.1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  cutfactor=0.85",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
+    MessagePrinter::PrintStars(MessageColor::BLUE);
+}
+//**********************************************************
+bool TimeSteppingBlockReader::ReadTimeSteppingBlock(ifstream &in, string str, int &linenum, TimeStepping &timestepping){
     bool HasType=false;
     vector<double> numbers;
     string namelist;
@@ -38,20 +41,24 @@ bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,Tim
     TimeSteppingBlock timesteppingBlock;
 
     timesteppingBlock.Init();// use the default value
-    
+
     while(str.find("[end]")==string::npos&&
           str.find("[END]")==string::npos){
         if(StringUtils::IsCommentLine(str)||str.length()<1){
             getline(in,str);linenum+=1;
             str=StringUtils::StrToLower(str);
+            str=StringUtils::RemoveStrSpace(str);
             continue;
         }
-        if(str.find("type=")!=string::npos||
-           str.find("TYPE=")!=string::npos){
+        if(str.find("type=")!=string::npos){
             int i=str.find_first_of('=');
             string substr=str.substr(i+1,str.length());
             substr=StringUtils::RemoveStrSpace(substr);
-            if((substr.find("be")!=string::npos||substr.find("BE")!=string::npos)&&
+            if(substr.find("helper")!=string::npos){
+                PrintHelper();
+                return false;
+            }
+            else if((substr.find("be")!=string::npos||substr.find("BE")!=string::npos)&&
                substr.length()==2){
                 HasType=true;
                 timesteppingBlock._TimeSteppingType=TimeSteppingType::BACKWARDEULER;
@@ -289,6 +296,6 @@ bool InputSystem::ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,Tim
     }
 
     timestepping.SetOpitonsFromTimeSteppingBlock(timesteppingBlock);
-    
+
     return HasType;
 }

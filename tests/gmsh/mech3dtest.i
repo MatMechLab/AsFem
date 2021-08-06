@@ -5,8 +5,8 @@
   ymax=2
   zmax=3
   nx=10
-  ny=10
-  nz=10
+  ny=20
+  nz=30
   meshtype=hex8
 [end]
 
@@ -30,6 +30,7 @@ name=ux uy uz
 [end]
 
 [nonlinearsolver]
+  //type=helper
   type=nr
   maxiters=50
   r_rel_tol=1.0e-12
@@ -40,6 +41,7 @@ name=ux uy uz
 
 [bcs]
   [fixux]
+    //type=helper
     type=dirichlet
     dof=ux
     value=0.0
@@ -74,6 +76,7 @@ rank2mate=stress strain
 
 [postprocess]
   [arealeft]
+    //type=helper
     type=area
     side=left
   [end]
