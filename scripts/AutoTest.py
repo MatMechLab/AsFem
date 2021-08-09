@@ -10,7 +10,14 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import time
 
+cpus=2
+if len(sys.argv)>=3:
+    if '-n' in sys.argv[2-1]:
+        cpus=int(sys.argv[3-1])
+        if cpus<1:
+            cpus=1
 
 currentdir=os.getcwd()
 parrentdir=Path(currentdir).parent
@@ -26,9 +33,9 @@ print('*** We are in folder:%s'%(currentdir))
 print('*** Parent dir is: %s'%(parrentdir))
 print('*** AsFem executable file is :%s'%(AsFem))
 print('*** Test input file folder is :%s'%(TestDir))
+print('*** Using %d cpus for auto-test'%(cpus))
 
-mpi="/home/by/Programs/openmpi/4.1.0/bin/mpirun"
-
+timestart=time.time()
 
 nFiles=0;nSucess=0
 FailedFileList=[]
@@ -41,9 +48,11 @@ for subdir,dirs,files in os.walk(TestDir):
             print('***     running %s'%(file))
             os.chdir(subdir)
             if 'mesh' in subdir:
-                result=subprocess.run([AsFem,"-i",arg,"-read-only"],capture_output=True)
+                args='mpirun -np %d '%(cpus)+AsFem+' -i '+file+' --read-only'
+                result=subprocess.run(args,shell=True,capture_output=True) 
             else:
-                result=subprocess.run([AsFem,"-i",arg],capture_output=True)
+                args='mpirun -np %d '%(cpus)+AsFem+' -i '+file
+                result=subprocess.run(args,shell=True,capture_output=True)
             nFiles+=1
             if ('AsFem exit due to some errors' in result.stdout.decode("utf-8")) or ('Error' in result.stdout.decode("utf-8")):
                 sys.stdout.write("\033[1;31m") # set to red color
@@ -56,8 +65,11 @@ for subdir,dirs,files in os.walk(TestDir):
                 print('***     %s is success!'%(file))
                 sys.stdout.write("\033[0;0m")  # reset
 
+timeend=time.time()
+duration=timeend-timestart
+
 print('**********************************************************************************')
-print('*** Test finished, test files=%d, success=%d, failed=%d !'%(nFiles,nSucess,nFiles-nSucess))
+print('*** Test finished, test files=%d, success=%d, failed=%d [elapse time=%13.5e]!'%(nFiles,nSucess,nFiles-nSucess,duration))
 if len(FailedFileList)>0:
     print('*** The failed input files are:')
     print(FailedFileList)
