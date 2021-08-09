@@ -31,10 +31,13 @@
 #include "Mesh/Nodes.h"
 
 
+#include "FE/Lagrange1DShapeFun.h"
+
 using namespace std;
 
 
-class LagrangeShapeFun{
+class LagrangeShapeFun: public Lagrange1DShapeFun
+{
 public:
     LagrangeShapeFun();
     LagrangeShapeFun(int dim,MeshType meshtype);
@@ -74,7 +77,6 @@ public:
 
 
 protected:
-    void Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes,bool flag=true);
     void Compute2DLagrangeShapeFun(const double &xi,const double &eta,const Nodes &nodes,bool flag=true);
     void Compute3DLagrangeShapeFun(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,bool flag=true);
 

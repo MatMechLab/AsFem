@@ -19,7 +19,7 @@
 #include "FE/LagrangeShapeFun.h"
 
 void LagrangeShapeFun::Calc(const double &xi,const Nodes &nodes,const bool &flag){
-    Compute1DLagrangeShapeFun(xi,nodes,flag);
+    Calc1DShapeFun(_MeshType,xi,nodes,_shape_value,_shape_grad,_DetJac,flag);
 }
 
 //*************************************

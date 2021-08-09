@@ -375,9 +375,12 @@ set(inc ${inc} include/FE/FE.h)
 set(src ${src} src/FE/FE.cpp)
 ### for shape functions
 set(inc ${inc} include/FE/LagrangeShapeFun.h)
+### for 1D lagrange shape function
+set(inc ${inc} include/FE/Lagrange1DShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/Lagrange1DShapeFun.cpp)
+###
 set(src ${src} src/FE/ShapeFuns/LagrangeShapeFun.cpp)
 set(src ${src} src/FE/ShapeFuns/LagrangeShapeFunCalc.cpp)
-set(src ${src} src/FE/ShapeFuns/Compute1DLagrangeShapeFun.cpp)
 set(src ${src} src/FE/ShapeFuns/Compute2DLagrangeShapeFun.cpp)
 set(src ${src} src/FE/ShapeFuns/Compute3DLagrangeShapeFun.cpp)
 set(inc ${inc} include/FE/ShapeFun.h)
@@ -473,3 +476,12 @@ set(src ${src} src/FEProblem/RunTransientAnalysis.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
+
+
+##################################################
+### Following lines are used by vim            ###
+### you can delete all of them                 ###
+##################################################
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${PETSC_DIR}/include")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${MPI_DIR}/include")
+
