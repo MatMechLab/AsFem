@@ -83,9 +83,6 @@ endif()
 message("AsFem will be compiled in ${CMAKE_BUILD_TYPE} mode !")
 
 
-
-
-
 ###############################################
 ### Do not edit the following two lines !!! ###
 ###############################################
@@ -378,11 +375,15 @@ set(inc ${inc} include/FE/LagrangeShapeFun.h)
 ### for 1D lagrange shape function
 set(inc ${inc} include/FE/Lagrange1DShapeFun.h)
 set(src ${src} src/FE/ShapeFuns/Lagrange1DShapeFun.cpp)
+### for 2D lagrange shape function 
+set(src ${src} include/FE/Lagrange2DShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/Lagrange2DShapeFun.cpp)
+### for 3D lagrange shape function
+set(inc ${inc} include/FE/Lagrange3DShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/Lagrange3DShapeFun.cpp)
 ###
 set(src ${src} src/FE/ShapeFuns/LagrangeShapeFun.cpp)
 set(src ${src} src/FE/ShapeFuns/LagrangeShapeFunCalc.cpp)
-set(src ${src} src/FE/ShapeFuns/Compute2DLagrangeShapeFun.cpp)
-set(src ${src} src/FE/ShapeFuns/Compute3DLagrangeShapeFun.cpp)
 set(inc ${inc} include/FE/ShapeFun.h)
 set(src ${src} src/FE/ShapeFuns/ShapeFun.cpp)
 #############################################################
