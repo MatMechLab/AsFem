@@ -22,7 +22,7 @@
 #include <vector>
 
 // For AsFem's own header files
-#include "MateSystem/MateTypeDefine.h"
+#include "MateSystem/Materials.h"
 
 using namespace std;
 

@@ -31,9 +31,3 @@ typedef map<string,Vector3d>       VectorMateType;
 typedef map<string,RankTwoTensor>  Rank2MateType;
 typedef map<string,RankFourTensor> Rank4MateType;
 
-struct Materials{
-    ScalarMateType ScalarMaterials;
-    VectorMateType VectorMaterials;
-    Rank2MateType Rank2Materials;
-    Rank4MateType Rank4Materials;
-};

@@ -30,7 +30,7 @@
 #include "Utils/RankFourTensor.h"
 
 #include "FESystem/FECalcType.h"
-#include "MateSystem/MateTypeDefine.h"
+#include "MateSystem/Materials.h"
 
 #include "Utils/MessagePrinter.h"
 

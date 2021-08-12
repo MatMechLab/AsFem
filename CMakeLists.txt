@@ -268,10 +268,13 @@ set(src ${src} src/ElmtSystem/User3Elmt.cpp)
 ### For Materials system in AsFem                         ###
 #############################################################
 set(inc ${inc} include/MateSystem/MateType.h)
-set(inc ${inc} include/MateSystem/MateTypeDefine.h)
+set(inc ${inc} include/MateSystem/MateNameDefine.h)
 set(inc ${inc} include/MateSystem/MateBlock.h)
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
+### for complex materials class
+set(inc ${inc} include/MateSystem/Materials.h)
+set(src ${src} src/MateSystem/Materials.cpp)
 ### for bulk materials
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)

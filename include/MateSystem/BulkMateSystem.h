@@ -30,8 +30,7 @@
 //**********************************
 #include "Utils/MessagePrinter.h"
 #include "MateSystem/MateBlock.h"
-#include "MateSystem/MateType.h"
-#include "MateSystem/MateTypeDefine.h"
+#include "MateSystem/Materials.h"
 
 #include "Utils/Vector3d.h"
 #include "Utils/RankTwoTensor.h"
@@ -70,28 +69,28 @@ public:
 
 
     inline ScalarMateType& GetScalarMatePtr(){
-        return _Materials.ScalarMaterials;
+        return _Materials.GetScalarMatePtr();
     }
     inline ScalarMateType& GetScalarMateOldPtr(){
-        return _MaterialsOld.ScalarMaterials;
+        return _MaterialsOld.GetScalarMatePtr();
     }
     inline VectorMateType& GetVectorMatePtr(){
-        return _Materials.VectorMaterials;
+        return _Materials.GetVectorMatePtr();
     }
     inline VectorMateType& GetVectorMateOldPtr(){
-        return _MaterialsOld.VectorMaterials;
+        return _MaterialsOld.GetVectorMatePtr();
     }
     inline Rank2MateType& GetRank2MatePtr(){
-        return _Materials.Rank2Materials;
+        return _Materials.GetRank2MatePtr();
     }
     inline Rank2MateType& GetRank2MateOldPtr(){
-        return _MaterialsOld.Rank2Materials;
+        return _MaterialsOld.GetRank2MatePtr();
     }
     inline Rank4MateType& GetRank4MatePtr(){
-        return _Materials.Rank4Materials;
+        return _Materials.GetRank4MatePtr();
     }
     inline Rank4MateType& GetRank4MateOldPtr(){
-        return _MaterialsOld.Rank4Materials;
+        return _MaterialsOld.GetRank4MatePtr();
     }
     inline Materials& GetMaterialsPtr(){
         return _Materials;
@@ -105,65 +104,65 @@ public:
     inline vector<string> GetScalarMateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_Materials.ScalarMaterials)temp.push_back(it.first);
+        for(const auto &it:_Materials.GetScalarMate())temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInScalarMate(string matename)const{
-        for(const auto &it:_Materials.ScalarMaterials){
+        for(const auto &it:_Materials.GetScalarMate()){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetScalarMateNums()const{
-        return static_cast<int>(_Materials.ScalarMaterials.size());
+        return static_cast<int>(_Materials.GetScalarMate().size());
     }
     //*** For vector materials
     inline vector<string> GetVectorMateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_Materials.VectorMaterials) temp.push_back(it.first);
+        for(const auto &it:_Materials.GetVectorMate()) temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInVectorMate(string matename)const{
-        for(const auto &it:_Materials.VectorMaterials){
+        for(const auto &it:_Materials.GetVectorMate()){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetVectorMateNums()const{
-        return static_cast<int>(_Materials.VectorMaterials.size());
+        return static_cast<int>(_Materials.GetVectorMate().size());
     }
     //*** For rank-2 materials
     inline vector<string> GetRank2MateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_Materials.Rank2Materials)temp.push_back(it.first);
+        for(const auto &it:_Materials.GetRank2Mate())temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInRank2Mate(string matename)const{
-        for(const auto &it:_Materials.Rank2Materials){
+        for(const auto &it:_Materials.GetRank2Mate()){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetRank2MateNums()const{
-        return static_cast<int>(_Materials.Rank2Materials.size());
+        return static_cast<int>(_Materials.GetRank2Mate().size());
     }
     //*** For rank-4 materials
     inline vector<string> GetRank4MateNameList()const{
         vector<string> temp;
         temp.clear();
-        for(const auto &it:_Materials.Rank4Materials)temp.push_back(it.first);
+        for(const auto &it:_Materials.GetRank4Mate())temp.push_back(it.first);
         return temp;
     }
     inline bool IsNameInRank4Mate(string matename)const{
-        for(const auto &it:_Materials.Rank4Materials){
+        for(const auto &it:_Materials.GetRank4Mate()){
             if(it.first==matename) return true;
         }
         return false;
     }
     inline int GetRank4MateNums()const{
-        return static_cast<int>(_Materials.Rank4Materials.size());
+        return static_cast<int>(_Materials.GetRank4Mate().size());
     }
     //***************************************************************************
     //*** For AsFem's built-in materials and User-Defined-Materials (UMAT)    ***
@@ -189,16 +188,19 @@ protected:
     vector<MateBlock> _BulkMateBlockList;
 
 protected:
-    //***************************************************************************
-    //*** Here we define four types of materials which will be used by our    ***
-    //*** element system, we use the 'map' to simplify the access of material ***
-    //*** properties by its name
-    //*** Material types:
-    //***  1) Scalar type materials
-    //***  2) Vector type materials, by default, we assume the vector3d type
-    //***  3) Rank-2 tensor type materials, i.e. stresses and strains
-    //***  4) Rank-4 tensor type materials, i.e. elasticity tensor
-    //****************************************************************************
+    /**
+     *
+     * Here we define four types of materials which will be used by our    
+     * element system, we use the 'map' to simplify the access of material 
+     * properties by its name.
+     * <pre>
+     * Material types:
+     *  1) Scalar type materials
+     *  2) Vector type materials, by default, we assume the vector3d type
+     *  3) Rank-2 tensor type materials, i.e. stresses and strains
+     *  4) Rank-4 tensor type materials, i.e. elasticity tensor
+     *  </pre>
+     */
     Materials _Materials,_MaterialsOld;
 
 
