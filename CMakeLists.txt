@@ -236,6 +236,8 @@ set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 ### For bulk element base class
 set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
+### For the data structure used by local element calc
+set(inc ${inc} include/ElmtSystem/LocalElmtData.h)
 ### For linear poisson element
 set(inc ${inc} include/ElmtSystem/PoissonElmt.h)
 set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
