@@ -253,18 +253,6 @@ set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### For Miehe's phase field fracture element
 set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
-### for laplace operator
-set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
-### for body source term
-set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
-### for poisson equation
-set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
-### for User1 element
-set(src ${src} src/ElmtSystem/User1Elmt.cpp)
-### for User2 element
-set(src ${src} src/ElmtSystem/User2Elmt.cpp)
-### for User3 element
-set(src ${src} src/ElmtSystem/User3Elmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###

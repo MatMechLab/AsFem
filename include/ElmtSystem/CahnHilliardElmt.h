@@ -12,52 +12,64 @@
 //+++ Purpose: implement the residual and jacobian for general
 //+++          Cahn-Hilliard equation
 //+++          dc/dt=div(M*grad(mu))
-//+++             mu=d2f/dc-Kappa*Delta(c)
+//+++             mu=df/dc-Kappa*Delta(c)
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
 #include "ElmtSystem/BulkElmtBase.h"
 
+/**
+ * This class implement the calculation of CahnHilliard equation.
+ * The implementation requires two Dofs, one for the concentration, another one is the chemical potential, the mixed form is used to solve this 4th order PDE.
+ */
 class CahnHilliardElmt:public BulkElmtBase{
+    
 public:
-    virtual void ComputeAll(const FECalcType &calctype, const int &nDim, const int &nNodes,
-                            const int &nDofs, const double &t, const double &dt, const double (&ctan)[2],
-                            const Vector3d &gpCoords, const vector<double> &gpU,
-                            const vector<double> &gpUold, const vector<double> &gpV,
-                            const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                            const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                            const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
-                            const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
-                            const Materials &MateOld, map<string, double> &gpProj, MatrixXd &localK,
-                            VectorXd &localR) override;
+    /**
+     * The function for different calc action
+     */
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+            const LocalElmtSolution &soln,const LocalShapeFun &shp,
+            const Materials &Mate,const Materials &MateOld,
+            ScalarMateType &gpProj,
+            MatrixXd &localK,VectorXd &localR) override;
 
 private:
-    virtual void ComputeResidual(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                 const double &dt, const Vector3d &gpCoords, const vector<double> &gpU,
-                                 const vector<double> &gpUold, const vector<double> &gpV,
-                                 const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                                 const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                                 const vector<Vector3d> &gpGradVold, const double &test,
-                                 const Vector3d &grad_test, const Materials &Mate,
-                                 const Materials &MateOld, VectorXd &localR) override;
+    /**
+     * This function is responsible for the residual calculation of CahnHilliard equation.<br>
+     * The explanation of each arguments can be found in ElmtBase class.<br>
+     * \f$R_{c}^{I}=\dot{c}N^{I}+M\nabla c\nabla\mu\f$ <br>
+     * \f$R_{\mu}^{I}=\mu N^{I}-\frac{\partial\psi}{\partial c}N^{I}-\kappa\Delta c
+     */
+    virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 VectorXd &localR) override;
 
-    virtual void ComputeJacobian(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                 const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                 const vector<double> &gpU, const vector<double> &gpUold,
-                                 const vector<double> &gpV, const vector<double> &gpVold,
-                                 const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                 const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                 const double &test, const double &trial, const Vector3d &grad_test,
-                                 const Vector3d &grad_trial, const Materials &Mate,
-                                 const Materials &MateOld, MatrixXd &localK) override;
+    /**
+     * This function calculate the jacobian matrix for CahnHilliard equation.<br>
+     * <pre>
+     * \f$K_{cc}^{IJ}=\frac{\partial R_{c}^{I}}{\partial c^{J}}\f$
+     * \f$K_{c\mu}^{IJ}=\frac{\partial R_{c}^{I}}{\partial\mu^{J}}\f$
+     * \f$K_{\mu c}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial c^{J}}\f$
+     * \f$K_{\mu\mu}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial\mu^{J}}\f$
+     * </pre>
+     */
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 MatrixXd &localK) override;
 
-    virtual void ComputeProjection(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                   const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                   const vector<double> &gpU, const vector<double> &gpUold,
-                                   const vector<double> &gpV, const vector<double> &gpVold,
-                                   const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                   const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                   const double &test, const Vector3d &grad_test, const Materials &Mate,
-                                   const Materials &MateOld, map<string, double> &gpProj) override;
+    /**
+     * For the projected scalar variables in CahnHilliard element 
+     */
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                   const LocalElmtSolution &soln,
+                                   const LocalShapeFun &shp,
+                                   const Materials &Mate,const Materials &MateOld,
+                                   ScalarMateType &gpProj) override;
+
 };

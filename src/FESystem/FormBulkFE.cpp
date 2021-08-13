@@ -112,10 +112,11 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             // init all the local K&R array/matrix
             // get local history(old) value on each gauss point
             if(calctype!=FECalcType::InitMaterialAndProjection){
-                mateSystem.GetMaterialsOldPtr().ScalarMaterials=solutionSystem._ScalarMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
-                mateSystem.GetMaterialsOldPtr().VectorMaterials=solutionSystem._VectorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
-                mateSystem.GetMaterialsOldPtr().Rank2Materials=solutionSystem._Rank2TensorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
-                mateSystem.GetMaterialsOldPtr().Rank4Materials=solutionSystem._Rank4TensorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
+                // the scalar/vector/rank-2/rank-4 materials in MateSystem is used by each quadrature point, so it is only used for one single gauss point. The materials of the whole system is stored in solution's materials array!!!
+                mateSystem.GetScalarMateOldPtr()=solutionSystem._ScalarMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
+                mateSystem.GetVectorMateOldPtr()=solutionSystem._VectorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
+                mateSystem.GetRank2MateOldPtr()=solutionSystem._Rank2TensorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
+                mateSystem.GetRank4MateOldPtr()=solutionSystem._Rank4TensorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
             }
             // calculate the current shape funs on each gauss point
             if(nDim==1){
@@ -213,6 +214,15 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                         _gpGradVOld[j](3)+=_elVold[(i-1)*nDofsPerNode+jj-1]*fe._BulkShp.shape_grad(i)(3);
                     }
                 }
+                // for local soln structure
+                _elmtsoln.gpGradU=_gpGradU;
+                _elmtsoln.gpGradUold=_gpGradUOld;
+                _elmtsoln.gpGradV=_gpGradV;
+                _elmtsoln.gpGradVold=_gpGradVOld;
+                _elmtsoln.gpU=_gpU;
+                _elmtsoln.gpUold=_gpUOld;
+                _elmtsoln.gpV=_gpV;
+                _elmtsoln.gpVold=_gpVOld;
 
                 if(calctype==FECalcType::ComputeResidual){
                     _subR.setZero();
@@ -233,38 +243,48 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 //*****************************************************
                 //*** For user element calculation(UEL)
                 //*****************************************************
+                // we set up the local information data structure before we go into each UEL
+                _elmtinfo.dt=dt;_elmtinfo.t=t;
+                _elmtinfo.gpCoords=_gpCoord;
+                _elmtinfo.nDim=nDim;
+                _elmtinfo.nDofs=nDofsPerSubElmt;
+                _elmtinfo.nNodes=nNodes;
                 if(calctype==FECalcType::ComputeResidual){
                     for(i=1;i<=nNodes;i++){
-                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
-                            _gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,_gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld,
-                            fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
-                            fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
-                            mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),
-                            _gpProj,_subK,_subR);
+                        // for local shape function
+                        _elmtshp.test=fe._BulkShp.shape_value(i);
+                        _elmtshp.trial=fe._BulkShp.shape_value(i);
+                        _elmtshp.grad_test=fe._BulkShp.shape_grad(i);
+                        _elmtshp.grad_trial=fe._BulkShp.shape_grad(i);
+                        
+                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,ctan,_elmtinfo,_elmtsoln,_elmtshp,mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),_gpProj,_subK,_subR);
                         AssembleSubResidualToLocalResidual(nDofsPerNode,nDofsPerSubElmt,i,_subR,_localR);
                     }
                 }
                 else if(calctype==FECalcType::ComputeJacobian){
                     for(i=1;i<=nNodes;i++){
                         for(j=1;j<=nNodes;j++){
-                            elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
-                            _gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,_gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld,
-                            fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(j),
-                            fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(j),
-                            mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),
-                            _gpProj,_subK,_subR);
+                            // for local shape function
+                            _elmtshp.test=fe._BulkShp.shape_value(i);
+                            _elmtshp.trial=fe._BulkShp.shape_value(j);
+                            _elmtshp.grad_test=fe._BulkShp.shape_grad(i);
+                            _elmtshp.grad_trial=fe._BulkShp.shape_grad(j);
+
+                            elmtSystem.RunBulkElmtLibs(calctype,elmttype,ctan,_elmtinfo,_elmtsoln,_elmtshp,mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),_gpProj,_subK,_subR);
+                            
                             AssembleSubJacobianToLocalJacobian(nDofsPerNode,i,j,_subK,_localK);
                         }
                     }
                 }
                 else if(calctype==FECalcType::Projection){
                     for(i=1;i<=nNodes;i++){
-                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,nDim,nNodes,nDofsPerSubElmt,t,dt,ctan,
-                        _gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,_gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld,
-                        fe._BulkShp.shape_value(i),fe._BulkShp.shape_value(i),// for Residual, we only need test fun
-                        fe._BulkShp.shape_grad(i),fe._BulkShp.shape_grad(i),
-                        mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),
-                        _gpProj,_subK,_subR);
+                        // for local shape function
+                        _elmtshp.test=fe._BulkShp.shape_value(i);
+                        _elmtshp.trial=fe._BulkShp.shape_value(i);
+                        _elmtshp.grad_test=fe._BulkShp.shape_grad(i);
+                        _elmtshp.grad_trial=fe._BulkShp.shape_grad(i);
+                        
+                        elmtSystem.RunBulkElmtLibs(calctype,elmttype,ctan,_elmtinfo,_elmtsoln,_elmtshp,mateSystem.GetMaterialsPtr(),mateSystem.GetMaterialsOldPtr(),_gpProj,_subK,_subR);
                     }
                     // here we should not assemble the local projection, because the JxW should not be accumulated
                     // inside the element-loop, but the gpProj should be.

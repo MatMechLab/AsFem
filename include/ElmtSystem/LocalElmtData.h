@@ -44,10 +44,10 @@ struct LocalElmtInfo{
 struct LocalShapeFun{
     double test;  /**< the test function value of current gauss point*/
     double trial; /**< the trial function value of current gauss point*/
-    vector<Vector3d> grad_test;/**< the gradient of the test function for current gauss point*/
-    vector<Vector3d> grad_phi;/**< the gradient of the trial function for current gauss point*/
-    vector<Vector3d> grad_test_current;/**< the gradient of the test function based on the current configuration for current gauss point*/
-    vector<Vector3d> grad_phi_current;/**< the gradient of the trial function based on the current configuration for current gauss point*/
+    Vector3d grad_test;/**< the gradient of the test function for current gauss point*/
+    Vector3d grad_trial;/**< the gradient of the trial function for current gauss point*/
+    Vector3d grad_test_current;/**< the gradient of the test function based on the current configuration for current gauss point*/
+    Vector3d grad_trial_current;/**< the gradient of the trial function based on the current configuration for current gauss point*/
 
 };
 

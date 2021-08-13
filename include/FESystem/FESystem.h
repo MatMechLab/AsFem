@@ -41,6 +41,7 @@
 #include "Utils/Vector3d.h"
 #include "Utils/VectorXd.h"
 #include "Utils/MatrixXd.h"
+#include "ElmtSystem/LocalElmtData.h"
 
 using namespace std;
 
@@ -153,7 +154,7 @@ private:
     vector<double> _gpU,_gpV;
     vector<double> _gpUOld,_gpVOld;
     vector<double> _gpHist,_gpHistOld;
-    map<string,double> _gpProj;
+    ScalarMateType _gpProj;
     vector<Vector3d> _gpGradU,_gpGradV;
     vector<Vector3d> _gpGradUOld,_gpGradVOld;
     vector<double> _MaterialValues;
@@ -165,6 +166,11 @@ private:
     MateType matetype;
     vector<int> localDofIndex;
     int mateindex;
+
+
+    LocalElmtInfo _elmtinfo;
+    LocalElmtSolution _elmtsoln;
+    LocalShapeFun _elmtshp;
 
 private:
     //************************************
