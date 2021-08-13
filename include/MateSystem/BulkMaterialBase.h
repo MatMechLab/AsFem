@@ -23,22 +23,40 @@
 
 // For AsFem's own header files
 #include "MateSystem/Materials.h"
+#include "ElmtSystem/LocalElmtData.h"
 
 using namespace std;
 
+/**
+ * The abstract bulk material base class, which defines the common functions for 
+ * material property calculation
+ */
 class BulkMaterialBase{
 public:
-    virtual void InitMaterialProperties(const int &nDim,const Vector3d &gpCoord,const vector<double> &InputParams,
-                                        const vector<double> &gpU,const vector<double> &gpUdot,
-                                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
-                                        Materials &Mate)=0;// initial material properties
+    /**
+     * Initial the preset material properties, if you don't need the history information of some materials, then you can avoid calling this function
+     * @param InputParams the input material parameters read from the input file
+     * @param elmtinfo the data structure for the local element information
+     * @param elmtsoln the solution like U and V of the local element
+     * @param Mate the materials to be initialized
+     */
+    virtual void InitMaterialProperties(const vector<double> &InputParams,
+                                        const LocalElmtInfo &elmtinfo,
+                                        const LocalElmtSolution &elmtsoln,
+                                        Materials &Mate)=0;
 
-    virtual void ComputeMaterialProperties(const double &t,const double &dt,const int &nDim,
-                                           const Vector3d &gpCoord,const vector<double> &InputParams,
-                                           const vector<double> &gpU,const vector<double> &gpUOld,
-                                           const vector<double> &gpUdot,const vector<double> &gpUdotOld,
-                                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
-                                           const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
-                                           const Materials &MateOld,Materials &Mate)=0;// the calculation of different materials
+    /**
+     * Compute the material property accroding to your model
+     * @param InputParams the input material parameters read from the input file
+     * @param elmtinfo the data structure for the local element information
+     * @param elmtsoln the solution like U and V of the local element
+     * @param MateOld the materials from previous step
+     * @param Mate the materials to be calculated
+     */
+    virtual void ComputeMaterialProperties(const vector<double> &InputParams,
+                                           const LocalElmtInfo &elmtinfo,
+                                           const LocalElmtSolution &elmtsoln,
+                                           const Materials &MateOld,Materials &Mate)=0;
+
 
 };

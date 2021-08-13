@@ -54,7 +54,7 @@ public:
      * @param shp the shape function structure, which stores the test/trial function value and their derivatives
      * @param Mate the materials of current step
      * @param MateOld the materials of previous step
-     * @parma gpProj the projected scalar variable in current element
+     * @param gpProj the projected scalar variable in current element
      * @param localK the K matrix of local element, it could be 1x1 or 5x5 depends on your local nDOfs
      * @param localR the Residual vector of local element,it could 1 or 5 depends on your local nDofs
      */
@@ -88,7 +88,7 @@ protected:
      * @param shp the shape function structure, which stores the test/trial function value and their derivatives
      * @param Mate the materials of current step
      * @param MateOld the materials of previous step
-     * @parma gpProj the projected scalar variable in current element
+     * @param gpProj the projected scalar variable in current element
      * @param localK the K matrix of local element, it could be 1x1 or 5x5 depends on your local nDOfs
      */
     virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
@@ -105,7 +105,7 @@ protected:
      * @param shp the shape function structure, which stores the test/trial function value and their derivatives
      * @param Mate the materials of current step
      * @param MateOld the materials of previous step
-     * @parma gpProj the projected scalar variable in current element
+     * @param gpProj the projected scalar variable in current element
      */
     virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
                                    const LocalElmtSolution &soln,

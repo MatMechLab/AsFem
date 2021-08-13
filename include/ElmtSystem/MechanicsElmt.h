@@ -35,7 +35,7 @@ public:
 private:
     /**
      * This function calculate the residual of the stress equilibrium equation. <br>
-     * \f$R_{u_{i}}^{I}=\f$\sigma_{ij}N_{,j}^{I}\f$
+     * \f$R_{u_{i}}^{I}=\sigma_{ij}N_{,j}^{I}\f$
      */
     virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
                                  const LocalElmtSolution &soln,
@@ -45,7 +45,7 @@ private:
 
     /**
      * This function calculate the jacobian matrix of the stress equilibrium equation. <br>
-     * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\fC_{ijkl}N_{,j}^{I}N_{,l}^{K}$
+     * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\mathbb{C}_{ijkl}N_{,j}^{I}N_{,l}^{J}\f$
      */
     virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
                                  const LocalElmtSolution &soln,

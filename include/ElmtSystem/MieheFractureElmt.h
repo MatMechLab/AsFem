@@ -39,9 +39,8 @@ public:
 private:
     /**
      * This function calculate the residual of Miehe's phase field fracture model. <br>
-     * <pre>
-     * \f$R_{u_{i}}^{I}=\f$\sigma_{ij}N_{,j}^{I}\f$
-     * \f$R_{d}=\eta\dot{d}N^{I}+2(d-1)\mathcal{H}N^{I}+\frac{G_{c}}{L}dN^{I}+G_{c}L\nabla d\nabla N^{I}\f$
+     * \f$R_{u_{i}}^{I}=\sigma_{ij}N_{,j}^{I}\f$ <br>
+     * \f$R_{d}=\eta\dot{d}N^{I}+2(d-1)\mathbb{H}N^{I}+\frac{G_{c}}{L}dN^{I}+G_{c}L\nabla d\nabla N^{I}\f$
      */
     virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
                                  const LocalElmtSolution &soln,
@@ -51,8 +50,8 @@ private:
 
     /**
      * This function calculate the jacobian matrix of Miehe's phase field fracture model. <br>
-     * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\fC_{ijkl}N_{,j}^{I}N_{,l}^{K}$
-     * \f$K_{dd}^{IJ}=\frac{\partial R_{d}^{I}}{\partial d^{J}}=\eta N^{J}N^{I}\mathrm{ctan[1]}+2N^{j}\mathcal{H}N^{J}+\frac{G_{c}}{L}N^{J}N^{I}+G_{c}L\nabla N^{J}\nabla N^{I}\f$
+     * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\mathbb{C}_{ijkl}N_{,j}^{I}N_{,l}^{J}\f$ <br>
+     * \f$K_{dd}^{IJ}=\frac{\partial R_{d}^{I}}{\partial d^{J}}=\eta N^{J}N^{I}\mathrm{ctan[1]}+2N^{J}\mathcal{H}N^{I}+\frac{G_{c}}{L}N^{J}N^{I}+G_{c}L\nabla N^{J}\nabla N^{I}\f$
      */
     virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
                                  const LocalElmtSolution &soln,

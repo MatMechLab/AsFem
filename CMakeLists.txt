@@ -304,9 +304,7 @@ set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
-set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 ### for UMAT
-set(src ${src} src/MateSystem/User1Material.cpp)
 
 #############################################################
 ### For Boundary condition system in AsFem                ###

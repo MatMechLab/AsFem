@@ -37,8 +37,7 @@ private:
 
     /**
      * This function calculate the residual of the poisson equation. <br>
-     * <pre>
-     * \f$R_{\phi}^{I}=\f$\nabla\phi\nabla N^{I}+FN^{I}\f$
+     * \f$R_{\phi}^{I}=\nabla\phi\nabla N^{I}+FN^{I}\f$
      */
     virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
                                  const LocalElmtSolution &soln,

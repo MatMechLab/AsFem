@@ -36,11 +36,12 @@ public:
             MatrixXd &localK,VectorXd &localR) override;
 
 private:
+
     /**
-     * This function is responsible for the residual calculation of CahnHilliard equation.<br>
+     * This function is responsible for the residual calculation of CahnHilliard equation.
      * The explanation of each arguments can be found in ElmtBase class.<br>
      * \f$R_{c}^{I}=\dot{c}N^{I}+M\nabla c\nabla\mu\f$ <br>
-     * \f$R_{\mu}^{I}=\mu N^{I}-\frac{\partial\psi}{\partial c}N^{I}-\kappa\Delta c
+     * \f$R_{\mu}^{I}=\mu N^{I}-\frac{\partial\psi}{\partial c}N^{I}-\kappa\Delta c\f$
      */
     virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
                                  const LocalElmtSolution &soln,
@@ -50,12 +51,10 @@ private:
 
     /**
      * This function calculate the jacobian matrix for CahnHilliard equation.<br>
-     * <pre>
-     * \f$K_{cc}^{IJ}=\frac{\partial R_{c}^{I}}{\partial c^{J}}\f$
-     * \f$K_{c\mu}^{IJ}=\frac{\partial R_{c}^{I}}{\partial\mu^{J}}\f$
-     * \f$K_{\mu c}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial c^{J}}\f$
-     * \f$K_{\mu\mu}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial\mu^{J}}\f$
-     * </pre>
+     * \f$K_{cc}^{IJ}=\frac{\partial R_{c}^{I}}{\partial c^{J}}\f$ <br>
+     * \f$K_{c\mu}^{IJ}=\frac{\partial R_{c}^{I}}{\partial\mu^{J}}\f$ <br>
+     * \f$K_{\mu c}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial c^{J}}\f$ <br>
+     * \f$K_{\mu\mu}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial\mu^{J}}\f$ <br>
      */
     virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
                                  const LocalElmtSolution &soln,

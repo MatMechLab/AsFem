@@ -20,28 +20,44 @@
 class DoubleWellFreeEnergyMaterial: public FreeEnergyMaterialBase{
 public:
     DoubleWellFreeEnergyMaterial();
-    virtual void InitMaterialProperties(const int &nDim,const Vector3d &gpCoord,const vector<double> &InputParams,
-                                        const vector<double> &gpU,const vector<double> &gpUdot,
-                                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
-                                        Materials &Mate) override;
 
-    virtual void ComputeMaterialProperties(const double &t, const double &dt,const int &nDim,
-                                           const Vector3d &gpCoord,const vector<double> &InputParams,
-                                           const vector<double> &gpU,const vector<double> &gpUOld,
-                                           const vector<double> &gpUdot,const vector<double> &gpUdotOld,
-                                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
-                                           const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
-                                           const Materials &MateOld, Materials &Mate) override;
+    virtual void InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate) override;
+
+
+    virtual void ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) override;
+
 
 private:
-    virtual void ComputeF(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt,vector<double> &F) override;
-    virtual void ComputedFdU(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt, vector<double> &dF) override;
-    virtual void Computed2FdU2(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt, vector<double> &d2F) override;
+    /**
+     * Compute the general free energy
+     * @param InputParams the material parameters read from the input file
+     * @param elmtsoln the solution vector of current element
+     * @param F the free energy value vector
+     */
+    virtual void ComputeF(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &F) override;
+    
+
+    /**
+     * Compute the general free energy's 1st order derivative (chemical potentials)
+     * @param InputParams the material parameters read from the input file
+     * @param elmtsoln the solution vector of current element
+     * @param dF the free energy's 1st derivatives (\f$\mu\f$)
+     */
+    virtual void ComputedFdU(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &dF) override;
+    
+    /**
+     * Compute the general free energy's 2nd order derivative (\f$\partial\mu/\partial c\f$)
+     * @param InputParams the material parameters read from the input file
+     * @param elmtsoln the solution vector of current element
+     * @param d2F the free energy's 1st derivatives (\f$d\mu/dc\f$)
+     */
+    virtual void Computed2FdU2(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &d2F) override;
+
+    
 
 private:
-    double c;
-    vector<double> _F,_dFdc,_d2Fdc2;
-
+    double c;/**< local concentration*/
+    vector<double> _F,_dFdc,_d2Fdc2;/**< local array for F and its derivatives*/
 
 };
 

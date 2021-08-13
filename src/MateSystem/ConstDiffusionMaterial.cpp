@@ -17,41 +17,30 @@
 
 #include "MateSystem/ConstDiffusionMaterial.h"
 
-void ConstDiffusionMaterial::InitMaterialProperties(const int &nDim, const Vector3d &gpCoord,
-                                                    const vector<double> &InputParams, const vector<double> &gpU,
-                                                    const vector<double> &gpUdot, const vector<Vector3d> &gpGradU,
-                                                    const vector<Vector3d> &gpGradUdot, Materials &Mate) {
+void ConstDiffusionMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
-       gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){}
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||Mate.GetScalarMate().size()){}
+
 }
 //****************************************************************************
-void ConstDiffusionMaterial::ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
-                                                       const Vector3d &gpCoord, const vector<double> &InputParams,
-                                                       const vector<double> &gpU, const vector<double> &gpUOld,
-                                                       const vector<double> &gpUdot, const vector<double> &gpUdotOld,
-                                                       const vector<Vector3d> &gpGradU,
-                                                       const vector<Vector3d> &gpGradUOld,
-                                                       const vector<Vector3d> &gpGradUdot,
-                                                       const vector<Vector3d> &gpGradUdotOld, const Materials &MateOld,
-                                                       Materials &Mate) {
+void ConstDiffusionMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate){
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(t||dt||nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUOld[0]||gpUdot[0]||gpUdotOld[0]||
-       gpGradU[0](1)||gpGradUOld[0](1)||gpGradUdot[0](1)||gpGradUdotOld[0](1)||
-       MateOld.ScalarMaterials.size()||Mate.ScalarMaterials.size()){}
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
+
 
     if(InputParams.size()<1){
         MessagePrinter::PrintErrorTxt("for constant diffusion material, one parameter, namely the diffusivity, is required");
         MessagePrinter::AsFem_Exit();
     }
 
-    Mate.ScalarMaterials["D"]=InputParams[0];// D
-    Mate.ScalarMaterials["dDdc"]=0.0;        // dD/dc
+    Mate.ScalarMaterials("D")=InputParams[0];// D
+    Mate.ScalarMaterials("dDdc")=0.0;        // dD/dc
 
-    Mate.VectorMaterials["gradc"]=gpGradU[1];
+    Mate.VectorMaterials("gradc")=elmtsoln.gpGradU[1];
+
 }
 
