@@ -13,7 +13,7 @@ currentdir=os.getcwd()
 print('We are in folder:%s\n'%(currentdir))
 
 ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0
-metafile=0;csvfile=0;valgrind=0
+metafile=0;csvfile=0;valgrind=0;swp=0
 cmake=0
 for subdir,dirs,files in os.walk(currentdir):
     if ('external/eigen' in subdir) or ('.git' in subdir) or ('figures' in subdir):
@@ -27,6 +27,15 @@ for subdir,dirs,files in os.walk(currentdir):
                 os.remove(removepath)
             except:
                 print('%s is not here'%(file))
+        elif '.swp' in file:
+            name=str(file)
+            if '.swp' in name[-4:]:
+                try:
+                    swp+=1
+                    removepath=subdir+'/'+file
+                    os.remove(removepath)
+                except:
+                    print('%s is not here'%(file))
         elif ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.inp' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.jpeg' in file) or ('.png' in file) or ('.gif' in file) or ('.pdf' in file) or ('.doc' in file) or ('.docx' in file) or ('.f03' in file) or ('.f08' in file) or ('.f90' in file) or ('.f' in file) or ('.xlsx' in file) or ('Doxyfile' in file):
             continue
         elif ('ASFEM' in file) or ('asfem' in file):
@@ -125,6 +134,7 @@ print('Remove %4d ASFEM files!'%(ASFEM))
 print('Remove %4d vtu files!'%(vtu))
 print('Remove %4d csv files!'%(csvfile))
 print('Remove %4d .o files!'%(o))
+print('Remove %4d .swp files!'%(swp))
 print('Remove %4d valgrind file!'%(valgrind))
 print('Remove %4d meta files!'%(metafile))
 print('Remove %4d .idea folder!'%(ideafolder))
