@@ -50,3 +50,21 @@ struct LocalShapeFun{
     vector<Vector3d> grad_phi_current;/**< the gradient of the trial function based on the current configuration for current gauss point*/
 
 };
+
+
+
+
+/**
+ * This structure stores the displacement 'u', the velocity 'v' and their gradient 
+ * for the local element
+ */
+struct LocalElmtSolution{
+    vector<double> gpU;   /**< the solution vector of local displacement 'u'*/
+    vector<double> gpUold;/**< the solution vector of local displacement 'u' in the previous step*/
+    vector<double> gpV;   /**< the solution vector of local displacement 'v'*/
+    vector<double> gpVold;/**< the solution vector of local displacement 'v' in the previous step*/
+    vector<Vector3d> gpGradU;   /**< the gradient vector of local disp 'u'*/
+    vector<Vector3d> gpGradUold;/**< the gradient vector of local disp 'u' in the previous step*/
+    vector<Vector3d> gpGradV;   /**< the gradient vector of local disp 'u'*/
+    vector<Vector3d> gpGradVold;/**< the gradient vector of local disp 'u' in the previous step*/
+};
