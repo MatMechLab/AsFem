@@ -7,12 +7,13 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2020.10.18
-//+++ Purpose: Define the general Matrix  in AsFem
-//+++          we mainly use this for the calculation of jacobian
-//+++          If one wants to use Eigen's MatrixXd, please use
-//+++          Eigen::MatrixXd, which is different with ours !!!
+//+++ Author  : Yang Bai
+//+++ Date    : 2020.10.18
+//+++ Reviewer: Xiaoyuan @ 2021.08.20
+//+++ Purpose : Define the general Matrix  in AsFem
+//+++           we mainly use this for the calculation of jacobian
+//+++           If one wants to use Eigen's MatrixXd, please use
+//+++           Eigen::MatrixXd, which is different with ours !!!
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "Utils/MatrixXd.h"

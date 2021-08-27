@@ -7,12 +7,13 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2020.10.18
-//+++ Purpose: Define the general Matrix  in AsFem
-//+++          we mainly use this for the calculation of jacobian
-//+++          If one wants to use Eigen's MatrixXd, please use
-//+++          Eigen::MatrixXd, which is different with ours !!!
+//+++ Author   : Yang Bai
+//+++ Date     : 2020.10.18
+//+++ Reviewer : Xiaoyuan @ 2021.08.20
+//+++ Purpose  : Define the general Matrix  in AsFem
+//+++            we mainly use this for the calculation of jacobian
+//+++            If one wants to use Eigen's MatrixXd, please use
+//+++            Eigen::MatrixXd, which is different with ours !!!
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
@@ -122,7 +123,7 @@ public:
      * @param val the double type value to set up the whole matrix
      */
     inline MatrixXd& operator=(const double &val){
-        for(int i=0;i<_MN;++i) _vals[i]=val;
+        fill(_vals.begin(),_vals.end(),val);
         return *this;
     }
     /**
@@ -137,14 +138,15 @@ public:
             return *this;
         }
         else{
-            if(_M!=a.GetM()&&_N!=a.GetN()){
-                MessagePrinter::PrintErrorTxt("a=b cant be applied for two matrix with different size");
-                MessagePrinter::AsFem_Exit();
-            }
-            else{
+            if(_M==a.GetM()&&_N==a.GetN()){
                 for(int i=0;i<_MN;++i) _vals[i]=a._vals[i];
                 return *this;
             }
+            else{
+                MessagePrinter::PrintErrorTxt("a=b cant be applied for two matrix with different size");
+                MessagePrinter::AsFem_Exit();
+            }
+
         }
         return *this;
     }
@@ -165,14 +167,15 @@ public:
      */
     inline MatrixXd operator+(const MatrixXd &a)const{
         MatrixXd temp(_M,_N);
-        if(_M!=a.GetM()&&_N!=a.GetN()){
-            MessagePrinter::PrintErrorTxt("a+b cant be applied for two matrix with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==a.GetM()&&_N==a.GetN()){
             for(int i=0;i<_MN;++i) temp._vals[i]=_vals[i]+a._vals[i];
             return temp;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a+b cant be applied for two matrix with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+
         return temp;
     }
     //*** for +=
@@ -190,14 +193,15 @@ public:
      */
     inline MatrixXd& operator+=(const MatrixXd &a){
         MatrixXd temp(_M,_N);
-        if(_M!=a.GetM()&&_N!=a.GetN()){
-            MessagePrinter::PrintErrorTxt("a+b cant be applied for two matrix with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==a.GetM()&&_N==a.GetN()){
             for(int i=0;i<_MN;++i) _vals[i]=_vals[i]+a._vals[i];
             return *this;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a+b cant be applied for two matrix with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+
         return *this;
     }
     //****************************
@@ -217,14 +221,15 @@ public:
      */
     inline MatrixXd operator-(const MatrixXd &a)const{
         MatrixXd temp(_M,_N);
-        if(_M!=a.GetM()&&_N!=a.GetN()){
-            MessagePrinter::PrintErrorTxt("a-b cant be applied for two matrix with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==a.GetM()&&_N==a.GetN()){
             for(int i=0;i<_MN;++i) temp._vals[i]=_vals[i]-a._vals[i];
             return temp;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a-b cant be applied for two matrix with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+
         return temp;
     }
     //*** for -=
@@ -242,14 +247,15 @@ public:
      */
     inline MatrixXd& operator-=(const MatrixXd &a){
         MatrixXd temp(_M,_N);
-        if(_M!=a.GetM()&&_N!=a.GetN()){
-            MessagePrinter::PrintErrorTxt("a-b cant be applied for two matrix with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==a.GetM()&&_N==a.GetN()){
             for(int i=0;i<_MN;++i) _vals[i]=_vals[i]-a._vals[i];
             return *this;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a-b cant be applied for two matrix with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+
         return *this;
     }
     //****************************
@@ -260,7 +266,7 @@ public:
      */
     inline MatrixXd operator*(const double &val)const{
         MatrixXd temp(_M,_N);
-        for(int i=0;i<_MN;++i) temp._vals[i]=_vals[i]+val;
+        for(int i=0;i<_MN;++i) temp._vals[i]=_vals[i]*val;
         return temp;
     }
     /**
@@ -340,7 +346,7 @@ public:
      * This function will set the whole matrix to zero
      */
     void setZero(){
-        for(int i=0;i<_MN;++i) _vals[i]=0.0;
+        fill(_vals.begin(),_vals.end(),0.0);
     }
     /**
      * This function will set each element of the matrix to be random value
