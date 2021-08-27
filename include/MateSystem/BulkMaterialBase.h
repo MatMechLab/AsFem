@@ -28,7 +28,7 @@
 using namespace std;
 
 /**
- * The abstract bulk material base class, which defines the common functions for 
+ * This abstract bulk material base class, which defines the common functions for 
  * material property calculation
  */
 class BulkMaterialBase{

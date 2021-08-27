@@ -230,25 +230,25 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 else if(calctype==FECalcType::ComputeJacobian){
                     _subK.setZero();
                 }
-                //*****************************************************
-                //*** For user material calculation(UMAT)
-                //*****************************************************
-                if(calctype==FECalcType::InitHistoryVariable){
-                    mateSystem.InitBulkMateLibs(matetype,mateindex,nDim,_gpCoord,_gpU,_gpV,_gpGradU,_gpGradV);
-                }
-                else{
-                    mateSystem.RunBulkMateLibs(matetype,mateindex,nDim,t,dt,_gpCoord,_gpU,_gpUOld,_gpV,_gpVOld,
-                                               _gpGradU,_gpGradUOld,_gpGradV,_gpGradVOld);
-                }
-                //*****************************************************
-                //*** For user element calculation(UEL)
-                //*****************************************************
-                // we set up the local information data structure before we go into each UEL
+                // we set up the local information data structure before we go into each UMAT and UEL
                 _elmtinfo.dt=dt;_elmtinfo.t=t;
                 _elmtinfo.gpCoords=_gpCoord;
                 _elmtinfo.nDim=nDim;
                 _elmtinfo.nDofs=nDofsPerSubElmt;
                 _elmtinfo.nNodes=nNodes;
+
+                //*****************************************************
+                //*** For user material calculation(UMAT)
+                //*****************************************************
+                if(calctype==FECalcType::InitHistoryVariable){
+                    mateSystem.InitBulkMateLibs(matetype,mateindex,_elmtinfo,_elmtsoln);
+                }
+                else{
+                    mateSystem.RunBulkMateLibs(matetype,mateindex,_elmtinfo,_elmtsoln);
+                }
+                //*****************************************************
+                //*** For user element calculation(UEL)
+                //*****************************************************
                 if(calctype==FECalcType::ComputeResidual){
                     for(i=1;i<=nNodes;i++){
                         // for local shape function

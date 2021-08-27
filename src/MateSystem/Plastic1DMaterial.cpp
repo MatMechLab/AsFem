@@ -14,25 +14,22 @@
 
 #include "MateSystem/Plastic1DMaterial.h"
 
-void Plastic1DMaterial::InitMaterialProperties(const int &nDim, const Vector3d &gpCoord,
-                                               const vector<double> &InputParams, const vector<double> &gpU,
-                                               const vector<double> &gpUdot, const vector<Vector3d> &gpGradU,
-                                               const vector<Vector3d> &gpGradUdot, Materials &Mate) {
-    //**************************************************************
-    //*** get rid of unused warning
-    //**************************************************************
-    if(nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
-       gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){}
 
-    Mate.ScalarMaterials["effective_plastic_strain"]=0;
-    Mate.Rank2Materials["plastic_strain"].SetToZeros();
+void Plastic1DMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
+    // Here we do not consider any initial internal strains, stress
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
+
+
+    Mate.Rank2Materials("plastic_strain").SetToZeros();
+    Mate.ScalarMaterials("effective_plastic_strain")=0;
+
 }
-//****************************************************************************
-void Plastic1DMaterial::ComputeStrain(const int &nDim, const vector<Vector3d> &GradDisp, RankTwoTensor &Strain) {
-    if(nDim==1){
-        _GradU.SetFromGradU(GradDisp[1]);
+//*********************************************************
+void Plastic1DMaterial::ComputeStrain(const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, RankTwoTensor &Strain){
+    if(elmtinfo.nDim==1){
+        _GradU.SetFromGradU(elmtsoln.gpGradU[1]);
     }
-    else {
+    else{
         MessagePrinter::PrintErrorTxt("Plastic1DMaterial only works for 1d case");
         MessagePrinter::AsFem_Exit();
     }
@@ -47,63 +44,68 @@ double Plastic1DMaterial::ComputeYieldFunction(const vector<double> &InputParams
     return trial_strss-(YieldStress+effect_plastic_strain*Hardening);
 }
 //****************************************************************************
-void Plastic1DMaterial::ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
-                                                  const Vector3d &gpCoord, const vector<double> &InputParams,
-                                                  const vector<double> &gpU, const vector<double> &gpUOld,
-                                                  const vector<double> &gpUdot, const vector<double> &gpUdotOld,
-                                                  const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUOld,
-                                                  const vector<Vector3d> &gpGradUdot,
-                                                  const vector<Vector3d> &gpGradUdotOld, const Materials &MateOld,
-                                                  Materials &Mate) {
-    //**********************************************************************
-    //*** get rid of unused warning
-    //**********************************************************************
-    if(t||dt||gpCoord(1)||gpU[0]||gpUOld[0]||
-       gpUdot[0]||gpUdotOld[0]||gpGradU[0](1)||gpGradUOld[0](1)||
-       gpGradUdot[0](1)||gpGradUdotOld[0](1)||MateOld.ScalarMaterials.size()){}
-
-    if(InputParams.size()<3){
-        MessagePrinter::PrintErrorTxt("for 1d plastic material, three parameters are required, you need to give: E, yield stress, and hardening modulus");
-        MessagePrinter::AsFem_Exit();
-    }
+void Plastic1DMaterial::ComputeAdmissibleStressState(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,const RankTwoTensor &Strain,const Materials &MateOld,Materials &Mate,RankTwoTensor &Stress,RankFourTensor &Jac){
+    //************************************************
+    // get rid of unused warnings
+    //************************************************
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Strain(1,1)){}
 
     _E=InputParams[1-1];
-    _hardening_modulus=InputParams[3-1];
-
-    ComputeStrain(nDim,gpGradU,_Strain);// this is the total strain
-
-    _PlasticStrainOld=MateOld.ScalarMaterials.at("effective_plastic_strain");
-    _TrialStrain=_Strain(1,1)-MateOld.Rank2Materials.at("plastic_strain")(1,1);
+    _hardening_modulus=InputParams[4-1];
+    
+    _PlasticStrainOld=MateOld.ScalarMaterials("effective_plastic_strain");
+    _TrialStrain=_Strain(1,1)-MateOld.Rank2Materials("plastic_strain")(1,1);
     _TrialStress=_E*_TrialStrain;
 
     _F= ComputeYieldFunction(InputParams,_TrialStress,_PlasticStrainOld);
     if(_F<=0.0){
         // for elastic loading/unloading
-        _Jac.SetToZeros();
-        _Jac(1,1,1,1)=_E;
+        Jac.SetToZeros();
+        Jac(1,1,1,1)=_E;
         _DeltaGamma=0.0;
     }
     else{
         // for plastic deformation
         _DeltaGamma=_F/(_E+_hardening_modulus);
-        _Jac.SetToZeros();
-        _Jac(1,1,1,1)=_E*_hardening_modulus/(_E+_hardening_modulus);
+        Jac.SetToZeros();
+        Jac(1,1,1,1)=_E*_hardening_modulus/(_E+_hardening_modulus);
     }
 
-    _Stress.SetToZeros();
-    _Stress(1,1)=_TrialStress-_E*_DeltaGamma*Sign(_TrialStress);
+    Stress.SetToZeros();
+    Stress(1,1)=_TrialStress-_E*_DeltaGamma*Sign(_TrialStress);
 
-    Mate.Rank2Materials["plastic_strain"].SetToZeros();
-    Mate.Rank2Materials["plastic_strain"](1,1)=MateOld.Rank2Materials.at("plastic_strain")(1,1)+_DeltaGamma*Sign(_TrialStress);
+    Mate.Rank2Materials("plastic_strain").SetToZeros();
+    Mate.Rank2Materials("plastic_strain")(1,1)=MateOld.Rank2Materials("plastic_strain")(1,1)+_DeltaGamma*Sign(_TrialStress);
 
-    Mate.ScalarMaterials["effective_plastic_strain"]=MateOld.ScalarMaterials.at("effective_plastic_strain")+_DeltaGamma;
+    Mate.ScalarMaterials("effective_plastic_strain")=MateOld.ScalarMaterials("effective_plastic_strain")+_DeltaGamma;
 
-    _I.SetToIdentity();
-    _devStress=_Stress-_I*(_Stress.Trace()/3.0);
-    Mate.ScalarMaterials["vonMises"]=sqrt(1.5*_devStress.DoubleDot(_devStress));
-
-    Mate.Rank2Materials["stress"]=_Stress;
-    Mate.Rank2Materials["strain"]=_Strain;
-    Mate.Rank4Materials["jacobian"]=_Jac;
 
 }
+
+void Plastic1DMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) {
+
+    //*********************************************************
+    //*** get rid of unused warnings
+    //*********************************************************
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
+ 
+    
+    if(InputParams.size()<3){ 
+        MessagePrinter::PrintErrorTxt("for 1d plastic material, three parameters are required, you need to give: E, yield stress, and hardening modulus");
+        MessagePrinter::AsFem_Exit();
+    }
+
+
+    ComputeStrain(elmtinfo,elmtsoln,_Strain);
+
+    ComputeAdmissibleStressState(InputParams,elmtinfo,elmtsoln,_Strain,MateOld,Mate,_Stress,_Jac);
+
+    Mate.Rank2Materials("stress")=_Stress;
+    Mate.Rank2Materials("strain")=_Strain;
+    Mate.Rank4Materials("jacobian")=_Jac;
+
+    _devStress=_Stress-_I*(_Stress.Trace()/3.0);
+    Mate.ScalarMaterials("vonMises")=sqrt(1.5*_devStress.DoubleDot(_devStress));
+
+}
+

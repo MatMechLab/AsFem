@@ -17,6 +17,9 @@
 
 #include "MateSystem/FreeEnergyMaterialBase.h"
 
+/**
+ * This class calculate the double well potential for binary mixed case
+ */
 class DoubleWellFreeEnergyMaterial: public FreeEnergyMaterialBase{
 public:
     DoubleWellFreeEnergyMaterial();

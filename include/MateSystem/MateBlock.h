@@ -24,7 +24,10 @@
 
 using namespace std;
 
-
+/**
+ * This class defines the basic information for [mate] block 
+ * in your input file
+ */
 class MateBlock{
 public:
     MateBlock(){

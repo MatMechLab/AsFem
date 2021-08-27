@@ -46,10 +46,25 @@ public:
 
     /**
      * The '=' operator between two materials,
-     * these two materials must have the same component(both the size and material name!!!)
+     * left-hand side materials will be overwrite by the right-hand side one( both the size and material name!!!)
      * @param newmate the right-hand side material name
      */
-    Materials& operator=(const Materials &newmate);
+    inline Materials& operator=(const Materials &newmate){
+        Clean();
+        for(const auto &it:newmate._ScalarMaterials){
+            _ScalarMaterials[it.first]=it.second;
+        }
+        for(const auto &it:newmate._VectorMaterials){
+            _VectorMaterials[it.first]=it.second;
+        }
+        for(const auto &it:newmate._Rank2Materials){
+            _Rank2Materials[it.first]=it.second;
+        }
+        for(const auto &it:newmate._Rank4Materials){
+            _Rank4Materials[it.first]=it.second;
+        }
+        return *this;
+    }
 
     /**
      * Get the reference to scalar materials
