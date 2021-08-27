@@ -25,29 +25,64 @@
 
 using namespace std;
 
+/**
+ * This class implement the vector with dynamic size, which different from the vector3d(fixed size, mainly used in shape function calculation)
+ */
 class VectorXd{
 public:
+    /**
+     * construtor for different purpose
+     */
     VectorXd();
     VectorXd(const VectorXd &a);
     VectorXd(const int &m);
     VectorXd(const int &m,const double &val);
+    
+    /**
+     * resize the vector
+     * @param m the size of the vector
+     */
     void Resize(const int &m){
         _vals.resize(m,0.0);_M=m;
     }
+    /**
+     * resize the vector with initial value
+     * @param m the size of the vector
+     * @param val the intial value of the resized vector
+     */
     void Resize(const int &m,const double &val){
         _vals.resize(m,val);_M=m;
     }
+    /**
+     * return the size of the vector
+     */
     inline int GetM()const{return _M;}
+    
+    /**
+     * clean the whole vector
+     */
     void Clean(){_vals.clear();}
+    
+    /**
+     * get the pointer of the vector's data
+     */
     double* GetDataPtr(){
         return _vals.data();
     }
     //*****************************************
     //*** Operator overload
     //*****************************************
+    /**
+     * () operator for the element access of the vector
+     * @param i the index of the single element
+     */
     inline double& operator()(const int &i){
         return _vals[i-1];
     }
+    /**
+     * const () operator for the elemenet access of the vector 
+     * @param i the index of the single element
+     */
     inline double operator()(const int &i)const{
         return _vals[i-1];
     }
@@ -55,10 +90,18 @@ public:
     //*** For basic mathematic operator
     //*****************************************
     //*** for =
+    /**
+     * '=' operator for scalar
+     * @param val right hand side scalar
+     */
     inline VectorXd& operator=(const double &val){
         for(int i=0;i<_M;++i) _vals[i]=val;
         return *this;
     }
+    /**
+     * '=' operator for vector
+     * @param a the right hand side vector
+     */
     inline VectorXd& operator=(const VectorXd &a){
         if(_M==0){
             _M=a.GetM();_vals.resize(_M,0.0);
@@ -66,116 +109,186 @@ public:
             return *this;
         }
         else{
-            if(_M!=a.GetM()){
-                MessagePrinter::PrintErrorTxt("a=b cant be applied for two vectors with different size");
-                MessagePrinter::AsFem_Exit();
-            }
-            else{
+            if(_M==a.GetM()){
                 for(int i=0;i<_M;++i) _vals[i]=a._vals[i];
                 return *this;
             }
+            else{
+                MessagePrinter::PrintErrorTxt("a=b cant be applied for two vectors with different size");
+                MessagePrinter::AsFem_Exit();
+            }
+
         }
         return *this;
     }
     //*** for +
+    /**
+     * '+' operator for scalar
+     * @param val the right hand side scalar
+     */
     inline VectorXd operator+(const double &val){
         VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]+val;
         return temp;
     }
+    /**
+     * '+' for vector
+     * @param a the right hand side vector
+     */
     inline VectorXd operator+(const VectorXd &a){
-        if(_M!=a.GetM()){
-            MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
-            VectorXd temp(_M);
+        VectorXd temp(_M);
+        if(_M==a.GetM()){
             for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]+a._vals[i];
             return temp;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+
+        return temp;
     }
     //*** for +=
+    /**
+     * '+=' operator for scalar
+     * @param val the right hand side scalar
+     */
     inline VectorXd& operator+=(const double &val){
         for(int i=0;i<_M;++i) _vals[i]+=val;
         return *this;
     }
+    /**
+     * '+=' for vector
+     * @param a the right hand side vector
+     */
     inline VectorXd& operator+=(const VectorXd &a){
-        if(_M!=a.GetM()){
-            MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==a.GetM()){
             for(int i=0;i<_M;++i) _vals[i]+=a._vals[i];
             return *this;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+        return *this;
     }
     //************************
     //*** for -
+    /**
+     * '-' operator for scalar
+     * @param val right hand side scalar value
+     */
     inline VectorXd operator-(const double &val){
         VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]-val;
         return temp;
     }
+    /**
+     * '-' operator for vector
+     * @param a right hand side vector
+     */
     inline VectorXd operator-(const VectorXd &a){
-        if(_M!=a.GetM()){
-            MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        VectorXd temp(_M);
+        if(_M==a.GetM()){
             VectorXd temp(_M);
             for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]-a._vals[i];
             return temp;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+        return temp;
     }
     //*** for -=
+    /**
+     * '-' operator for scalar
+     * @param val right hand side scalar
+     */
     inline VectorXd& operator-=(const double &val){
         for(int i=0;i<_M;++i) _vals[i]-=val;
         return *this;
     }
+    /**
+     * '-=' operator for vector
+     * @param a right hand side vector
+     */
     inline VectorXd& operator-=(const VectorXd &a){
-        if(_M!=a.GetM()){
-            MessagePrinter::PrintErrorTxt("a-b cant be applied for two vectors with different size");
-            MessagePrinter::AsFem_Exit();
-        }
-        else{
+        if(_M==a.GetM()){
             for(int i=0;i<_M;++i) _vals[i]-=a._vals[i];
             return *this;
         }
+        else{
+            MessagePrinter::PrintErrorTxt("a-b cant be applied for two vectors with different size");
+            MessagePrinter::AsFem_Exit();
+        }
+        return *this;
     }
     //***********************************************
     //*** for *
+    /**
+     * '*' operator for scalar
+     * @param val right hand side scalar
+     */
     inline VectorXd operator*(const double &val){
         VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]*val;
         return temp;
     }
     //*** for *=
+    /**
+     * '*=' operator for scalar
+     * @param val the right hand side scalar
+     */
     inline VectorXd& operator*=(const double &val){
         for(int i=0;i<_M;++i) _vals[i]*=val;
         return *this;
     }
     //**********************************************
     //*** for /
+    /**
+     * '/' operator for scalar
+     * @param val right hand side scalar
+     */
     inline VectorXd operator/(const double &val){
         VectorXd temp(_M);
+        if(abs(val)<1.0e-16){
+            MessagePrinter::PrintErrorTxt("x/0 is not acceptable for '/' operator");
+            MessagePrinter::AsFem_Exit();
+        }
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]/val;
         return temp;
     }
     //*** for /=
+    /**
+     * '/=' operator for scalar
+     * @param val right hand side scalar
+     */
     inline VectorXd& operator/=(const double &val){
+        if(abs(val)<1.0e-16){
+            MessagePrinter::PrintErrorTxt("x/0 is not acceptable for '/' operator");
+            MessagePrinter::AsFem_Exit();
+        }
         for(int i=0;i<_M;++i) _vals[i]/=val;
         return *this;
     }
     //***********************************************
+    /**
+     * set vector's value to be zero
+     */
     void setZero(){
-        for(int i=0;i<_M;++i) _vals[i]=0.0;
+        fill(_vals.begin(),_vals.end(),0.0);
     }
+
+    /**
+     * set vector's components to be random values
+     */
     void setRandom(){
         srand(time(0));
         for(int i=0;i<_M;++i) _vals[i]=static_cast<double>(1.0*rand()/RAND_MAX);
     }
 
 private:
-    vector<double> _vals;
-    int _M;
+    vector<double> _vals;/**< the double array for vector's components*/
+    int _M;/**< the length of the vector*/
 };
