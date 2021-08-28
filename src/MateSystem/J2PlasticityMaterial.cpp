@@ -85,9 +85,9 @@ void J2PlasticityMaterial::ComputeAdmissibleStressState(const vector<double> &In
         _N=_STrial/_STrial.Norm();
         _theta=1.0-2.0*_Mu*_DeltaGamma/_STrial.Norm();
         _thetabar=1.0/(1.0+_hardening_modulus/(3*_Mu))-(1-_theta);
-        Jac=_I.CrossDot(_I)*_Lambda
-            +(_I4Sym-_I.CrossDot(_I)*(1.0/3.0))*2*_Mu*_theta
-            -_N.CrossDot(_N)*2*_Mu*_thetabar;
+        Jac=_I.OTimes(_I)*_Lambda
+            +(_I4Sym-_I.OTimes(_I)*(1.0/3.0))*2*_Mu*_theta
+            -_N.OTimes(_N)*2*_Mu*_thetabar;
 
     }
     // update all the variables

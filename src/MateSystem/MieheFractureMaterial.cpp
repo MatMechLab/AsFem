@@ -132,8 +132,8 @@ void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputP
     if(BracketNeg(trEps)<0) signneg=1.0;
 
     Jacobian.SetToZeros();
-    Jacobian=(I.CrossDot(I)*lambda*signpos+ProjPos*2*mu)*(g+k)
-        +I.CrossDot(I)*lambda*signneg+ProjNeg*2*mu;
+    Jacobian=(I.OTimes(I)*lambda*signpos+ProjPos*2*mu)*(g+k)
+        +I.OTimes(I)*lambda*signneg+ProjNeg*2*mu;
 
 }
 //************************************************************
