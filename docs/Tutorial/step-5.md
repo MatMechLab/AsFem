@@ -49,7 +49,7 @@ $$
 thereby, the chemical potential $\mu$ can be expressed as:
 $$
 \begin{equation}
-\mu=\ln(c)-\ln(1-c)+\chi(1-c)-\nabla^{2}c
+\mu=\ln(c)-\ln(1-c)+\chi(1-c)-\kappa\nabla^{2}c
 \label{eq:mu}
 \tag{4}
 \end{equation}
