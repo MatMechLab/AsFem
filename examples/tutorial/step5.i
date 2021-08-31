@@ -22,7 +22,7 @@ name=c mu
 
 [mates]
   [myf]
-    type=doublewellpotential
+    type=idealsolution
     params=1.0 2.5 0.005
     //     D   Chi Kappa
   [end]

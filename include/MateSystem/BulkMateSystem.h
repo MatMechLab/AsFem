@@ -40,6 +40,7 @@
 #include "MateSystem/ConstPoissonMaterial.h"
 #include "MateSystem/ConstDiffusionMaterial.h"
 #include "MateSystem/DoubleWellFreeEnergyMaterial.h"
+#include "MateSystem/IdealSolutionFreeEnergyMaterial.h"
 #include "MateSystem/LinearElasticMaterial.h"
 #include "MateSystem/IncrementSmallStrainMaterial.h"
 #include "MateSystem/NeoHookeanMaterial.h"
@@ -55,6 +56,7 @@
 class BulkMateSystem: public ConstPoissonMaterial,
                       public ConstDiffusionMaterial,
                       public DoubleWellFreeEnergyMaterial,
+                      public IdealSolutionFreeEnergyMaterial,
                       public LinearElasticMaterial,
                       public IncrementSmallStrainMaterial,
                       public NeoHookeanMaterial,

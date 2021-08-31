@@ -296,6 +296,9 @@ set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 #   for double well free energy materials
 set(inc ${inc} include/MateSystem/DoubleWellFreeEnergyMaterial.h)
 set(src ${src} src/MateSystem/DoubleWellFreeEnergyMaterial.cpp)
+#   for ideal solution free energy
+set(inc ${inc} include/MateSystem/IdealSolutionFreeEnergyMaterial.h)
+set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)

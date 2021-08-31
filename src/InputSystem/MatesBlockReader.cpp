@@ -119,6 +119,12 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::DOUBLEWELLFREENERGYMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("idealsolution")!=string::npos&&substr.length()==13){
+                        mateBlock._MateTypeName="idealsolution";
+                        mateBlock._MateType=MateType::IDEALSOLUTIONFREENERGYMATE;
+                        HasElmt=true;
+                    }
+
                     else if(substr.find("linearelastic")!=string::npos&&substr.length()==13){
                         mateBlock._MateTypeName="linearelastic";
                         mateBlock._MateType=MateType::LINEARELASTICMATE;

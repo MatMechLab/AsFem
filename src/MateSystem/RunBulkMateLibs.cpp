@@ -29,6 +29,9 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate, const int &mateindex
         case MateType::DOUBLEWELLFREENERGYMATE:
             DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
+        case MateType::IDEALSOLUTIONFREENERGYMATE:
+            IdealSolutionFreeEnergyMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
         case MateType::LINEARELASTICMATE:
             LinearElasticMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
