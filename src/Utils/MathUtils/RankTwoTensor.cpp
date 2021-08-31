@@ -14,7 +14,6 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "Utils/RankTwoTensor.h"
-#include "Eigen/Eigen"
 
 
 //***************************************
@@ -360,13 +359,15 @@ RankFourTensor RankTwoTensor::ODot(const RankTwoTensor &a) const{
 void RankTwoTensor::CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec)const {
     // TODO: change Eigen to Slepc?
     // I must say, it is quite stupid, since we already has PETSc, why to call Eigen for eigen value?
-    Eigen::EigenSolver<Eigen::Matrix3d> _eigen_solver;
     Eigen::Matrix3d _M;
 
     _M<<(*this)(1,1),(*this)(1,2),(*this)(1,3),
         (*this)(2,1),(*this)(2,2),(*this)(2,3),
         (*this)(3,1),(*this)(3,2),(*this)(3,3);
+    
+    Eigen::EigenSolver<Eigen::Matrix3d> _eigen_solver;
     _eigen_solver.compute(_M);
+    //
     eigval[0]=_eigen_solver.eigenvalues()(0).real();
     eigval[1]=_eigen_solver.eigenvalues()(1).real();
     eigval[2]=_eigen_solver.eigenvalues()(2).real();

@@ -21,10 +21,13 @@
 
 #include "petsc.h"
 
+#include "Eigen/Eigen"
+
 //****************************
 #include "Utils/MessagePrinter.h"
 #include "Utils/Vector3d.h"
 #include "Utils/RankFourTensor.h"
+
 
 using namespace std;
 

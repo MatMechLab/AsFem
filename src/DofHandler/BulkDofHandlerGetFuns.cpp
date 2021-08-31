@@ -16,7 +16,7 @@
 
 //********************************************************
 int BulkDofHandler::GetDofIDviaDofName(string dofname)const{
-    for(const auto it:_DofName2IDList){
+    for(const auto &it:_DofName2IDList){
         if(it.first==dofname){
             return it.second;
         }
