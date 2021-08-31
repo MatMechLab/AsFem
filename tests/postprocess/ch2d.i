@@ -30,7 +30,7 @@ name=c mu
 
 [mates]
   [mate1]
-    type=doublewellpotential
+    type=idealsolution
     params=1.0 2.5 0.002
   [end]
 [end]

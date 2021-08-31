@@ -60,6 +60,7 @@ private:
 
 private:
     double c;/**< local concentration*/
+    double ca,cb,factor;
     vector<double> _F,_dFdc,_d2Fdc2;/**< local array for F and its derivatives*/
 
 };

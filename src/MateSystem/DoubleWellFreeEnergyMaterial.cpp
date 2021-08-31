@@ -30,19 +30,34 @@ void DoubleWellFreeEnergyMaterial::InitMaterialProperties(const vector<double> &
 //*****************************************************************
 void DoubleWellFreeEnergyMaterial::ComputeF(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &F){
     c=elmtsoln.gpU[1];
-    F[0]=c*log(c)+(1-c)*log(1-c)+InputParams[1]*c*(1-c);
+    
+    ca=InputParams[1];
+    cb=InputParams[2];
+    factor=InputParams[3];
+    
+    F[0]=factor*(c-ca)*(c-ca)*(c-cb)*(c-cb);
 }
 //****************************************************************
 
 void DoubleWellFreeEnergyMaterial::ComputedFdU(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &dF){
     
     c=elmtsoln.gpU[1];
-    dF[0]=log(c)-log(1-c)+InputParams[1]*(1-2*c);
+    
+    ca=InputParams[1];
+    cb=InputParams[2];
+    factor=InputParams[3];
+
+    dF[0]=factor*2*(c-ca)*(c-cb)*(2*c-ca-cb);
 }
 
 void DoubleWellFreeEnergyMaterial::Computed2FdU2(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &d2F){
     c=elmtsoln.gpU[1];
-    d2F[0]=1.0/c+1.0/(1-c)-2*InputParams[1];
+    
+    ca=InputParams[1];
+    cb=InputParams[2];
+    factor=InputParams[3];
+
+    d2F[0]=2*(ca*ca+4*ca*cb-6*ca*c+cb*cb-6*cb*c+6*c*c);
 }
 
 void DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate){
@@ -52,8 +67,8 @@ void DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(const vector<double
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
 
 
-    if(InputParams.size()<3){
-        MessagePrinter::PrintErrorTxt("for double well free energy material, three parameters are required, you need to give: D, Chi, and Kappa");
+    if(InputParams.size()<5){
+        MessagePrinter::PrintErrorTxt("for double well free energy material(f=h(c-ca)^2(c-cb)^2), five parameters are required, you need to give: D, ca, cb, h,  and Kappa");
         MessagePrinter::AsFem_Exit();
     }
 
@@ -69,7 +84,7 @@ void DoubleWellFreeEnergyMaterial::ComputeMaterialProperties(const vector<double
     Mate.ScalarMaterials("dFdc")=_dFdc[0];
     Mate.ScalarMaterials("d2Fdc2")=_d2Fdc2[0];
 
-    Mate.ScalarMaterials("Kappa")=InputParams[2];
+    Mate.ScalarMaterials("Kappa")=InputParams[4];
 
     Mate.VectorMaterials("gradc") =elmtsoln.gpGradU[1];// for output
     Mate.VectorMaterials("gradmu")=elmtsoln.gpGradU[2];// for output
