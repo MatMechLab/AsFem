@@ -7,9 +7,10 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2021.02.18
-//+++ Purpose: add getting functions for abaqus io importor
+//+++ Author  : Yang Bai
+//+++ Date    : 2021.02.18
+//+++ Reviewer: Xiaoyuan @2021.08.28
+//+++ Purpose : add getting functions for abaqus io importor
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "Mesh/AbaqusIO.h"
@@ -476,7 +477,7 @@ int AbaqusIO::GetSubSubElmtNodesNumFromInp() const{
     return -1;
 }
 //*****************************************************************
-int AbaqusIO::GetSubElmtDimFromGmshInp() const{
+int AbaqusIO::GetSubElmtDimFromInp() const{
     return GetElmtDimFromInp()-1;
 }
 int AbaqusIO::GetSubElmtOrderFromInpElmt()const{

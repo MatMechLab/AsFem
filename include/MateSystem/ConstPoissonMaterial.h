@@ -21,19 +21,22 @@
 
 #include "MateSystem/BulkMaterialBase.h"
 
+/**
+ * This class calculate the constant sigma and F for the poisson equation
+ * \f$\sigma\nabla^{2}\phi=F\f$
+ */
 class ConstPoissonMaterial:public BulkMaterialBase{
 public:
-    virtual void InitMaterialProperties(const int &nDim, const Vector3d &gpCoord,const vector<double> &InputParams,
-                                        const vector<double> &gpU,const vector<double> &gpUdot,
-                                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
-                                        Materials &Mate) override;
+    /**
+     * Initialze the material properties
+     */
+    virtual void InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate) override;
 
-    virtual void ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
-                                           const Vector3d &gpCoord, const vector<double> &InputParams,
-                                           const vector<double> &gpU, const vector<double> &gpUOld,
-                                           const vector<double> &gpUdot,const vector<double> &gpUdotOld,
-                                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
-                                           const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
-                                           const Materials &MateOld, Materials &Mate) override;
+    /**
+     * Calculate the \f$\sigma\f$, \f$F\f$ and their derivative(=0 for constant case)
+     */
+    virtual void ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) override;
+
+
 
 };

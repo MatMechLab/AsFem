@@ -15,10 +15,33 @@
 
 #include "MateSystem/BulkMaterialBase.h"
 
+/**
+ * The base class for free energy materials, where the calculation of free energy and its 1st+2nd order derivatives are required
+ */
 class FreeEnergyMaterialBase: public BulkMaterialBase{
 protected:
-    virtual void ComputeF(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt,vector<double> &F)=0;
-    virtual void ComputedFdU(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt,vector<double> &dF)=0;
-    virtual void Computed2FdU2(const vector<double> &InputParams,const vector<double> &U,const vector<double> &dUdt,vector<double> &d2F)=0;
+    /**
+     * Compute the general free energy
+     * @param InputParams the material parameters read from the input file
+     * @param elmtsoln the solution vector of current element
+     * @param F the free energy value vector
+     */
+    virtual void ComputeF(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &F)=0;
+    
+    /**
+     * Compute the general free energy's 1st order derivative (chemical potentials)
+     * @param InputParams the material parameters read from the input file
+     * @param elmtsoln the solution vector of current element
+     * @param dF the free energy's 1st derivatives (\f$\mu\f$)
+     */
+    virtual void ComputedFdU(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &dF)=0;
+    
+    /**
+     * Compute the general free energy's 2nd order derivative (\f$\partial\mu/\partial c\f$)
+     * @param InputParams the material parameters read from the input file
+     * @param elmtsoln the solution vector of current element
+     * @param d2F the free energy's 1st derivatives (\f$d\mu/dc\f$)
+     */
+    virtual void Computed2FdU2(const vector<double> &InputParams,const LocalElmtSolution &elmtsoln,vector<double> &d2F)=0;
 
 };

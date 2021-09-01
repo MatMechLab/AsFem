@@ -41,10 +41,10 @@ using namespace std;
 class MateSystem;
 
 class BulkElmtSystem: public PoissonElmt,
-        public DiffusionElmt,
-        public MechanicsElmt,
-        public CahnHilliardElmt,
-        public MieheFractureElmt{
+                      public DiffusionElmt,
+                      public MechanicsElmt,
+                      public CahnHilliardElmt,
+                      public MieheFractureElmt{
 public:
     BulkElmtSystem();
 
@@ -61,17 +61,12 @@ public:
 
 
     void RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                         const int &nDim,const int &nNodes,const int &nDofs,
-                         const double &t,const double &dt,const double (&ctan)[2],
-                         const Vector3d &gpCoords,
-                         const vector<double> &gpU,const vector<double> &gpUold,
-                         const vector<double> &gpV,const vector<double> &gpVold,
-                         const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUold,
-                         const vector<Vector3d> &gpGradV,const vector<Vector3d> &gpGradVold,
-                         const double &test,const double &trial,
-                         const Vector3d &grad_test,const Vector3d &grad_trial,
+                         const double (&ctan)[2],
+                         const LocalElmtInfo &elmtinfo,
+                         const LocalElmtSolution &soln,
+                         const LocalShapeFun &shp,
                          const Materials &Mate,const Materials &MateOld,
-                         map<string,double> &gpProj,
+                         ScalarMateType &gpProj,
                          MatrixXd &localK,VectorXd &localR);
 
     void PrintBulkElmtInfo()const;
@@ -81,107 +76,5 @@ protected:
     vector<ElmtBlock> _BulkElmtBlockList;
 
 protected:
-    //****************************************************************************
-    //*** For AsFem's built-in elements and User-Defined-Elements (UEL)
-    //*** One can implement his own model here
-    //****************************************************************************
-    //*** the laplace means: \int(\nabla U*\nabla test)dV
-    void LaplaceElmt(const FECalcType &calctype,
-                const int &nDim,const int &nNodes,const int &nDofs,
-                const double &t,const double &dt,const double (&ctan)[2],
-                const Vector3d &gpCoords,
-                const vector<double> &gpU,const vector<double> &gpV,
-                const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                const ScalarMateType &ScalarMaterials,
-                const VectorMateType &VectorMaterials,
-                const Rank2MateType &Rank2Materials,
-                const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                MatrixXd &localK,VectorXd &localR);
-    //*** the body source means  int(f*test)dV
-    void BodySourceElmt(const FECalcType &calctype,
-                const int &nDim,const int &nNodes,const int &nDofs,
-                const double &t,const double &dt,const double (&ctan)[2],
-                const Vector3d &gpCoords,
-                const vector<double> &gpU,const vector<double> &gpV,
-                const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                const ScalarMateType &ScalarMaterials,
-                const VectorMateType &VectorMaterials,
-                const Rank2MateType &Rank2Materials,
-                const Rank4MateType &Rank4Materials,
-                vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                MatrixXd &localK,VectorXd &localR);
-    //************************************************************************************
-    //*** for general time derivative
-    //************************************************************************************
-    void TimeDerivElmt(const FECalcType &calctype,
-                     const int &nDim,const int &nNodes,const int &nDofs,
-                     const double &t,const double &dt,const double (&ctan)[2],
-                     const Vector3d &gpCoords,
-                     const vector<double> &gpU,const vector<double> &gpV,
-                     const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                     const double &test,const double &trial,
-                     const Vector3d &grad_test,const Vector3d &grad_trial,
-                     const ScalarMateType &ScalarMaterials,
-                     const VectorMateType &VectorMaterials,
-                     const Rank2MateType &Rank2Materials,
-                     const Rank4MateType &Rank4Materials,
-                     vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                     MatrixXd &localK,VectorXd &localR);
-    //************************************************************************************
-    //*** for User-defined element 1
-    //************************************************************************************
-    void User1Elmt(const FECalcType &calctype,
-                           const int &nDim,const int &nNodes,const int &nDofs,
-                           const double &t,const double &dt,const double (&ctan)[2],
-                           const Vector3d &gpCoords,
-                           const vector<double> &gpU,const vector<double> &gpV,
-                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                           const double &test,const double &trial,
-                           const Vector3d &grad_test,const Vector3d &grad_trial,
-                           const ScalarMateType &ScalarMaterials,
-                           const VectorMateType &VectorMaterials,
-                           const Rank2MateType &Rank2Materials,
-                           const Rank4MateType &Rank4Materials,
-                           vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                           MatrixXd &localK,VectorXd &localR);
-    //************************************************************************************
-    //*** for User-defined element 2
-    //************************************************************************************
-    void User2Elmt(const FECalcType &calctype,
-                   const int &nDim,const int &nNodes,const int &nDofs,
-                   const double &t,const double &dt,const double (&ctan)[2],
-                   const Vector3d &gpCoords,
-                   const vector<double> &gpU,const vector<double> &gpV,
-                   const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                   const double &test,const double &trial,
-                   const Vector3d &grad_test,const Vector3d &grad_trial,
-                   const ScalarMateType &ScalarMaterials,
-                   const VectorMateType &VectorMaterials,
-                   const Rank2MateType &Rank2Materials,
-                   const Rank4MateType &Rank4Materials,
-                   vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                   MatrixXd &localK,VectorXd &localR);
-    //************************************************************************************
-    //*** for User-defined element 2
-    //************************************************************************************
-    void User3Elmt(const FECalcType &calctype,
-                   const int &nDim,const int &nNodes,const int &nDofs,
-                   const double &t,const double &dt,const double (&ctan)[2],
-                   const Vector3d &gpCoords,
-                   const vector<double> &gpU,const vector<double> &gpV,
-                   const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradV,
-                   const double &test,const double &trial,
-                   const Vector3d &grad_test,const Vector3d &grad_trial,
-                   const ScalarMateType &ScalarMaterials,
-                   const VectorMateType &VectorMaterials,
-                   const Rank2MateType &Rank2Materials,
-                   const Rank4MateType &Rank4Materials,
-                   vector<double> &gpHist,vector<double> &gpHistOld,map<string,double> &gpProj,
-                   MatrixXd &localK,VectorXd &localR);
 
 };

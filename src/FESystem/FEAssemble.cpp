@@ -61,10 +61,10 @@ void FESystem::AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vect
 }
 //**********************************************************************
 void FESystem::AssembleSubHistToLocal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem){
-    solutionSystem._ScalarMaterials[(e-1)*ngp+gpInd-1]=mate.ScalarMaterials;
-    solutionSystem._VectorMaterials[(e-1)*ngp+gpInd-1]=mate.VectorMaterials;
-    solutionSystem._Rank2TensorMaterials[(e-1)*ngp+gpInd-1]=mate.Rank2Materials;
-    solutionSystem._Rank4TensorMaterials[(e-1)*ngp+gpInd-1]=mate.Rank4Materials;
+    solutionSystem._ScalarMaterials[(e-1)*ngp+gpInd-1]=mate.GetScalarMate();
+    solutionSystem._VectorMaterials[(e-1)*ngp+gpInd-1]=mate.GetVectorMate();
+    solutionSystem._Rank2TensorMaterials[(e-1)*ngp+gpInd-1]=mate.GetRank2Mate();
+    solutionSystem._Rank4TensorMaterials[(e-1)*ngp+gpInd-1]=mate.GetRank4Mate();
 }
 void FESystem::AssembleLocalHistToGlobal(const int &e,const int &ngp,SolutionSystem &solutionSystem){
     for(int gpInd=0;gpInd<ngp;gpInd++){

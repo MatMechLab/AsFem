@@ -15,24 +15,32 @@
 
 #include "MateSystem/MechanicsMaterialBase.h"
 
+/**
+ * This class implement the isotropic linear elastic material for the small strain case.
+ */
 class LinearElasticMaterial: public MechanicsMaterialBase{
 public:
-    virtual void InitMaterialProperties(const int &nDim,const Vector3d &gpCoord,const vector<double> &InputParams,
-                                        const vector<double> &gpU,const vector<double> &gpUdot,
-                                        const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUdot,
-                                        Materials &Mate) override;
-
-    virtual void ComputeMaterialProperties(const double &t, const double &dt,const int &nDim,
-                                           const Vector3d &gpCoord,const vector<double> &InputParams,
-                                           const vector<double> &gpU,const vector<double> &gpUOld,
-                                           const vector<double> &gpUdot,const vector<double> &gpUdotOld,
-                                           const vector<Vector3d> &gpGradU,const vector<Vector3d> &gpGradUOld,
-                                           const vector<Vector3d> &gpGradUdot,const vector<Vector3d> &gpGradUdotOld,
-                                           const Materials &MateOld, Materials &Mate) override;
+    /**
+     * Initialize material properties in LinearElasticMaterial
+     */
+    virtual void InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate) override;
+   
+    /**
+     * Compute the stress and jacobian in LinearElasticMaterial
+     */ 
+    virtual void ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) override;
 
 private:
-    virtual void ComputeStrain(const int &nDim,const vector<Vector3d> &GradDisp, RankTwoTensor &Strain) override;
-    virtual void ComputeStressAndJacobian(const vector<double> &InputParams,const RankTwoTensor &Strain,RankTwoTensor &Stress,RankFourTensor &Jacobian) override;
+    /**
+     * compute small strain
+     */
+    virtual void ComputeStrain(const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, RankTwoTensor &Strain) override;
+
+    /**
+     * compute the stress and jacobian for small deformation case.
+     */
+    virtual void ComputeStressAndJacobian(const vector<double> &InputParams, const RankTwoTensor &Strain, RankTwoTensor &Stress, RankFourTensor &Jacobian) override;
+
 
 private:
     RankTwoTensor _GradU,_Strain,_Stress,_I,_devStress;

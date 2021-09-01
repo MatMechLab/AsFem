@@ -182,6 +182,7 @@ bool AbaqusIO::ReadMeshFromFile(Mesh &mesh){
             string SurfaceSetName;
             nLowerDimElmts=GetSurfaceElmtsNumFromInp();
             int surfaceid,i,edge;
+            surfaceid=0;
             vector<int> ElmtIDList;
             i=str.find_last_of("=");
             SurfaceSetName=str.substr(i+1,string::npos);

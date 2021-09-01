@@ -23,6 +23,10 @@
 //**********************************
 #include "MateSystem/BulkMateSystem.h"
 
+/**
+ * This class implement the calculation of user-defined materials for both
+ * the bulk domain and interface domain
+ */
 class MateSystem:public BulkMateSystem{
 public:
     MateSystem();

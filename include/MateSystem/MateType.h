@@ -14,6 +14,9 @@
 
 #pragma once
 
+/**
+ * This enum structure list all the pre-registered materials
+ */
 enum class MateType{
     NULLMATE,
     LINEARELASTICMATE,
@@ -31,6 +34,7 @@ enum class MateType{
     THERMALELASTICMATE,
     CONSTWAVEMATE,
     CAHNHILLIARDMATE,
+    IDEALSOLUTIONFREENERGYMATE,
     DOUBLEWELLFREENERGYMATE,
     ELASTICCAHNHILLIARDMATE,
     LINEARELASTICPFFRACTUREMATE,

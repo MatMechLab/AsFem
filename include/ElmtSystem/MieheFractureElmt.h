@@ -22,46 +22,50 @@
 
 #include "ElmtSystem/BulkElmtBase.h"
 
+/**
+ * This class implement the calculation of Miehe's phase field fracture model
+ */
 class MieheFractureElmt:public BulkElmtBase{
 public:
-    virtual void ComputeAll(const FECalcType &calctype, const int &nDim, const int &nNodes,
-                            const int &nDofs, const double &t, const double &dt, const double (&ctan)[2],
-                            const Vector3d &gpCoords, const vector<double> &gpU,
-                            const vector<double> &gpUold, const vector<double> &gpV,
-                            const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                            const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                            const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
-                            const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
-                            const Materials &MateOld, map<string, double> &gpProj, MatrixXd &localK,
-                            VectorXd &localR) override;
+    /**
+     * Function for different calculate action
+     */
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+            const LocalElmtSolution &soln,const LocalShapeFun &shp,
+            const Materials &Mate,const Materials &MateOld,
+            ScalarMateType &gpProj,
+            MatrixXd &localK,VectorXd &localR) override;
 
 private:
-    virtual void ComputeResidual(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                 const double &dt, const Vector3d &gpCoords, const vector<double> &gpU,
-                                 const vector<double> &gpUold, const vector<double> &gpV,
-                                 const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                                 const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                                 const vector<Vector3d> &gpGradVold, const double &test,
-                                 const Vector3d &grad_test, const Materials &Mate,
-                                 const Materials &MateOld, VectorXd &localR) override;
+    /**
+     * This function calculate the residual of Miehe's phase field fracture model. <br>
+     * \f$R_{u_{i}}^{I}=\sigma_{ij}N_{,j}^{I}\f$ <br>
+     * \f$R_{d}=\eta\dot{d}N^{I}+2(d-1)\mathbb{H}N^{I}+\frac{G_{c}}{L}dN^{I}+G_{c}L\nabla d\nabla N^{I}\f$
+     */
+    virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 VectorXd &localR) override;
 
-    virtual void ComputeJacobian(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                 const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                 const vector<double> &gpU, const vector<double> &gpUold,
-                                 const vector<double> &gpV, const vector<double> &gpVold,
-                                 const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                 const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                 const double &test, const double &trial, const Vector3d &grad_test,
-                                 const Vector3d &grad_trial, const Materials &Mate,
-                                 const Materials &MateOld, MatrixXd &localK) override;
+    /**
+     * This function calculate the jacobian matrix of Miehe's phase field fracture model. <br>
+     * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\mathbb{C}_{ijkl}N_{,j}^{I}N_{,l}^{J}\f$ <br>
+     * \f$K_{dd}^{IJ}=\frac{\partial R_{d}^{I}}{\partial d^{J}}=\eta N^{J}N^{I}\mathrm{ctan[1]}+2N^{J}\mathcal{H}N^{I}+\frac{G_{c}}{L}N^{J}N^{I}+G_{c}L\nabla N^{J}\nabla N^{I}\f$
+     */
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 MatrixXd &localK) override;
 
-    virtual void ComputeProjection(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                   const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                   const vector<double> &gpU, const vector<double> &gpUold,
-                                   const vector<double> &gpV, const vector<double> &gpVold,
-                                   const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                   const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                   const double &test, const Vector3d &grad_test, const Materials &Mate,
-                                   const Materials &MateOld, map<string, double> &gpProj) override;
+    /**
+     * This function calculate the projected scalar variable for Miehe's phase field fracture model
+     */
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                   const LocalElmtSolution &soln,
+                                   const LocalShapeFun &shp,
+                                   const Materials &Mate,const Materials &MateOld,
+                                   ScalarMateType &gpProj) override;
 
 };

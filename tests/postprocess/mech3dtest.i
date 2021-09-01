@@ -5,8 +5,8 @@
   ymax=2
   zmax=3
   nx=10
-  ny=10
-  nz=10
+  ny=20
+  nz=30
   meshtype=hex8
 [end]
 

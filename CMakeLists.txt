@@ -83,9 +83,6 @@ endif()
 message("AsFem will be compiled in ${CMAKE_BUILD_TYPE} mode !")
 
 
-
-
-
 ###############################################
 ### Do not edit the following two lines !!! ###
 ###############################################
@@ -140,19 +137,47 @@ set(inc ${inc} include/Utils/MathFuns.h)
 #############################################################
 set(inc ${inc} include/InputSystem/InputSystem.h)
 set(src ${src} src/InputSystem/InputSystem.cpp src/InputSystem/ReadInputFile.cpp)
-set(src ${src} src/InputSystem/ReadMeshBlock.cpp)
-set(src ${src} src/InputSystem/ReadDofsBlock.cpp)
-set(src ${src} src/InputSystem/ReadElmtBlock.cpp)
-set(src ${src} src/InputSystem/ReadMateBlock.cpp)
-set(src ${src} src/InputSystem/ReadBCBlock.cpp)
-set(src ${src} src/InputSystem/ReadICBlock.cpp)
-set(src ${src} src/InputSystem/ReadQPointBlock.cpp)
-set(src ${src} src/InputSystem/ReadOutputBlock.cpp)
-set(src ${src} src/InputSystem/ReadPostprocessBlock.cpp)
-set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
-set(src ${src} src/InputSystem/ReadNonlinearSolverBlock.cpp)
-set(src ${src} src/InputSystem/ReadTimeSteppingBlock.cpp)
-set(src ${src} src/InputSystem/ReadFEJobBlock.cpp)
+set(inc ${inc} include/InputSystem/SingleBlockReader.h)
+### for mesh block
+set(inc ${inc} include/InputSystem/MeshBlockReader.h)
+set(src ${src} src/InputSystem/MeshBlockReader.cpp)
+### for dof block
+set(inc ${inc} include/InputSystem/DofsBlockReader.h)
+set(src ${src} src/InputSystem/DofsBlockReader.cpp)
+### for elmts block
+set(inc ${inc} include/InputSystem/ElmtsBlockReader.h)
+set(src ${src} src/InputSystem/ElmtsBlockReader.cpp)
+### for mate block
+set(inc ${inc} include/InputSystem/MatesBlockReader.h)
+set(src ${src} src/InputSystem/MatesBlockReader.cpp)
+### for bcs block
+set(inc ${inc} include/InputSystem/BCsBlockReader.h)
+set(src ${src} src/InputSystem/BCsBlockReader.cpp)
+### for ics block
+set(inc ${inc} include/InputSystem/ICsBlockReader.h)
+set(src ${src} src/InputSystem/ICsBlockReader.cpp)
+### for qpoint block
+set(inc ${inc} include/InputSystem/QPointBlockReader.h)
+set(src ${src} src/InputSystem/QPointBlockReader.cpp)
+### for output block
+set(inc ${inc} include/InputSystem/OutputBlockReader.h)
+set(src ${src} src/InputSystem/OutputBlockReader.cpp)
+### for postprocess block 
+set(inc ${inc} include/InputSystem/PostprocessBlockReader.h)
+set(src ${src} src/InputSystem/PostprocessBlockReader.cpp)
+### for projection block
+set(inc ${inc} include/InputSystem/ProjectionBlockReader.h)
+set(src ${src} src/InputSystem/ProjectionBlockReader.cpp)
+### for nonlinear solver block
+set(inc ${inc} include/InputSystem/NonlinearSolverBlockReader.h)
+set(src ${src} src/InputSystem/NonlinearSolverBlockReader.cpp)
+### for time stepping block
+set(inc ${inc} include/InputSystem/TimeSteppingBlockReader.h)
+set(src ${src} src/InputSystem/TimeSteppingBlockReader.cpp)
+### for FEJob block
+set(inc ${inc} include/InputSystem/FEJobBlockReader.h)
+set(src ${src} src/InputSystem/FEJobBlockReader.cpp)
+
 
 #############################################################
 ### For Mesh class                                        ###
@@ -211,6 +236,8 @@ set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 ### For bulk element base class
 set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
+### For the data structure used by local element calc
+set(inc ${inc} include/ElmtSystem/LocalElmtData.h)
 ### For linear poisson element
 set(inc ${inc} include/ElmtSystem/PoissonElmt.h)
 set(src ${src} src/ElmtSystem/PoissonElmt.cpp)
@@ -226,27 +253,18 @@ set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### For Miehe's phase field fracture element
 set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
-### for laplace operator
-set(src ${src} src/ElmtSystem/LaplaceElmt.cpp)
-### for body source term
-set(src ${src} src/ElmtSystem/BodySourceElmt.cpp)
-### for poisson equation
-set(src ${src} src/ElmtSystem/TimeDerivElmt.cpp)
-### for User1 element
-set(src ${src} src/ElmtSystem/User1Elmt.cpp)
-### for User2 element
-set(src ${src} src/ElmtSystem/User2Elmt.cpp)
-### for User3 element
-set(src ${src} src/ElmtSystem/User3Elmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
 #############################################################
 set(inc ${inc} include/MateSystem/MateType.h)
-set(inc ${inc} include/MateSystem/MateTypeDefine.h)
+set(inc ${inc} include/MateSystem/MateNameDefine.h)
 set(inc ${inc} include/MateSystem/MateBlock.h)
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
+### for complex materials class
+set(inc ${inc} include/MateSystem/Materials.h)
+set(src ${src} src/MateSystem/Materials.cpp)
 ### for bulk materials
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
@@ -278,6 +296,9 @@ set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 #   for double well free energy materials
 set(inc ${inc} include/MateSystem/DoubleWellFreeEnergyMaterial.h)
 set(src ${src} src/MateSystem/DoubleWellFreeEnergyMaterial.cpp)
+#   for ideal solution free energy
+set(inc ${inc} include/MateSystem/IdealSolutionFreeEnergyMaterial.h)
+set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
@@ -286,9 +307,7 @@ set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
 set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
-set(src ${src} src/MateSystem/CahnHilliardMaterial.cpp)
 ### for UMAT
-set(src ${src} src/MateSystem/User1Material.cpp)
 
 #############################################################
 ### For Boundary condition system in AsFem                ###
@@ -347,11 +366,18 @@ set(inc ${inc} include/FE/FE.h)
 set(src ${src} src/FE/FE.cpp)
 ### for shape functions
 set(inc ${inc} include/FE/LagrangeShapeFun.h)
+### for 1D lagrange shape function
+set(inc ${inc} include/FE/Lagrange1DShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/Lagrange1DShapeFun.cpp)
+### for 2D lagrange shape function 
+set(src ${src} include/FE/Lagrange2DShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/Lagrange2DShapeFun.cpp)
+### for 3D lagrange shape function
+set(inc ${inc} include/FE/Lagrange3DShapeFun.h)
+set(src ${src} src/FE/ShapeFuns/Lagrange3DShapeFun.cpp)
+###
 set(src ${src} src/FE/ShapeFuns/LagrangeShapeFun.cpp)
 set(src ${src} src/FE/ShapeFuns/LagrangeShapeFunCalc.cpp)
-set(src ${src} src/FE/ShapeFuns/Compute1DLagrangeShapeFun.cpp)
-set(src ${src} src/FE/ShapeFuns/Compute2DLagrangeShapeFun.cpp)
-set(src ${src} src/FE/ShapeFuns/Compute3DLagrangeShapeFun.cpp)
 set(inc ${inc} include/FE/ShapeFun.h)
 set(src ${src} src/FE/ShapeFuns/ShapeFun.cpp)
 #############################################################
@@ -445,3 +471,12 @@ set(src ${src} src/FEProblem/RunTransientAnalysis.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
+
+
+##################################################
+### Following lines are used by vim            ###
+### you can delete all of them                 ###
+##################################################
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${PETSC_DIR}/include")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${MPI_DIR}/include")
+

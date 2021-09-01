@@ -18,46 +18,50 @@
 
 #include "ElmtSystem/BulkElmtBase.h"
 
+
+/**
+ * This class implement the calculation of poisson equation
+ */
 class PoissonElmt:public BulkElmtBase{
 public:
-    virtual void ComputeAll(const FECalcType &calctype, const int &nDim, const int &nNodes,
-                            const int &nDofs, const double &t, const double &dt, const double (&ctan)[2],
-                            const Vector3d &gpCoords, const vector<double> &gpU,
-                            const vector<double> &gpUold, const vector<double> &gpV,
-                            const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                            const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                            const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
-                            const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
-                            const Materials &MateOld, map<string, double> &gpProj, MatrixXd &localK,
-                            VectorXd &localR) override;
+    /**
+     * Function for different calculate action
+     */
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+            const LocalElmtSolution &soln,const LocalShapeFun &shp,
+            const Materials &Mate,const Materials &MateOld,
+            ScalarMateType &gpProj,
+            MatrixXd &localK,VectorXd &localR) override;
 
 private:
-    virtual void ComputeResidual(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                 const double &dt, const Vector3d &gpCoords, const vector<double> &gpU,
-                                 const vector<double> &gpUold, const vector<double> &gpV,
-                                 const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                                 const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                                 const vector<Vector3d> &gpGradVold, const double &test,
-                                 const Vector3d &grad_test, const Materials &Mate,
-                                 const Materials &MateOld, VectorXd &localR) override;
 
-    virtual void ComputeJacobian(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                 const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                 const vector<double> &gpU, const vector<double> &gpUold,
-                                 const vector<double> &gpV, const vector<double> &gpVold,
-                                 const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                 const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                 const double &test, const double &trial, const Vector3d &grad_test,
-                                 const Vector3d &grad_trial, const Materials &Mate,
-                                 const Materials &MateOld, MatrixXd &localK) override;
+    /**
+     * This function calculate the residual of the poisson equation. <br>
+     * \f$R_{\phi}^{I}=\nabla\phi\nabla N^{I}+FN^{I}\f$
+     */
+    virtual void ComputeResidual(const LocalElmtInfo &elmtinfo,
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 VectorXd &localR) override;
 
-    virtual void ComputeProjection(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                   const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                   const vector<double> &gpU, const vector<double> &gpUold,
-                                   const vector<double> &gpV, const vector<double> &gpVold,
-                                   const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                   const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                   const double &test, const Vector3d &grad_test, const Materials &Mate,
-                                   const Materials &MateOld, map<string, double> &gpProj) override;
+    /**
+     * This function calculate the jacobian matrix of the poisson equation. <br>
+     * \f$K_{\phi\phi}^{IJ}=\sigma\nabla N^{J}\nabla N^{I}\f$
+     */
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 MatrixXd &localK) override;
+    
+    /**
+     * This function calculate the projected scalar variable for the poisson equation
+     */
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                   const LocalElmtSolution &soln,
+                                   const LocalShapeFun &shp,
+                                   const Materials &Mate,const Materials &MateOld,
+                                   ScalarMateType &gpProj) override;
 
 };

@@ -7,9 +7,10 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2021.02.18
-//+++ Purpose: implement Abaqus' inp mesh file importer
+//+++ Author  : Yang Bai
+//+++ Date    : 2021.02.18
+//+++ Reviewer: Xiaoyuan @ 2021.08.28
+//+++ Purpose : implement Abaqus' inp mesh file importer
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
@@ -44,7 +45,7 @@ private:
     string GetElmtMeshTypeNameFromInp()const;
 
     int GetSubElmtNodesNumFromInp() const;
-    int GetSubElmtDimFromGmshInp() const;
+    int GetSubElmtDimFromInp() const;
     int GetSubElmtOrderFromInpElmt()const;
     MeshType GetSubElmtMeshTypeFromInp()const;
 

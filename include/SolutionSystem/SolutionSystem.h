@@ -23,7 +23,7 @@
 
 #include "petsc.h"
 
-#include "MateSystem/MateTypeDefine.h"
+#include "MateSystem/MateNameDefine.h"
 
 #include "Utils/MessagePrinter.h"
 

@@ -24,11 +24,29 @@
 
 #include "petsc.h"
 
-//**************************************
-//*** For AsFem's own header file
-//**************************************
+/**
+ * For the utils of message print and string tools
+ */
 #include "Utils/StringUtils.h"
 #include "Utils/MessagePrinter.h"
+
+/**
+ * For different block readers related to each block in the input file
+ */
+#include "InputSystem/MeshBlockReader.h"
+#include "InputSystem/DofsBlockReader.h"
+#include "InputSystem/ElmtsBlockReader.h"
+#include "InputSystem/MatesBlockReader.h"
+#include "InputSystem/BCsBlockReader.h"
+#include "InputSystem/ICsBlockReader.h"
+#include "InputSystem/QPointBlockReader.h"
+#include "InputSystem/OutputBlockReader.h"
+#include "InputSystem/PostprocessBlockReader.h"
+#include "InputSystem/ProjectionBlockReader.h"
+#include "InputSystem/NonlinearSolverBlockReader.h"
+#include "InputSystem/TimeSteppingBlockReader.h"
+#include "InputSystem/FEJobBlockReader.h"
+
 
 #include "Mesh/Mesh.h"
 #include "Mesh/MeshIO.h"
@@ -46,7 +64,20 @@
 #include "FEProblem/FEJobBlock.h"
 
 
-class InputSystem{
+class InputSystem:public MeshBlockReader,
+                  public DofsBlockReader,
+                  public ElmtsBlockReader,
+                  public MatesBlockReader,
+                  public BCsBlockReader,
+                  public ICsBlockReader,
+                  public QPointBlockReader,
+                  public OutputBlockReader,
+                  public PostprocessBlockReader,
+                  public ProjectionBlockReader,
+                  public NonlinearSolverBlockReader,
+                  public TimeSteppingBlockReader,
+                  public FEJobBlockReader
+{
 public:
     InputSystem(int args,char *argv[]);
     InputSystem();
@@ -65,56 +96,6 @@ public:
     bool IsReadOnlyMode()const{return _IsReadOnly;}
 
 private:
-    //******************************************************
-    //*** functions for reading each block
-    //******************************************************
-    bool ReadMeshBlock(ifstream &in,string str,int &linenum,Mesh &mesh);
-    bool ReadDofsBlock(ifstream &in,string str,int &linenum,DofHandler &dofHandler);
-    bool ReadElmtBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ElmtSystem &elmtSystem,DofHandler &dofHandler);
-    bool ReadMateBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,MateSystem &mateSystem);
-
-    //******************************************************
-    //*** functions for reading bcs and ics
-    //******************************************************
-    bool ReadBCBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,BCSystem &bcSystem,DofHandler &dofHandler);
-    bool ReadICBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,ICSystem &icSystem,DofHandler &dofHandler);
-
-    //******************************************************
-    //*** functions for reading [qpoint]
-    //******************************************************
-    bool ReadQPointBlock(ifstream &in,string str,int &linenum,FE &fe);
-
-    //******************************************************
-    //*** functions for reading [output]
-    //******************************************************
-    bool ReadOutputBlock(ifstream &in,string str,int &linenum,OutputSystem &outputSystem);
-
-    //******************************************************
-    //*** functions for reading [postprocess]
-    //******************************************************
-    bool ReadPostprocessBlock(ifstream &in,string str,const int &lastendlinenum,int &linenum,Postprocess &postprocess,DofHandler &dofHandler);
-
-    //******************************************************
-    //*** functions for reading [projection]
-    //******************************************************
-    bool ReadProjectionBlock(ifstream &in,string str,int &linenum,SolutionSystem &solutionSystem);
-
-    //******************************************************
-    //*** functions for reading [nonlinearsolver]
-    //******************************************************
-    bool ReadNonlinearSolverBlock(ifstream &in,string str,int &linenum,NonlinearSolver &nonlinearSolver);
-
-
-    //******************************************************
-    //*** functions for reading [timestepping]
-    //******************************************************
-    bool ReadTimeSteppingBlock(ifstream &in,string str,int &linenum,TimeStepping &timestepping);
-
-    //******************************************************
-    //*** functions for reading [job]
-    //******************************************************
-    bool ReadFEJobBlock(ifstream &in,string str,int &linenum,FEJobBlock &feJobBlock);
-
     
     //******************************************************
     //*** private variables

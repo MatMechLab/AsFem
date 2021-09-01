@@ -15,30 +15,23 @@
 
 #include "MateSystem/IncrementSmallStrainMaterial.h"
 
-void IncrementSmallStrainMaterial::InitMaterialProperties(const int &nDim, const Vector3d &gpCoord,
-                                                          const vector<double> &InputParams, const vector<double> &gpU,
-                                                          const vector<double> &gpUdot, const vector<Vector3d> &gpGradU,
-                                                          const vector<Vector3d> &gpGradUdot, Materials &Mate) {
-    //*************************************************************************
-    //*** get rid of unused warning
-    //*************************************************************************
-    if(nDim||gpCoord(1)||InputParams.size()||gpU[0]||gpUdot[0]||
-       gpGradU[0](1)||gpGradUdot[0](1)||Mate.ScalarMaterials.size()){}
+void IncrementSmallStrainMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
+    // Here we do not consider any initial internal strains, stress
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
 
-    Mate.Rank2Materials["stress"].SetToZeros();// we need the stress and strain from previous step
-    Mate.Rank2Materials["strain"].SetToZeros();
+    Mate.Rank2Materials("stress").SetToZeros();// we need the stress and strain from previous step
+    Mate.Rank2Materials("strain").SetToZeros();
 }
-//**************************************************************************************
-void IncrementSmallStrainMaterial::ComputeStrain(const int &nDim, const vector<Vector3d> &GradDisp,
-                                                 RankTwoTensor &Strain) {
-    if(nDim==1){
-        _GradU.SetFromGradU(GradDisp[1]);
+
+void IncrementSmallStrainMaterial::ComputeStrain(const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, RankTwoTensor &Strain){
+    if(elmtinfo.nDim==1){
+        _GradU.SetFromGradU(elmtsoln.gpGradU[1]);
     }
-    else if(nDim==2){
-        _GradU.SetFromGradU(GradDisp[1],GradDisp[2]);
+    else if(elmtinfo.nDim==2){
+        _GradU.SetFromGradU(elmtsoln.gpGradU[1],elmtsoln.gpGradU[2]);
     }
-    else if(nDim==3){
-        _GradU.SetFromGradU(GradDisp[1],GradDisp[2],GradDisp[3]);
+    else if(elmtinfo.nDim==3){
+        _GradU.SetFromGradU(elmtsoln.gpGradU[1],elmtsoln.gpGradU[2],elmtsoln.gpGradU[3]);
     }
     Strain=(_GradU+_GradU.Transpose())*0.5;
 }
@@ -54,26 +47,15 @@ void IncrementSmallStrainMaterial::ComputeStressAndJacobian(const vector<double>
     Stress=Jacobian.DoubleDot(Strain);
 }
 //*********************************************************************
-void IncrementSmallStrainMaterial::ComputeMaterialProperties(const double &t, const double &dt, const int &nDim,
-                                                             const Vector3d &gpCoord, const vector<double> &InputParams,
-                                                             const vector<double> &gpU, const vector<double> &gpUOld,
-                                                             const vector<double> &gpUdot,
-                                                             const vector<double> &gpUdotOld,
-                                                             const vector<Vector3d> &gpGradU,
-                                                             const vector<Vector3d> &gpGradUOld,
-                                                             const vector<Vector3d> &gpGradUdot,
-                                                             const vector<Vector3d> &gpGradUdotOld,
-                                                             const Materials &MateOld, Materials &Mate) {
+void IncrementSmallStrainMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) {
     //***********************************************************************
     //*** get rid of unused warning
     //***********************************************************************
-    if(t||dt||gpCoord(1)||gpU[0]||gpUOld[0]||
-       gpUdot[0]||gpUdotOld[0]||gpGradU[0](1)||gpGradUOld[0](1)||
-       gpGradUdot[0](1)||gpGradUdotOld[0](1)||MateOld.ScalarMaterials.size()){}
+    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
 
-    _StrainOld=MateOld.Rank2Materials.at("strain");
-    _StressOld=MateOld.Rank2Materials.at("stress");
-    ComputeStrain(nDim,gpGradU,_Strain);
+    _StrainOld=MateOld.Rank2Materials("strain");
+    _StressOld=MateOld.Rank2Materials("stress");
+    ComputeStrain(elmtinfo,elmtsoln,_Strain);
     _DeltaStrain=_Strain-_StrainOld;
     ComputeStressAndJacobian(InputParams,_DeltaStrain,_DeltaStress,_Jac);
 
@@ -82,8 +64,9 @@ void IncrementSmallStrainMaterial::ComputeMaterialProperties(const double &t, co
     _I.SetToZeros();
     _devStress=_Stress-_I*(_Stress.Trace()/3.0);
 
-    Mate.ScalarMaterials["vonMises"]=sqrt(1.5*_devStress.DoubleDot(_devStress));
-    Mate.Rank2Materials["stress"]=_Stress;
-    Mate.Rank2Materials["strain"]=_Strain;
-    Mate.Rank4Materials["jacobian"]=_Jac;
+    Mate.ScalarMaterials("vonMises")=sqrt(1.5*_devStress.DoubleDot(_devStress));
+    Mate.Rank2Materials("stress")=_Stress;
+    Mate.Rank2Materials("strain")=_Strain;
+    Mate.Rank4Materials("jacobian")=_Jac;
+
 }

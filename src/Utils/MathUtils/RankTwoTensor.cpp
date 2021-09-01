@@ -14,7 +14,6 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "Utils/RankTwoTensor.h"
-#include "Eigen/Eigen"
 
 
 //***************************************
@@ -66,7 +65,7 @@ RankTwoTensor::RankTwoTensor(const Vector3d &r1,
     (*this)(1,1)=r1(1);(*this)(1,2)=r1(2);(*this)(1,3)=r1(3);
     (*this)(2,1)=r2(1);(*this)(2,2)=r2(2);(*this)(2,3)=r2(3);
 
-    (*this)(3,1)=0.0;(*this)(3,2)=0.0;(*this)(3,3)=0.0;
+    (*this)(3,1)=  0.0;(*this)(3,2)=  0.0;(*this)(3,3)=  0.0;
 }
 RankTwoTensor::RankTwoTensor(const Vector3d &r1,
                              const Vector3d &r2,
@@ -112,8 +111,8 @@ RankTwoTensor::RankTwoTensor(const double &v11,const double &v12,const double &v
 //**********************************************************
 void RankTwoTensor::SetFromGradU(const Vector3d &gradUx){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=0.0;(*this)(1,3)=0.0;
-    (*this)(2,1)=        0.0;(*this)(2,2)=0.0;(*this)(2,3)=0.0;
-    (*this)(3,1)=        0.0;(*this)(3,2)=0.0;(*this)(3,3)=0.0;
+    (*this)(2,1)=      0.0;(*this)(2,2)=0.0;(*this)(2,3)=0.0;
+    (*this)(3,1)=      0.0;(*this)(3,2)=0.0;(*this)(3,3)=0.0;
 }
 void RankTwoTensor::SetFromGradU(const Vector3d &gradUx,const Vector3d &gradUy){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=gradUx(2);(*this)(1,3)=0.0;
@@ -173,14 +172,11 @@ RankTwoTensor operator*(const double &lhs,const RankTwoTensor &a){
 Vector3d operator*(const Vector3d &lhs,const RankTwoTensor &a){
     Vector3d temp(0.0);
     for(int j=1;j<=a._N;++j){
-        temp(j)=0.0;
-        for(int i=1;i<=a._N;++i){
-            temp(j)+=lhs(i)*a(i,j);
-        }
+        temp(j)=lhs(1)*a(1,j)+lhs(2)*a(2,j)+lhs(3)*a(3,j);
     }
     return temp;
 }
-RankTwoTensor VecCrossDot(const Vector3d &a,const Vector3d &b){
+RankTwoTensor VecOTimes(const Vector3d &a,const Vector3d &b){
     RankTwoTensor temp(0.0);
     for(int i=1;i<=3;i++){
         for(int j=1;j<=3;j++){
@@ -192,7 +188,7 @@ RankTwoTensor VecCrossDot(const Vector3d &a,const Vector3d &b){
 //*******************************************************************
 //*** some higher order tensor calculations
 //*******************************************************************
-RankFourTensor RankTwoTensor::CrossDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::OTimes(const RankTwoTensor &a) const{
     // return C_ijkl=a_ij*b_kl
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
@@ -207,7 +203,7 @@ RankFourTensor RankTwoTensor::CrossDot(const RankTwoTensor &a) const{
     return temp;
 }
 //*** for mixed case
-RankFourTensor RankTwoTensor::IJlkDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::IJlkTimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -223,7 +219,7 @@ RankFourTensor RankTwoTensor::IJlkDot(const RankTwoTensor &a) const{
 //********************************************************
 //*** For IkJl and IklJ
 //********************************************************
-RankFourTensor RankTwoTensor::IkJlDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::IkJlTimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -236,7 +232,7 @@ RankFourTensor RankTwoTensor::IkJlDot(const RankTwoTensor &a) const{
     }
     return temp;
 }
-RankFourTensor RankTwoTensor::IklJDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::IklJTimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -252,7 +248,7 @@ RankFourTensor RankTwoTensor::IklJDot(const RankTwoTensor &a) const{
 //********************************************************
 //*** For IlJk and IlkJ
 //********************************************************
-RankFourTensor RankTwoTensor::IlJkDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::IlJkTimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -265,7 +261,7 @@ RankFourTensor RankTwoTensor::IlJkDot(const RankTwoTensor &a) const{
     }
     return temp;
 }
-RankFourTensor RankTwoTensor::IlkJDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::IlkJTimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -281,7 +277,7 @@ RankFourTensor RankTwoTensor::IlkJDot(const RankTwoTensor &a) const{
 //********************************************************
 //*** For JkIl and JklI
 //********************************************************
-RankFourTensor RankTwoTensor::JkIlDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::JkIlTimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -294,7 +290,7 @@ RankFourTensor RankTwoTensor::JkIlDot(const RankTwoTensor &a) const{
     }
     return temp;
 }
-RankFourTensor RankTwoTensor::JklIDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::JklITimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -310,7 +306,7 @@ RankFourTensor RankTwoTensor::JklIDot(const RankTwoTensor &a) const{
 //********************************************************
 //*** For klJI and lkJI
 //********************************************************
-RankFourTensor RankTwoTensor::klJIDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::klJITimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -323,7 +319,7 @@ RankFourTensor RankTwoTensor::klJIDot(const RankTwoTensor &a) const{
     }
     return temp;
 }
-RankFourTensor RankTwoTensor::lkJIDot(const RankTwoTensor &a) const{
+RankFourTensor RankTwoTensor::lkJITimes(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
     for(int i=1;i<=_N;++i){
         for(int j=1;j<=_N;++j){
@@ -363,13 +359,15 @@ RankFourTensor RankTwoTensor::ODot(const RankTwoTensor &a) const{
 void RankTwoTensor::CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec)const {
     // TODO: change Eigen to Slepc?
     // I must say, it is quite stupid, since we already has PETSc, why to call Eigen for eigen value?
-    Eigen::EigenSolver<Eigen::Matrix3d> _eigen_solver;
     Eigen::Matrix3d _M;
 
     _M<<(*this)(1,1),(*this)(1,2),(*this)(1,3),
         (*this)(2,1),(*this)(2,2),(*this)(2,3),
         (*this)(3,1),(*this)(3,2),(*this)(3,3);
+    
+    Eigen::EigenSolver<Eigen::Matrix3d> _eigen_solver;
     _eigen_solver.compute(_M);
+    //
     eigval[0]=_eigen_solver.eigenvalues()(0).real();
     eigval[1]=_eigen_solver.eigenvalues()(1).real();
     eigval[2]=_eigen_solver.eigenvalues()(2).real();
@@ -409,9 +407,9 @@ RankFourTensor RankTwoTensor::CalcPostiveProjTensor(double (&eigval)[3],RankTwoT
     // calculate Ma defined in Eq.(9)-2
     // Ma=n_a x n_a
     for(int i=1;i<=_N;++i){
-        Ma.VectorCrossDot(eigvec.IthCol(i),eigvec.IthCol(i));
+        Ma.VectorOTimes(eigvec.IthCol(i),eigvec.IthCol(i));
         // Eq.(19), first term on the right side
-        ProjPos+=Ma.CrossDot(Ma)*diag[i-1];
+        ProjPos+=Ma.OTimes(Ma)*diag[i-1];
     }
 
     // Now we calculate the Gab and Gba
@@ -421,11 +419,11 @@ RankFourTensor RankTwoTensor::CalcPostiveProjTensor(double (&eigval)[3],RankTwoT
     const double tol=1.0e-13;
     for(int a=0;a<_N;++a){
         for(int b=0;b<a;++b){
-            Ma.VectorCrossDot(eigvec.IthCol(a+1),eigvec.IthCol(a+1));// Eq.(12)
-            Mb.VectorCrossDot(eigvec.IthCol(b+1),eigvec.IthCol(b+1));// change the order of Eq.(12)
+            Ma.VectorOTimes(eigvec.IthCol(a+1),eigvec.IthCol(a+1));// Eq.(12)
+            Mb.VectorOTimes(eigvec.IthCol(b+1),eigvec.IthCol(b+1));// change the order of Eq.(12)
 
-            Gab=Ma.IkJlDot(Mb)+Ma.IlJkDot(Mb);
-            Gba=Mb.IkJlDot(Ma)+Mb.IlJkDot(Ma);
+            Gab=Ma.IkJlTimes(Mb)+Ma.IlJkTimes(Mb);
+            Gba=Mb.IkJlTimes(Ma)+Mb.IlJkTimes(Ma);
             // since only positive term is involved
             // e_a=0.5*(abs(lambda_a)+lambda_a)
             // P is defined as: 2dE/dC in Eq.(8)-2
@@ -474,9 +472,9 @@ RankFourTensor RankTwoTensor::GetPostiveProjTensor() const{
     // calculate Ma defined in Eq.(9)-2
     // Ma=n_a x n_a
     for(int i=1;i<=_N;++i){
-        Ma.VectorCrossDot(eigvec.IthCol(i),eigvec.IthCol(i));
+        Ma.VectorOTimes(eigvec.IthCol(i),eigvec.IthCol(i));
         // Eq.(19), first term on the right side
-        ProjPos+=Ma.CrossDot(Ma)*diag[i-1];
+        ProjPos+=Ma.OTimes(Ma)*diag[i-1];
     }
 
     // Now we calculate the Gab and Gba
@@ -486,11 +484,11 @@ RankFourTensor RankTwoTensor::GetPostiveProjTensor() const{
     const double tol=1.0e-13;
     for(int a=0;a<_N;++a){
         for(int b=0;b<a;++b){
-            Ma.VectorCrossDot(eigvec.IthCol(a+1),eigvec.IthCol(a+1));// Eq.(12)
-            Mb.VectorCrossDot(eigvec.IthCol(b+1),eigvec.IthCol(b+1));// change the order of Eq.(12)
+            Ma.VectorOTimes(eigvec.IthCol(a+1),eigvec.IthCol(a+1));// Eq.(12)
+            Mb.VectorOTimes(eigvec.IthCol(b+1),eigvec.IthCol(b+1));// change the order of Eq.(12)
 
-            Gab=Ma.IkJlDot(Mb)+Ma.IlJkDot(Mb);
-            Gba=Mb.IkJlDot(Ma)+Mb.IlJkDot(Ma);
+            Gab=Ma.IkJlTimes(Mb)+Ma.IlJkTimes(Mb);
+            Gba=Mb.IkJlTimes(Ma)+Mb.IlJkTimes(Ma);
             // since only positive term is involved
             // e_a=0.5*(abs(lambda_a)+lambda_a)
             // P is defined as: 2dE/dC in Eq.(8)-2

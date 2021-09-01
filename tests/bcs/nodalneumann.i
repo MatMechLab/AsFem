@@ -44,6 +44,7 @@ vectormate=gradc
 
 [bcs]
   [flux]
+    //type=helper
     type=nodalneumann
     dof=c
     value=-0.1

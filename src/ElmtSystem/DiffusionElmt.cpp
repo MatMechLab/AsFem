@@ -16,84 +16,66 @@
 
 #include "ElmtSystem/DiffusionElmt.h"
 
-void DiffusionElmt::ComputeAll(const FECalcType &calctype, const int &nDim, const int &nNodes, const int &nDofs,
-                               const double &t, const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                               const vector<double> &gpU, const vector<double> &gpUold, const vector<double> &gpV,
-                               const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                               const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                               const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
-                               const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
-                               const Materials &MateOld, map<string, double> &gpProj, MatrixXd &localK,
-                               VectorXd &localR) {
+void DiffusionElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,
+                               const double (&ctan)[2],
+                               const LocalElmtSolution &soln,const LocalShapeFun &shp,
+                               const Materials &Mate,const Materials &MateOld,
+                               ScalarMateType &gpProj,
+                               MatrixXd &localK,VectorXd &localR) {
     if(calctype==FECalcType::ComputeResidual){
-        ComputeResidual(nDim,nNodes,nDofs,t,dt,gpCoords,gpU,gpUold,gpV,gpVold,gpGradU,gpGradUold,gpGradV,gpGradVold,test,grad_test,
-                        Mate,MateOld,localR);
+        ComputeResidual(elmtinfo,soln,shp,Mate,MateOld,localR);
     }
     else if(calctype==FECalcType::ComputeJacobian){
-        ComputeJacobian(nDim,nNodes,nDofs,t,dt,ctan,gpCoords,gpU,gpUold,gpV,gpVold,gpGradU,gpGradUold,gpGradV,gpGradVold,
-                        test,trial,grad_test,grad_trial,Mate,MateOld,localK);
+        ComputeJacobian(elmtinfo,ctan,soln,shp,Mate,MateOld,localK);
     }
     else if(calctype==FECalcType::Projection){
-        ComputeProjection(nDim,nNodes,nDofs,t,dt,ctan,gpCoords,gpU,gpUold,gpV,gpVold,gpGradU,gpGradUold,gpGradV,gpGradVold,
-                          test,grad_test,Mate,MateOld,gpProj);
+        ComputeProjection(elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj);
     }
     else{
-        MessagePrinter::PrintErrorTxt("unsupported calculation type in DiffusionElmt, please check your related code");
+        MessagePrinter::PrintErrorTxt("unsupported calculation type in the DiffusionElmt, please check your related code");
         MessagePrinter::AsFem_Exit();
     }
 }
 //****************************************************************
-void DiffusionElmt::ComputeResidual(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                    const double &dt, const Vector3d &gpCoords, const vector<double> &gpU,
-                                    const vector<double> &gpUold, const vector<double> &gpV,
-                                    const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                                    const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                                    const vector<Vector3d> &gpGradVold, const double &test, const Vector3d &grad_test,
-                                    const Materials &Mate, const Materials &MateOld, VectorXd &localR) {
+void DiffusionElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 VectorXd &localR) {
     //***********************************************************
-    //*** get rid of unused warning
+    //*** get rid of unused warnings
     //***********************************************************
-    if(nDim||nNodes||nDofs||t||dt||gpCoords(1)||gpU[0]||gpUold[0]||gpV[0]||gpVold[0]||
-       gpGradU[0](1)||gpGradUold[0](1)||gpGradV[0](1)||gpGradVold[0](1)||
-       test||grad_test(1)||
-       Mate.ScalarMaterials.size()||MateOld.ScalarMaterials.size()){}
+    if(elmtinfo.dt||soln.gpU.size()||shp.test||Mate.GetVectorMate().size()||MateOld.GetScalarMate().size()){}
 
-    localR(1)=gpV[1]*test+Mate.ScalarMaterials.at("D")*(gpGradU[1]*grad_test);
+    localR(1)=soln.gpV[1]*shp.test+Mate.ScalarMaterials("D")*(soln.gpGradU[1]*shp.grad_test);
+
 }
+
 //****************************************************************************
-void DiffusionElmt::ComputeJacobian(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                    const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                    const vector<double> &gpU, const vector<double> &gpUold, const vector<double> &gpV,
-                                    const vector<double> &gpVold, const vector<Vector3d> &gpGradU,
-                                    const vector<Vector3d> &gpGradUold, const vector<Vector3d> &gpGradV,
-                                    const vector<Vector3d> &gpGradVold, const double &test, const double &trial,
-                                    const Vector3d &grad_test, const Vector3d &grad_trial, const Materials &Mate,
-                                    const Materials &MateOld, MatrixXd &localK) {
+void DiffusionElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                 const LocalElmtSolution &soln,
+                                 const LocalShapeFun &shp,
+                                 const Materials &Mate,const Materials &MateOld,
+                                 MatrixXd &localK) {
     //***********************************************************
-    //*** get rid of unused warning
+    //*** get rid of unused warnings
     //***********************************************************
-    if(nDim||nNodes||nDofs||t||dt||ctan[0]||gpCoords(1)||gpU[0]||gpUold[0]||gpV[0]||gpVold[0]||
-       gpGradU[0](1)||gpGradUold[0](1)||gpGradV[0](1)||gpGradVold[0](1)||
-       test||trial||grad_test(1)||grad_trial(1)||
-       Mate.VectorMaterials.size()||MateOld.ScalarMaterials.size()){}
+    if(elmtinfo.dt||soln.gpU.size()||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
 
-    localK(1,1)=trial*test*ctan[1]+Mate.ScalarMaterials.at("dDdc")*trial*(gpGradU[1]*grad_test)*ctan[0]
-            +Mate.ScalarMaterials.at("D")*grad_trial*grad_test*ctan[0];
+    localK(1,1)=shp.trial*shp.test*ctan[1]+Mate.ScalarMaterials("dDdc")*shp.trial*(soln.gpGradU[1]*shp.grad_test)*ctan[0]
+            +Mate.ScalarMaterials("D")*shp.grad_trial*shp.grad_test*ctan[0];
+
 }
+
 //**************************************************************************
-void DiffusionElmt::ComputeProjection(const int &nDim, const int &nNodes, const int &nDofs, const double &t,
-                                      const double &dt, const double (&ctan)[2], const Vector3d &gpCoords,
-                                      const vector<double> &gpU, const vector<double> &gpUold,
-                                      const vector<double> &gpV, const vector<double> &gpVold,
-                                      const vector<Vector3d> &gpGradU, const vector<Vector3d> &gpGradUold,
-                                      const vector<Vector3d> &gpGradV, const vector<Vector3d> &gpGradVold,
-                                      const double &test, const Vector3d &grad_test, const Materials &Mate,
-                                      const Materials &MateOld, map<string, double> &gpProj) {
+void DiffusionElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+                                   const LocalElmtSolution &soln,
+                                   const LocalShapeFun &shp,
+                                   const Materials &Mate,const Materials &MateOld,
+                                   ScalarMateType &gpProj) {
     //***********************************************************
-    //*** get rid of unused warning
+    //*** get rid of unused warnings
     //***********************************************************
-    if(nDim||nNodes||nDofs||t||dt||ctan[0]||gpCoords(1)||gpU[0]||gpUold[0]||gpV[0]||gpVold[0]||
-       gpGradU[0](1)||gpGradUold[0](1)||gpGradV[0](1)||gpGradVold[0](1)||
-       test||grad_test(1)||gpProj.size()||
-       Mate.VectorMaterials.size()||MateOld.ScalarMaterials.size()){}
+    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||Mate.GetVectorMate().size()||MateOld.GetVectorMate().size()||gpProj.size()){}
+
 }

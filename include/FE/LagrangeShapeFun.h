@@ -31,10 +31,17 @@
 #include "Mesh/Nodes.h"
 
 
+#include "FE/Lagrange1DShapeFun.h"
+#include "FE/Lagrange2DShapeFun.h"
+#include "FE/Lagrange3DShapeFun.h"
+
 using namespace std;
 
 
-class LagrangeShapeFun{
+class LagrangeShapeFun: public Lagrange1DShapeFun,
+                        public Lagrange2DShapeFun,
+                        public Lagrange3DShapeFun
+{
 public:
     LagrangeShapeFun();
     LagrangeShapeFun(int dim,MeshType meshtype);
@@ -71,12 +78,6 @@ public:
     // operator overload
     inline double  operator()(const int &i,const int &j) const {return _values[(i-1)*(_nDim+1)+j];}
     inline double& operator()(const int &i,const int &j) {return _values[(i-1)*(_nDim+1)+j];}
-
-
-protected:
-    void Compute1DLagrangeShapeFun(const double &xi,const Nodes &nodes,bool flag=true);
-    void Compute2DLagrangeShapeFun(const double &xi,const double &eta,const Nodes &nodes,bool flag=true);
-    void Compute3DLagrangeShapeFun(const double &xi,const double &eta,const double &zeta,const Nodes &nodes,bool flag=true);
 
 
 protected:
