@@ -30,17 +30,17 @@ name=c mu
 
 [mates]
   [myf1]
-    type=doublewellpotential
+    type=idealsolution
     params=5.0 1.0 0.4
     //     D   Chi Kappa
   [end]
   [myf2]
-    type=doublewellpotential
+    type=idealsolution
     params=5.0 1.0 0.4
     //     D   Chi Kappa
   [end]
   [myf3]
-    type=doublewellpotential
+    type=idealsolution
     params=1.0 3.5 0.4
     //     D   Chi Kappa
   [end]
