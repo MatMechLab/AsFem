@@ -82,6 +82,12 @@ bool TimeSteppingBlockReader::ReadTimeSteppingBlock(ifstream &in, string str, in
                 timesteppingBlock._TimeSteppingType=TimeSteppingType::ROSW;
                 timesteppingBlock._TimeSteppingTypeName="rosenbrock-w";
             }
+            else if((substr.find("bdf2")!=string::npos||substr.find("BDF2")!=string::npos)&&
+               substr.length()==4){
+                HasType=true;
+                timesteppingBlock._TimeSteppingType=TimeSteppingType::BDF2;
+                timesteppingBlock._TimeSteppingTypeName="back-difference-formula2";
+            }
             else{
                 MessagePrinter::PrintErrorInLineNumber(linenum);
                 MessagePrinter::PrintErrorTxt("unsupported type in the [timestepping] block");

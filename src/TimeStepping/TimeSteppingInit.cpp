@@ -38,6 +38,10 @@ void TimeStepping::Init(){
     else if(_TimeSteppingType==TimeSteppingType::ROSW){
         TSSetType(_ts,TSROSW);
     }
+    else if(_TimeSteppingType==TimeSteppingType::BDF2){
+        TSSetType(_ts,TSBDF);
+        TSBDFSetOrder(_ts,2);
+    }
     else{
         MessagePrinter::PrintErrorTxt("unsupported time stepping method");
         MessagePrinter::AsFem_Exit();
@@ -50,6 +54,7 @@ void TimeStepping::Init(){
     TSGetAdapt(_ts,&_tsadapt);
     TSAdaptSetType(_tsadapt,TSADAPTNONE);// disable adaptivity, we will use our own adapter
     TSSetTolerances(_ts,_RAbsTol,NULL,_RRelTol,NULL);
+    cout<<"abs tol="<<_RAbsTol<<", rel tol="<<_RRelTol<<endl;
     //***************************************************
     //*** for the nonlinear solver settings
     //***************************************************
@@ -116,4 +121,5 @@ void TimeStepping::Init(){
     else if(_SolverType==NonlinearSolverType::NEWTONGMRES){
         SNESSetType(_snes,SNESNGMRES);
     }
+
 }

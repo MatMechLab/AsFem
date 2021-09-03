@@ -66,7 +66,8 @@ rank2mate=stress strain PK1 PK2 F
 [end]
 
 [timestepping]
-  type=be
+  //type=be
+  type=bdf2
   dt=1.0e-3
   endtime=5.0e-3
   adaptive=true
