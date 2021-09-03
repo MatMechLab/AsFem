@@ -3,14 +3,12 @@
 [mesh]
   type=asfem
   dim=2
-  xmax=2
-  ymax=2
-  nx=80
-  ny=80
+  xmax=5
+  ymax=5
+  nx=50
+  ny=50
   meshtype=quad4
 [end]
-
-
 
 [dofs]
 name=ux uy
@@ -18,26 +16,31 @@ name=ux uy
 
 [projection]
 scalarmate=vonMises
-rank2mate=stress strain
+rank2mate=stress strain PK1 PK2
 [end]
 
 [elmts]
   [mechanics]
     type=mechanics
     dofs=ux uy
-    mate=smallstrain
+    mate=neohookean
     domain=alldomain
   [end]
 [end]
 
 [mates]
-  [smallstrain]
-    type=incresmallstrain
+  [neohookean]
+    type=neohookean
     params=100.0 0.3
   [end]
 [end]
 
-
+[nonlinearsolver]
+  type=nr
+  r_abs_tol=1.0e-10
+  r_rel_tol=5.0e-15
+  //solver=mumps
+[end]
 
 [bcs]
   [FixUx]
@@ -49,33 +52,20 @@ rank2mate=stress strain
   [FixUy]
     type=dirichlet
     dof=uy
-    boundary=bottom
+    boundary=bottom top
     value=0.0
   [end]
   [loadUx]
     type=dirichlet
     dof=ux
-    value=1.0*t
-    boundary=top
-  [end]
-  [loadUy]
-    type=dirichlet
-    dof=uy
-    value=-2.0*t
+    value=2.0e-2
     boundary=top
   [end]
 [end]
 
-[timestepping]
-  type=be
-  dt=1.0e-3
-  endtime=1.0e-2
-  adaptive=true
-  optiters=3
-  dtmax=1.0e-1
-[end]
+
 
 [job]
-  type=transient
+  type=static
   debug=dep
 [end]

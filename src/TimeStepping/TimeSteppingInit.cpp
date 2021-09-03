@@ -49,7 +49,7 @@ void TimeStepping::Init(){
 
     TSGetAdapt(_ts,&_tsadapt);
     TSAdaptSetType(_tsadapt,TSADAPTNONE);// disable adaptivity, we will use our own adapter
-
+    TSSetTolerances(_ts,_RAbsTol,NULL,_RRelTol,NULL);
     //***************************************************
     //*** for the nonlinear solver settings
     //***************************************************
@@ -89,7 +89,6 @@ void TimeStepping::Init(){
     SNESSetTolerances(_snes,_RAbsTol,_RRelTol,_STol,_MaxIters,-1);
     SNESSetDivergenceTolerance(_snes,-1);
     TSSetMaxSNESFailures(_ts,-1);
-
     //**************************************************
     //*** for different type of nonlinear methods
     //**************************************************
