@@ -47,6 +47,17 @@
 #include "MateSystem/Plastic1DMaterial.h"
 #include "MateSystem/J2PlasticityMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
+//*** For user defined materials(UMAT)
+#include "MateSystem/User1Material.h"
+#include "MateSystem/User2Material.h"
+#include "MateSystem/User3Material.h"
+#include "MateSystem/User4Material.h"
+#include "MateSystem/User5Material.h"
+#include "MateSystem/User6Material.h"
+#include "MateSystem/User7Material.h"
+#include "MateSystem/User8Material.h"
+#include "MateSystem/User9Material.h"
+#include "MateSystem/User10Material.h"
 
 
 /**
@@ -62,7 +73,17 @@ class BulkMateSystem: public ConstPoissonMaterial,
                       public NeoHookeanMaterial,
                       public Plastic1DMaterial,
                       public J2PlasticityMaterial,
-                      public MieheFractureMaterial{
+                      public MieheFractureMaterial,
+                      public User1Material,
+                      public User2Material,
+                      public User3Material,
+                      public User4Material,
+                      public User5Material,
+                      public User6Material,
+                      public User7Material,
+                      public User8Material,
+                      public User9Material,
+                      public User10Material{
 public:
     /*
      * The constructor of BulkMateSystem.

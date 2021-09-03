@@ -302,7 +302,37 @@ set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
-#
+### For UMAT1
+set(inc ${inc} include/MateSystem/User1Material.h)
+set(src ${src} src/MateSystem/User1Material.cpp)
+### For UMAT2
+set(inc ${inc} include/MateSystem/User2Material.h)
+set(src ${src} src/MateSystem/User2Material.cpp)
+### For UMAT3
+set(inc ${inc} include/MateSystem/User3Material.h)
+set(src ${src} src/MateSystem/User3Material.cpp)
+### For UMAT4
+set(inc ${inc} include/MateSystem/User4Material.h)
+set(src ${src} src/MateSystem/User4Material.cpp)
+### For UMAT5
+set(inc ${inc} include/MateSystem/User5Material.h)
+set(src ${src} src/MateSystem/User5Material.cpp)
+### For UMAT6
+set(inc ${inc} include/MateSystem/User6Material.h)
+set(src ${src} src/MateSystem/User6Material.cpp)
+### For UMAT7
+set(inc ${inc} include/MateSystem/User7Material.h)
+set(src ${src} src/MateSystem/User7Material.cpp)
+### For UMAT8
+set(inc ${inc} include/MateSystem/User8Material.h)
+set(src ${src} src/MateSystem/User8Material.cpp)
+### For UMAT9
+set(inc ${inc} include/MateSystem/User9Material.h)
+set(src ${src} src/MateSystem/User9Material.cpp)
+### For UMAT10
+set(inc ${inc} include/MateSystem/User10Material.h)
+set(src ${src} src/MateSystem/User10Material.cpp)
+###
 set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
