@@ -404,7 +404,11 @@ set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
 #############################################################
 set(inc ${inc} include/BCSystem/BCType.h)
 set(inc ${inc} include/BCSystem/BCBlock.h)
+### For integrated boundary conditions
+set(inc ${inc} include/BCSystem/IntegrateBCBase.h)
+###
 set(inc ${inc} include/BCSystem/BCSystem.h)
+###
 set(src ${src} src/BCSystem/BCSystem.cpp)
 set(src ${src} src/BCSystem/CheckAppliedBCNameIsValid.cpp)
 set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
