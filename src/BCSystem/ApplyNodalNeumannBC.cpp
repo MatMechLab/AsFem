@@ -16,9 +16,7 @@
 #include "BCSystem/BCSystem.h"
 #include "DofHandler/DofHandler.h"
 
-void BCSystem::ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,
-                              const int &DofIndex,const double &bcvalue,const vector<string> &bcnamelist,
-                              Vec &RHS){
+void BCSystem::ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const vector<int> &dofsindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS){
     PetscInt j,e;
     PetscInt iInd;
     int rankne,eStart,eEnd;
@@ -33,8 +31,11 @@ void BCSystem::ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler
         if(_rank==_size-1) eEnd=mesh.GetBulkMeshNodeIDsNumViaPhysicalName(bcname);
         for(e=eStart;e<eEnd;++e){
             j=mesh.GetBulkMeshIthNodeIDViaPhyName(bcname,e+1);
-            iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
-            VecSetValue(RHS,iInd,bcvalue,ADD_VALUES);
+            for(const auto &id:dofsindex){
+                iInd=dofHandler.GetIthNodeJthDofIndex(j,id)-1;
+                VecSetValue(RHS,iInd,bcvalue,ADD_VALUES);
+            }
         }
     }
+
 }

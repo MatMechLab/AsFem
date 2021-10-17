@@ -51,10 +51,11 @@ public:
      * @param soln the solution of current element
      * @param normal the normal vector of current gauss point in the current element
      * @param shp the local shape function values
+     * @param ctan the time derivative related coefficient array
      * @param localK the local K matrix
      * @param localR the locak R matrix
      */
-    virtual void ComputeBCValue(const FECalcType &calctype,const double &bcvalue,const vector<double> &params,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &soln,const Vector3d &normal,const LocalShapeFun &shp,MatrixXd &localK,VectorXd &localR)=0;
+    virtual void ComputeBCValue(const FECalcType &calctype,const double &bcvalue,const vector<double> &params,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &soln,const Vector3d &normal,const LocalShapeFun &shp,const double (&ctan)[3],MatrixXd &localK,VectorXd &localR)=0;
     
     /**
      * calculate the residual of current boundary element
@@ -67,7 +68,7 @@ public:
      * @param shp the local shape function values
      * @param localR the locak R matrix
      */
-    virtual void ComputeResidual(const double &bcvalue,const vector<double> &params,const LocalElmtInfo &bcelmtinfo,const LocalElmtSolution &bcelmtsoln,const Vector3d &normal,const LocalShapeFun &shp,VectorXd &localR)=0; 
+    virtual void ComputeResidual(const double &bcvalue,const vector<double> &params,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,const Vector3d &normal,const LocalShapeFun &shp,VectorXd &localR)=0; 
     
     /**
      * calculate the jacbobian contribution of current boundary element 
@@ -80,7 +81,7 @@ public:
      * @param shp the local shape function values
      * @param localK the local K matrix
      */
-    virtual void ComputeJacobian(const double &bcvalue,const vector<double> &params,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &soln,const Vector3d &normal,const LocalShapeFun &shp,MatrixXd &localK)=0;
+    virtual void ComputeJacobian(const double &bcvalue,const vector<double> &params,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &soln,const Vector3d &normal,const LocalShapeFun &shp,const double (&ctan)[3],MatrixXd &localK)=0;
 
 };
 

@@ -39,12 +39,63 @@
 
 #include "Utils/Vector3d.h"
 
+/**
+ * For built-in and user-defined boundary condition sub-classes
+ */
+
+#include "BCSystem/DirichletBC.h"
+#include "BCSystem/NeumannBC.h"
+#include "BCSystem/FluxBC.h"
+#include "BCSystem/NodalForceBC.h"
+/**
+ * For user-defined dirichlet bc
+ */
+#include "BCSystem/User1DirichletBC.h"
+#include "BCSystem/User2DirichletBC.h"
+#include "BCSystem/User3DirichletBC.h"
+#include "BCSystem/User4DirichletBC.h"
+#include "BCSystem/User5DirichletBC.h"
+/**
+ * For user-defined-interated bc
+ */
+#include "BCSystem/User1BC.h"
+#include "BCSystem/User2BC.h"
+#include "BCSystem/User3BC.h"
+#include "BCSystem/User4BC.h"
+#include "BCSystem/User5BC.h"
+#include "BCSystem/User6BC.h"
+#include "BCSystem/User7BC.h"
+#include "BCSystem/User8BC.h"
+#include "BCSystem/User9BC.h"
+#include "BCSystem/User10BC.h"
+
 using namespace std;
 
 class Mesh;
 class DofHandler;
 
-class BCSystem{
+class BCSystem:public DirichletBC,
+               public NeumannBC,
+               public FluxBC,
+               public NodalForceBC,
+               // for user-defined-dirichlet-type bc
+               public User1DirichletBC,
+               public User2DirichletBC,
+               public User3DirichletBC,
+               public User4DirichletBC,
+               public User5DirichletBC,
+               // for user-defined-integrated-type bc
+               public User1BC,
+               public User2BC,
+               public User3BC,
+               public User4BC,
+               public User5BC,
+               public User6BC,
+               public User7BC,
+               public User8BC,
+               public User9BC,
+               public User10BC
+{
 public:
     BCSystem();
     void AddBCBlock2List(BCBlock &bcblock);
@@ -64,7 +115,8 @@ public:
     //**************************************************************
     //*** Apply boundary conditions
     //**************************************************************
-    void ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[2],Vec &U,Mat &AMATRIX,Vec &RHS);
+    void ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[3],Vec &U,Vec &V,Mat &AMATRIX,Vec &RHS);
+    
     void ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,const double &t,Vec &U);
 
     void PrintBCSystemInfo()const;
@@ -80,36 +132,40 @@ private:
     //**************************************************************
     //*** for different boundary conditions
     //**************************************************************
-    void ApplyDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
-    void ApplyNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
+    void ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,const vector<string> bcnamelist,const vector<int> &dofindex,const double &bcvalue,const vector<double> &params,const Mesh &mesh,const DofHandler &dofHandler,Vec &U,Mat &K,Vec &RHS);
+    
+    void ApplyNodalDirichletBC(const FECalcType &calctype,const BCType &bctype,const vector<string> bcnamelist,const vector<int> &dofindex,const double &bcvalue,const vector<double> &params,const Mesh &mesh,const DofHandler &dofHandler,Vec &U,Mat &K,Vec &RHS);
 
     //**************************************************************
     //*** for nodal type boundary conditions
     //**************************************************************
-    void ApplyNodalDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS);
-    void ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
+    void ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const vector<int> &dofsindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &RHS);
 
     //**************************************************************
     //*** for other general boundary conditions
     //**************************************************************
-    void RunBCLibs(const BCType bctype,const FECalcType &calctype,
-                const Vector3d &normals,const double &gpU,const Vector3d &gpGradU,
-                const double &bcvalue,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                double &localK,double &localR);
-
-    void User1BC(const FECalcType &calctype,
-                const Vector3d &normals,const double &gpU,const Vector3d &gpGradU,
-                const double &bcvalue,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                double &localK,double &localR);
+    void RunBCLibs(const FECalcType &calctype,const BCType &bctype,
+            const double &bcvalue,const vector<double> &parameters,
+            const Vector3d &normals,const double (&ctan)[3],
+            const LocalElmtInfo &elmtinfo,
+            const LocalElmtSolution &soln,
+            const LocalShapeFun &shp,
+            VectorXd &localR,
+            MatrixXd &localK);
 
 
 private:
     int _nBCBlocks;
     vector<BCBlock> _BCBlockList;
+
+    /**
+     * these three variables are used to store the local information
+     */
+    LocalElmtInfo _elmtinfo;
+    LocalShapeFun _shp;
+    LocalElmtSolution _soln;
+
+    vector<int> _dofids;/**< the active dofs id for assemble (start from 0!!!) >*/
 
 private:
     double _PenaltyFactor;
@@ -123,10 +179,12 @@ private:
     Nodes _elNodes;
     double _xs[3][3],_dist;
 
-    Vector3d _normals,_gpGradU,_gpCoord;
-    double _gpU;
-    double _localR,_localK;
-    Vec _Useq;
-    VecScatter _scatteru;
+    Vector3d _normals;
+    VectorXd _localR;
+    MatrixXd _localK;
+
+    // for PETSc scatter
+    Vec _Useq,_Vseq;
+    VecScatter _scatteru,_scatterv;
 
 };

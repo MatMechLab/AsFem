@@ -55,25 +55,25 @@ rank4mate=jacobian
 [bcs]
   [fixbottomx]
     type=dirichlet
-    dof=disp_x
+    dofs=disp_x
     value=0.0
     boundary=bottom
   [end]
   [fixbottomy]
     type=dirichlet
-    dof=disp_y
+    dofs=disp_y
     value=0.0
     boundary=bottom
   [end]
   [loadX]
     type=dirichlet
-    dof=disp_x
+    dofs=disp_x
     value=0.2
     boundary=top
   [end]
   [loadY]
     type=dirichlet
-    dof=disp_y
+    dofs=disp_y
     value=0.1
     boundary=top
   [end]

@@ -20,7 +20,7 @@
 
 #include "ElmtSystem/MieheFractureElmt.h"
 
-void MieheFractureElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MieheFractureElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -70,7 +70,7 @@ void MieheFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     }
 }
 //*************************************************************
-void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -142,7 +142,7 @@ void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const doub
     }
 }
 //**************************************************************************
-void MieheFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MieheFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

@@ -27,13 +27,13 @@ name=phi
 [bcs]
   [fixbottom]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=0.0
     boundary=left
   [end]
   [fixtop]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=1.0
     boundary=right
   [end]

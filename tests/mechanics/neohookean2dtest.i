@@ -45,19 +45,19 @@ rank2mate=stress strain PK1 PK2
 [bcs]
   [FixUx]
     type=dirichlet
-    dof=ux
+    dofs=ux
     boundary=bottom
     value=0.0
   [end]
   [FixUy]
     type=dirichlet
-    dof=uy
+    dofs=uy
     boundary=bottom top
     value=0.0
   [end]
   [loadUx]
     type=dirichlet
-    dof=ux
+    dofs=ux
     value=2.0e-2
     boundary=top
   [end]

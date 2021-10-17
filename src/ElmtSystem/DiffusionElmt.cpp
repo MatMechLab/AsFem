@@ -17,7 +17,7 @@
 #include "ElmtSystem/DiffusionElmt.h"
 
 void DiffusionElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,
-                               const double (&ctan)[2],
+                               const double (&ctan)[3],
                                const LocalElmtSolution &soln,const LocalShapeFun &shp,
                                const Materials &Mate,const Materials &MateOld,
                                ScalarMateType &gpProj,
@@ -52,7 +52,7 @@ void DiffusionElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
 }
 
 //****************************************************************************
-void DiffusionElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void DiffusionElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -68,7 +68,7 @@ void DiffusionElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (
 }
 
 //**************************************************************************
-void DiffusionElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void DiffusionElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

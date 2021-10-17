@@ -132,7 +132,8 @@ PetscErrorCode ComputeIResidual(TS ts,PetscReal t,Vec U,Vec V,Vec RHS,void *ctx)
     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                    FECalcType::ComputeResidual,t,user->_fectrlinfo.ctan,U,
+                    FECalcType::ComputeResidual,t,user->_fectrlinfo.ctan,
+                    U,V,
                     user->_equationSystem._AMATRIX,RHS);
     
     return 0;
@@ -174,7 +175,8 @@ PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,
     }
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                    FECalcType::ComputeJacobian,t,user->_fectrlinfo.ctan,U,
+                    FECalcType::ComputeJacobian,t,user->_fectrlinfo.ctan,
+                    U,V,
                     A,user->_equationSystem._RHS);
 
     MatGetSize(B,&i,&i);

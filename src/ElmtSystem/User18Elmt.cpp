@@ -14,7 +14,7 @@
 
 #include "ElmtSystem/User18Elmt.h"
 
-void User18Elmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void User18Elmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -48,7 +48,7 @@ void User18Elmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
 
 }
 //*****************************************************************************
-void User18Elmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void User18Elmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                 const LocalElmtSolution &soln,
                                 const LocalShapeFun &shp,
                                 const Materials &Mate,const Materials &MateOld,
@@ -62,7 +62,7 @@ void User18Elmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ct
 
 }
 //*******************************************************************************
-void User18Elmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void User18Elmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                   const LocalElmtSolution &soln,
                                   const LocalShapeFun &shp,
                                   const Materials &Mate,const Materials &MateOld,

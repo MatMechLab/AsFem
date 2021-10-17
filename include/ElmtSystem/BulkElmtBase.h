@@ -58,7 +58,7 @@ public:
      * @param localK the K matrix of local element, it could be 1x1 or 5x5 depends on your local nDOfs
      * @param localR the Residual vector of local element,it could 1 or 5 depends on your local nDofs
      */
-    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -91,7 +91,7 @@ protected:
      * @param gpProj the projected scalar variable in current element
      * @param localK the K matrix of local element, it could be 1x1 or 5x5 depends on your local nDOfs
      */
-    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -107,7 +107,7 @@ protected:
      * @param MateOld the materials of previous step
      * @param gpProj the projected scalar variable in current element
      */
-    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

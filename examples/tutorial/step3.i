@@ -30,19 +30,19 @@ name=ux uy
 [bcs]
   [fixbottomX]
     type=dirichlet
-    dof=ux
+    dofs=ux
     value=0.0
     boundary=bottom
   [end]
   [fixbottomY]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=0.0
     boundary=bottom
   [end]
   [loadY]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=0.1
     boundary=top
   [end]

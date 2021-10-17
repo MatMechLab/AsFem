@@ -15,7 +15,7 @@
 #include "ElmtSystem/BulkElmtSystem.h"
 
 void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                         const double (&ctan)[2],
+                         const double (&ctan)[3],
                          const LocalElmtInfo &elmtinfo,
                          const LocalElmtSolution &soln,
                          const LocalShapeFun &shp,

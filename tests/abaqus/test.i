@@ -53,13 +53,13 @@ vectormate=gradc
 [bcs]
   //[fix]
   //  type=nodaldirichlet
-  //  dof=c
+  //  dofs=c
   //  value=1.0
   //  boundary=Node-Left
   //[end]
   [flux]
     type=nodalneumann
-    dof=c
+    dofs=c
     value=-0.1
     boundary=Node-Left
   [end]

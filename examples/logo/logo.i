@@ -48,13 +48,13 @@ name=phi
 [bcs]
   [fixleft]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=-0.1e4
     boundary=bottom
   [end]
   [fixright]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=-0.1e4
     boundary=top
   [end]

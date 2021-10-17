@@ -31,9 +31,10 @@ public:
         _BCBlockName.clear();
         _BCTypeName.clear();
         _BCType=BCType::NULLBC;
-        _DofName.clear();
-        _DofID=-1;
+        _DofsName.clear();
+        _DofIDs.clear();
         _BCValue=0.0;
+        _Parameters.clear();
         _BoundaryNameList.clear();
         _IsTimeDependent=false;
     }
@@ -41,9 +42,10 @@ public:
     string         _BCBlockName;
     string         _BCTypeName;
     BCType         _BCType;
-    string         _DofName;
-    int            _DofID;
+    vector<string> _DofsName;
+    vector<int>    _DofIDs;
     double         _BCValue;
+    vector<double> _Parameters;
     vector<string> _BoundaryNameList;// it could be either an element set or a node set
     bool           _IsTimeDependent;
 
@@ -51,9 +53,10 @@ public:
         _BCBlockName.clear();
         _BCTypeName.clear();
         _BCType=BCType::NULLBC;
-        _DofName.clear();
-        _DofID=-1;
+        _DofsName.clear();
+        _DofIDs.clear();
         _BCValue=0.0;
+        _Parameters.clear();
         _BoundaryNameList.clear();
         _IsTimeDependent=false;
     }

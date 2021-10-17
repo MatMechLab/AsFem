@@ -72,9 +72,12 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     
     user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
 
+
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                    FECalcType::ComputeResidual,user->_fectrlinfo.t,user->_fectrlinfo.ctan,U,
-                    user->_equationSystem._AMATRIX,RHS);
+            FECalcType::ComputeResidual,
+            user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
+            U,user->_solutionSystem._V,
+            user->_equationSystem._AMATRIX,RHS);
 
     return 0;
 }
@@ -119,9 +122,10 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     }
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                    FECalcType::ComputeJacobian,user->_fectrlinfo.t,user->_fectrlinfo.ctan,U,
-                    A,user->_equationSystem._RHS);
-
+                            FECalcType::ComputeJacobian,user->_fectrlinfo.t,
+                            user->_fectrlinfo.ctan,
+                            U,user->_solutionSystem._V,
+                            A,user->_equationSystem._RHS);
 //    MatView(A,PETSC_VIEWER_STDOUT_WORLD);
 
     MatGetSize(B,&i,&i);

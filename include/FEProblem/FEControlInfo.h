@@ -24,7 +24,7 @@ using namespace std;
 class FEControlInfo{
 public:
     FEControlInfo(){
-        ctan[0]=1.0;ctan[1]=0.0;
+        ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
         dt=1.0e-6;
         t=1.0;
         CurrentStep=0;
@@ -35,7 +35,7 @@ public:
     }
 
     void Init(){
-        ctan[0]=1.0;ctan[1]=0.0;
+        ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
         dt=1.0e-6;
         t=1.0;
         CurrentStep=0;
@@ -45,7 +45,7 @@ public:
         IsProjection=false;
     }
 
-    double ctan[2];
+    double ctan[3];
     double dt=1.0e-6;
     double t=1.0;
     int CurrentStep=0;
@@ -53,4 +53,5 @@ public:
     bool IsDebug=true;
     bool IsDepDebug=false;
     bool IsProjection=false;
+
 };

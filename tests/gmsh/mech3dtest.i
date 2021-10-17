@@ -43,25 +43,25 @@ name=ux uy uz
   [fixux]
     //type=helper
     type=dirichlet
-    dof=ux
+    dofs=ux
     value=0.0
     boundary=back
   [end]
   [fixuy]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=0.0
     boundary=back
   [end]
   [fixuz]
     type=dirichlet
-    dof=uz
+    dofs=uz
     value=0.0
     boundary=back
   [end]
   [load]
     type=dirichlet
-    dof=uz
+    dofs=uz
     value=0.1
     boundary=front
   [end]

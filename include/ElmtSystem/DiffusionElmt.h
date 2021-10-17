@@ -27,7 +27,7 @@ public:
     /**
      * Function for different calculate action
      */
-    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -48,7 +48,7 @@ private:
      * This function calculate the jacobian matrix of the diffusion equation. <br>
      * \f$K_{cc}^{IJ}=\frac{\partial R_{c}^{I}}{\partial\dot{c}^{J}}\frac{\partial\dot{c}^{J}}{\partial c^{J}}+\frac{\partial R_{c}^{I}}{\partial c^{J}}\f$
      */
-    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -57,7 +57,7 @@ private:
     /**
      * This function calculate the projected scalar variable for the diffusion equation
      */
-    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

@@ -406,6 +406,40 @@ set(inc ${inc} include/BCSystem/BCType.h)
 set(inc ${inc} include/BCSystem/BCBlock.h)
 ### For integrated boundary conditions
 set(inc ${inc} include/BCSystem/IntegrateBCBase.h)
+### for neumann bc
+set(inc ${inc} include/BCSystem/NeumannBC.h)
+set(src ${src} src/BCSystem/NeumannBC.cpp)
+### for flux bc
+set(inc ${inc} include/BCSystem/FluxBC.h)
+set(src ${src} src/BCSystem/FluxBC.cpp)
+### for nodalbc base
+set(inc ${inc} include/BCSystem/NodalBCBase.h)
+### for nodal force bc
+set(inc ${inc} include/BCSystem/NodalForceBC.h)
+set(src ${src} src/BCSystem/NodalForceBC.cpp)
+### for nodal flux bc
+set(inc ${inc} include/BCSystem/NodalFluxBC.h)
+set(src ${src} src/BCSystem/NodalFluxBC.cpp)
+### for dirichlet bc base class
+set(inc ${inc} include/BCSystem/DirichletBCBase.h)
+### for dirichlet boundary condition
+set(inc ${inc} include/BCSystem/DirichletBC.h)
+set(src ${src} src/BCSystem/DirichletBC.cpp)
+### for user1 dirichlet bc
+set(inc ${inc} include/BCSystem/User1DirichletBC.h)
+set(src ${src} src/BCSystem/User1DirichletBC.cpp)
+### for user2 dirichlet bc
+set(inc ${inc} include/BCSystem/User2DirichletBC.h)
+set(src ${src} src/BCSystem/User2DirichletBC.cpp)
+### for user3 dirichlet bc
+set(inc ${inc} include/BCSystem/User3DirichletBC.h)
+set(src ${src} src/BCSystem/User3DirichletBC.cpp)
+### for user4 dirichlet bc
+set(inc ${inc} include/BCSystem/User4DirichletBC.h)
+set(src ${src} src/BCSystem/User4DirichletBC.cpp)
+### for user5 dirichlet bc
+set(inc ${inc} include/BCSystem/User5DirichletBC.h)
+set(src ${src} src/BCSystem/User5DirichletBC.cpp)
 ###
 set(inc ${inc} include/BCSystem/BCSystem.h)
 ###
@@ -415,10 +449,39 @@ set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
 set(src ${src} src/BCSystem/ApplyBC.cpp)
 set(src ${src} src/BCSystem/ApplyDirichletBC.cpp)
 set(src ${src} src/BCSystem/ApplyNodalDirichletBC.cpp)
-set(src ${src} src/BCSystem/ApplyNeumannBC.cpp)
 set(src ${src} src/BCSystem/ApplyNodalNeumannBC.cpp)
 set(src ${src} src/BCSystem/RunBCLibs.cpp)
+### for user-defined-integrated-type bc
+### for user1-bc
+set(inc ${inc} include/BCSystem/User1BC.h)
 set(src ${src} src/BCSystem/User1BC.cpp)
+### for user2-bc
+set(inc ${inc} include/BCSystem/User2BC.h)
+set(src ${src} src/BCSystem/User2BC.cpp) 
+### for user3-bc  
+set(inc ${inc} include/BCSystem/User3BC.h)   
+set(src ${src} src/BCSystem/User3BC.cpp)  
+### for user4-bc  
+set(inc ${inc} include/BCSystem/User4BC.h)
+set(src ${src} src/BCSystem/User4BC.cpp)
+### for user5-bc
+set(inc ${inc} include/BCSystem/User5BC.h)
+set(src ${src} src/BCSystem/User5BC.cpp)
+### for user6-bc
+set(inc ${inc} include/BCSystem/User6BC.h)
+set(src ${src} src/BCSystem/User6BC.cpp)
+### for user7-bc
+set(inc ${inc} include/BCSystem/User7BC.h)
+set(src ${src} src/BCSystem/User7BC.cpp)
+### for user8-bc
+set(inc ${inc} include/BCSystem/User8BC.h)
+set(src ${src} src/BCSystem/User8BC.cpp)
+### for user9-bc
+set(inc ${inc} include/BCSystem/User9BC.h)
+set(src ${src} src/BCSystem/User9BC.cpp)
+### for user10-bc
+set(inc ${inc} include/BCSystem/User10BC.h)
+set(src ${src} src/BCSystem/User10BC.cpp)
 
 #############################################################
 ### For Initial condition system in AsFem                 ###

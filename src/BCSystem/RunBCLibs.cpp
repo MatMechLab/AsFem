@@ -16,19 +16,50 @@
 
 #include "BCSystem/BCSystem.h"
 
-void BCSystem::RunBCLibs(const BCType bctype,const FECalcType &calctype,
-                const Vector3d &normals,const double &gpU,const Vector3d &gpGradU,
-                const double &bcvalue,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                double &localK,double &localR){
-    switch (bctype)
-    {
-    case BCType::USER1BC:
-        User1BC(calctype,normals,gpU,gpGradU,bcvalue,test,trial,grad_test,grad_trial,localK,localR);
-        break;
-    default:
-        MessagePrinter::PrintErrorTxt("unsupported boundary condition type");
+void BCSystem::RunBCLibs(const FECalcType &calctype,const BCType &bctype,
+        const double &bcvalue,const vector<double> &parameters,
+        const Vector3d &normals,const double (&ctan)[3],
+        const LocalElmtInfo &elmtinfo,
+        const LocalElmtSolution &soln,
+        const LocalShapeFun &shp,
+        VectorXd &localR,
+        MatrixXd &localK){
+    switch (bctype){
+        case BCType::NEUMANNBC:
+            NeumannBC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER1BC:
+            User1BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER2BC:
+            User2BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER3BC:
+            User3BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER4BC:
+            User4BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER5BC:
+            User5BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER6BC:
+            User6BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER7BC:
+            User7BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER8BC:
+            User8BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER9BC:
+            User9BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+        case BCType::USER10BC:
+            User10BC::ComputeBCValue(calctype,bcvalue,parameters,elmtinfo,soln,normals,shp,ctan,localK,localR);
+            break;
+   default:
+        MessagePrinter::PrintErrorTxt("unsupported boundary condition type in RunBCLibs, please check your input file or your code");
         MessagePrinter::AsFem_Exit();
         break;
     }

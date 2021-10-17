@@ -31,13 +31,13 @@ name=u
 [bcs]
   [fixleft]
     type=dirichlet
-    dof=u
+    dofs=u
     value=0.1
     boundary=left
   [end]
   [fixright]
     type=dirichlet
-    dof=u
+    dofs=u
     value=0.5
      boundary=right
   [end]
