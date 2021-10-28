@@ -92,7 +92,7 @@ void SolutionSystem::PrintProjectionInfo()const{
 void SolutionSystem::ReleaseMem(){
     VecDestroy(&_Unew);
     VecDestroy(&_U);
-    VecDestroy(&_dU);
+    VecDestroy(&_Utemp);
     VecDestroy(&_V);
 
     VecDestroy(&_Uold);

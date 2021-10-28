@@ -26,7 +26,7 @@ name=d ux uy
 
 [nonlinearsolver]
   type=nr
-  maxiters=80
+  maxiters=20
   r_rel_tol=5.0e-10
   r_abs_tol=1.5e-7
   solver=superlu

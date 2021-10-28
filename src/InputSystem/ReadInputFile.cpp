@@ -448,9 +448,6 @@ bool InputSystem::ReadInputFile(Mesh &mesh,
                 MessagePrinter::PrintErrorTxt("no [timestepping] block is found for a transient FEM analysis, the [timestepping] block is required for time dependent problem");
                 MessagePrinter::AsFem_Exit();
             }
-            else{
-                timestepping.SetOptionsFromNonlinearSolverBlock(_nonlinearSolverBlock);
-            }
         }
     }
     else{

@@ -48,10 +48,10 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     MPI_Comm_size(PETSC_COMM_WORLD,&_size);
 
     // we can get the correct value on the ghosted node!
-    // please keep in mind, we will always use Unew and V in SNES and TS !!!
-    VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);
-    VecScatterBegin(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);
+    // please keep in mind, we will always use Utemp and V in SNES !!!
+    VecScatterCreateToAll(solutionSystem._Utemp,&_scatteru,&_Useq);
+    VecScatterBegin(_scatteru,solutionSystem._Utemp,_Useq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatteru,solutionSystem._Utemp,_Useq,INSERT_VALUES,SCATTER_FORWARD);
 
 
     VecScatterCreateToAll(solutionSystem._V,&_scatterv,&_Vseq);
@@ -60,9 +60,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
 
 
     // for the disp and velocity in the previous step
-    VecScatterCreateToAll(solutionSystem._Uold,&_scatteruold,&_Uoldseq);
-    VecScatterBegin(_scatteruold,solutionSystem._Uold,_Uoldseq,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(_scatteruold,solutionSystem._Uold,_Uoldseq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterCreateToAll(solutionSystem._U,&_scatteruold,&_Uoldseq);
+    VecScatterBegin(_scatteruold,solutionSystem._U,_Uoldseq,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(_scatteruold,solutionSystem._U,_Uoldseq,INSERT_VALUES,SCATTER_FORWARD);
 
     VecScatterCreateToAll(solutionSystem._Vold,&_scattervold,&_Voldseq);
     VecScatterBegin(_scattervold,solutionSystem._Vold,_Voldseq,INSERT_VALUES,SCATTER_FORWARD);
@@ -111,7 +111,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         for(gpInd=1;gpInd<=fe._BulkQPoint.GetQpPointsNum();++gpInd){
             // init all the local K&R array/matrix
             // get local history(old) value on each gauss point
-            if(calctype!=FECalcType::InitMaterialAndProjection){
+            if(calctype!=FECalcType::InitHistoryVariable){
                 // the scalar/vector/rank-2/rank-4 materials in MateSystem is used by each quadrature point, so it is only used for one single gauss point. The materials of the whole system is stored in solution's materials array!!!
                 mateSystem.GetScalarMateOldPtr()=solutionSystem._ScalarMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
                 mateSystem.GetVectorMateOldPtr()=solutionSystem._VectorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];

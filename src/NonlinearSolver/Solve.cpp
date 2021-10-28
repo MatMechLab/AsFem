@@ -37,7 +37,7 @@ PetscErrorCode Monitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
         user->enorm0=user->enorm;
     }
     if(user->IsDepDebug){
-        snprintf(buff,68,"  SNES solver: iters=%3d,|R|=%12.5e,|dU|=%12.5e",iters,rnorm,user->dunorm);
+        snprintf(buff,68,"  SNES solver: iters=%4d, |R|=%12.5e, |dU|=%12.5e",iters,rnorm,user->dunorm);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
     }
@@ -51,20 +51,37 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
     int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);// just to get rid of unused snes warning
-    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
+    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,
+                                   user->_fectrlinfo.t+user->_fectrlinfo.dt,// t in fectrlinfo is still the previous one
+                                   U);
 
-    user->_fectrlinfo.ctan[0]=1.0;
-    user->_fectrlinfo.ctan[1]=0.0;
+    // set the ctan array according to different time stepping method
+    if(user->_fectrlinfo._timesteppingtype==TimeSteppingType::STATIC){
+        // for static analysis
+        user->_fectrlinfo.ctan[0]=1.0;
+        user->_fectrlinfo.ctan[1]=0.0;
+        user->_fectrlinfo.ctan[2]=0.0;
+    }
+    else if(user->_fectrlinfo._timesteppingtype==TimeSteppingType::BACKWARDEULER){
+        user->_fectrlinfo.ctan[0]=1.0;
+        user->_fectrlinfo.ctan[1]=1.0/user->_fectrlinfo.dt;
+        user->_fectrlinfo.ctan[2]=0.0;
+        // calculate the current velocity
+        VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
+        VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("Unsupported time stepping method in nonlinear solver");
+        MessagePrinter::AsFem_Exit();
+    }
 
-    // calculate the current velocity
-    VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
-    VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
 
-
-    VecCopy(U,user->_solutionSystem._Unew);
+    VecCopy(U,user->_solutionSystem._Utemp);// in FormBulkFE, we always use Utemp for the calculation
     
     user->_feSystem.FormBulkFE(FECalcType::ComputeResidual,
-                        user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
+                        user->_fectrlinfo.t+user->_fectrlinfo.dt,
+                        user->_fectrlinfo.dt,
+                        user->_fectrlinfo.ctan,
                         user->_mesh,user->_dofHandler,user->_fe,
                         user->_elmtSystem,user->_mateSystem,
                         user->_solutionSystem,
@@ -75,7 +92,8 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
 
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
             FECalcType::ComputeResidual,
-            user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
+            user->_fectrlinfo.t+user->_fectrlinfo.dt,
+            user->_fectrlinfo.ctan,
             U,user->_solutionSystem._V,
             user->_equationSystem._AMATRIX,RHS);
 
@@ -90,39 +108,44 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
     int i;
 
     user->_feSystem.ResetMaxAMatrixValue();
-    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,user->_fectrlinfo.t,U);
+    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,
+                                   user->_fectrlinfo.t+user->_fectrlinfo.dt,
+                                   U);
 
-    user->_fectrlinfo.ctan[0]=1.0;
-    user->_fectrlinfo.ctan[1]=0.0;
+    // set the ctan array according to different time stepping method
+    if(user->_fectrlinfo._timesteppingtype==TimeSteppingType::STATIC){
+        // for static analysis
+        user->_fectrlinfo.ctan[0]=1.0;
+        user->_fectrlinfo.ctan[1]=0.0;
+        user->_fectrlinfo.ctan[2]=0.0;
+    }
+    else if(user->_fectrlinfo._timesteppingtype==TimeSteppingType::BACKWARDEULER){
+        user->_fectrlinfo.ctan[0]=1.0;
+        user->_fectrlinfo.ctan[1]=1.0/user->_fectrlinfo.dt;
+        user->_fectrlinfo.ctan[2]=0.0;
+        // calculate the current velocity
+        VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
+        VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("Unsupported time stepping method in nonlinear solver");
+        MessagePrinter::AsFem_Exit();
+    }
 
-    //*** calculate the current velocity
-    VecWAXPY(user->_solutionSystem._V,-1.0,user->_solutionSystem._U,U);//V=-Uold+Unew
-    VecScale(user->_solutionSystem._V,user->_fectrlinfo.ctan[1]);//V=V*1.0/dt
-
-    VecCopy(U,user->_solutionSystem._Unew);
+    VecCopy(U,user->_solutionSystem._Utemp);
 
     user->_feSystem.FormBulkFE(FECalcType::ComputeJacobian,
-                        user->_fectrlinfo.t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
+                        user->_fectrlinfo.t+user->_fectrlinfo.dt,
+                        user->_fectrlinfo.dt,
+                        user->_fectrlinfo.ctan,
                         user->_mesh,user->_dofHandler,user->_fe,
                         user->_elmtSystem,user->_mateSystem,
                         user->_solutionSystem,
                         A,user->_equationSystem._RHS);
     
-    if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){
-        user->_bcSystem.SetBCPenaltyFactor(1.0e20);
-    }
-    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e6&&user->_feSystem.GetMaxAMatrixValue()<=1.0e12){
-        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
-    }
-    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e3&&user->_feSystem.GetMaxAMatrixValue()<=1.0e6){
-        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e12);
-    }
-    else{
-        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e16);
-    }
-
     user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                            FECalcType::ComputeJacobian,user->_fectrlinfo.t,
+                            FECalcType::ComputeJacobian,
+                            user->_fectrlinfo.t+user->_fectrlinfo.dt,
                             user->_fectrlinfo.ctan,
                             U,user->_solutionSystem._V,
                             A,user->_equationSystem._RHS);
@@ -139,13 +162,13 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
 //***************************************************************
 bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
                         ElmtSystem &elmtSystem,MateSystem &mateSystem,
-                        BCSystem &bcSystem,ICSystem &icSystem,
+                        BCSystem &bcSystem,
                         SolutionSystem &solutionSystem,EquationSystem &equationSystem,
                         FE &fe,FESystem &feSystem,
                         FEControlInfo &fectrlinfo){
     
     _appctx=AppCtx{mesh,dofHandler,
-                   bcSystem,icSystem,
+                   bcSystem,
                    elmtSystem,mateSystem,
                    solutionSystem,equationSystem,
                    fe,feSystem,

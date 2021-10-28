@@ -73,7 +73,7 @@ interval=5
   adaptive=true
   optiters=3
   dtmax=1.0e-1
-  dtmin=1.0e-4
+  dtmin=1.0e-12
 [end]
 
 [job]

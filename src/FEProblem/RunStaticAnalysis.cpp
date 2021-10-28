@@ -19,9 +19,11 @@ void FEProblem::RunStaticAnalysis(){
     if(_rank==0){
         _TimerStart=chrono::high_resolution_clock::now();
     }
-
+    _feCtrlInfo._timesteppingtype=TimeSteppingType::STATIC;
+    _icSystem.ApplyIC(_mesh,_dofHandler,_solutionSystem._U);
+    VecCopy(_solutionSystem._U,_solutionSystem._Unew);//Copy U -> Unew
     if(_nonlinearSolver.Solve(_mesh,_dofHandler,_elmtSystem,_mateSystem,
-        _bcSystem,_icSystem,
+        _bcSystem,
         _solutionSystem,_equationSystem,
         _fe,_feSystem,_feCtrlInfo)){
         if(_rank==0){

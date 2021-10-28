@@ -16,175 +16,6 @@
 #include "TimeStepping/TimeStepping.h"
 
 
-//***************************************************************
-//*** here we define a monitor to print out the iteration info
-//***************************************************************
-PetscErrorCode MySNESMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
-    char buff[70];
-    string str;
-    TSAppCtx *user=(TSAppCtx*)ctx;
-    user->iters=iters;
-    user->rnorm=rnorm;
-    if(iters==0){
-        SNESGetSolutionNorm(snes,&user->dunorm);
-    }
-    else{
-        SNESGetUpdateNorm(snes,&user->dunorm);
-    }
-    user->enorm=rnorm*user->dunorm;
-    if(iters==0){
-        user->rnorm0=rnorm;
-        user->dunorm0=user->dunorm;
-        user->enorm0=user->enorm;
-    }
-    if(user->IsDepDebug){
-        snprintf(buff,70,"  SNES solver:iters=%3d,|R|=%11.4e,|dU|=%11.4e,dt=%7.2e",iters,rnorm,user->dunorm,user->dt);
-        str=buff;
-        MessagePrinter::PrintNormalTxt(str);
-    }
-    return 0;
-}
-//**********************************
-PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx){
-    TSAppCtx *user=(TSAppCtx*)ctx;
-    char buff[68];
-    string str;
-    double dt;
-
-    TSGetTimeStep(ts,&dt);
-
-    user->time=time;
-    user->step=step;
-    user->dt=dt;
-    // update previous solution
-    VecCopy(user->_solutionSystem._Unew,user->_solutionSystem._Uold);
-    VecCopy(user->_solutionSystem._V,user->_solutionSystem._Vold);
-    // update current solution
-    VecCopy(U,user->_solutionSystem._Unew);
-    
-    snprintf(buff,68,"Time step=%8d, time=%13.5e, dt=%13.5e",step,time,dt);
-    str=buff;
-    MessagePrinter::PrintNormalTxt(str);
-    if(!user->IsDepDebug){
-        snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",user->iters+1,user->rnorm0,user->rnorm);
-        str=buff;
-        MessagePrinter::PrintNormalTxt(str);
-    }
-
-
-    if(user->_fectrlinfo.IsProjection){
-        user->_feSystem.FormBulkFE(FECalcType::Projection,time,dt,user->_fectrlinfo.ctan,
-                                   user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
-                                   user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
-
-    }
-    if(step%user->_outputSystem.GetIntervalNum()==0){
-        user->_outputSystem.WriteResultToFile(step,user->_mesh,user->_dofHandler,user->_solutionSystem);
-        user->_outputSystem.WriteResultToPVDFile(time,user->_outputSystem.GetOutputFileName());
-        MessagePrinter::PrintNormalTxt("Write result to "+user->_outputSystem.GetOutputFileName());
-        MessagePrinter::PrintDashLine();
-
-    }
-    if(step%user->_postprocess.GetOutputIntervalNum()==0){
-        user->_postprocess.RunPostprocess(time,user->_mesh,user->_dofHandler,user->_fe,user->_solutionSystem);
-    }
-
-
-    // update history variable
-    user->_feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,time,dt,user->_fectrlinfo.ctan,
-                               user->_mesh,user->_dofHandler,user->_fe,user->_elmtSystem,user->_mateSystem,
-                               user->_solutionSystem,user->_equationSystem._AMATRIX,user->_equationSystem._RHS);
-
-    if(user->IsAdaptive&&step>=1){
-        if(user->iters<=user->OptiIters){
-            dt=user->dt*user->GrowthFactor;
-            if(dt>user->DtMax) dt=user->DtMax;
-        }
-        else{
-            dt=user->dt*user->CutbackFactor;
-            if(dt<user->DtMin) dt=user->DtMin;
-        }
-        TSSetTimeStep(ts,dt);
-    }
-
-    return 0;
-}
-//***************************************************************
-//*** for our Residual and Jacobian calculation
-//***************************************************************
-PetscErrorCode ComputeIResidual(TS ts,PetscReal t,Vec U,Vec V,Vec RHS,void *ctx){
-    TSAppCtx *user=(TSAppCtx*)ctx;
-
-    TSGetTimeStep(ts,&user->dt);
-    // apply the initial dirichlet boundary condition
-    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,t,U);
-
-    VecCopy(U,user->_solutionSystem._Unew);
-    VecCopy(V,user->_solutionSystem._V);
-
-    user->_feSystem.FormBulkFE(FECalcType::ComputeResidual,
-                        t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
-                        user->_mesh,user->_dofHandler,user->_fe,
-                        user->_elmtSystem,user->_mateSystem,
-                        user->_solutionSystem,
-                        user->_equationSystem._AMATRIX,RHS);
-    
-    user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
-
-    user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                    FECalcType::ComputeResidual,t,user->_fectrlinfo.ctan,
-                    U,V,
-                    user->_equationSystem._AMATRIX,RHS);
-    
-    return 0;
-}
-//******************************************************
-PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,Mat B,void *ctx){
-    TSAppCtx *user=(TSAppCtx*)ctx;
-    int i;
-
-    TSGetTimeStep(ts,&user->_fectrlinfo.dt);
-    TSGetTimeStep(ts,&user->dt);
-    user->_feSystem.ResetMaxAMatrixValue();// we reset the penalty factor
-    user->_bcSystem.ApplyInitialBC(user->_mesh,user->_dofHandler,t,U);
-
-    VecCopy(U,user->_solutionSystem._Unew);
-    VecCopy(V,user->_solutionSystem._V);
-
-    user->_fectrlinfo.ctan[0]=1.0;
-    user->_fectrlinfo.ctan[1]=s;// dUdot/dU
-
-    user->_feSystem.FormBulkFE(FECalcType::ComputeJacobian,
-                        t,user->_fectrlinfo.dt,user->_fectrlinfo.ctan,
-                        user->_mesh,user->_dofHandler,user->_fe,
-                        user->_elmtSystem,user->_mateSystem,
-                        user->_solutionSystem,
-                        A,user->_equationSystem._RHS);
-    
-    if(user->_feSystem.GetMaxAMatrixValue()>1.0e12){
-        user->_bcSystem.SetBCPenaltyFactor(1.0e20);
-    }
-    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e6&&user->_feSystem.GetMaxAMatrixValue()<=1.0e12){
-        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e8);
-    }
-    else if(user->_feSystem.GetMaxAMatrixValue()>1.0e3&&user->_feSystem.GetMaxAMatrixValue()<=1.0e6){
-        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e12);
-    }
-    else{
-        user->_bcSystem.SetBCPenaltyFactor(user->_feSystem.GetMaxAMatrixValue()*1.0e16);
-    }
-
-    user->_bcSystem.ApplyBC(user->_mesh,user->_dofHandler,user->_fe,
-                    FECalcType::ComputeJacobian,t,user->_fectrlinfo.ctan,
-                    U,V,
-                    A,user->_equationSystem._RHS);
-
-    MatGetSize(B,&i,&i);
-
-    return 0;
-}
-
-//*************************************************************************
 bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             ElmtSystem &elmtSystem,MateSystem &mateSystem,
             BCSystem &bcSystem,ICSystem &icSystem,
@@ -192,58 +23,113 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             FE &fe,FESystem &feSystem,
             OutputSystem &outputSystem,
             Postprocess &postprocessSystem,
-            FEControlInfo &fectrlinfo){
+            FEControlInfo &fectrlinfo,
+            NonlinearSolver &nonlinearSolver){
 
-    _appctx=TSAppCtx{mesh,dofHandler,
-                   bcSystem,icSystem,
-                   elmtSystem,mateSystem,
-                   solutionSystem,equationSystem,
-                   fe,feSystem,
-                   outputSystem,
-                   postprocessSystem,
-                   fectrlinfo,
-                   //*****************
-                   0.0,0.0,
-                   0.0,0.0,
-                   0.0,0.0,
-                   0,
-                   fectrlinfo.IsDebug,fectrlinfo.IsDepDebug,
-                   0.0,0.0,0,
-                    //********************************
-                    _Adaptive,
-                    _OptIters,
-                    _GrowthFactor,_CutBackFactor,
-                    _DtMin,_DtMax
-                   };
+    // initialize the feControl structure
+    fectrlinfo.CurrentStep=1;
+    fectrlinfo.dt=_Dt;
+    fectrlinfo.t=0.0;
+
+    char buff[68];
+    string str;
+
+    // apply the initial condition to the solution
+    icSystem.ApplyIC(mesh,dofHandler,solutionSystem._U);
+    VecCopy(solutionSystem._U,solutionSystem._Uold);
+    VecCopy(solutionSystem._U,solutionSystem._Unew);
+    VecCopy(solutionSystem._U,solutionSystem._Utemp);
     
+    // initialize the history variables
+    feSystem.FormBulkFE(FECalcType::InitHistoryVariable,0.0,_Dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
 
+    // write result to the head of pvd file
+    outputSystem.WritePVDFileHeader();
+    if(fectrlinfo.IsProjection){
+        feSystem.FormBulkFE(FECalcType::Projection,0.0,_Dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
+    }
+    outputSystem.WriteResultToFile(0,mesh,dofHandler,solutionSystem);
+    outputSystem.WriteResultToPVDFile(0.0,outputSystem.GetOutputFileName());
+    MessagePrinter::PrintNormalTxt("Write result to "+outputSystem.GetOutputFileName());
+    MessagePrinter::PrintDashLine();
+   
+    bool HasConvergeSolution; 
+    for(double currenttime=0.0;currenttime<=_FinalT;){
+        HasConvergeSolution=false;
+        while(fectrlinfo.dt>_DtMin){
+            snprintf(buff,68,"  TimeStepping: step=%8d,time=%12.5e,dt=%12.5e",fectrlinfo.CurrentStep,fectrlinfo.t+fectrlinfo.dt,fectrlinfo.dt);
+            str=buff;
+            MessagePrinter::PrintNormalTxt(str);
+            if(nonlinearSolver.Solve(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,solutionSystem,equationSystem,fe,feSystem,fectrlinfo)){
+                // now the nonlinear solver converged 
+                // the final solution is stored in Unew of solutionSystem
+                // We first update the solution system
+                VecCopy(solutionSystem._U,solutionSystem._Uold);
+                VecCopy(solutionSystem._Unew,solutionSystem._U);
+                VecCopy(solutionSystem._V,solutionSystem._Vold);
 
-    _appctx._icSystem.ApplyIC(_appctx._mesh,_appctx._dofHandler,_appctx._solutionSystem._Unew);
-    _appctx._bcSystem.ApplyInitialBC(_appctx._mesh,_appctx._dofHandler,0.0,_appctx._solutionSystem._Unew);
-    _appctx._feSystem.FormBulkFE(FECalcType::InitHistoryVariable,_appctx._fectrlinfo.t,_appctx._fectrlinfo.dt,_appctx._fectrlinfo.ctan,
-                                 _appctx._mesh,_appctx._dofHandler,_appctx._fe,_appctx._elmtSystem,_appctx._mateSystem,
-                                 _appctx._solutionSystem,
-                                 _appctx._equationSystem._AMATRIX,_appctx._equationSystem._RHS);
+                // in FormBulkFE, we used Utemp
+                VecCopy(solutionSystem._Unew,solutionSystem._Utemp);
 
-    TSSetIFunction(_ts,_appctx._equationSystem._RHS,ComputeIResidual,&_appctx);
-    TSSetIJacobian(_ts,_appctx._equationSystem._AMATRIX,_appctx._equationSystem._AMATRIX,ComputeIJacobian,&_appctx);
-    
-    TSMonitorSet(_ts,MyTSMonitor,&_appctx,NULL);
-    SNESMonitorSet(_snes,MySNESMonitor,&_appctx,0);
+                // then we update the history variables
+                feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
 
-    SNESSetForceIteration(_snes,PETSC_TRUE);
+                // update the time and step
+                currenttime+=fectrlinfo.dt;
+                fectrlinfo.t+=fectrlinfo.dt;
+                
 
-    SNESSetFromOptions(_snes);
+                // now we do the projection
+                if(fectrlinfo.IsProjection){
+                    feSystem.FormBulkFE(FECalcType::Projection,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
+                }
+                // now, since the projection quantities are ready, we can do either the output or the postprocess
+                if(fectrlinfo.CurrentStep%postprocessSystem.GetOutputIntervalNum()==0){
+                    postprocessSystem.RunPostprocess(fectrlinfo.t,mesh,dofHandler,fe,solutionSystem);
+                }
+                // for result output
+                if(fectrlinfo.CurrentStep%outputSystem.GetIntervalNum()==0){
+                    outputSystem.WriteResultToFile(fectrlinfo.CurrentStep,mesh,dofHandler,solutionSystem);
+                    outputSystem.WriteResultToPVDFile(fectrlinfo.t,outputSystem.GetOutputFileName());
+                    MessagePrinter::PrintNormalTxt("Write result to "+outputSystem.GetOutputFileName(),MessageColor::BLUE);
+                    MessagePrinter::PrintDashLine();
+                }
 
-    TSSetFromOptions(_ts);
+                // update the step
+                fectrlinfo.CurrentStep+=1;
+                
+                // for adaptive time stepping
+                if(IsAdaptive()){
+                    if(nonlinearSolver.GetFinalInterations()<=_OptIters){
+                        fectrlinfo.dt*=_GrowthFactor;
+                        if(fectrlinfo.dt>_DtMax) fectrlinfo.dt=_DtMax;
+                    }
+                    else{
+                        fectrlinfo.dt*=_CutBackFactor;
+                        if(fectrlinfo.dt<_DtMin) fectrlinfo.dt=_DtMin;
+                    }
+                }
 
-    //***************************************************
-    //*** before solve,we need to write some basic info
-    //*** to pvd file
-    //***************************************************
-    _appctx._outputSystem.WritePVDFileHeader();
-    TSSolve(_ts,_appctx._solutionSystem._Unew);
-    _appctx._outputSystem.WritePVDFileEnd();
+                HasConvergeSolution=true;
+                // for converged case, we jump out the loop
+                break;
+            }// ===>end-of-if-nonlinearSolver-converged-case
+            else{
+                // nonlinearSolver diverged, then we will try to reduce delta t
+                fectrlinfo.dt*=0.5;
+                snprintf(buff,68,"  TimeStepping failed: step=%8d,reduce dt to %14.5e",fectrlinfo.CurrentStep,fectrlinfo.dt);
+                str=buff;
+                MessagePrinter::PrintNormalTxt(str,MessageColor::RED);
+                HasConvergeSolution=false;
+            }//===>end-of-converge-diverge-if-condition
+        }//===end-of-while-for-failed-try
+        if(!HasConvergeSolution){
+            MessagePrinter::PrintErrorTxt("The minimum delta t has been used for step="+to_string(fectrlinfo.CurrentStep)+", however, it still failed");
+            MessagePrinter::PrintErrorTxt("Please check your code or your boundary/initial condition for the simulation");
+            MessagePrinter::AsFem_Exit();
+            break;
+        }
+    }
 
     return true;
 }

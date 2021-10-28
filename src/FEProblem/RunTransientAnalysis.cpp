@@ -25,7 +25,8 @@ void FEProblem::RunTransientAnalysis(){
         _fe,_feSystem,
         _outputSystem,
         _postprocessSystem,
-        _feCtrlInfo)){
+        _feCtrlInfo,
+        _nonlinearSolver)){
         if(_rank==0){
             _TimerEnd=chrono::high_resolution_clock::now();
             _Duration=Duration(_TimerStart,_TimerEnd);
