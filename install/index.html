@@ -10,7 +10,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
     
     
       
@@ -18,7 +18,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.cdeb8541.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -70,7 +70,9 @@
       
     </div>
     
-      <header class="md-header" data-md-component="header">
+      
+
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
@@ -136,11 +138,14 @@
     
     
   </nav>
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
+        
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -224,6 +229,8 @@
       </a>
       
         
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -272,10 +279,14 @@
       
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
-      <label class="md-nav__link" for="__nav_4">
-        Tutorial
-        <span class="md-nav__icon md-icon"></span>
-      </label>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Tutorial
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
         <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
@@ -284,6 +295,7 @@
         <ul class="md-nav__list" data-md-scrollfix>
           
             
+              
   
   
   
@@ -294,8 +306,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -306,8 +320,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -318,8 +334,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -330,8 +348,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -342,8 +362,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -354,6 +376,21 @@
     </li>
   
 
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Tutorial/step-6/" class="md-nav__link">
+        Step-6
+      </a>
+    </li>
+  
+
+            
           
         </ul>
       </nav>
@@ -374,10 +411,14 @@
       
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
-      <label class="md-nav__link" for="__nav_5">
-        Document
-        <span class="md-nav__icon md-icon"></span>
-      </label>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Document
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <nav class="md-nav" aria-label="Document" data-md-level="1">
         <label class="md-nav__title" for="__nav_5">
           <span class="md-nav__icon md-icon"></span>
@@ -386,6 +427,7 @@
         <ul class="md-nav__list" data-md-scrollfix>
           
             
+              
   
   
   
@@ -396,8 +438,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -408,8 +452,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -420,8 +466,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -432,8 +480,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -444,8 +494,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -456,8 +508,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -468,8 +522,24 @@
     </li>
   
 
+            
           
             
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Document/block-projection/" class="md-nav__link">
+        projection block
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
   
   
   
@@ -480,8 +550,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -492,6 +564,7 @@
     </li>
   
 
+            
           
         </ul>
       </nav>
@@ -526,6 +599,8 @@
                 <div class="md-sidebar__scrollwrap">
                   <div class="md-sidebar__inner">
                     
+
+
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -569,24 +644,31 @@
                 <h1 id="basic-components">Basic components</h1>
 <p>Before we begin the installation, some components are needed, for example:</p>
 <ul>
-<li>gcc</li>
+<li>gcc g++ gfortran</li>
 <li>cmake</li>
 <li>git</li>
+<li>python3</li>
 </ul>
+<p><span style="color:red">In the following installation, please <strong>do not</strong> use <code>sudo</code> or <code>root</code>!!! It's only supposed to be used for <code>apt install</code></span>.</p>
+<p><strong>It is highly recommended to install openmpi and PETSc from the source code!</strong></p>
 <h2 id="install-gcc">Install gcc</h2>
 <p>You can use the steps below to install a modern GCC compiler if you don't already have one. <strong>Otherwise, go straight to the MPI setup</strong>.</p>
+<p><span style="color:red"><strong>Before you start, you'll need a GCC (the old one) compiler to compile another GCC, therefore if your system doesn't have one, please run(for Ubuntu)</strong></span>:</p>
+<pre><code>sudo apt install gcc g++ gfortran cmake git python3 build-essential
+</code></pre>
+<p>For ubuntu 20.04, <code>apt install</code> will bring you the <code>GCC9.3.0</code> package which is <strong>new</strong> and <strong>good</strong> enough for our installation, so you can skip the GCC installation part list below. Anyway, you can also install a newer version, i.e., GCC10.3.0 or even newer.</p>
 <p>To begin, you should download and unzip the gcc source code:</p>
-<pre><code>curl -L -O http://mirrors.concertpass.com/gcc/releases/gcc-9.3.0/gcc-9.3.0.tar.gz
+<pre><code>curl -L -O http://mirrors.concertpass.com/gcc/releases/gcc-10.3.0/gcc-10.3.0.tar.gz
 
-tar -xf gcc-9.3.0.tar.gz
+tar -xf gcc-10.3.0.tar.gz
 </code></pre>
 <p>or directly go to the official website <a href="https://gcc.gnu.org/">gcc</a>.</p>
 <p>Next, we'll need to get the GCC pre-request:</p>
-<pre><code>cd gcc-9.3.0
+<pre><code>cd gcc-10.3.0
 ./contrib/download_prerequisites
 </code></pre>
 <p>we can then config, build and install GCC:</p>
-<pre><code>./configure --prefix=your-gcc-install-path \
+<pre><code>./configure --prefix=**your-gcc-install-path** \
 --disable-multilib \
 --enable-languages=c,c++,fortran,jit \
 --enable-checking=release \
@@ -597,59 +679,72 @@ tar -xf gcc-9.3.0.tar.gz
 </code></pre>
 <pre><code>make install
 </code></pre>
-<p>Following the installation, we must configure our bash environment to use our modern GCC:</p>
+<p>For the following installation, we must configure our bash environment to use our modern GCC:</p>
 <pre><code>export gcc=your-gcc-instal-path
 export PATH=$gcc/bin:$PATH
-export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/9.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/9.3.0:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/10.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/10.3.0:$LD_LIBRARY_PATH
 </code></pre>
-<p>you can either paste the above settings to your <code>~/.bashrc</code> file or put it into a new file, i.e. <code>~/.asfem-profile</code>.</p>
+<p>you can either paste the above settings to your <code>~/.bashrc</code> file or put it into a new file, i.e., <code>~/.asfem-profile</code>.</p>
 <h2 id="install-mpi">Install mpi</h2>
 <p>The MPI compiler is required to use the PETSc package for parallelization. <strong>Please skip this stage if your machine already has the MPI compiler installed</strong>.</p>
 <pre><code>curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.0.tar.gz
 </code></pre>
 <p>Alternatively, you can get the source code from <a href="https://www.open-mpi.org/">openmpi</a>.</p>
-<p>Then you can config, build and install your openmpi:</p>
+<p>Then you can config, build and install your openmpi (<span style="color:red">if you installed the GCC by compiling the source code rather than using <code>apt install</code>, then please do <code>source ~/.asfem-profile</code> to set up your environment before running the following step</span>):</p>
 <pre><code>tar -xf openmpi-4.1.0.tar.gz
 cd openmpi-4.1.0
 ./configure --prefix=*your-path-to-opemmpi*
 make -j8
 make install
 </code></pre>
-<p>After that, you should put the related settings in your bash environment as follows:</p>
-<pre><code>export mpi=your-path-to-openmpi
+<p>After that, you should put the related settings into your bash environment as follows:</p>
+<pre><code>export MPI_DIR=your-path-to-openmpi
 
-export PATH=$PATH:$mpi/bin
+export PATH=$PATH:$MPI_DIR/bin
 
-export CC=mpicc
-export CXX=mpicxx
-export FC=mpif90
-export F90=mpif90
+# please comment out the following four lines until the PETSc has installed !!!
+#export CC=mpicc
+#export CXX=mpicxx
+#export FC=mpif90
+#export F90=mpif90
+
 export OMP_NUM_THREADS=1
 
-export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
-export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
-export FPATH=$mpi/include:$FPATH
-export MANPATH=$mpi/share/man:$MANPATH
-export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
+export C_INCLUDE_PATH=$MPI_DIR/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$MPI_DIR/include:$CPLUS_INCLUDE_PATH
+export FPATH=$MPI_DIR/include:$FPATH
+export MANPATH=$MPI_DIR/share/man:$MANPATH
+export LD_LIBRARY_PATH=$MPI_DIR/lib:$LD_LIBRARY_PATH
 </code></pre>
+<p>Now execute the <code>source ~/.asfem-profile</code>, and then run:</p>
+<pre><code>mpirun -np 4 echo &quot;Hi&quot;
+</code></pre>
+<p>you should see 4x"Hi" in your terminal.</p>
 <h1 id="install-petsc">Install PETSc</h1>
-<p><strong>Before we begin, make sure your GCC and MPI compilers are up to date</strong>:</p>
+<p><strong>Before we begin, make sure your GCC and MPI compilers are up to date (by doing <code>source ~/.asfem-profile</code>)</strong>, (<span style="color:red">if both of your GCC and MPI are installed from <code>apt install</code>, then the newly opened terminal will find the gcc/mpicc compiler, which means you <strong>do not</strong> need to run <code>source ~/.bashrc</code> or <code>source ~/.asfem-profile</code> !</span>):</p>
 <pre><code>source ~/.asfem-profile
 gcc --version
 mpicxx --version
 </code></pre>
-<p>The PETSc package can be downloaded via:</p>
-<pre><code>curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.14.3.tar.gz
+<p>Plase keep in mind, these four lines must be comment out in your <code>~/.asfem-profile</code></p>
+<pre><code>#export CC=mpicc
+#export CXX=mpicxx
+#export FC=mpif90
+#export F90=mpif90
+</code></pre>
+<p>We will tell PETSc the path to the openmpi, then it will find the correct compiler.</p>
+<p>The PETSc package can be downloaded via(you can change the version number to whatever you like, for example, <code>petsc-3.16.0.tar.gz</code>, <code>petsc-3.13.3.tar.gz</code>):</p>
+<pre><code>curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.15.3.tar.gz
 </code></pre>
 <p>or you can download it from the <a href="https://www.mcs.anl.gov/petsc/download/index.html">PETSc website</a>.</p>
 <p>For the configuration, one can use:</p>
 <pre><code>./configure \
---prefix=your-PETSc-install-path \
+--prefix=***your-PETSc-install-path*** \
 --with-debugging=0 \
 --with-ssl=0 \
 --with-pic=1 \
 --with-openmp=1 \
---with-mpi-dir=your-MPI-install-path \
+--with-mpi-dir=***your-MPI-install-path*** \
 --with-shared-libraries=1 \
 --with-cxx-dialect=C++14 \
 --with-fortran-bindings=1 \
@@ -670,15 +765,70 @@ CXXOPTFLAGS='-fPIC -fopenmp -O3 ' \
 FOPTFLAGS='-fPIC -fopenmp -O3 ' \
 PETSC_DIR=`pwd`
 </code></pre>
+<p>you can also use the simplified version (with much fewer external packages) as follows:</p>
+<pre><code>./configure \
+--prefix=***your-PETSc-install-path*** \
+--with-debugging=0 \
+--with-ssl=0 \
+--with-pic=1 \
+--with-openmp=1 \
+--with-mpi-dir=***your-MPI-install-path*** \
+--with-shared-libraries=1 \
+--with-cxx-dialect=C++14 \
+--with-fortran-bindings=1 \
+--with-sowing=0 \
+--download-fblaslapack=1 \
+COPTFLAGS='-fPIC -fopenmp -O3 ' \
+CXXOPTFLAGS='-fPIC -fopenmp -O3 ' \
+FOPTFLAGS='-fPIC -fopenmp -O3 ' \
+PETSC_DIR=`pwd`
+</code></pre>
 <p>other external packages can be installed via <code>-download-XXX=1</code> . Then, by running the <code>make xxxxx -j8</code> and <code>make xxxx install</code> command, one can finish the installation. Here <code>xxx</code> represents the command line which is shown by PETSc in your terminal!</p>
+<p>Afterwards, put the related settings into your <code>~/.asfem-profile</code> (now, you need to uncomment <code>export CC=xxx</code>) as follows:</p>
+<pre><code>export gcc=***your-path-to-gcc-install-path***
+export PETSC_DIR=***your-path-to-petsc-install-dir***
+export MPI_DIR=***your-path-to-openmpi***
+
+export PATH=$gcc/bin:$PATH
+export PATH=$MPI_DIR/bin:$PATH
+
+export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/10.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/10.3.0:$LD_LIBRARY_PATH
+
+export CC=mpicc
+export CXX=mpicxx
+export FC=mpif90
+export F90=mpif90
+
+export C_INCLUDE_PATH=$MPI_DIR/include:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=$MPI_DIR/include:$CPLUS_INCLUDE_PATH
+export FPATH=$MPI_DIR/include:$FPATH
+export MANPATH=$MPI_DIR/share/man:$MANPATH
+export LD_LIBRARY_PATH=$MPI_DIR/lib:$LD_LIBRARY_PATH
+
+export OMP_NUM_THREADS=1
+</code></pre>
+<p>Once again, if you installed your GCC and openmpi from <code>apt install</code>, then you only need:</p>
+<pre><code>export PETSC_DIR=***your-path-to-petsc-install-dir***
+export MPI_DIR=***your-path-to-openmpi***
+
+export CC=mpicc
+export CXX=mpicxx
+export FC=mpif90
+export F90=mpif90
+
+export OMP_NUM_THREADS=1
+</code></pre>
 <h1 id="install-asfem">Install AsFem</h1>
 <p>Download AsFem:</p>
 <pre><code>git clone https://github.com/yangbai90/AsFem.git
 </code></pre>
-<p>if you want the have a try for the <code>devel</code> version(unstable), one can use:</p>
+<p>if you want to have a try for the <code>devel</code> version(unstable), one can use:</p>
 <pre><code>git clone -b devel https://github.com/yangbai90/AsFem.git
 </code></pre>
-<p>then we can make <code>asfem</code> via:</p>
+<p>then execute <code>source ~/.asfem-profile</code>, and then we can get the makefile via:</p>
+<pre><code>cmake CMakeLists.txt
+</code></pre>
+<p>afterwards, we can make the <code>asfem</code> by executing:</p>
 <pre><code>make -j4
 </code></pre>
 <p>the executable file <code>asfem</code> can be found in the <code>AsFem/bin</code> folder.</p>
@@ -737,10 +887,12 @@ PETSC_DIR=`pwd`
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
         
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
+        
+          Made with
+          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+            Material for MkDocs
+          </a>
+        
         
       </div>
       
@@ -752,10 +904,10 @@ PETSC_DIR=`pwd`
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      <script src="../assets/javascripts/bundle.1e84347e.min.js"></script>
       
         <script src="../javascripts/config.js"></script>
       
