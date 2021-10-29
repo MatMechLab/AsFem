@@ -15,7 +15,7 @@ The block `[bcs]` is used to apply the different types of boundary conditions, i
 [bcs]
   [mybc1]
     type=dirichlet
-    dof=dof1
+    dofs=dof1
     boundary=left right ...
     value=bcvalue
   [end]
@@ -25,7 +25,7 @@ The block `[bcs]` is used to apply the different types of boundary conditions, i
 ## options
 The `type =` option specifies the name of the boundary condition type one wants to use.
 
-`dof=` specifies which DoF we want to use. It should be noted that, only one DoF can be accepted, instead of multiple DoFs used in other blocks like `[elmts]`.
+`dofs=` specifies which DoF we want to use. It should be noted that, more than one DoF can be accepted, for instance, `dofs=ux uy`.
 
 `boundary=` specifies the name of the boundary, which we want to apply the related boundary condition. The name of the boundary should be defined in your mesh file. For the built-in mesh, we use `left` and `right` for the point/line/surface at `xmin` and `xmax`. Similarly, `bottom` and `top` are used for the line/surface at `ymin` and `ymax`. Then `back` and `front` are used for the surface at `zmin` and `zmax`.
 
@@ -36,5 +36,9 @@ The `type =` option specifies the name of the boundary condition type one wants 
 The full list of the available boundary condition type is:
 ```
 type=dirichlet
+type=nodaldirichlet
 type=neumann
+type=nodalneumann
+type=user1bc[,user2bc,user3bc,...]
+type=user1dirichletbc[,user2dirichletbc,...]
 ```

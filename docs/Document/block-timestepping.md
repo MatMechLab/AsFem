@@ -42,4 +42,5 @@ The full list of the available time stepping method is:
 ```
 type=be
 type=cn
+type=bdf2
 ```

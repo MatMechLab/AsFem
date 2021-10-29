@@ -9,7 +9,7 @@ This is *A* *S*imple *F*inite *E*lement *M*ethod program for the phase-field mod
 - [x] Linear elastic materials
 
 # How to use it ?
-The documentation is under construction at present. If you have any questions, just email me: [Yang](mailto:walkandthinker@gmail.com)
+The documentation is under construction at present. If you have any questions, just email me: [Yang](mailto:yangbai90@outlook.com)
 
 or for Chinese users, we can also discuss more about it in the QQ group::
 ```
