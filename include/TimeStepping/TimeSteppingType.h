@@ -18,8 +18,5 @@ enum class TimeSteppingType{
     STATIC,
     BACKWARDEULER,
     CRANCKNICLSON,
-    ALPHA,
-    BDF2,
-    GL,
-    ROSW
+    BDF2
 };

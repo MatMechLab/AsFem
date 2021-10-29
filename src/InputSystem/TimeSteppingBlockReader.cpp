@@ -70,18 +70,6 @@ bool TimeSteppingBlockReader::ReadTimeSteppingBlock(ifstream &in, string str, in
                 timesteppingBlock._TimeSteppingType=TimeSteppingType::CRANCKNICLSON;
                 timesteppingBlock._TimeSteppingTypeName="crank-nicolson";
             }
-            else if((substr.find("gl")!=string::npos||substr.find("GL")!=string::npos)&&
-               substr.length()==2){
-                HasType=true;
-                timesteppingBlock._TimeSteppingType=TimeSteppingType::GL;
-                timesteppingBlock._TimeSteppingTypeName="general-linear";
-            }
-            else if((substr.find("rosw")!=string::npos||substr.find("ROSW")!=string::npos)&&
-               substr.length()==4){
-                HasType=true;
-                timesteppingBlock._TimeSteppingType=TimeSteppingType::ROSW;
-                timesteppingBlock._TimeSteppingTypeName="rosenbrock-w";
-            }
             else if((substr.find("bdf2")!=string::npos||substr.find("BDF2")!=string::npos)&&
                substr.length()==4){
                 HasType=true;

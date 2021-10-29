@@ -44,16 +44,16 @@
  * This is the struct that will be used to pass down/up the args we need to call SNES
  */
 typedef struct{
-    Mesh _mesh;
-    DofHandler _dofHandler;
-    BCSystem _bcSystem;
-    ElmtSystem _elmtSystem;
-    MateSystem _mateSystem;
-    SolutionSystem _solutionSystem;
-    EquationSystem _equationSystem;
-    FE _fe;
-    FESystem _feSystem;
-    FEControlInfo _fectrlinfo;
+    Mesh *_mesh;
+    DofHandler *_dofHandler;
+    BCSystem *_bcSystem;
+    ElmtSystem *_elmtSystem;
+    MateSystem *_mateSystem;
+    SolutionSystem *_solutionSystem;
+    EquationSystem *_equationSystem;
+    FE *_fe;
+    FESystem *_feSystem;
+    FEControlInfo *_fectrlinfo;
 } AppCtx;
 
 /**

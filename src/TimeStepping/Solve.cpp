@@ -54,10 +54,10 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
     MessagePrinter::PrintDashLine();
    
     bool HasConvergeSolution; 
-    for(double currenttime=0.0;currenttime<=_FinalT;){
+    for(double currenttime=0.0;currenttime<_FinalT;){
         HasConvergeSolution=false;
         while(fectrlinfo.dt>_DtMin){
-            snprintf(buff,68,"  TimeStepping: step=%8d,time=%12.5e,dt=%12.5e",fectrlinfo.CurrentStep,fectrlinfo.t+fectrlinfo.dt,fectrlinfo.dt);
+            snprintf(buff,68,"TimeStepping: step=%8d,time=%12.5e,dt=%12.5e",fectrlinfo.CurrentStep,fectrlinfo.t+fectrlinfo.dt,fectrlinfo.dt);
             str=buff;
             MessagePrinter::PrintNormalTxt(str);
             if(nonlinearSolver.Solve(mesh,dofHandler,elmtSystem,mateSystem,bcSystem,solutionSystem,equationSystem,fe,feSystem,fectrlinfo)){
@@ -77,7 +77,6 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                 // update the time and step
                 currenttime+=fectrlinfo.dt;
                 fectrlinfo.t+=fectrlinfo.dt;
-                
 
                 // now we do the projection
                 if(fectrlinfo.IsProjection){
@@ -117,7 +116,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             else{
                 // nonlinearSolver diverged, then we will try to reduce delta t
                 fectrlinfo.dt*=0.5;
-                snprintf(buff,68,"  TimeStepping failed: step=%8d,reduce dt to %14.5e",fectrlinfo.CurrentStep,fectrlinfo.dt);
+                snprintf(buff,68,"TimeStepping failed: step=%8d,reduce dt to %14.5e",fectrlinfo.CurrentStep,fectrlinfo.dt);
                 str=buff;
                 MessagePrinter::PrintNormalTxt(str,MessageColor::RED);
                 HasConvergeSolution=false;
@@ -130,6 +129,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             break;
         }
     }
+    outputSystem.WritePVDFileEnd();
 
     return true;
 }

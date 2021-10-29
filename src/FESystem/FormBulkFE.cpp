@@ -53,11 +53,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
     VecScatterBegin(_scatteru,solutionSystem._Utemp,_Useq,INSERT_VALUES,SCATTER_FORWARD);
     VecScatterEnd(_scatteru,solutionSystem._Utemp,_Useq,INSERT_VALUES,SCATTER_FORWARD);
 
-
     VecScatterCreateToAll(solutionSystem._V,&_scatterv,&_Vseq);
     VecScatterBegin(_scatterv,solutionSystem._V,_Vseq,INSERT_VALUES,SCATTER_FORWARD);
     VecScatterEnd(_scatterv,solutionSystem._V,_Vseq,INSERT_VALUES,SCATTER_FORWARD);
-
 
     // for the disp and velocity in the previous step
     VecScatterCreateToAll(solutionSystem._U,&_scatteruold,&_Uoldseq);
