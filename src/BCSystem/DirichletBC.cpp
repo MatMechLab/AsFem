@@ -15,7 +15,7 @@
 #include "BCSystem/DirichletBC.h"
 
 DirichletBC::DirichletBC(){
-    localU.Resize(11);// here we set the maximum number of dofs is 10
+    localU.Resize(11,0.0);// here we set the maximum number of dofs is 10
                       // which means, 'dofs=v1 v2 ... v10', you can append the dofs up to 10!!!
 } 
 

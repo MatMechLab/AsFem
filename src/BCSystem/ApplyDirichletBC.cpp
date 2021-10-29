@@ -23,9 +23,8 @@ void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,
     int rankne,eStart,eEnd;
     vector<int> dofids;
 
-    dofids.resize(dofindex.size()+1,0);
+    dofids.resize(dofindex.size(),0);
     _elmtinfo.nDofs=static_cast<int>(dofindex.size());
-
 
     MPI_Comm_size(PETSC_COMM_WORLD,&_size);
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
@@ -37,7 +36,6 @@ void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,
         if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
 
         _elmtinfo.nDim=mesh.GetBulkMeshDimViaPhyName(bcname);
-
         for(e=eStart;e<eEnd;++e){
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);//global id
             _elmtinfo.nNodes=mesh.GetBulkMeshIthElmtNodesNum(ee);
@@ -78,4 +76,5 @@ void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,
             }
         }
     }
+
 }
