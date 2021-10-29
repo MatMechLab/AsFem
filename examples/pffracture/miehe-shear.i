@@ -19,7 +19,7 @@ name=d ux uy
 [mates]
   [myfracmate]
     type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.012  1.0e-6
+    params=121.15 80.77 2.7e-3 0.012  1.0e-6   
     //     lambda mu    Gc     L      viscosity
   [end]
 [end]
@@ -42,7 +42,7 @@ name=d ux uy
 
 [output]
   type=vtu
-  interval=20
+  interval=10
 [end]
 
 [timestepping]
@@ -54,7 +54,7 @@ name=d ux uy
   growthfactor=1.1
   cutfactor=0.85
   dtmin=1.0e-12
-  dtmax=1.0e-4
+  dtmax=1.0e-3
 [end]
 
 [bcs]
@@ -81,7 +81,6 @@ name=d ux uy
 
 
 [projection]
-name=reacforce_x reacforce_y
 scalarmate=vonMises
 rank2mate=stress strain
 [end]
@@ -89,16 +88,6 @@ rank2mate=stress strain
 [postprocess]
   [area]
     type=area
-    side=top
-  [end]
-  [fx]
-    type=projvariablesideintegral
-    projvariable=reacforce_x
-    side=top
-  [end]
-  [fy]
-    type=projvariablesideintegral
-    projvariable=reacforce_y
     side=top
   [end]
   [ux]

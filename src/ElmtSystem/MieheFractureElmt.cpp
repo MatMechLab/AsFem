@@ -53,7 +53,7 @@ void MieheFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     double viscosity=Mate.ScalarMaterials("viscosity");
     double Gc=Mate.ScalarMaterials("Gc");
     double L=Mate.ScalarMaterials("L");
-    double Hist=Mate.ScalarMaterials("Hist");
+    double Hist=Mate.ScalarMaterials("H");
     RankTwoTensor Stress=Mate.Rank2Materials("stress");
 
     localR(1)=viscosity*soln.gpV[1]*shp.test
@@ -87,7 +87,7 @@ void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const doub
     double viscosity=Mate.ScalarMaterials("viscosity");
     double Gc=Mate.ScalarMaterials("Gc");
     double L=Mate.ScalarMaterials("L");
-    double Hist=Mate.ScalarMaterials("Hist");
+    double Hist=Mate.ScalarMaterials("H");
     RankTwoTensor dStressdD=Mate.Rank2Materials("dstressdD");
     RankTwoTensor dHdstrain=Mate.Rank2Materials("dHdstrain");
 
