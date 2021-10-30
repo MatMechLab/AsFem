@@ -22,24 +22,11 @@ TimeStepping::TimeStepping(){
     _TotalSteps=-1;
     _TimeSteppingType=TimeSteppingType::BACKWARDEULER;
     _TimeSteppingTypeName="backward-euler";
-    _LinearSolverName="ksp";
     _GrowthFactor=1.1;
     _CutBackFactor=0.85;
     _OptIters=3;
     _DtMax=1.0e2;
     _DtMin=1.0e-12;
-    //**********************************
-    //*** for nonlinear solver
-    //**********************************
-    _Rnorm0=1.0;_Rnorm=1.0;
-    _Enorm0=1.0;_Enorm=1.0;
-    _RAbsTol=4.0e-8;_RRelTol=1.0e-9;
-    _EAbsTol=1.0e-19;_ERelTol=1.0e-20;
-    _MaxIters=25;_Iters=0;
-    _STol=1.0e-16;
-    _SolverType=NonlinearSolverType::NEWTONLS;
-    _PCTypeName="lu";
-    _LinearSolverName="petsc";
 }
 
 //****************************************************
@@ -55,17 +42,6 @@ void TimeStepping::SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppi
     _GrowthFactor=timeSteppingBlock._GrowthFactor;
     _CutBackFactor=timeSteppingBlock._CutBackFactor;
     _OptIters=timeSteppingBlock._OptIters;
-}
-void TimeStepping::SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock){
-    _SolverType=nonlinearsolverblock._SolverType;
-    _MaxIters=nonlinearsolverblock._MaxIters;
-    _RAbsTol=nonlinearsolverblock._RAbsTol;
-    _RRelTol=nonlinearsolverblock._RRelTol;
-    _STol=nonlinearsolverblock._STol;
-
-    _SolverType=nonlinearsolverblock._SolverType;
-    _PCTypeName=nonlinearsolverblock._PCTypeName;
-    _LinearSolverName=nonlinearsolverblock._LinearSolverName;
 }
 //*******************************************************
 void TimeStepping::PrintTimeSteppingInfo()const{
@@ -94,6 +70,3 @@ void TimeStepping::PrintTimeSteppingInfo()const{
     MessagePrinter::PrintDashLine();
 }
 //****************************************
-void TimeStepping::ReleaseMem(){
-    TSDestroy(&_ts);
-}

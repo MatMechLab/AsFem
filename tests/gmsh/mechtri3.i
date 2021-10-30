@@ -36,19 +36,19 @@ name=ux uy
 [bcs]
   [fixux]
     type=dirichlet
-    dof=ux
+    dofs=ux
     value=0.0
     boundary=bottom
   [end]
   [fixuy]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=0.0
     boundary=bottom
   [end]
   [load]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=0.1
     boundary=top
   [end]

@@ -41,13 +41,13 @@ rank2mate=stress strain
 [bcs]
   [FixUx]
     type=dirichlet
-    dof=ux
+    dofs=ux
     boundary=left
     value=0.0
   [end]
   [loadUx]
     type=dirichlet
-    dof=ux
+    dofs=ux
     value=1.0*t
     boundary=right
   [end]
@@ -55,8 +55,8 @@ rank2mate=stress strain
 
 [timestepping]
   type=be
-  dt=1.0e-3
-  endtime=1.0e-1
+  dt=1.0e-4
+  endtime=1.0e-3
   adaptive=false
   optiters=3
   dtmax=1.0e-1

@@ -47,13 +47,13 @@ vectormate=gradc
   [fix]
     //type=helper
     type=nodaldirichlet
-    dof=c
+    dofs=c
     value=1.0
     boundary=left bottom
   [end]
   [fix1]
     type=nodaldirichlet
-    dof=c
+    dofs=c
     value=2.0
     boundary=left bottom
   [end]

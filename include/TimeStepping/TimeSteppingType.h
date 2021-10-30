@@ -15,9 +15,8 @@
 #pragma once
 
 enum class TimeSteppingType{
+    STATIC,
     BACKWARDEULER,
     CRANCKNICLSON,
-    ALPHA,
-    GL,
-    ROSW
+    BDF2
 };

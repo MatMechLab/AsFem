@@ -16,7 +16,7 @@
 
 #include "ElmtSystem/PoissonElmt.h"
 
-void PoissonElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void PoissonElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -50,7 +50,7 @@ void PoissonElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
 
 }
 //*****************************************************************************
-void PoissonElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void PoissonElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -66,7 +66,7 @@ void PoissonElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&c
 
 }
 //*******************************************************************************
-void PoissonElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void PoissonElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

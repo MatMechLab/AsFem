@@ -17,14 +17,18 @@
 
 #include <iostream>
 
+#include "TimeStepping/TimeSteppingType.h"
 #include "petsc.h"
 
 using namespace std;
 
+/**
+ * This class defines the basic information to control to FE calculation
+ */
 class FEControlInfo{
 public:
     FEControlInfo(){
-        ctan[0]=1.0;ctan[1]=0.0;
+        ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
         dt=1.0e-6;
         t=1.0;
         CurrentStep=0;
@@ -32,10 +36,12 @@ public:
         IsDebug=true;
         IsDepDebug=false;
         IsProjection=false;
+
+        _timesteppingtype=TimeSteppingType::BACKWARDEULER;
     }
 
     void Init(){
-        ctan[0]=1.0;ctan[1]=0.0;
+        ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
         dt=1.0e-6;
         t=1.0;
         CurrentStep=0;
@@ -43,9 +49,11 @@ public:
         IsDebug=true;
         IsDepDebug=false;
         IsProjection=false;
+
+        _timesteppingtype=TimeSteppingType::BACKWARDEULER;
     }
 
-    double ctan[2];
+    double ctan[3];
     double dt=1.0e-6;
     double t=1.0;
     int CurrentStep=0;
@@ -53,4 +61,8 @@ public:
     bool IsDebug=true;
     bool IsDepDebug=false;
     bool IsProjection=false;
+
+    // for time stepping
+    TimeSteppingType _timesteppingtype=TimeSteppingType::BACKWARDEULER;
+
 };

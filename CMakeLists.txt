@@ -253,6 +253,66 @@ set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### For Miehe's phase field fracture element
 set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
+### for UEL1
+set(inc ${inc} include/ElmtSystem/User1Elmt.h)
+set(src ${src} src/ElmtSystem/User1Elmt.cpp)
+### for UEL2
+set(inc ${inc} include/ElmtSystem/User2Elmt.h)
+set(src ${src} src/ElmtSystem/User2Elmt.cpp)
+### for UEL3
+set(inc ${inc} include/ElmtSystem/User3Elmt.h)
+set(src ${src} src/ElmtSystem/User3Elmt.cpp)
+### for UEL4
+set(inc ${inc} include/ElmtSystem/User4Elmt.h)
+set(src ${src} src/ElmtSystem/User4Elmt.cpp)
+### for UEL5
+set(inc ${inc} include/ElmtSystem/User5Elmt.h)
+set(src ${src} src/ElmtSystem/User5Elmt.cpp)
+### for UEL6
+set(inc ${inc} include/ElmtSystem/User6Elmt.h)
+set(src ${src} src/ElmtSystem/User6Elmt.cpp)
+### for UEL7
+set(inc ${inc} include/ElmtSystem/User7Elmt.h)
+set(src ${src} src/ElmtSystem/User7Elmt.cpp)
+### for UEL8
+set(inc ${inc} include/ElmtSystem/User8Elmt.h)
+set(src ${src} src/ElmtSystem/User8Elmt.cpp)
+### for UEL9
+set(inc ${inc} include/ElmtSystem/User9Elmt.h)
+set(src ${src} src/ElmtSystem/User9Elmt.cpp)
+### for UEL10
+set(inc ${inc} include/ElmtSystem/User10Elmt.h)
+set(src ${src} src/ElmtSystem/User10Elmt.cpp)
+### for UEL11
+set(inc ${inc} include/ElmtSystem/User11Elmt.h)
+set(src ${src} src/ElmtSystem/User11Elmt.cpp)
+### for UEL12
+set(inc ${inc} include/ElmtSystem/User12Elmt.h)
+set(src ${src} src/ElmtSystem/User12Elmt.cpp)
+### for UEL13
+set(inc ${inc} include/ElmtSystem/User13Elmt.h)
+set(src ${src} src/ElmtSystem/User13Elmt.cpp)
+### for UEL14
+set(inc ${inc} include/ElmtSystem/User14Elmt.h)
+set(src ${src} src/ElmtSystem/User14Elmt.cpp)
+### for UEL15
+set(inc ${inc} include/ElmtSystem/User15Elmt.h)
+set(src ${src} src/ElmtSystem/User15Elmt.cpp)
+### for UEL16
+set(inc ${inc} include/ElmtSystem/User16Elmt.h)
+set(src ${src} src/ElmtSystem/User16Elmt.cpp)
+### for UEL17
+set(inc ${inc} include/ElmtSystem/User17Elmt.h)
+set(src ${src} src/ElmtSystem/User17Elmt.cpp)
+### for UEL18
+set(inc ${inc} include/ElmtSystem/User18Elmt.h)
+set(src ${src} src/ElmtSystem/User18Elmt.cpp)
+### for UEL19
+set(inc ${inc} include/ElmtSystem/User19Elmt.h)
+set(src ${src} src/ElmtSystem/User19Elmt.cpp)
+### for UEL20
+set(inc ${inc} include/ElmtSystem/User20Elmt.h)
+set(src ${src} src/ElmtSystem/User20Elmt.cpp)
 
 #############################################################
 ### For Materials system in AsFem                         ###
@@ -302,7 +362,37 @@ set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
-#
+### For UMAT1
+set(inc ${inc} include/MateSystem/User1Material.h)
+set(src ${src} src/MateSystem/User1Material.cpp)
+### For UMAT2
+set(inc ${inc} include/MateSystem/User2Material.h)
+set(src ${src} src/MateSystem/User2Material.cpp)
+### For UMAT3
+set(inc ${inc} include/MateSystem/User3Material.h)
+set(src ${src} src/MateSystem/User3Material.cpp)
+### For UMAT4
+set(inc ${inc} include/MateSystem/User4Material.h)
+set(src ${src} src/MateSystem/User4Material.cpp)
+### For UMAT5
+set(inc ${inc} include/MateSystem/User5Material.h)
+set(src ${src} src/MateSystem/User5Material.cpp)
+### For UMAT6
+set(inc ${inc} include/MateSystem/User6Material.h)
+set(src ${src} src/MateSystem/User6Material.cpp)
+### For UMAT7
+set(inc ${inc} include/MateSystem/User7Material.h)
+set(src ${src} src/MateSystem/User7Material.cpp)
+### For UMAT8
+set(inc ${inc} include/MateSystem/User8Material.h)
+set(src ${src} src/MateSystem/User8Material.cpp)
+### For UMAT9
+set(inc ${inc} include/MateSystem/User9Material.h)
+set(src ${src} src/MateSystem/User9Material.cpp)
+### For UMAT10
+set(inc ${inc} include/MateSystem/User10Material.h)
+set(src ${src} src/MateSystem/User10Material.cpp)
+###
 set(inc ${inc} include/MateSystem/BulkMateSystem.h)
 set(src ${src} src/MateSystem/BulkMateSystem.cpp)
 set(src ${src} src/MateSystem/InitBulkMateLibs.cpp)
@@ -314,17 +404,84 @@ set(src ${src} src/MateSystem/RunBulkMateLibs.cpp)
 #############################################################
 set(inc ${inc} include/BCSystem/BCType.h)
 set(inc ${inc} include/BCSystem/BCBlock.h)
+### For integrated boundary conditions
+set(inc ${inc} include/BCSystem/IntegrateBCBase.h)
+### for neumann bc
+set(inc ${inc} include/BCSystem/NeumannBC.h)
+set(src ${src} src/BCSystem/NeumannBC.cpp)
+### for flux bc
+set(inc ${inc} include/BCSystem/FluxBC.h)
+set(src ${src} src/BCSystem/FluxBC.cpp)
+### for nodalbc base
+set(inc ${inc} include/BCSystem/NodalBCBase.h)
+### for nodal force bc
+set(inc ${inc} include/BCSystem/NodalForceBC.h)
+set(src ${src} src/BCSystem/NodalForceBC.cpp)
+### for nodal flux bc
+set(inc ${inc} include/BCSystem/NodalFluxBC.h)
+set(src ${src} src/BCSystem/NodalFluxBC.cpp)
+### for dirichlet bc base class
+set(inc ${inc} include/BCSystem/DirichletBCBase.h)
+### for dirichlet boundary condition
+set(inc ${inc} include/BCSystem/DirichletBC.h)
+set(src ${src} src/BCSystem/DirichletBC.cpp)
+### for user1 dirichlet bc
+set(inc ${inc} include/BCSystem/User1DirichletBC.h)
+set(src ${src} src/BCSystem/User1DirichletBC.cpp)
+### for user2 dirichlet bc
+set(inc ${inc} include/BCSystem/User2DirichletBC.h)
+set(src ${src} src/BCSystem/User2DirichletBC.cpp)
+### for user3 dirichlet bc
+set(inc ${inc} include/BCSystem/User3DirichletBC.h)
+set(src ${src} src/BCSystem/User3DirichletBC.cpp)
+### for user4 dirichlet bc
+set(inc ${inc} include/BCSystem/User4DirichletBC.h)
+set(src ${src} src/BCSystem/User4DirichletBC.cpp)
+### for user5 dirichlet bc
+set(inc ${inc} include/BCSystem/User5DirichletBC.h)
+set(src ${src} src/BCSystem/User5DirichletBC.cpp)
+###
 set(inc ${inc} include/BCSystem/BCSystem.h)
+###
 set(src ${src} src/BCSystem/BCSystem.cpp)
 set(src ${src} src/BCSystem/CheckAppliedBCNameIsValid.cpp)
 set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
 set(src ${src} src/BCSystem/ApplyBC.cpp)
 set(src ${src} src/BCSystem/ApplyDirichletBC.cpp)
 set(src ${src} src/BCSystem/ApplyNodalDirichletBC.cpp)
-set(src ${src} src/BCSystem/ApplyNeumannBC.cpp)
 set(src ${src} src/BCSystem/ApplyNodalNeumannBC.cpp)
 set(src ${src} src/BCSystem/RunBCLibs.cpp)
+### for user-defined-integrated-type bc
+### for user1-bc
+set(inc ${inc} include/BCSystem/User1BC.h)
 set(src ${src} src/BCSystem/User1BC.cpp)
+### for user2-bc
+set(inc ${inc} include/BCSystem/User2BC.h)
+set(src ${src} src/BCSystem/User2BC.cpp) 
+### for user3-bc  
+set(inc ${inc} include/BCSystem/User3BC.h)   
+set(src ${src} src/BCSystem/User3BC.cpp)  
+### for user4-bc  
+set(inc ${inc} include/BCSystem/User4BC.h)
+set(src ${src} src/BCSystem/User4BC.cpp)
+### for user5-bc
+set(inc ${inc} include/BCSystem/User5BC.h)
+set(src ${src} src/BCSystem/User5BC.cpp)
+### for user6-bc
+set(inc ${inc} include/BCSystem/User6BC.h)
+set(src ${src} src/BCSystem/User6BC.cpp)
+### for user7-bc
+set(inc ${inc} include/BCSystem/User7BC.h)
+set(src ${src} src/BCSystem/User7BC.cpp)
+### for user8-bc
+set(inc ${inc} include/BCSystem/User8BC.h)
+set(src ${src} src/BCSystem/User8BC.cpp)
+### for user9-bc
+set(inc ${inc} include/BCSystem/User9BC.h)
+set(src ${src} src/BCSystem/User9BC.cpp)
+### for user10-bc
+set(inc ${inc} include/BCSystem/User10BC.h)
+set(src ${src} src/BCSystem/User10BC.cpp)
 
 #############################################################
 ### For Initial condition system in AsFem                 ###
@@ -410,7 +567,6 @@ set(inc ${inc} include/TimeStepping/TimeSteppingType.h)
 set(inc ${inc} include/TimeStepping/TimeSteppingBlock.h)
 set(inc ${inc} include/TimeStepping/TimeStepping.h)
 set(src ${src} src/TimeStepping/TimeStepping.cpp)
-set(src ${src} src/TimeStepping/TimeSteppingInit.cpp)
 set(src ${src} src/TimeStepping/Solve.cpp)
 
 #############################################################

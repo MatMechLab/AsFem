@@ -8,23 +8,39 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.27
-//+++ Purpose: here we can apply the user-defined-boundary-condition-1
+//+++ Date   : 2021.10.17
+//+++ Purpose: implement the user-defined-integrated type boundary
+//+++          condition, if one wants to use dirichlet type bc,
+//+++          please call UserXXDirichletBC !!!
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "BCSystem/BCSystem.h"
+#include "BCSystem/User1BC.h"
 
-void BCSystem::User1BC(const FECalcType &calctype,
-                const Vector3d &normals,const double &gpU,const Vector3d &gpGradU,
-                const double &bcvalue,
-                const double &test,const double &trial,
-                const Vector3d &grad_test,const Vector3d &grad_trial,
-                double &localK,double &localR){
-    if(gpU||grad_test(1)||trial||grad_trial(1)){}
+void User1BC::ComputeBCValue(const FECalcType &calctype, const double &bcvalue, const vector<double> &params, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &soln, const Vector3d &normal, const LocalShapeFun &shp,const double (&ctan)[3], MatrixXd &localK, VectorXd &localR){
     if(calctype==FECalcType::ComputeResidual){
-        localR=(gpGradU*normals-bcvalue)*test;
+        ComputeResidual(bcvalue,params,elmtinfo,soln,normal,shp,localR);
     }
     else if(calctype==FECalcType::ComputeJacobian){
-        localK=(grad_trial*normals)*test;
+        ComputeJacobian(bcvalue,params,elmtinfo,soln,normal,shp,ctan,localK);
+    }
+    else{
+        MessagePrinter::PrintErrorTxt("Unsupported calculation type in NeumannBC class, please check your code");
+        MessagePrinter::AsFem_Exit();
     }
 }
+
+
+void User1BC::ComputeResidual(const double &bcvalue, const vector<double> &params, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &soln, const Vector3d &normal, const LocalShapeFun &shp, VectorXd &localR){
+    // get rid of unused warnings
+    if(params.size()||elmtinfo.dt||soln.gpU[0]||normal(1)){}
+    localR.setZero();
+    localR(1)=bcvalue*shp.test;// here the bcvalue is your "flux"!
+}
+
+void User1BC::ComputeJacobian(const double &bcvalue, const vector<double> &params, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &soln, const Vector3d &normal, const LocalShapeFun &shp,const double (&ctan)[3], MatrixXd &localK){
+    // get rid of unused warnings
+    if(bcvalue||params.size()||elmtinfo.dt||soln.gpU[0]||normal(1)||shp.test||ctan[0]){}
+    localK.setZero();
+    localK(1,1)=0.0; // since bcvalue is a constant, its derivative should be zero!
+}
+

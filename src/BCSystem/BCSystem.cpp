@@ -33,6 +33,33 @@ BCSystem::BCSystem(){
     _dist=0.0;
 
     _normals=0.0;
+
+    _elmtinfo.dt=0.0;
+    _elmtinfo.t=0.0;
+    _elmtinfo.gpCoords=0.0;
+    _elmtinfo.nDim=0;
+    _elmtinfo.nDofs=0;
+    _elmtinfo.nNodes=0;
+
+    // here we assume the maximum dofs of each BC element is 10!
+    _soln.gpU.resize(10);
+    _soln.gpGradU.resize(10);
+    _soln.gpV.resize(10);
+    _soln.gpGradV.resize(10);
+    // for the old solution in the previous step
+    // do we realy need this?
+    _soln.gpUold.resize(10);
+    _soln.gpGradUold.resize(10);
+    _soln.gpVold.resize(10);
+    _soln.gpGradVold.resize(10);
+
+    // for shape functions
+    _shp.test=0.0;
+    _shp.grad_test=0.0;
+    _shp.trial=0.0;
+    _shp.grad_trial=0.0;
+
+
 }
 
 //************************************
@@ -78,4 +105,30 @@ void BCSystem::InitBCSystem(const Mesh &mesh){
     _dist=0.0;
 
     _normals=0.0;
+    
+    _elmtinfo.dt=0.0;
+    _elmtinfo.t=0.0;
+    _elmtinfo.gpCoords=0.0;
+    _elmtinfo.nDim=0;
+    _elmtinfo.nDofs=0;
+    _elmtinfo.nNodes=0;
+
+    // here we assume the maximum dofs of each BC element is 10!
+    _soln.gpU.resize(10);
+    _soln.gpGradU.resize(10);
+    _soln.gpV.resize(10);
+    _soln.gpGradV.resize(10);
+    // for the old solution in the previous step
+    // do we realy need this?
+    _soln.gpUold.resize(10);
+    _soln.gpGradUold.resize(10);
+    _soln.gpVold.resize(10);
+    _soln.gpGradVold.resize(10);
+
+    // for shape functions
+    _shp.test=0.0;
+    _shp.grad_test=0.0;
+    _shp.trial=0.0;
+    _shp.grad_trial=0.0;
+
 }

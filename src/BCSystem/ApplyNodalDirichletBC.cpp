@@ -17,12 +17,17 @@
 #include "BCSystem/BCSystem.h"
 #include "DofHandler/DofHandler.h"
 
-void BCSystem::ApplyNodalDirichletBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const int &dofindex,const double &bcvalue,const vector<string> &bcnamelist,Vec &U,Mat &K,Vec &RHS){
+void BCSystem::ApplyNodalDirichletBC(const FECalcType &calctype,const BCType &bctype,const vector<string> bcnamelist,const vector<int> &dofsindex,const double &bcvalue,const vector<double> &params,const Mesh &mesh,const DofHandler &dofHandler,Vec &U,Mat &K,Vec &RHS){
     PetscInt nodeid,e;
     PetscInt iInd;
-    const PetscScalar fix=0.0;
     int rankne,eStart,eEnd;
+    vector<int> dofsid;
 
+    dofsid.resize(dofsindex.size(),0);
+    _elmtinfo.nDofs=static_cast<int>(dofsindex.size());
+    _elmtinfo.nDim=0;
+    _elmtinfo.nNodes=1;
+    
     MPI_Comm_size(PETSC_COMM_WORLD,&_size);
     MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
 
@@ -33,14 +38,19 @@ void BCSystem::ApplyNodalDirichletBC(const Mesh &mesh,const DofHandler &dofHandl
         if(_rank==_size-1) eEnd=mesh.GetBulkMeshNodeIDsNumViaPhysicalName(bcname);
         for(e=eStart;e<eEnd;++e){
             nodeid=mesh.GetBulkMeshIthNodeIDViaPhyName(bcname,e+1);
-            iInd=dofHandler.GetIthNodeJthDofIndex(nodeid,dofindex)-1;
-            if(calctype==FECalcType::ComputeResidual) {
-                VecSetValues(RHS,1,&iInd,&fix,INSERT_VALUES);
+            for(int i=0;i<_elmtinfo.nDofs;i++){
+                iInd=dofHandler.GetIthNodeJthDofIndex(nodeid,dofsindex[i])-1;
+                dofsid[i]=iInd;
             }
-            else if(calctype==FECalcType::ComputeJacobian){
-                MatSetValues(K,1,&iInd,1,&iInd,&_PenaltyFactor,INSERT_VALUES);
-            }
-            VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
+            switch (bctype) {
+                case BCType::NODALDIRICHLETBC:
+                    DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofsid,_elmtinfo.gpCoords,K,RHS,U);
+                    break;
+                default:
+                    MessagePrinter::PrintErrorTxt("unsupported boundary condition type in ApplyNodalDirichletBC, please check your code");
+                    MessagePrinter::AsFem_Exit();
+                    break;
+                }
         }// end-of-nodes-loop
     }// end-of-boundary-name-loop
 }

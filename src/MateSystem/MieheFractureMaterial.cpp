@@ -111,6 +111,8 @@ void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputP
     Stress=StressPos*(g+k)+StressNeg;
     Mate.Rank2Materials("dstressdD")=StressPos*dg;
 
+    Mate.ScalarMaterials("H")=0.0;// we use H instead of Hist for our element
+                                  // in such a way, users can use the stagger solution!
     if(psipos>MateOld.ScalarMaterials("Hist")){
         Mate.ScalarMaterials("Hist")=psipos;
         Mate.Rank2Materials("dHdstrain")=StressPos;
@@ -120,8 +122,10 @@ void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputP
         Mate.Rank2Materials("dHdstrain").SetToZeros();
     }
 
+    Mate.ScalarMaterials("H")=Mate.ScalarMaterials("Hist");
+
     if(UseHist){
-        Mate.ScalarMaterials("Hist")=MateOld.ScalarMaterials("Hist");
+        Mate.ScalarMaterials("H")=MateOld.ScalarMaterials("Hist");
         Mate.Rank2Materials("dHdstrain").SetToZeros();
     }
 

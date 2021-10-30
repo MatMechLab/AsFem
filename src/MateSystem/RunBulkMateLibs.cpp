@@ -50,6 +50,37 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate, const int &mateindex
         case MateType::MIEHEFRACTUREMATE:
             MieheFractureMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
+        case MateType::USER1MATE:
+            User1Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER2MATE:
+            User2Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER3MATE:
+            User3Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER4MATE:
+            User4Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER5MATE:
+            User5Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER6MATE:
+            User6Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER7MATE:
+            User7Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER8MATE:
+            User8Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER9MATE:
+            User9Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        case MateType::USER10MATE:
+            User10Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+
         default:
             MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of the MateSystem, please check either your code or your input file");
             MessagePrinter::AsFem_Exit();

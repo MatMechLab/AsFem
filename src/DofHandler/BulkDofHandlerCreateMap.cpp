@@ -158,14 +158,20 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
     BCBlock bcBlock;
     for(iblock=1;iblock<=bcSystem.GetBCBlockNums();iblock++){
         bcBlock=bcSystem.GetIthBCBlock(iblock);
-        j=bcBlock._DofID;
-        if(bcBlock._BCType==BCType::DIRICHLETBC){
+        if(bcBlock._BCType==BCType::DIRICHLETBC||
+           bcBlock._BCType==BCType::USER1DIRICHLETBC||
+           bcBlock._BCType==BCType::USER2DIRICHLETBC||
+           bcBlock._BCType==BCType::USER3DIRICHLETBC||
+           bcBlock._BCType==BCType::USER4DIRICHLETBC||
+           bcBlock._BCType==BCType::USER5DIRICHLETBC){
             for(auto bc:bcBlock._BoundaryNameList){
                 for(auto e:mesh.GetBulkMeshElmtIDsViaPhysicalName(bc)){
                     // now we are in the elmt id vector
                     for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(e);i++){
                         iInd=mesh.GetBulkMeshIthElmtJthNodeID(e,i);
-                        _NodalDofFlag[iInd-1][j-1]=0.0;
+                        for(const auto &dofid:bcBlock._DofIDs){
+                            _NodalDofFlag[iInd-1][dofid-1]=0.0;
+                        }
                     }
                 }
             }
@@ -173,7 +179,9 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
         else if(bcBlock._BCType==BCType::NODALDIRICHLETBC){
             for(auto bc:bcBlock._BoundaryNameList){
                 for(auto i:mesh.GetBulkMeshNodeIDsViaPhysicalName(bc)){
-                    _NodalDofFlag[i-1][j-1]=0.0;
+                    for(const auto &dofid:bcBlock._DofIDs){
+                        _NodalDofFlag[i-1][dofid-1]=0.0;
+                    }
                 }
             }
         }

@@ -34,14 +34,14 @@ void SolutionSystem::InitSolution(const int &ndofs,const int &nelmts,const int &
     VecSetUp(_Unew);
 
 
-    VecCreate(PETSC_COMM_WORLD,&_dU);
-    VecSetSizes(_dU,PETSC_DECIDE,ndofs);
-    VecSetUp(_dU);
+    VecCreate(PETSC_COMM_WORLD,&_Utemp);
+    VecSetSizes(_Utemp,PETSC_DECIDE,ndofs);
+    VecSetUp(_Utemp);
 
     VecSet(_Unew,0.0);
     VecSet(_U,0.0);
     VecSet(_Uold,0.0);
-    VecSet(_dU,0.0);
+    VecSet(_Utemp,0.0);
     //*******************************
     VecCreate(PETSC_COMM_WORLD,&_V);
     VecSetSizes(_V,PETSC_DECIDE,ndofs);

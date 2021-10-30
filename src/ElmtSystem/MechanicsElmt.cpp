@@ -16,7 +16,7 @@
 
 #include "ElmtSystem/MechanicsElmt.h"
 
-void MechanicsElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MechanicsElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -56,7 +56,7 @@ void MechanicsElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     }
 }
 //******************************************************************************
-void MechanicsElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MechanicsElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -90,7 +90,7 @@ void MechanicsElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (
     }
 }
 //*************************************************
-void MechanicsElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MechanicsElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

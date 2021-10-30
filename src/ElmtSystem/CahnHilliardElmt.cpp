@@ -18,7 +18,7 @@
 #include "ElmtSystem/CahnHilliardElmt.h"
 
 void CahnHilliardElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,
-                                  const double (&ctan)[2],
+                                  const double (&ctan)[3],
                                   const LocalElmtSolution &soln,const LocalShapeFun &shp,
                                   const Materials &Mate,const Materials &MateOld,
                                   ScalarMateType &gpProj,
@@ -54,7 +54,7 @@ void CahnHilliardElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
             -Mate.ScalarMaterials("Kappa")*(soln.gpGradU[1]*shp.grad_test);
 }
 //***************************************************************************
-void CahnHilliardElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void CahnHilliardElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                     const LocalElmtSolution &soln,
                                     const LocalShapeFun &shp,
                                     const Materials &Mate,const Materials &MateOld,
@@ -75,7 +75,7 @@ void CahnHilliardElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const doubl
     localK(2,2)=shp.trial*shp.test*ctan[0];
 }
 //***********************************************************
-void CahnHilliardElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void CahnHilliardElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                          const LocalElmtSolution &soln,
                                          const LocalShapeFun &shp,
                                          const Materials &Mate,const Materials &MateOld,

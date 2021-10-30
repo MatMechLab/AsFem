@@ -3,10 +3,15 @@
 [mesh]
   type=asfem
   dim=3
-  nx=2
-  ny=2
-  nz=2
-  meshtype=hex8
+  nx=5
+  ny=5
+  nz=5
+  meshtype=hex27
+[end]
+
+[qpoint]
+type=gauss
+order=4
 [end]
 
 [dofs]
@@ -28,16 +33,23 @@ name=phi
   [end]
 [end]
 
+[nonlinearsolver]
+type=nr
+maxiters=25
+r_rel_tol=1.0e-18
+r_abs_tol=1.0e-15
+[end]
+
 [bcs]
   [fixleft]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=0.1
     boundary=left
   [end]
   [fixright]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=0.5
     boundary=right
   [end]
@@ -46,4 +58,5 @@ name=phi
 
 [job]
   type=static
+  debug=dep
 [end]

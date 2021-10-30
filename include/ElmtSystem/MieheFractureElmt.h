@@ -30,7 +30,7 @@ public:
     /**
      * Function for different calculate action
      */
-    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -53,7 +53,7 @@ private:
      * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\mathbb{C}_{ijkl}N_{,j}^{I}N_{,l}^{J}\f$ <br>
      * \f$K_{dd}^{IJ}=\frac{\partial R_{d}^{I}}{\partial d^{J}}=\eta N^{J}N^{I}\mathrm{ctan[1]}+2N^{J}\mathcal{H}N^{I}+\frac{G_{c}}{L}N^{J}N^{I}+G_{c}L\nabla N^{J}\nabla N^{I}\f$
      */
-    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -62,7 +62,7 @@ private:
     /**
      * This function calculate the projected scalar variable for Miehe's phase field fracture model
      */
-    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

@@ -35,6 +35,27 @@
 #include "ElmtSystem/MechanicsElmt.h"
 #include "ElmtSystem/CahnHilliardElmt.h"
 #include "ElmtSystem/MieheFractureElmt.h"
+// for UEL
+#include "ElmtSystem/User1Elmt.h"
+#include "ElmtSystem/User2Elmt.h"
+#include "ElmtSystem/User3Elmt.h"
+#include "ElmtSystem/User4Elmt.h"
+#include "ElmtSystem/User5Elmt.h"
+#include "ElmtSystem/User6Elmt.h"
+#include "ElmtSystem/User7Elmt.h"
+#include "ElmtSystem/User8Elmt.h"
+#include "ElmtSystem/User9Elmt.h"
+#include "ElmtSystem/User10Elmt.h"
+#include "ElmtSystem/User11Elmt.h"
+#include "ElmtSystem/User12Elmt.h"
+#include "ElmtSystem/User13Elmt.h"
+#include "ElmtSystem/User14Elmt.h"
+#include "ElmtSystem/User15Elmt.h"
+#include "ElmtSystem/User16Elmt.h"
+#include "ElmtSystem/User17Elmt.h"
+#include "ElmtSystem/User18Elmt.h"
+#include "ElmtSystem/User19Elmt.h"
+#include "ElmtSystem/User20Elmt.h"
 
 using namespace std;
 
@@ -44,7 +65,27 @@ class BulkElmtSystem: public PoissonElmt,
                       public DiffusionElmt,
                       public MechanicsElmt,
                       public CahnHilliardElmt,
-                      public MieheFractureElmt{
+                      public MieheFractureElmt,
+                      public User1Elmt,
+                      public User2Elmt,
+                      public User3Elmt,
+                      public User4Elmt,
+                      public User5Elmt,
+                      public User6Elmt,
+                      public User7Elmt,
+                      public User8Elmt,
+                      public User9Elmt,
+                      public User10Elmt,
+                      public User11Elmt,
+                      public User12Elmt,
+                      public User13Elmt,
+                      public User14Elmt,
+                      public User15Elmt,
+                      public User16Elmt,
+                      public User17Elmt,
+                      public User18Elmt,
+                      public User19Elmt,
+                      public User20Elmt{
 public:
     BulkElmtSystem();
 
@@ -61,7 +102,7 @@ public:
 
 
     void RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                         const double (&ctan)[2],
+                         const double (&ctan)[3],
                          const LocalElmtInfo &elmtinfo,
                          const LocalElmtSolution &soln,
                          const LocalShapeFun &shp,

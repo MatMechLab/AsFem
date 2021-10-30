@@ -22,14 +22,16 @@ void BCsBlockReader::PrintHelper(){
     MessagePrinter::PrintNormalTxt("[bcs]",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("  [bc-1]",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("    type=bc-type-1",MessageColor::BLUE);
-    MessagePrinter::PrintNormalTxt("    dof=dof1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dofs=dof1 dofs2 ...",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("    value=bc-value-1",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    params=val1 val2 ...",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("    boundary=boundary-name-1",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("  [bc-2]",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("    type=bc-type-2",MessageColor::BLUE);
-    MessagePrinter::PrintNormalTxt("    dof=dof2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    dofs=dof2",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("    value=bc-value-2",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("    params=v1 v2 ...",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("    boundary=boundary-name-2",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("  [end]",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
@@ -40,13 +42,14 @@ void BCsBlockReader::PrintHelper(){
 bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlinenum, int &linenum, BCSystem &bcSystem, DofHandler &dofHandler){
     bool HasBCBlock=false;
     BCBlock bcblock;
-    string tempstr,str0;
+    string tempstr,str0,substr;
     vector<double> number;
     vector<string> bclist;
     string msg;
 
     bool HasElmt=false;
     bool HasValue=false;
+    bool HasParams=false;
     bool HasBoundary=false;
     bool HasDof=false;
 
@@ -64,8 +67,6 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
         HasValue=false;
         HasBoundary=false;
         HasDof=false;
-
-
 
         if((str.find('[')!=string::npos&&str.find(']')!=string::npos)&&
           (str.find("[end]")==string::npos&&str.find("[END]")==string::npos)){
@@ -100,6 +101,31 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                         bcblock._BCType=BCType::DIRICHLETBC;
                         HasElmt=true;
                     }
+                    else if(substr.find("user1dirichlet")!=string::npos && substr.length()==14){
+                        bcblock._BCTypeName="user1dirichlet";
+                        bcblock._BCType=BCType::USER1DIRICHLETBC;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("user2dirichlet")!=string::npos && substr.length()==14){
+                        bcblock._BCTypeName="user2dirichlet";
+                        bcblock._BCType=BCType::USER2DIRICHLETBC;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("user3dirichlet")!=string::npos && substr.length()==14){
+                        bcblock._BCTypeName="user3dirichlet";
+                        bcblock._BCType=BCType::USER3DIRICHLETBC;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("user4dirichlet")!=string::npos && substr.length()==14){
+                        bcblock._BCTypeName="user4dirichlet";
+                        bcblock._BCType=BCType::USER4DIRICHLETBC;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("user5dirichlet")!=string::npos && substr.length()==14){
+                        bcblock._BCTypeName="user5dirichlet";
+                        bcblock._BCType=BCType::USER5DIRICHLETBC;
+                        HasElmt=true;
+                    }
                     else if(substr.find("neumann")!=string::npos && substr.length()==7){
                         bcblock._BCTypeName="neumann";
                         bcblock._BCType=BCType::NEUMANNBC;
@@ -120,7 +146,7 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                         bcblock._BCType=BCType::PRESSUREBC;
                         HasElmt=true;
                     }
-                    else if(substr.find("user")!=string::npos){
+                    else if(substr.find("user")!=string::npos && substr.size()<=6){
                         number=StringUtils::SplitStrNum(str);
                         if(number.size()<1){
                             MessagePrinter::PrintErrorInLineNumber(linenum);
@@ -185,30 +211,36 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                         MessagePrinter::AsFem_Exit();
                     }
                 }
-                else if(str.find("dof=")!=string::npos){
+                else if(str.find("dofs=")!=string::npos){
                     if(!HasElmt){
                         MessagePrinter::PrintErrorInLineNumber(linenum);
-                        msg="type= is not given yet in ["+bcblock._BCBlockName+"] sub block, 'dof=' should be given after 'type=' in [bcs] sub block";
+                        msg="type= is not given yet in ["+bcblock._BCBlockName+"] sub block, 'dofs=' should be given after 'type=' in [bcs] sub block";
                         MessagePrinter::PrintErrorTxt(msg);
                         MessagePrinter::AsFem_Exit();
                     }
-                    if(str.size()<5){
+                    if(str.size()<6){
                         MessagePrinter::PrintErrorInLineNumber(linenum);
-                        msg="dof name not found in ["+bcblock._BCBlockName+"] sub block, 'dof=' should be given after 'type=' in [bcs] sub block";
+                        msg="dof name not found in ["+bcblock._BCBlockName+"] sub block, 'dofs=' should be given after 'type=' in [bcs] sub block";
                         MessagePrinter::PrintErrorTxt(msg);
                         MessagePrinter::AsFem_Exit();
                     }
                     else{
-                        bcblock._DofName=str.substr(4);
-                        if(!dofHandler.IsValidDofName(bcblock._DofName)){
-                            MessagePrinter::PrintErrorInLineNumber(linenum);
-                            msg="invalid dof name found in ["+bcblock._BCBlockName+"] sub block, dof must be one of the names list in [dofs] block";
-                            MessagePrinter::PrintErrorTxt(msg);
-                            MessagePrinter::AsFem_Exit();
-                            return false;
+                        int i=str0.find_first_of('=');
+                        substr=str0.substr(i+1,str0.length());
+                        bcblock._DofsName=StringUtils::SplitStr(substr,' ');
+                        bcblock._DofIDs.resize(bcblock._DofsName.size());
+                        i=0;
+                        for(const auto &name:bcblock._DofsName){
+                            if(!dofHandler.IsValidDofName(name)){
+                                MessagePrinter::PrintErrorInLineNumber(linenum);
+                                msg="invalid dof name found in ["+bcblock._BCBlockName+"] sub block, dof must be one of the names list in [dofs] block";
+                                MessagePrinter::PrintErrorTxt(msg);
+                                MessagePrinter::AsFem_Exit();
+                                return false;
+                            }
+                            bcblock._DofIDs[i]=dofHandler.GetDofIDviaDofName(name);
+                            i+=1;
                         }
-                        bcblock._DofID=dofHandler.GetDofIDviaDofName(bcblock._DofName);
-
                         HasDof=true;
                     }
                 }
@@ -271,7 +303,6 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                         int i;
                         i=str.find_first_of("=");
                         string substr=str.substr(i+1);
-                        // cout<<"bcblock="<<bcblock._BCBlockName<<", str="<<str<<", substr="<<substr<<endl;
                         if(substr.find("t")!=string::npos&&substr.find("*")==string::npos){
                             bcblock._IsTimeDependent=true;
                             bcblock._BCValue=1.0;
@@ -292,6 +323,26 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                         }
                     }
                 }
+                else if(str.find("params=")!=string::npos){
+                    if(!HasElmt){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="no 'type=' found in ["+bcblock._BCBlockName+"] sub block, 'value=' must be given after 'type=' in [bcs] sub block";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                    }
+                    number=StringUtils::SplitStrNum(str0);
+                    if(number.size()<1){
+                        MessagePrinter::PrintErrorInLineNumber(linenum);
+                        msg="parameters can not be found in ["+bcblock._BCBlockName+"] block, 'params=x y z..' is expected";
+                        MessagePrinter::PrintErrorTxt(msg);
+                        MessagePrinter::AsFem_Exit();
+                        return false;
+                    }
+                    else{
+                        bcblock._Parameters=number;
+                        HasParams=true;
+                    }
+                }
                 else if(str.find("[end]")!=string::npos){
                     break;
                 }
@@ -307,6 +358,7 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
             if(HasDof&&HasBoundary&&HasElmt&&HasBCBlock){
                 HasBCBlock=true;
                 if(!HasValue) bcblock._BCValue=0.0;
+                if(!HasParams) bcblock._Parameters.push_back(1.0);
                 bcSystem.AddBCBlock2List(bcblock);
                 bcblock.Init();
             }
@@ -319,7 +371,7 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                 }
 
                 if(!HasDof){
-                    msg="no dof found in ["+bcblock._BCBlockName+"] sub block, 'dof=dof_name' must be given in each [bcs] sub block";
+                    msg="no dof found in ["+bcblock._BCBlockName+"] sub block, 'dofs=dof_name' must be given in each [bcs] sub block";
                     MessagePrinter::PrintErrorTxt(msg);
                 }
 

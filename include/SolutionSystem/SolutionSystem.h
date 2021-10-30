@@ -142,7 +142,7 @@ public:
 
 public:
     Vec _Unew,_U,_V;
-    Vec _dU;
+    Vec _Utemp;
     Vec _Uold,_Vold;
 
     Vec _Proj;// this is used for projection quantities in each element

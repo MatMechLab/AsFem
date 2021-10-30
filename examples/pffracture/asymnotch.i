@@ -60,19 +60,19 @@ name=d ux uy
 [bcs]
   [fixux]
     type=dirichlet
-    dof=ux
+    dofs=ux
     value=0.0
     boundary=leftpoint
   [end]
   [fixuy]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=0.0
     boundary=leftpoint rightpoint
   [end]
   [load]
     type=dirichlet
-    dof=uy
+    dofs=uy
     value=-1.0*t
     boundary=toppoint
   [end]

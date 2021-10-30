@@ -26,7 +26,7 @@ public:
     /**
      * Function for different calculate action
      */
-    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -47,7 +47,7 @@ private:
      * This function calculate the jacobian matrix of the stress equilibrium equation. <br>
      * \f$K_{u_{i}u_{k}}^{IJ}=\frac{\partial R_{u_{i}}^{I}}{\partial u_{k}^{J}}=\mathbb{C}_{ijkl}N_{,j}^{I}N_{,l}^{J}\f$
      */
-    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -56,7 +56,7 @@ private:
     /**
      * This function calculate the projected scalar variable for the stress equilibrium equation
      */
-    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

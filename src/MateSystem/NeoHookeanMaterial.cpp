@@ -19,6 +19,10 @@
 void NeoHookeanMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
     // Here we do not consider any initial internal strains, stress
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
+
+    Mate.Rank2Materials("F").SetToIdentity();
+    Mate.Rank2Materials("PK1").SetToZeros();
+    Mate.Rank2Materials("PK2").SetToZeros();
 }
 
 //*********************************************************
@@ -50,7 +54,8 @@ void NeoHookeanMaterial::ComputeStressAndJacobian(const vector<double> &InputPar
     double mu=EE/(2*(1+nu));
     double J=_F.Det();
 
-    Stress=(_I-_Cinv)*mu+_Cinv*lambda*log(J);
+    _pk2=(_I-_Cinv)*mu+_Cinv*lambda*log(J);
+    Stress=_pk2;
     Jacobian=_Cinv.ODot(_Cinv)*(mu-lambda*log(J))*2
             +_Cinv.OTimes(_Cinv)*lambda;
 
@@ -70,11 +75,17 @@ void NeoHookeanMaterial::ComputeMaterialProperties(const vector<double> &InputPa
     ComputeStrain(elmtinfo,elmtsoln,_Strain);
     ComputeStressAndJacobian(InputParams,_Strain,_Stress,_Jac);
 
+    Mate.Rank2Materials("F")=_F;
+    Mate.Rank2Materials("PK1")=_F*_Stress;//1-st Piola-Kirchhoff stress 
+    Mate.Rank2Materials("PK2")=_Stress;   //2-nd Piola-Kirchhoff stress
+
+    _Stress=_F*_Stress;// we use 1-st Piola-Kirchhoff stress for the calculation
+
     _I.SetToIdentity();
     _devStress=_Stress-_I*(_Stress.Trace()/3.0);
     Mate.ScalarMaterials("vonMises")=sqrt(1.5*_devStress.DoubleDot(_devStress));
     Mate.Rank2Materials("strain")=_Strain;
-    Mate.Rank2Materials("stress")=_Stress;
+    Mate.Rank2Materials("stress")=_Stress;//-MateOld.Rank2Materials("PK1");
     Mate.Rank4Materials("jacobian")=_Jac;
 
 }

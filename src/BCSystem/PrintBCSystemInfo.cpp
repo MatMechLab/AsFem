@@ -39,14 +39,28 @@ void BCSystem::PrintBCSystemInfo()const{
             MessagePrinter::PrintNormalTxt(str);
         }
         //*
-        snprintf(buff,len,"   dof name            = %15s, dof index=%2d",it._DofName.c_str(),it._DofID);
-        str=buff;
+        str="   dofs name           =";
+        for(auto &dofname:it._DofsName){
+            str+=dofname+" ";
+        }
+        MessagePrinter::PrintNormalTxt(str);
+        str="   dofs ID             =";
+        for(auto id:it._DofIDs){
+            str+=to_string(id);
+        }
         MessagePrinter::PrintNormalTxt(str);
         //*
         snprintf(buff,len,"   boundary value      = %14.6e",it._BCValue);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
         //*
+        if(it._Parameters.size()>0){
+            str="   boundary parameters =";
+            for(auto val:it._Parameters){
+                str+=to_string(val);
+            }
+            MessagePrinter::PrintNormalTxt(str);
+        }
         str="   boundary name       =";
         for(auto bcname:it._BoundaryNameList){
             str+=bcname+" ";

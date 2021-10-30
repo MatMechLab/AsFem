@@ -53,7 +53,7 @@ void NonlinearSolver::Init(){
     //*** init KSP
     //**************************************************
     SNESGetKSP(_snes,&_ksp);
-    KSPGMRESSetRestart(_ksp,1400);
+    KSPGMRESSetRestart(_ksp,1800);
     KSPGetPC(_ksp,&_pc);
     PCFactorSetMatSolverType(_pc,MATSOLVERPETSC);
 

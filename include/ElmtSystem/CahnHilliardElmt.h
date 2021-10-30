@@ -29,7 +29,7 @@ public:
     /**
      * The function for different calc action
      */
-    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -56,7 +56,7 @@ private:
      * \f$K_{\mu c}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial c^{J}}\f$ <br>
      * \f$K_{\mu\mu}^{IJ}=\frac{\partial R_{\mu}^{I}}{\partial\mu^{J}}\f$ <br>
      */
-    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -65,7 +65,7 @@ private:
     /**
      * For the projected scalar variables in CahnHilliard element 
      */
-    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+    virtual void ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

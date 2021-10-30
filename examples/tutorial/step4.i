@@ -32,7 +32,7 @@ name=c
 [bcs]
   [flux]
     type=neumann
-    dof=c
+    dofs=c
     value=-0.5
     boundary=front
   [end]

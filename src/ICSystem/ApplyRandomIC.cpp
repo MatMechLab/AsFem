@@ -26,6 +26,7 @@ void ICSystem::ApplyRandomIC(const int &DofIndex, const vector<double> &Paramete
 
     PetscRandomCreate(PETSC_COMM_WORLD,&_rnd);
     PetscRandomSetInterval(_rnd,Parameters[0],Parameters[1]);
+    PetscRandomSetType(_rnd,PETSCRAND);
 
     int rankne,eStart,eEnd,e,ee,i,j,iInd;
     double value;

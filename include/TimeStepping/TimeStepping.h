@@ -38,7 +38,7 @@
 #include "OutputSystem/OutputSystem.h"
 #include "Postprocess/Postprocess.h"
 
-#include "NonlinearSolver/NonlinearSolverBlock.h"
+#include "NonlinearSolver/NonlinearSolver.h"
 
 #include "TimeStepping/TimeSteppingBlock.h"
 #include "TimeStepping/TimeSteppingType.h"
@@ -47,59 +47,32 @@
 
 using namespace std;
 
-//************************************************************************
-//*** for some user-defined contex
-typedef struct{
-    Mesh _mesh;
-    DofHandler _dofHandler;
-    BCSystem _bcSystem;
-    ICSystem _icSystem;
-    ElmtSystem _elmtSystem;
-    MateSystem _mateSystem;
-    SolutionSystem _solutionSystem;
-    EquationSystem _equationSystem;
-    FE _fe;
-    FESystem _feSystem;
-    OutputSystem _outputSystem;
-    Postprocess _postprocess;
-    FEControlInfo _fectrlinfo;
-    //********************************
-    PetscReal rnorm,rnorm0;
-    PetscReal dunorm,dunorm0;
-    PetscReal enorm,enorm0;
-    PetscInt iters;
-    bool IsDebug;
-    bool IsDepDebug;
-    double time;
-    double dt;
-    int step;
-    //**************************
-    bool IsAdaptive;
-    int OptiIters;
-    double GrowthFactor;
-    double CutbackFactor;
-    double DtMin;
-    double DtMax;
-} TSAppCtx;
 
-//************************************************************************
-//*** subroutines for the calculation of Residual and Jacobian
-extern PetscErrorCode ComputeIResidual(TS ts,PetscReal t,Vec U,Vec V,Vec RHS,void *ctx);
-extern PetscErrorCode ComputeIJacobian(TS ts,PetscReal t,Vec U,Vec V,PetscReal s,Mat A,Mat B,void *ctx);
-extern PetscErrorCode MyTSMonitor(TS ts,PetscInt step,PetscReal time,Vec U,void *ctx);
-extern PetscErrorCode MySNESMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx);
-//************************************************************************
-
+/**
+ * This class responsible for the time stepping of transient analysis
+ */
 class TimeStepping{
 public:
     TimeStepping();
 
-    void Init();
-
+    /**
+     * Setup the timeStepping solver from the [timestepping] block
+     */
     void SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppingBlock);
 
-    void SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock);
+    /**
+     * Get the current time stepping method
+     */
+    TimeSteppingType GetCurrentSteppingMethod()const{return _TimeSteppingType;}
 
+    /**
+     * Check wether the adaptive is enabled
+     */
+    bool IsAdaptive()const{return _Adaptive;}
+
+    /**
+     * Do the time stepping until the maximum step is arrived
+     */
     bool Solve(Mesh &mesh,DofHandler &dofHandler,
             ElmtSystem &elmtSystem,MateSystem &mateSystem,
             BCSystem &bcSystem,ICSystem &icSystem,
@@ -107,10 +80,12 @@ public:
             FE &fe,FESystem &feSystem,
             OutputSystem &outputSystem,
             Postprocess &postprocessSystem,
-            FEControlInfo &fectrlinfo);
+            FEControlInfo &fectrlinfo,
+            NonlinearSolver &nonlinearSolver);
 
-    void ReleaseMem();
-
+    /**
+     * Print out the basic information of time stepping class to your terminal
+     */
     void PrintTimeSteppingInfo()const;
 private:
     //*****************************************************************
@@ -123,33 +98,8 @@ private:
     long int _CurrentStep=-1;
     TimeSteppingType _TimeSteppingType=TimeSteppingType::BACKWARDEULER;
     string _TimeSteppingTypeName="backward-euler";
-    string _LinearSolverName="ksp";
     double _GrowthFactor=1.1,_CutBackFactor=0.85;
     int _OptIters;
     double _DtMin,_DtMax;
 
-private:
-    //*****************************************************************
-    //*** for nonlinear solver options
-    //*****************************************************************
-    double _Rnorm0,_Rnorm;
-    double _Enorm0,_Enorm;
-    double _dUnorm,_dUnorm0;
-    double _RAbsTol,_RRelTol;
-    double _EAbsTol,_ERelTol;
-    double _STol;
-    int _MaxIters,_Iters;
-    bool _IsConvergent;
-    NonlinearSolverType _SolverType;
-    string _PCTypeName;
-    //*****************************************************************
-    //*** for TS components from PETSc
-    //*****************************************************************
-    TS _ts;
-    TSAdapt _tsadapt;
-    SNES _snes;
-    KSP _ksp;
-    PC _pc;
-    SNESConvergedReason _snesreason;
-    TSAppCtx _appctx;
 };

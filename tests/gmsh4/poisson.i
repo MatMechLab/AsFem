@@ -31,19 +31,19 @@ order=3
 [bcs]
   [fixright]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=2.0
     boundary=right
   [end]
   [fixleft]
     type=dirichlet
-    dof=phi
+    dofs=phi
     value=1.0
     boundary=left
   [end]
   [fixpoint]
     type=nodaldirichlet
-    dof=phi
+    dofs=phi
     value=-5.0
     boundary=bottompoint
   [end]

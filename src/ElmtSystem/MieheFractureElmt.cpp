@@ -20,7 +20,7 @@
 
 #include "ElmtSystem/MieheFractureElmt.h"
 
-void MieheFractureElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MieheFractureElmt::ComputeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const Materials &Mate,const Materials &MateOld,
             ScalarMateType &gpProj,
@@ -53,7 +53,7 @@ void MieheFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     double viscosity=Mate.ScalarMaterials("viscosity");
     double Gc=Mate.ScalarMaterials("Gc");
     double L=Mate.ScalarMaterials("L");
-    double Hist=Mate.ScalarMaterials("Hist");
+    double Hist=Mate.ScalarMaterials("H");
     RankTwoTensor Stress=Mate.Rank2Materials("stress");
 
     localR(1)=viscosity*soln.gpV[1]*shp.test
@@ -70,7 +70,7 @@ void MieheFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     }
 }
 //*************************************************************
-void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const Materials &Mate,const Materials &MateOld,
@@ -87,7 +87,7 @@ void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const doub
     double viscosity=Mate.ScalarMaterials("viscosity");
     double Gc=Mate.ScalarMaterials("Gc");
     double L=Mate.ScalarMaterials("L");
-    double Hist=Mate.ScalarMaterials("Hist");
+    double Hist=Mate.ScalarMaterials("H");
     RankTwoTensor dStressdD=Mate.Rank2Materials("dstressdD");
     RankTwoTensor dHdstrain=Mate.Rank2Materials("dHdstrain");
 
@@ -142,7 +142,7 @@ void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const doub
     }
 }
 //**************************************************************************
-void MieheFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[2],
+void MieheFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                    const LocalElmtSolution &soln,
                                    const LocalShapeFun &shp,
                                    const Materials &Mate,const Materials &MateOld,

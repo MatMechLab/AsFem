@@ -325,7 +325,7 @@ bool MeshBlockReader::ReadMeshBlock(ifstream &in, string str, int &linenum, Mesh
                         MessagePrinter::AsFem_Exit();
                     }
                     else{
-                        nx=int(numbers[0]);
+                        nz=int(numbers[0]);
                         if(nz<1){
                             snprintf(buff,55,"line-%d has some errors",linenum);
                             MessagePrinter::PrintErrorTxt(string(buff));

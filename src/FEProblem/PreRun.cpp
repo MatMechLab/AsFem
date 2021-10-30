@@ -153,7 +153,6 @@ void FEProblem::InitAllComponents(){
             _TimerStart=chrono::high_resolution_clock::now();
         }
     }
-    _timestepping.Init();
     
     if(_feJobType==FEJobType::TRANSIENT){
         if(_rank==0){
