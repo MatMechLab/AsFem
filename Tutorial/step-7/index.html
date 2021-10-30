@@ -9,19 +9,19 @@
       
       
       
-      <link rel="icon" href="/assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
     
     
       
-        <title>AsFem</title>
+        <title>Step 7 - Write your own material model - AsFem</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.cdeb8541.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.cdeb8541.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
         
       
     
@@ -53,12 +53,17 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
-    <script>function __prefix(e){return new URL("/",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#introduction" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -69,7 +74,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
+    <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -88,7 +93,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Step 7 - Write your own material model
             
           </span>
         </div>
@@ -156,7 +161,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
+    <a href="../.." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -175,7 +180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         Home
       </a>
     </li>
@@ -190,7 +195,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/about/" class="md-nav__link">
+      <a href="../../about/" class="md-nav__link">
         About
       </a>
     </li>
@@ -205,7 +210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/install/" class="md-nav__link">
+      <a href="../../install/" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -218,12 +223,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -246,7 +253,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-0/" class="md-nav__link">
+      <a href="../step-0/" class="md-nav__link">
         Step-0
       </a>
     </li>
@@ -260,7 +267,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-1/" class="md-nav__link">
+      <a href="../step-1/" class="md-nav__link">
         Step-1
       </a>
     </li>
@@ -274,7 +281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-2/" class="md-nav__link">
+      <a href="../step-2/" class="md-nav__link">
         Step-2
       </a>
     </li>
@@ -288,7 +295,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-3/" class="md-nav__link">
+      <a href="../step-3/" class="md-nav__link">
         Step-3
       </a>
     </li>
@@ -302,7 +309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-4/" class="md-nav__link">
+      <a href="../step-4/" class="md-nav__link">
         Step-4
       </a>
     </li>
@@ -316,7 +323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-5/" class="md-nav__link">
+      <a href="../step-5/" class="md-nav__link">
         Step-5
       </a>
     </li>
@@ -330,7 +337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Tutorial/step-6/" class="md-nav__link">
+      <a href="../step-6/" class="md-nav__link">
         Step-6
       </a>
     </li>
@@ -342,11 +349,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="/Tutorial/step-7/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Step-7
       </a>
+      
     </li>
   
 
@@ -392,7 +409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-mesh/" class="md-nav__link">
+      <a href="../../Document/block-mesh/" class="md-nav__link">
         mesh block
       </a>
     </li>
@@ -406,7 +423,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-dofs/" class="md-nav__link">
+      <a href="../../Document/block-dofs/" class="md-nav__link">
         dofs block
       </a>
     </li>
@@ -420,7 +437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-elmts/" class="md-nav__link">
+      <a href="../../Document/block-elmts/" class="md-nav__link">
         elmts block
       </a>
     </li>
@@ -434,7 +451,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-mates/" class="md-nav__link">
+      <a href="../../Document/block-mates/" class="md-nav__link">
         mate block
       </a>
     </li>
@@ -448,7 +465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-bcs/" class="md-nav__link">
+      <a href="../../Document/block-bcs/" class="md-nav__link">
         bcs block
       </a>
     </li>
@@ -462,7 +479,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-ics/" class="md-nav__link">
+      <a href="../../Document/block-ics/" class="md-nav__link">
         ics block
       </a>
     </li>
@@ -476,7 +493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-qpoint/" class="md-nav__link">
+      <a href="../../Document/block-qpoint/" class="md-nav__link">
         qpoint block
       </a>
     </li>
@@ -490,7 +507,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-projection/" class="md-nav__link">
+      <a href="../../Document/block-projection/" class="md-nav__link">
         projection block
       </a>
     </li>
@@ -504,7 +521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-nonlinearsolver/" class="md-nav__link">
+      <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
         nonlinear solver block
       </a>
     </li>
@@ -518,7 +535,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/Document/block-timestepping/" class="md-nav__link">
+      <a href="../../Document/block-timestepping/" class="md-nav__link">
         timestepping block
       </a>
     </li>
@@ -540,7 +557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/release/" class="md-nav__link">
+      <a href="../../release/" class="md-nav__link">
         Release
       </a>
     </li>
@@ -554,11 +571,172 @@
               </div>
             
             
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content" data-md-component="content">
             <article class="md-content__inner md-typeset">
               
-  <h1>404 - Not found</h1>
+                
+                
+                <h1 id="introduction">Introduction</h1>
+<p>In this step, we will try to write our first user-defined-material (UMAT). The equation we used here is still the <a href="https://en.wikiversity.org/wiki/Continuum_mechanics/Balance_of_linear_momentum">linear momentum balance</a> equation for the linear elastic problem. For more details, one is referred to <a href="https://yangbai90.github.io/AsFem/Tutorial/step-6/">step-6</a>.</p>
+<h1 id="the-user-defined-material-umat">The user-defined-material (umat)</h1>
+<p>In this step, we try to define a coordinate-dependent Young's modulus for our simulation, which can be read as follows:
+$$
+\begin{equation}
+E=E_{0}(1+\delta\cos(xy))
+\label{eq:E}
+\tag{1}
+\end{equation}
+$$
+with <span class="arithmatex">\(E_{0}\)</span> being the constant Youngs modulus, <span class="arithmatex">\(\delta\)</span> representing fluctuation. <span class="arithmatex">\(x\)</span> and <span class="arithmatex">\(y\)</span> are the coordinate.</p>
+<h2 id="write-code-for-your-umat-1">Write code for your umat-1</h2>
+<p>AsFem offers several umat(1~10), which means you can easily write your code by editing the cpp file in the <code>src/MateSystem</code> folder. In this case, we will use <code>umat1</code>, then one can open the <code>User1Material.cpp</code> file with whatever text/code editor he/she likes.</p>
+<h2 id="constitutive-laws">Constitutive laws</h2>
+<p>For the small strain case, one can have
+$$
+\begin{equation}
+\mathbf{\varepsilon}=\frac{1}{2}(\nabla u+\nabla^{T}u).
+\label{eq:strain}
+\tag{2}
+\end{equation}
+$$
+For the 2D case, one can have:</p>
+<pre><code>GradU.SetFromGradU(elmtsoln.gpGradU[1],elmtsoln.gpGradU[2]);
+Strain=(GradU+GradU.Transpose())*0.5;
+</code></pre>
+<p>The <code>InputParams</code> variable can access the parameters we provide in our input file as follows:</p>
+<pre><code>E0=InputParams[1-1];
+nu=InputParams[2-1];
+delta=InputParams[3-1];
+</code></pre>
+<p>then we can write out the following code for the Young's modulus list in Eq.<span class="arithmatex">\(\eqref{eq:E}\)</span> as follows:</p>
+<pre><code>x=elmtinfo.gpCoords(1);
+y=elmtinfo.gpCoords(2);
+E=E0*(1+delta*sin(x*y));
+</code></pre>
+<p>From <code>elmtinfo</code>, you can get all the information of the local element.</p>
+<p>Then we can set up the stress <span class="arithmatex">\(\mathbf{\sigma}\)</span> and elasticity tensor <span class="arithmatex">\(\mathbb{C}\)</span> as follows:</p>
+<pre><code>Jacobian.SetFromEandNu(E,nu);
+Stress=Jacobian.DoubleDot(Strain)
+</code></pre>
+<p>That's all? Yup, that's all for your first UMAT.</p>
+<h1 id="solve-the-problem">Solve the problem</h1>
+<h2 id="choose-the-umat-1">Choose the umat-1</h2>
+<p>Since you have wrote the code for your own material, then you should save the <code>User1Material.cpp</code> file and <strong>make AsFem again</strong> by running(you should have the <strong>Makefile</strong>, otherwise, please do <code>cmake CMakeLists.txt</code>):</p>
+<pre><code>make -j4
+</code></pre>
+<p>Then, you can tell AsFem to use the <code>User1Material</code> via:</p>
+<pre><code>[mates]
+  [mymate1]
+    type=user1
+    params=210.0 0.3 0.2
+    //     E0    nu  delta
+  [end]
+[end]
+</code></pre>
+<p>here <code>type=user1</code> means we will use the material model defined in <code>User1Material.cpp</code>. <code>InputParams</code> will store the <code>params</code> you give in the material block.</p>
+<h2 id="projection-for-materials">Projection for materials</h2>
+<p>If I want to check the value of the coordinate-dependent Youngs modulus, what should I do?</p>
+<p>That's easy, you can define a scalar material as follows:</p>
+<pre><code>Mate.ScalarMaterials(&quot;MyE&quot;)=E;
+</code></pre>
+<p>then in your <code>[projection]</code> block, you can use:</p>
+<pre><code>[projection]
+scalarmate=MyE vonMises
+[end]
+</code></pre>
+<p>Then you will see your "MyE" in the <code>Paraview</code>.</p>
+<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<p>Now, let's try your first umat example in AsFem. You can create a new text file and name it as step7.i or whatever you like. Then copy the following lines into your input file:</p>
+<pre><code>[mesh]
+  type=asfem
+  dim=2
+  xmax=10.0
+  ymax=10.0
+  nx=100
+  ny=100
+  meshtype=quad9
+[end]
+
+[qpoint]
+  type=gauss
+  order=4
+[end]
+
+[dofs]
+name=ux uy
+[end]
+
+[elmts]
+  [mysolids]
+    type=mechanics
+    dofs=ux uy
+    mate=mymate1
+  [end]
+[end]
+
+[mates]
+  [mymate1]
+    type=user1
+    params=210.0 0.3 0.2
+    //     E0    nu  delta
+  [end]
+[end]
+
+[projection]
+scalarmate=MyE vonMises
+[end]
+
+[bcs]
+  [fix]
+    type=dirichlet
+    dofs=ux uy
+    value=0.0
+    boundary=bottom
+  [end]
+  [load]
+    type=dirichlet
+    dofs=uy
+    value=0.02
+    boundary=top
+  [end]
+[end]
+
+[job]
+  type=static
+  debug=dep
+[end]
+</code></pre>
+<p>You can also find the complete input file in <code>examples/tutorial/step7.i</code>.</p>
+<p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
+<img alt="vonMises" src="vonMises.jpeg" /></p>
+<p><img alt="MyE" src="MyE.jpeg" /></p>
+                
+                  
+                
+              
+              
+                
+
 
               
             </article>
@@ -569,6 +747,41 @@
       
         
 <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../step-6/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-6" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Step-6
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../Document/block-mesh/" class="md-footer__link md-footer__link--next" aria-label="Next: mesh block" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              mesh block
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -591,12 +804,12 @@
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "/", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "/assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.1e84347e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.1e84347e.min.js"></script>
       
-        <script src="/javascripts/config.js"></script>
+        <script src="../../javascripts/config.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

@@ -343,6 +343,20 @@
 
             
           
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Tutorial/step-7/" class="md-nav__link">
+        Step-7
+      </a>
+    </li>
+  
+
+            
+          
         </ul>
       </nav>
     </li>
@@ -522,19 +536,6 @@
     options
   </a>
   
-    <nav class="md-nav" aria-label="options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-nonlinear-solver-method" class="md-nav__link">
-    supported nonlinear solver method
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -627,19 +628,6 @@
     options
   </a>
   
-    <nav class="md-nav" aria-label="options">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-nonlinear-solver-method" class="md-nav__link">
-    supported nonlinear solver method
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -672,14 +660,6 @@
 <p><code>rank2mate=</code> specifies the name of rank-2 tensor type materials you want to project, which should be defined/calculated in your materials. For example, <code>Mate.Rank2Materials("mystress")=1.0</code>, where "mystress" is the name for the rank-2 tensor type material.</p>
 <p><code>rank4mate=</code> specifies the name of rank-4 tensor type materials you want to project, which should be defined/calculated in your materials. For example, <code>Mate.Rank4Materials("myjacobian")=1.0</code>, where "myjacobian" is the name for the rank-4 tensor type material.</p>
 <p>Once you put the correct name of the material properties there, AsFem will automatically save them into the result file. Then you can check them easily in the Paraview.</p>
-<h3 id="supported-nonlinear-solver-method">supported nonlinear solver method</h3>
-<p>The full list of the available nonlinear solver method is:</p>
-<pre><code>type=nr // for newton-raphson with line search, the default one
-type=newtonls // same as the first one
-type=newtontr // NR with trust region method
-type=bfgs     // BFGS method
-type=broyden  // Broyden method
-</code></pre>
                 
                   
                 
