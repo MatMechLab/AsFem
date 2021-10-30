@@ -34,14 +34,3 @@ The `name=` option specifies the name of the scalar value you want to project, i
 
 
 Once you put the correct name of the material properties there, AsFem will automatically save them into the result file. Then you can check them easily in the Paraview.
-
-
-### supported nonlinear solver method
-The full list of the available nonlinear solver method is:
-```
-type=nr // for newton-raphson with line search, the default one
-type=newtonls // same as the first one
-type=newtontr // NR with trust region method
-type=bfgs     // BFGS method
-type=broyden  // Broyden method
-```

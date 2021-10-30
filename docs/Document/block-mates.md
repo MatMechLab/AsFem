@@ -38,4 +38,5 @@ The full list of the available element type is:
 type=constpoisson
 type=linearelastic
 type=cahnhilliard
+type=user1[,...,user10]
 ```

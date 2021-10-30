@@ -24,6 +24,7 @@ nav:
     - Step-4: Tutorial/step-4.md
     - Step-5: Tutorial/step-5.md
     - Step-6: Tutorial/step-6.md
+    - Step-7: Tutorial/step-7.md
   - Document:
     - mesh block: Document/block-mesh.md
     - dofs block: Document/block-dofs.md

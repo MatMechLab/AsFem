@@ -44,4 +44,5 @@ type=poisson
 type=mechanics
 type=diffusion
 type=cahnhilliard
+type=user1[,...,user20]
 ```
