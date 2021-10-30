@@ -1,21 +1,23 @@
 [mesh]
   type=asfem
-  dim=2
+  dim=3
   xmax=2.0
   ymax=2.0
-  nx=50
-  ny=50
-  meshtype=quad4
+  zmax=10.0
+  nx=10
+  ny=10
+  nz=50
+  meshtype=hex8
 [end]
 
 [dofs]
-name=ux uy
+name=ux uy uz
 [end]
 
 [elmts]
   [mysolids]
     type=mechanics
-    dofs=ux uy
+    dofs=ux uy uz
     mate=mymate
   [end]
 [end]
@@ -31,22 +33,21 @@ name=ux uy
 [bcs]
   [FixUx]
     type=dirichlet
-    dofs=ux uy
-    boundary=bottom
+    dofs=ux uy uz
+    boundary=back
     value=0.0
   [end]
-  [loadUx]
+  [loadUz]
     type=dirichlet
-    dofs=uy
-    value=0.02
-    boundary=top
+    dofs=uz
+    value=1.0*t
+    boundary=front
   [end]
 [end]
 
 [projection]
 scalarmate=vonMises
 rank2mate=stress strain
-rank4mate=jacobian
 [end]
 
 [nonlinearsolver]
@@ -57,7 +58,16 @@ rank4mate=jacobian
   solver=mumps
 [end]
 
+[timestepping]
+  type=be
+  dt=1.0e-5
+  time=1.0e-2
+  dtmax=1.0
+  adaptive=true
+  optiters=3
+[end]
+
 [job]
-  type=static
+  type=transient
   debug=dep
 [end]
