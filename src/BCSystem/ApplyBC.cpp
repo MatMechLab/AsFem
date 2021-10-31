@@ -57,6 +57,8 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
 
             dofids.resize(DofsIndex.size(),0);
 
+            _localR.Resize(10,0.0);
+            _localK.Resize(10,10,0.0);
             _elmtinfo.nDofs=static_cast<int>(DofsIndex.size());
 
             MPI_Comm_size(PETSC_COMM_WORLD,&_size);
@@ -193,14 +195,14 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                     iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
                                     dofids[k-1]=iInd;
                                     VecGetValues(_Useq,1,&iInd,&value);
-                                    _soln.gpU[k]+=fe._SurfaceShp.shape_value(i)*value;
+                                    _soln.gpU[k]+=fe._LineShp.shape_value(i)*value;
                                     
                                     _soln.gpGradU[k](1)+=value*fe._LineShp.shape_grad(i)(1);
                                     _soln.gpGradU[k](2)+=value*fe._LineShp.shape_grad(i)(2);
                                     _soln.gpGradU[k](3)+=value*fe._LineShp.shape_grad(i)(3);
                                     
                                     VecGetValues(_Vseq,1,&iInd,&value);
-                                    _soln.gpV[k]+=fe._SurfaceShp.shape_value(i)*value;
+                                    _soln.gpV[k]+=fe._LineShp.shape_value(i)*value;
                                     
                                     _soln.gpGradV[k](1)+=value*fe._LineShp.shape_grad(i)(1);
                                     _soln.gpGradV[k](2)+=value*fe._LineShp.shape_grad(i)(2);
@@ -244,7 +246,8 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                             iInd=dofHandler.GetIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
                                             for(kj=0;kj<_elmtinfo.nDofs;kj++){
                                                 jInd=dofHandler.GetIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
-                                                MatSetValue(AMATRIX,iInd,jInd,_localK(ki+1,kj+1)*_JxW,ADD_VALUES);
+                                                value=_localK(ki+1,kj+1)*_JxW;
+                                                MatSetValue(AMATRIX,iInd,jInd,value,ADD_VALUES);
                                             }
                                         }
                                     }
@@ -312,16 +315,16 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                     VecGetValues(_Useq,1,&iInd,&value);
                                     _soln.gpU[k]+=fe._SurfaceShp.shape_value(i)*value;
                                     
-                                    _soln.gpGradU[k](1)+=value*fe._LineShp.shape_grad(i)(1);
-                                    _soln.gpGradU[k](2)+=value*fe._LineShp.shape_grad(i)(2);
-                                    _soln.gpGradU[k](3)+=value*fe._LineShp.shape_grad(i)(3);
+                                    _soln.gpGradU[k](1)+=value*fe._SurfaceShp.shape_grad(i)(1);
+                                    _soln.gpGradU[k](2)+=value*fe._SurfaceShp.shape_grad(i)(2);
+                                    _soln.gpGradU[k](3)+=value*fe._SurfaceShp.shape_grad(i)(3);
                                     
                                     VecGetValues(_Vseq,1,&iInd,&value);
                                     _soln.gpV[k]+=fe._SurfaceShp.shape_value(i)*value;
                                     
-                                    _soln.gpGradV[k](1)+=value*fe._LineShp.shape_grad(i)(1);
-                                    _soln.gpGradV[k](2)+=value*fe._LineShp.shape_grad(i)(2);
-                                    _soln.gpGradV[k](3)+=value*fe._LineShp.shape_grad(i)(3);
+                                    _soln.gpGradV[k](1)+=value*fe._SurfaceShp.shape_grad(i)(1);
+                                    _soln.gpGradV[k](2)+=value*fe._SurfaceShp.shape_grad(i)(2);
+                                    _soln.gpGradV[k](3)+=value*fe._SurfaceShp.shape_grad(i)(3);
                                 }
                                 _elmtinfo.gpCoords(1)+=fe._SurfaceShp.shape_value(i)*_elNodes(i,1);
                                 _elmtinfo.gpCoords(2)+=fe._SurfaceShp.shape_value(i)*_elNodes(i,2);
@@ -361,7 +364,8 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                             iInd=dofHandler.GetIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
                                             for(kj=0;kj<_elmtinfo.nDofs;kj++){
                                                 jInd=dofHandler.GetIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
-                                                MatSetValue(AMATRIX,iInd,jInd,_localK(ki+1,kj+1)*_JxW,ADD_VALUES);
+                                                value=_localK(ki+1,kj+1)*_JxW;
+                                                MatSetValue(AMATRIX,iInd,jInd,value,ADD_VALUES);
                                             }
                                         }//===> end-of-localK-assemble-loop
                                     }//===> end-of-local-J-node-loop

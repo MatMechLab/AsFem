@@ -59,6 +59,8 @@ BCSystem::BCSystem(){
     _shp.trial=0.0;
     _shp.grad_trial=0.0;
 
+    _localR.Resize(10);
+    _localK.Resize(10,10);
 
 }
 
