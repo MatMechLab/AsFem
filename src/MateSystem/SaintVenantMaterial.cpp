@@ -8,15 +8,15 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.04.11
-//+++ Purpose: Implement the calculation of neo-hookean type
-//+++          hyperlelastic material
+//+++ Date   : 2021.10.31
+//+++ Purpose: Implement the calculation of SaintVenant 
+//+++          hyperelastic material
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/NeoHookeanMaterial.h"
+#include "MateSystem/SaintVenantMaterial.h"
 
 
-void NeoHookeanMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
+void SaintVenantMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
     // Here we do not consider any initial internal strains, stress
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
 
@@ -27,9 +27,12 @@ void NeoHookeanMaterial::InitMaterialProperties(const vector<double> &InputParam
 }
 
 //*********************************************************
-void NeoHookeanMaterial::ComputeStrain(const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, RankTwoTensor &Strain){
+void SaintVenantMaterial::ComputeStrain(const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, RankTwoTensor &Strain){
     // here we calculate the deformation gradient tensor as well as euler-lagrange strain tensor
-    if(elmtinfo.nDim==2){
+    if(elmtinfo.nDim==1){
+        _GradU.SetFromGradU(elmtsoln.gpGradU[1]);
+    }
+    else if(elmtinfo.nDim==2){
         _GradU.SetFromGradU(elmtsoln.gpGradU[1],elmtsoln.gpGradU[2]);
     }
     else if(elmtinfo.nDim==3){
@@ -38,55 +41,43 @@ void NeoHookeanMaterial::ComputeStrain(const LocalElmtInfo &elmtinfo, const Loca
     _I.SetToIdentity();
     _F=_GradU+_I;// F=I+U_{i,j}
     _C=_F.Transpose()*_F; //C=F^T*F
-    _Cinv=_C.Inverse();
     Strain=(_C-_I)*0.5;
 
 }
 //****************************************************************
-void NeoHookeanMaterial::ComputeStressAndJacobian(const vector<double> &InputParams, const RankTwoTensor &Strain, RankTwoTensor &Stress, RankFourTensor &Jacobian){
-    // here Strain is E
-    if(Strain(1,1)){}// get rid of unused warning
-
-    
-    double EE=InputParams[0];
+void SaintVenantMaterial::ComputeStressAndJacobian(const vector<double> &InputParams, const RankTwoTensor &Strain, RankTwoTensor &Stress, RankFourTensor &Jacobian){
+    double E=InputParams[0];
     double nu=InputParams[1];
 
-    double lambda=EE*nu/((1+nu)*(1-2*nu));
-    double mu=EE/(2*(1+nu));
-    double J=_F.Det();
-
-    _pk2=(_I-_Cinv)*mu+_Cinv*lambda*log(J);
-    Stress=_pk2;
-    Jacobian=_Cinv.ODot(_Cinv)*(mu-lambda*log(J))*2
-            +_Cinv.OTimes(_Cinv)*lambda;
+    Jacobian.SetFromEandNu(E,nu);
+    _pk2=Jacobian.DoubleDot(Strain);
+    Stress=_F*_pk2;// convert it to 1st Piola-Kirchhoff stress
 
 }
 //***************************************************************
-void NeoHookeanMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) {
+void SaintVenantMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) {
 
     //*********************************************************
     //*** get rid of unused warnings
     //*********************************************************
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
     if(InputParams.size()<2){
-        MessagePrinter::PrintErrorTxt("for the NeoHookeanMaterial, two parameters are required, you need to give: E and nu");
+        MessagePrinter::PrintErrorTxt("for the SaintVenantMaterial, two parameters are required, you need to give: E and nu");
         MessagePrinter::AsFem_Exit();
     }
 
     ComputeStrain(elmtinfo,elmtsoln,_Strain);
     ComputeStressAndJacobian(InputParams,_Strain,_Stress,_Jac);
 
-    Mate.Rank2Materials("F")=_F;
-    Mate.Rank2Materials("PK1")=_F*_Stress;//1-st Piola-Kirchhoff stress 
-    Mate.Rank2Materials("PK2")=_Stress;   //2-nd Piola-Kirchhoff stress
-
-    _Stress=_F*_Stress;// we use 1-st Piola-Kirchhoff stress for the calculation
-
     _I.SetToIdentity();
     _devStress=_Stress-_I*(_Stress.Trace()/3.0);
     Mate.ScalarMaterials("vonMises")=sqrt(1.5*_devStress.DoubleDot(_devStress));
     Mate.Rank2Materials("strain")=_Strain;
-    Mate.Rank2Materials("stress")=_Stress;//-MateOld.Rank2Materials("PK1");
+    Mate.Rank2Materials("stress")=_Stress;
     Mate.Rank4Materials("jacobian")=_Jac;
+
+    Mate.Rank2Materials("F")=_F;
+    Mate.Rank2Materials("PK1")=_Stress;//1-st Piola-Kirchhoff stress
+    Mate.Rank2Materials("PK2")=_pk2;   //2-nd Piola-Kirchhoff stress
 
 }

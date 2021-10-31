@@ -60,7 +60,7 @@ void FESystem::AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vect
     MatSetValues(K,ndofs,dofindex.data(),ndofs,dofindex.data(),jacobian.data(),ADD_VALUES);
 }
 //**********************************************************************
-void FESystem::AssembleSubHistToLocal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem){
+void FESystem::AssembleLocalMaterialsToGlobal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem){
     solutionSystem._ScalarMaterials[(e-1)*ngp+gpInd-1]=mate.GetScalarMate();
     solutionSystem._VectorMaterials[(e-1)*ngp+gpInd-1]=mate.GetVectorMate();
     solutionSystem._Rank2TensorMaterials[(e-1)*ngp+gpInd-1]=mate.GetRank2Mate();

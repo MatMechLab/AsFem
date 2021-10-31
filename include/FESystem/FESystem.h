@@ -45,9 +45,16 @@
 
 using namespace std;
 
+/**
+ * This class responsible for the system matrix calculation, i.e., the calculation of global
+ * residual and jacobian, the local to global space assemble.
+ */
 class FESystem{
 public:
     FESystem();
+    /**
+     * Init the bulk element system
+     */
     void InitBulkFESystem(const Mesh &mesh,
                     const DofHandler &dofHandler,
                     FE &fe,
@@ -63,7 +70,9 @@ public:
     inline double GetMaxAMatrixValue()const {return _MaxKMatrixValue;}
     inline double GetBulkVolume() const {return _BulkVolumes;}
 
-    // for FEM simulation related functions
+    /**
+     * This function will do the calculation for residual, jacobian, and projection
+     */
     void FormBulkFE(const FECalcType &calctype,const double &t,const double &dt,const double (&ctan)[3],
                 Mesh &mesh,const DofHandler &dofHandler,FE &fe,
                 ElmtSystem &elmtSystem,MateSystem &mateSystem,
@@ -75,21 +84,39 @@ private:
     //*********************************************************
     //*** assemble residual to local and global one
     //*********************************************************
+    /**
+     * assemle the sub element's contribution to local array(from sub-element to local element)
+     */
     void AssembleSubResidualToLocalResidual(const int &ndofspernode,const int &dofs,const int &iInd,
                                             const VectorXd &subR,VectorXd &localR);
+    /**
+     * accumulate all the sub-element's contribution
+     */
     void AccumulateLocalResidual(const int &dofs,const vector<double> &dofsactiveflag,const double &JxW,
                                  const VectorXd &localR,vector<double> &sumR);
+    /**
+     * assemble the local reisudal to the global RHS array
+     */
     void AssembleLocalResidualToGlobalResidual(const int &ndofs,const vector<int> &dofindex,
                                             const vector<double> &residual,Vec &rhs);
 
     //*********************************************************
     //*** assemble jacobian to local and global one
     //*********************************************************
+    /**
+     * assemble the sub-element's jacobian to the local element
+     */
     void AssembleSubJacobianToLocalJacobian(const int &ndofspernode,
                                             const int &iInd,const int &jInd,
                                             const MatrixXd &subK,MatrixXd &localK);
+    /**
+     * accumulate the sub-element's contribution
+     */
     void AccumulateLocalJacobian(const int &dofs,const vector<double> &dofsactiveflag,const double &JxW,
                                  const MatrixXd &localK,vector<double> &sumK);
+    /**
+     * assemble the local jacobian to the global K matrix
+     */
     void AssembleLocalJacobianToGlobalJacobian(const int &ndofs,const vector<int> &dofindex,
                                             const vector<double> &jacobian,Mat &K);
 
@@ -99,6 +126,9 @@ private:
     //*********************************************************
     //*** for projection
     //*********************************************************
+    /**
+     * Assemble the projected quantities to the global array
+     */
     void AssembleLocalProjectionToGlobal(const int &nNodes,const double &DetJac,const ShapeFun &shp,
                                          const map<string,double> &ProjVariables,
                                          const ScalarMateType &ScalarMate,
@@ -122,13 +152,19 @@ private:
     void AssembleLocalProjRank4Mate2Global(const int &nNodes,const double &DetJac,const ShapeFun &shp,
                                             const int &nProj,vector<string> ProjNameVec,const Rank4MateType &Rank4Mate,Vec &ProjVec);
 
+    /**
+     * the final projection function for the quantities from gauss point to the nodal one
+     */
     void Projection(const int &nTotalNodes,SolutionSystem &solutionSystem);
 
 
     //*********************************************************
-    //*** for history variables
+    //*** for material properties  variables
     //*********************************************************
-    void AssembleSubHistToLocal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem);
+    /**
+     * assemble the local material properties to the global array
+     */
+    void AssembleLocalMaterialsToGlobal(const int &e,const int &ngp,const int &gpInd,const Materials &mate,SolutionSystem &solutionSystem);
     void AssembleLocalHistToGlobal(const int &e,const int &ngp,SolutionSystem &solutionSystem);
     
 

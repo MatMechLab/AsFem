@@ -47,11 +47,12 @@ void MechanicsElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     if(elmtinfo.dt||soln.gpU.size()||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
     // calculate the residual contribution of Mechanics problem
     // For R_ux
-    localR(1)=Mate.Rank2Materials("stress").IthRow(1)*shp.grad_test;
+    Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
+    localR(1)=Stress.IthRow(1)*shp.grad_test;
     if(elmtinfo.nDim>=2){
-        localR(2)=Mate.Rank2Materials("stress").IthRow(2)*shp.grad_test;
+        localR(2)=Stress.IthRow(2)*shp.grad_test;
         if(elmtinfo.nDim==3){
-            localR(3)=Mate.Rank2Materials("stress").IthRow(3)*shp.grad_test;
+            localR(3)=Stress.IthRow(3)*shp.grad_test;
         }
     }
 }

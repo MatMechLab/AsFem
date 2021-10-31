@@ -19,7 +19,7 @@ void J2PlasticityMaterial::InitMaterialProperties(const vector<double> &InputPar
     // Here we do not consider any initial internal strains, stress
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
 
-
+    Mate.Rank2Materials("stress").SetToZeros();
     Mate.Rank2Materials("plastic_strain").SetToZeros();
     Mate.ScalarMaterials("effective_plastic_strain")=0;
 

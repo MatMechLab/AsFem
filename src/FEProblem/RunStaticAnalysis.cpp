@@ -31,7 +31,7 @@ void FEProblem::RunStaticAnalysis(){
             _Duration=Duration(_TimerStart,_TimerEnd);
         }
         char buff[70];string str;
-        snprintf(buff,70,"Static analysis finished! [elapse time=%14.6e]",_Duration);
+        snprintf(buff,70,"Static analysis finished! [elapse time=%14.6e s]",_Duration);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
         if(_feCtrlInfo.IsProjection){

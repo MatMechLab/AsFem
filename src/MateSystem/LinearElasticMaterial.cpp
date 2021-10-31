@@ -17,6 +17,7 @@
 void LinearElasticMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
     // Here we do not consider any initial internal strains, stress
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
+    Mate.Rank2Materials("stress").SetToZeros();
 }
 
 //*********************************************************

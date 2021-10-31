@@ -41,6 +41,9 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate, const int &mateindex
         case MateType::NEOHOOKEANMATE:
             NeoHookeanMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
+        case MateType::SAINTVENANTMATE:
+            SaintVenantMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break; 
         case MateType::PLASTIC1DMATE:
             Plastic1DMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
@@ -50,6 +53,12 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate, const int &mateindex
         case MateType::MIEHEFRACTUREMATE:
             MieheFractureMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
+        case MateType::STRESSDECOMPOSITIONMATE:
+            StressDecompositionMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
+        //***************************************************
+        //*** for user-defined-material
+        //***************************************************
         case MateType::USER1MATE:
             User1Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
@@ -80,7 +89,6 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate, const int &mateindex
         case MateType::USER10MATE:
             User10Material::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
-
         default:
             MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of the MateSystem, please check either your code or your input file");
             MessagePrinter::AsFem_Exit();

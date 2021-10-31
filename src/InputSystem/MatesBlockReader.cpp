@@ -180,6 +180,11 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::MIEHEFRACTUREMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("stressdecompositionmate")!=string::npos&&substr.length()==23){
+                        mateBlock._MateTypeName="stressdecompositionmate";
+                        mateBlock._MateType=MateType::STRESSDECOMPOSITIONMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("elasticch")!=string::npos&&substr.length()==9){
                         mateBlock._MateTypeName="elasticch";
                         mateBlock._MateType=MateType::ELASTICCAHNHILLIARDMATE;

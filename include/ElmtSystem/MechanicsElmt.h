@@ -62,4 +62,6 @@ private:
                                    const Materials &Mate,const Materials &MateOld,
                                    ScalarMateType &gpProj) override;
 
+private:
+    RankTwoTensor Stress;
 };

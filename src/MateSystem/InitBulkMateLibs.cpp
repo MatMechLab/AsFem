@@ -41,6 +41,9 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::NEOHOOKEANMATE:
             NeoHookeanMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::SAINTVENANTMATE:
+            SaintVenantMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
         case MateType::PLASTIC1DMATE:
             Plastic1DMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
@@ -50,6 +53,10 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::MIEHEFRACTUREMATE:
             MieheFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::STRESSDECOMPOSITIONMATE:
+            StressDecompositionMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
+
         case MateType::USER1MATE:
             User1Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
@@ -81,7 +88,7 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
             User10Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
         default:
-            MessagePrinter::PrintErrorTxt("unsupported material type in RunBulkMateLibs of the MateSystem, please check either your code or your input file");
+            MessagePrinter::PrintErrorTxt("unsupported material type in InitBulkMateLibs of the MateSystem, please check either your code or your input file");
             MessagePrinter::AsFem_Exit();
             break;
     }

@@ -342,6 +342,9 @@ set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
 ### For incremental small strain material
 set(inc ${inc} include/MateSystem/IncrementSmallStrainMaterial.h)
 set(src ${src} src/MateSystem/IncrementSmallStrainMaterial.cpp)
+### for SaintVenant Material
+set(inc ${inc} include/MateSystem/SaintVenantMaterial.h)
+set(src ${src} src/MateSystem/SaintVenantMaterial.cpp)
 ### For NeoHookean material
 set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
 set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
@@ -362,6 +365,9 @@ set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+### for stress decomposition phase field fracture material
+set(inc ${inc} include/MateSystem/StressDecompositionMaterial.h)
+set(src ${src} src/MateSystem/StressDecompositionMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
@@ -543,6 +549,7 @@ set(src ${src} src/FE/ShapeFuns/ShapeFun.cpp)
 set(inc ${inc} include/SolutionSystem/SolutionSystem.h)
 set(src ${src} src/SolutionSystem/SolutionSystem.cpp)
 set(src ${src} src/SolutionSystem/InitSolution.cpp)
+set(src ${src} src/SolutionSystem/UpdateMaterials.cpp)
 
 #############################################################
 ### For equation system in AsFem                          ###
