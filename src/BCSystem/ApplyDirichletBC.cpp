@@ -77,4 +77,14 @@ void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,
         }
     }
 
+    // INSERT_VALUES canot mix with ADD_VALUES, so you should assemble them first,
+    // then apply other BCs
+    VecAssemblyBegin(U);
+    VecAssemblyEnd(U);
+    VecAssemblyBegin(RHS);
+    VecAssemblyEnd(RHS);
+
+    MatAssemblyBegin(K,MAT_FINAL_ASSEMBLY);
+    MatAssemblyEnd(K,MAT_FINAL_ASSEMBLY);
+
 }
