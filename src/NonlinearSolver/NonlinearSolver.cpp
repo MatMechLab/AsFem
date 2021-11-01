@@ -29,6 +29,7 @@ NonlinearSolver::NonlinearSolver(){
     _SolverTypeName="newton with line search";
     _LinearSolverName="petsc";
     _PCTypeName="lu";
+    _CheckJacobian=false;
 }
 
 void NonlinearSolver::SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &nonlinearsolverblock){
@@ -42,6 +43,8 @@ void NonlinearSolver::SetOptionsFromNonlinearSolverBlock(NonlinearSolverBlock &n
     _SolverTypeName=nonlinearsolverblock._SolverTypeName;
     _LinearSolverName=nonlinearsolverblock._LinearSolverName;
     _PCTypeName=nonlinearsolverblock._PCTypeName;
+
+    _CheckJacobian=nonlinearsolverblock._CheckJacobian;
 }
 void NonlinearSolver::Init(){
     //**************************************************
@@ -74,7 +77,7 @@ void NonlinearSolver::Init(){
     //*** allow user setting ksp from command line
     //**************************************************
     KSPSetFromOptions(_ksp);
-
+    PCSetFromOptions(_pc);
     //**************************************************
     //*** some basic settings for SNES
     //**************************************************
@@ -108,6 +111,8 @@ void NonlinearSolver::Init(){
     else if(_SolverType==NonlinearSolverType::NEWTONGMRES){
         SNESSetType(_snes,SNESNGMRES);
     }
+
+    SNESSetFromOptions(_snes);
 }
 
 //***************************************************

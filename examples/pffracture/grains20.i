@@ -8,6 +8,7 @@
 name=d ux uy
 [end]
 
+
 [elmts]
   [myfracture]
     type=miehefrac
@@ -18,18 +19,21 @@ name=d ux uy
 
 [mates]
   [myfracmate]
+    //type=miehefracmate
+    //params=121.15 80.77 2.7e-3 0.012  1.0e-6
     type=stressdecompositionmate
-    params=121.15 80.77 2.7e-3 0.012  1.0e-6     0.0 0.0 0.0 1  
-    //     lambda mu    Gc     L      viscosity  t1  t2  t3  UseHist
+    params=100.0  0.2  2.7e-3  0.015  1.0e-6     0.0 0.0 0.0 1.0
+    //     E      nu   Gc      L      viscosity
   [end]
 [end]
 
 [nonlinearsolver]
   type=nr
-  maxiters=20
+  maxiters=500
   r_rel_tol=5.0e-10
-  r_abs_tol=2.5e-7
+  r_abs_tol=5.5e-7
   solver=superlu
+  debug=true
 [end]
 
 [ics]
@@ -47,10 +51,10 @@ name=d ux uy
 
 [timestepping]
   type=be
-  dt=1.0e-5
+  dt=2.0e-5
   time=2.0e-1
-  adaptive=true
-  optiters=3
+  adaptive=false
+  optiters=10
   growthfactor=1.1
   cutfactor=0.85
   dtmin=1.0e-12

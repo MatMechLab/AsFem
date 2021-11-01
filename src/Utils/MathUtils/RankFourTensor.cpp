@@ -174,14 +174,14 @@ RankFourTensor operator*(const RankTwoTensor &lhs,const RankFourTensor &a){
 }
 // for double dot operator
 RankTwoTensor RankFourTensor::DoubleDot(const RankTwoTensor &a) const{
-        // A_ijkl:B_lk = Cij
+        // A_ijkl:B_kl = Cij
         RankTwoTensor temp(0.0);
         for(int i=1;i<=_N;i++){
             for(int j=1;j<=_N;++j){
                 temp(i,j)=0.0;
                 for(int k=1;k<=_N;++k){
                     for(int l=1;l<=_N;++l){
-                        temp(i,j)+=(*this)(i,j,k,l)*a(l,k);
+                        temp(i,j)+=(*this)(i,j,k,l)*a(k,l);
                     }
                 }
             }

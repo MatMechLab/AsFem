@@ -228,6 +228,26 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 MessagePrinter::AsFem_Exit();
             }
         }
+        else if(str.find("debug=")!=string::npos){
+            int i=str.find_first_of('=');
+            string substr=str.substr(i+1,str.length());
+            substr=StringUtils::RemoveStrSpace(substr);
+            if(substr.find("true")!=string::npos||
+               substr.find("True")!=string::npos||
+               substr.find("TRUE")!=string::npos){
+                _nonlinearSolverBlock._CheckJacobian=true;
+            }
+            else if(substr.find("false")!=string::npos||
+                    substr.find("False")!=string::npos||
+                    substr.find("FALSE")!=string::npos){
+                _nonlinearSolverBlock._CheckJacobian=false;
+            }
+            else{
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                MessagePrinter::PrintErrorTxt("unsupported option in 'debug=' in the [nonlinearsolver] block");
+                MessagePrinter::AsFem_Exit();
+            }
+        }
         else if(str.find("[]")!=string::npos){
             MessagePrinter::PrintErrorInLineNumber(linenum);
             MessagePrinter::PrintErrorTxt("the bracket pair is not complete in the [nonlinearsolver] block",false);

@@ -60,11 +60,11 @@ void StressDecompositionMaterial::ComputeConstitutiveLaws(const vector<double> &
     double g,dg;// for the degradation function
     const double k=1.0e-5; // for stabilizer
 
-    const double E=InputParams[1-1];
-    const double nu=InputParams[2-1];
-    const double Gc=InputParams[3-1];
-    const double L=InputParams[4-1];
-    const double viscosity=InputParams[5-1];
+    double E=InputParams[1-1];
+    double nu=InputParams[2-1];
+    double Gc=InputParams[3-1];
+    double L=InputParams[4-1];
+    double viscosity=InputParams[5-1];
     double theta1,theta2,theta3;
     if(InputParams.size()<=5){
         theta1=0.0;theta2=0.0;theta3=0.0;
@@ -107,7 +107,7 @@ void StressDecompositionMaterial::ComputeConstitutiveLaws(const vector<double> &
     // now we can get positive and negative stress
     _StressPos=_ProjPos.DoubleDot(Stress);
     _StressNeg=Stress-_StressPos;
-    
+    Stress=_StressPos*(g+k)+_StressNeg;
     // for the positive and negative elastic free energy
     _psipos=0.5*_StressPos.DoubleDot(Strain);
     _psineg=0.5*_StressNeg.DoubleDot(Strain);
@@ -117,12 +117,11 @@ void StressDecompositionMaterial::ComputeConstitutiveLaws(const vector<double> &
     Mate.ScalarMaterials("PsiPos")=_psipos;
     Mate.ScalarMaterials("PsiNeg")=_psineg;
 
-    _I.SetToIdentity();
-
-    Stress=_StressPos*(g+k)+_StressNeg;
     Mate.Rank2Materials("dstressdD")=_StressPos*dg;
 
-    Jacobian=(_ProjPos*(g+k)+_ProjNeg).DoubleDot(_Cijkl);
+    Jacobian=_ProjPos.DoubleDot(_Cijkl)*(g+k)+_ProjNeg.DoubleDot(_Cijkl);
+    Stress=Jacobian.DoubleDot(Strain);
+    Mate.Rank2Materials("dstressdD")=(_ProjPos.DoubleDot(_Cijkl)).DoubleDot(Strain)*dg;
 
     Mate.ScalarMaterials("H")=0.0;// we use H instead of Hist for our element
                                   // in such a way, users can use the stagger solution!
@@ -155,7 +154,7 @@ void StressDecompositionMaterial::ComputeMaterialProperties(const vector<double>
         MessagePrinter::PrintErrorTxt("for Miehe's phase field fracture materials, at least 5 parameters are required, you need to give: lambda, mu, Gc, L, viscosity");
         MessagePrinter::AsFem_Exit();
     }
-    else if(InputParams.size()>=5 && InputParams.size()<8){
+    else if(InputParams.size()>5 && InputParams.size()<8){
         MessagePrinter::PrintErrorTxt("if you want to give the euler angles, then please add them next to the viscosity coefficient, then, you need 8 parameters in total");
         MessagePrinter::PrintErrorTxt("the complete parameters list is: lambda, mu, Gc, L, viscosity, theta1, theta2, theta3, usehist-flag");
         MessagePrinter::AsFem_Exit();

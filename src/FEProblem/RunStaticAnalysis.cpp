@@ -22,6 +22,11 @@ void FEProblem::RunStaticAnalysis(){
     _feCtrlInfo._timesteppingtype=TimeSteppingType::STATIC;
     _icSystem.ApplyIC(_mesh,_dofHandler,_solutionSystem._U);
     VecCopy(_solutionSystem._U,_solutionSystem._Unew);//Copy U -> Unew
+    VecCopy(_solutionSystem._U,_solutionSystem._Utemp);
+    _feSystem.FormBulkFE(FECalcType::InitMaterial,0.0,0.0,_feCtrlInfo.ctan,_mesh,
+            _dofHandler,_fe,_elmtSystem,_mateSystem,_solutionSystem,
+            _equationSystem._AMATRIX,_equationSystem._RHS);
+    _solutionSystem.UpdateMaterials();
     if(_nonlinearSolver.Solve(_mesh,_dofHandler,_elmtSystem,_mateSystem,
         _bcSystem,
         _solutionSystem,_equationSystem,
@@ -34,6 +39,10 @@ void FEProblem::RunStaticAnalysis(){
         snprintf(buff,70,"Static analysis finished! [elapse time=%14.6e s]",_Duration);
         str=buff;
         MessagePrinter::PrintNormalTxt(str);
+        
+        VecCopy(_solutionSystem._Unew,_solutionSystem._U);//Copy Unew -> U
+        VecCopy(_solutionSystem._Unew,_solutionSystem._Utemp);
+
         if(_feCtrlInfo.IsProjection){
             _feSystem.FormBulkFE(FECalcType::Projection,_feCtrlInfo.dt,_feCtrlInfo.dt,_feCtrlInfo.ctan,
                 _mesh,_dofHandler,_fe,_elmtSystem,_mateSystem,

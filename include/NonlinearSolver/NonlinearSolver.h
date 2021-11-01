@@ -164,7 +164,7 @@ private:
     NonlinearSolverType _SolverType;
     string _LinearSolverName,_SolverTypeName;
     string _PCTypeName;
-
+    bool _CheckJacobian=false;
     //*********************************************
     //*** For nonlinear solver's related components
     //*********************************************
