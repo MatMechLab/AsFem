@@ -49,6 +49,7 @@
 #include "MateSystem/J2PlasticityMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
 #include "MateSystem/StressDecompositionMaterial.h"
+#include "MateSystem/NeoHookeanPFFractureMaterial.h"
 //*** For user defined materials(UMAT)
 #include "MateSystem/User1Material.h"
 #include "MateSystem/User2Material.h"
@@ -78,6 +79,7 @@ class BulkMateSystem: public ConstPoissonMaterial,
                       public J2PlasticityMaterial,
                       public MieheFractureMaterial,
                       public StressDecompositionMaterial,
+                      public NeoHookeanPFFractureMaterial,
                       public User1Material,
                       public User2Material,
                       public User3Material,

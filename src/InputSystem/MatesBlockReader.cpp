@@ -185,6 +185,11 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::STRESSDECOMPOSITIONMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("neohookeanpffracturemate")!=string::npos&&substr.length()==24){
+                        mateBlock._MateTypeName="neohookeanpffracturemate";
+                        mateBlock._MateType=MateType::NEOHOOKEANPFFRACTUREMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("elasticch")!=string::npos&&substr.length()==9){
                         mateBlock._MateTypeName="elasticch";
                         mateBlock._MateType=MateType::ELASTICCAHNHILLIARDMATE;

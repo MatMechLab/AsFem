@@ -56,7 +56,12 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::STRESSDECOMPOSITIONMATE:
             StressDecompositionMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
-
+        case MateType::NEOHOOKEANPFFRACTUREMATE:
+            NeoHookeanPFFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
+        //**************************************************************
+        //*** for User-Defined-Materials (UMAT)
+        //**************************************************************
         case MateType::USER1MATE:
             User1Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;

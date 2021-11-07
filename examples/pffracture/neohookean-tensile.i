@@ -18,17 +18,17 @@ name=d ux uy
 
 [mates]
   [myfracmate]
-    type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.012 1.0e-6
+    type=neohookeanpffracturemate
+    params=121.15 80.77 2.7e-3 0.015 1.0e-6
     //     lambda mu    Gc     L     viscosity
   [end]
 [end]
 
 [nonlinearsolver]
   type=nr
-  maxiters=80
-  r_rel_tol=1.0e-9
-  r_abs_tol=1.5e-7
+  maxiters=25
+  r_rel_tol=1.0e-10
+  r_abs_tol=4.5e-7
   solver=superlu
 [end]
 
@@ -50,10 +50,9 @@ name=d ux uy
   dt=1.0e-5
   time=2.0e-1
   adaptive=true
-  optiters=3
-  growthfactor=1.1
+  optiters=5
+  growthfactor=1.2
   cutfactor=0.85
-  dtmin=1.0e-12
   dtmax=1.0e-4
 [end]
 
@@ -63,47 +62,15 @@ rank2mate=stress strain
 [end]
 
 [postprocess]
-  [area]
-    type=area
-    side=top
-  [end]
-  [ux]
+  [uy]
     type=sideintegral
-    dof=ux
-    side=top
-  [end]
-  [sigma_xx]
-    type=rank2matesideintegral
-    rank2mate=stress
-    iindex=1
-    jindex=1
-    side=top
-  [end]
-  [sigma_xy]
-    type=rank2matesideintegral
-    rank2mate=stress
-    iindex=1
-    jindex=2
+    dof=uy
     side=top
   [end]
   [sigma_yy]
     type=rank2matesideintegral
     rank2mate=stress
     iindex=2
-    jindex=2
-    side=top
-  [end]
-  [strain_xx]
-    type=rank2matesideintegral
-    rank2mate=strain
-    iindex=1
-    jindex=1
-    side=top
-  [end]
-  [strain_xy]
-    type=rank2matesideintegral
-    rank2mate=strain
-    iindex=1
     jindex=2
     side=top
   [end]
@@ -119,15 +86,15 @@ rank2mate=stress strain
 [bcs]
   [fixux]
     type=dirichlet
-    dofs=ux
+    dofs=ux uy
     value=0.0
-    boundary=left right top bottom
+    boundary=bottom
   [end]
   [fixuy]
     type=dirichlet
-    dofs=uy
+    dofs=ux
     value=0.0
-    boundary=bottom
+    boundary=top
   [end]
   [load]
     type=dirichlet

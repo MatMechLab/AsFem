@@ -368,6 +368,9 @@ set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
 ### for stress decomposition phase field fracture material
 set(inc ${inc} include/MateSystem/StressDecompositionMaterial.h)
 set(src ${src} src/MateSystem/StressDecompositionMaterial.cpp)
+### for neohookean phase-field fracture material
+set(inc ${inc} include/MateSystem/NeoHookeanPFFractureMaterial.h)
+set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
