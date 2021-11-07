@@ -543,15 +543,15 @@ public:
      */
     void CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec) const;
     /**
-     * calculate the postive projection tensor(a rank-4 tensor), this algorithm is taken from Miehe's paper, for the details, please see the cpp file
+     * calculate the positive projection tensor(a rank-4 tensor), this algorithm is taken from Miehe's paper, for the details, please see the cpp file
      * @param eigval the double array, which stores the eigen value
      * @param eigvec the rank-2 tensor, whoses column stores the related eigen vector
      */
-    RankFourTensor CalcPostiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const;
+    RankFourTensor CalcPositiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const;
     /**
      * calculate the positive projection tensor (rank-4 tensor) based on current rank-2 tensor
      */
-    RankFourTensor GetPostiveProjTensor() const;
+    RankFourTensor GetPositiveProjTensor() const;
     //*******************************************************************
     //*** some setting functions
     //*******************************************************************

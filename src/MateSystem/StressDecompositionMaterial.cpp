@@ -100,7 +100,7 @@ void StressDecompositionMaterial::ComputeConstitutiveLaws(const vector<double> &
     // this stress is the temporary one!!!
     Stress=_Cijkl.DoubleDot(Strain);
 
-    _ProjPos=Stress.GetPostiveProjTensor();
+    _ProjPos=Stress.GetPositiveProjTensor();
     _I4Sym.SetToIdentitySymmetric4();
     _ProjNeg=_I4Sym-_ProjNeg;
 
