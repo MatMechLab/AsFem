@@ -246,7 +246,7 @@ public:
     void SetFromEandNu(const double &E,const double &Nu);
     void SetFromKandG(const double &K,const double &G);
     void SetFromSymmetric9(const vector<double> &vec);
-
+    void SetToOrthotropic(const vector<double> &vec);
 
     //*****************************************
     //*** Print rank-4 tensor
