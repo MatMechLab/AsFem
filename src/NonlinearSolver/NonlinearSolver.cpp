@@ -27,7 +27,7 @@ NonlinearSolver::NonlinearSolver(){
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
-    _LinearSolverName="petsc";
+    _LinearSolverName="gmres";
     _PCTypeName="lu";
     _CheckJacobian=false;
 }
@@ -59,8 +59,24 @@ void NonlinearSolver::Init(){
     KSPGMRESSetRestart(_ksp,1800);
     KSPGetPC(_ksp,&_pc);
     PCFactorSetMatSolverType(_pc,MATSOLVERPETSC);
+    
 
-    if(_LinearSolverName=="mumps"){
+    if(_LinearSolverName=="gmres"){
+        KSPSetType(_ksp,KSPGMRES);
+    }
+    else if(_LinearSolverName=="fgmres"){
+        KSPSetType(_ksp,KSPFGMRES);
+    }
+    else if(_LinearSolverName=="cg"){
+        KSPSetType(_ksp,KSPCG);
+    }
+    else if(_LinearSolverName=="bicg"){
+        KSPSetType(_ksp,KSPBICG);
+    }
+    else if(_LinearSolverName=="richardson"){
+        KSPSetType(_ksp,KSPRICHARDSON);
+    }
+    else if(_LinearSolverName=="mumps"){
         PCSetType(_pc,PCLU);
         KSPSetType(_ksp,KSPPREONLY);
         PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
