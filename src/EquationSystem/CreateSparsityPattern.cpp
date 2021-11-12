@@ -25,18 +25,22 @@ void EquationSystem::CreateSparsityPattern(DofHandler &dofHandler){
     int eEnd=(rank+1)*rankne;
     if(rank==size-1) eEnd=dofHandler.GetBulkElmtNums();
     int nDofs;
-    double localK[270];
-    int conn[27];
-    for(int i=0;i<270;++i){localK[i]=0.0;}
+    vector<double> localK;
+    vector<int> elDofs;
 
+    nDofs=dofHandler.GetDofsNumPerNode()*27;
+    elDofs.resize(nDofs+1,0);
+    localK.resize(nDofs*nDofs,0.0);
+    
     for(int e=eStart;e<eEnd;++e){
-        dofHandler.GetIthBulkElmtDofIndex0(e+1,conn);
+        //dofHandler.GetIthBulkElmtDofIndex0(e+1,conn);
+        dofHandler.GetIthBulkElmtDofIndex0(e+1,elDofs,localK);
         nDofs=dofHandler.GetIthBulkElmtDofsNum(e+1);
-        MatSetValues(_AMATRIX,nDofs,conn,nDofs,conn,localK,ADD_VALUES);
+        //MatSetValues(_AMATRIX,nDofs,conn,nDofs,conn,localK,ADD_VALUES);
+        MatSetValues(_AMATRIX,nDofs,elDofs.data(),nDofs,elDofs.data(),localK.data(),ADD_VALUES);
     }
     MatAssemblyBegin(_AMATRIX,MAT_FINAL_ASSEMBLY);
     MatAssemblyEnd(_AMATRIX,MAT_FINAL_ASSEMBLY);
-
     //*****************************************************************************
     //*** once the sparsity pattern is ready, we need to disable the new allocation 
     //*** to our matrix
