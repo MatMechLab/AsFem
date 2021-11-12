@@ -34,7 +34,7 @@ public:
         _MaxIters=25;
         _RAbsTol=4.5e-8;
         _RRelTol=1.0e-9;
-        _STol=1.0e-16; // |dx|<|x|*stol
+        _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
         _LinearSolverName="gmres";
         _CheckJacobian=false;
@@ -55,7 +55,7 @@ public:
         _MaxIters=25;
         _RAbsTol=4.5e-8;
         _RRelTol=1.0e-9;
-        _STol=1.0e-16; // |dx|<|x|*stol
+        _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
         _LinearSolverName="gmres";
         _CheckJacobian=false;

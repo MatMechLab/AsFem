@@ -196,7 +196,7 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 MessagePrinter::AsFem_Exit();
             }
             else{
-                if(numbers[0]<=0.0){
+                if(numbers[0]<0.0){
                     MessagePrinter::PrintErrorInLineNumber(linenum);
                     MessagePrinter::PrintErrorTxt("invalid stol= number found in [nonlinearsolver] block, stol=real should be given",false);
                     MessagePrinter::AsFem_Exit();
