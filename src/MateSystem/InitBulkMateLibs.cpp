@@ -59,6 +59,9 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::NEOHOOKEANPFFRACTUREMATE:
             NeoHookeanPFFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::KOBAYASHIMATE:
+            KobayashiMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
         //**************************************************************
         //*** for User-Defined-Materials (UMAT)
         //**************************************************************

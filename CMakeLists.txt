@@ -253,6 +253,9 @@ set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### For Miehe's phase field fracture element
 set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
+### For Kobayashi's dendrite element
+set(inc ${inc} include/ElmtSystem/KobayashiElmt.h)
+set(src ${src} src/ElmtSystem/KobayashiElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -371,6 +374,9 @@ set(src ${src} src/MateSystem/StressDecompositionMaterial.cpp)
 ### for neohookean phase-field fracture material
 set(inc ${inc} include/MateSystem/NeoHookeanPFFractureMaterial.h)
 set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
+### for kobayashi material
+set(inc ${inc} include/MateSystem/KobayashiMaterial.h)
+set(src ${src} src/MateSystem/KobayashiMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
@@ -506,6 +512,7 @@ set(src ${src} src/ICSystem/ApplyConstantIC.cpp)
 set(src ${src} src/ICSystem/ApplyRandomIC.cpp)
 set(src ${src} src/ICSystem/ApplyRectangleIC.cpp)
 set(src ${src} src/ICSystem/ApplyCircleIC.cpp)
+set(src ${src} src/ICSystem/ApplySmoothCirlceIC.cpp)
 set(src ${src} src/ICSystem/ApplyCubicIC.cpp)
 set(src ${src} src/ICSystem/ApplySphereIC.cpp)
 set(src ${src} src/ICSystem/User1IC.cpp)

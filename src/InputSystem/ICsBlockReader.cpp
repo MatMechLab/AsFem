@@ -109,6 +109,11 @@ bool ICsBlockReader::ReadICBlock(ifstream &in, string str, const int &lastendlin
                         icblock._ICType=ICType::CIRCLEIC;
                         HasElmt=true;
                     }
+                    else if(substr.find("smoothcircle")!=string::npos&&substr.length()==12){
+                        icblock._ICTypeName="smoothcircle";
+                        icblock._ICType=ICType::SMOOTHCIRCLEIC;
+                        HasElmt=true;
+                    }
                     else if(substr.find("sphere")!=string::npos&&substr.length()==6){
                         icblock._ICTypeName="sphere";
                         icblock._ICType=ICType::SPHERICALIC;
@@ -288,6 +293,7 @@ bool ICsBlockReader::ReadICBlock(ifstream &in, string str, const int &lastendlin
                     HasDomain=true;
                 }
                 icSystem.AddICBlock2List(icblock);
+                icblock.Init();
             }
             else{
                 msg="information is not complete in ["+icblock._ICBlockName+"] sub block, some information is missing, please check your input file";

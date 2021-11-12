@@ -148,9 +148,9 @@ bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &laste
                         elmtBlock._ElmtType=ElmtType::THERMALCONDUCTELMT;
                         HasElmtType=true;
                     }
-                    else if(substr.find("dendrite")!=string::npos && substr.length()==8){
-                        elmtBlock._ElmtTypeName="dendrite";
-                        elmtBlock._ElmtType=ElmtType::DENDRITEELMT;
+                    else if(substr.find("kobayashi")!=string::npos && substr.length()==9){
+                        elmtBlock._ElmtTypeName="kobayashi";
+                        elmtBlock._ElmtType=ElmtType::KOBAYASHIELMT;
                         HasElmtType=true;
                     }
                     else if(substr.find("user")!=string::npos){

@@ -195,9 +195,9 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::ELASTICCAHNHILLIARDMATE;
                         HasElmt=true;
                     }
-                    else if(substr.find("dendrite")!=string::npos&&substr.length()==8){
-                        mateBlock._MateTypeName="dendrite";
-                        mateBlock._MateType=MateType::DENDRITEMATE;
+                    else if(substr.find("kobayashimate")!=string::npos&&substr.length()==13){
+                        mateBlock._MateTypeName="kobayashimate";
+                        mateBlock._MateType=MateType::KOBAYASHIMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("user")!=string::npos){

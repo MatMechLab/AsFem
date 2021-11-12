@@ -69,6 +69,7 @@ private:
     void ApplyRandomIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
     void ApplyRectangleIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
     void ApplyCircleIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
+    void ApplySmoothCircleIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
     void ApplyCubicIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
     void ApplySphereIC(const int &DofIndex,const vector<double> &Parameters,const vector<string> &DomainList,const Mesh &mesh,const DofHandler &dofHandler,Vec &U);
     // for user-defined ic
