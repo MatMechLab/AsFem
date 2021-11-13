@@ -57,7 +57,7 @@ void ICSystem::ApplySmoothCircleIC(const int &DofIndex, const vector<double> &Pa
                     eta=0.0;
                 }
                 value=val*eta*eta*eta*(6*eta*eta-15*eta+10);
-                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                 VecSetValues(U,1,&iInd,&value,INSERT_VALUES);
             }
         }

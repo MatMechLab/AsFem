@@ -18,7 +18,7 @@
 
 BulkDofHandler::BulkDofHandler(){
     _nElmts=0.0;_nNodes=0.0;_nBulkElmts=0;
-    _nDofsPerNode=0;
+    _nDofsPerNode=0;_nNodesPerBulkElmt=0;
     _nDofs=0;_nActiveDofs=0;
     _nNodesPerBulkElmt=0;
     _nMaxDim=0;_nMinDim=0;
@@ -36,9 +36,9 @@ BulkDofHandler::BulkDofHandler(){
     _DofName2IDList.clear();
 
     _NodeDofsMap.clear();
-    _ElmtDofsMap.clear();
+    _BulkElmtDofsMap.clear();
 
-    _ElmtElmtMateTypePairList.clear();
+    _BulkElmtElmtMateTypePairList.clear();
 }
 
 void BulkDofHandler::AddDofNameFromStrVec(vector<string> &namelist){
@@ -91,7 +91,7 @@ void BulkDofHandler::PrintBulkDofDetailInfo()const{
         str.clear();
         sprintf(buff,"e=%8d:",e+1);
         str+=string(buff);
-        for(auto it:_ElmtDofsMap[e]){
+        for(auto it:_BulkElmtDofsMap[e]){
             sprintf(buff,"%8d ",it);
             str+=string(buff);
         }

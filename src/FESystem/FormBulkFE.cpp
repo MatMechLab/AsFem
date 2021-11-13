@@ -81,8 +81,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         e=ee+1;
         mesh.GetBulkMeshIthBulkElmtNodes(e,_elNodes);
         mesh.GetBulkMeshIthBulkElmtConn(e,_elConn);
-        dofHandler.GetIthBulkElmtDofIndex0(e,_elDofs,_elDofsActiveFlag);
-        nDofs=dofHandler.GetIthBulkElmtDofsNum(e);
+        dofHandler.GetBulkMeshIthBulkElmtDofIndex0(e,_elDofs,_elDofsActiveFlag);
+        nDofs=dofHandler.GetBulkMeshIthBulkElmtDofsNum(e);
         nNodes=mesh.GetBulkMeshIthBulkElmtNodesNum(e);
         nDofsPerNode=nDofs/nNodes;
 
@@ -166,11 +166,11 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             //}
             // now we do the loop for local element, *local element could have multiple contributors according
             // to your model, i.e. one element (or one domain) can be assigned by multiple [elmt] sub block in your input file !!!
-            for(int ielmt=1;ielmt<=static_cast<int>(dofHandler.GetIthElmtElmtMateTypePair(e).size());ielmt++){
-                elmttype=dofHandler.GetIthElmtJthKernelElmtType(e,ielmt);
-                matetype=dofHandler.GetIthElmtJthKernelMateType(e,ielmt);
-                localDofIndex=dofHandler.GetIthBulkElmtJthKernelDofIndex(e,ielmt);
-                mateindex=dofHandler.GetIthBulkElmtJthKernelMateIndex(e,ielmt);
+            for(int ielmt=1;ielmt<=static_cast<int>(dofHandler.GetBulkMeshIthBulkElmtElmtMateTypePair(e).size());ielmt++){
+                elmttype=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtElmtType(e,ielmt);
+                matetype=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtMateType(e,ielmt);
+                localDofIndex=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtDofIndex(e,ielmt);
+                mateindex=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtMateIndex(e,ielmt);
                 nDofsPerSubElmt=static_cast<int>(localDofIndex.size());
 
                 // now we calculate the local dofs and their derivatives

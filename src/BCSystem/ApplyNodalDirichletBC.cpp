@@ -39,7 +39,7 @@ void BCSystem::ApplyNodalDirichletBC(const FECalcType &calctype,const BCType &bc
         for(e=eStart;e<eEnd;++e){
             nodeid=mesh.GetBulkMeshIthNodeIDViaPhyName(bcname,e+1);
             for(int i=0;i<_elmtinfo.nDofs;i++){
-                iInd=dofHandler.GetIthNodeJthDofIndex(nodeid,dofsindex[i])-1;
+                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(nodeid,dofsindex[i])-1;
                 dofsid[i]=iInd;
             }
             switch (bctype) {

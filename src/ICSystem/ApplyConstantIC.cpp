@@ -35,7 +35,7 @@ void ICSystem::ApplyConstantIC(const int &DofIndex, const vector<double> &Parame
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(domain,e+1);//global id
             for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(ee);++i){
                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
-                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                 VecSetValues(U,1,&iInd,&Parameters[0],INSERT_VALUES);
             }
         }

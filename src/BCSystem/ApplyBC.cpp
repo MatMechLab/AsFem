@@ -96,7 +96,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                             _elmtinfo.gpCoords(2)=mesh.GetBulkMeshIthNodeJthCoord(j,2);
                             _elmtinfo.gpCoords(3)=mesh.GetBulkMeshIthNodeJthCoord(j,3);
                             for(k=0;k<_elmtinfo.nDofs;k++){
-                                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k])-1;
+                                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k])-1;
                                 dofids[k]=iInd;
                             }
                         }
@@ -109,7 +109,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                         for(i=1;i<=_nNodesPerBCElmt;++i){
                             j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                             for(k=1;k<=_elmtinfo.nDofs;k++){
-                                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
+                                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
                                 dofids[k-1]=iInd;
                                 VecGetValues(_Useq,1,&iInd,&value);
                                 _soln.gpU[k]=value;
@@ -128,7 +128,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                 // assemble the localR to the global one
                                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                                 for(k=0;k<_elmtinfo.nDofs;k++){
-                                    iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k])-1;
+                                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k])-1;
                                     VecSetValue(RHS,iInd,_localR(k+1)*1.0,ADD_VALUES);
                                 }
                             }
@@ -145,9 +145,9 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                     RunBCLibs(calctype,it._BCType,bcvalue,it._Parameters,_normals,ctan,_elmtinfo,_soln,_shp,_localR,_localK);
                                     // assemble localK to the global one
                                     for(ki=0;ki<_elmtinfo.nDofs;ki++){
-                                        iInd=dofHandler.GetIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
+                                        iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
                                         for(kj=0;kj<_elmtinfo.nDofs;kj++){
-                                            jInd=dofHandler.GetIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
+                                            jInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
                                             MatSetValue(AMATRIX,iInd,jInd,_localK(ki+1,kj+1)*1.0,ADD_VALUES);
                                         }
                                     }//===> end-of-localK-assemble
@@ -192,7 +192,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                             for(i=1;i<=_nNodesPerBCElmt;++i){
                                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                                 for(k=1;k<=_elmtinfo.nDofs;k++){
-                                    iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
+                                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
                                     dofids[k-1]=iInd;
                                     VecGetValues(_Useq,1,&iInd,&value);
                                     _soln.gpU[k]+=fe._LineShp.shape_value(i)*value;
@@ -226,7 +226,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                     // assemble the localR to the global one
                                     j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                                     for(k=0;k<_elmtinfo.nDofs;k++){
-                                        iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k])-1;
+                                        iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k])-1;
                                         VecSetValue(RHS,iInd,_localR(k+1)*_JxW,ADD_VALUES);
                                     }
                                 }
@@ -243,9 +243,9 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                         RunBCLibs(calctype,it._BCType,bcvalue,it._Parameters,_normals,ctan,_elmtinfo,_soln,_shp,_localR,_localK);
                                         // assemble localK to the global one
                                         for(ki=0;ki<_elmtinfo.nDofs;ki++){
-                                            iInd=dofHandler.GetIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
+                                            iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
                                             for(kj=0;kj<_elmtinfo.nDofs;kj++){
-                                                jInd=dofHandler.GetIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
+                                                jInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
                                                 value=_localK(ki+1,kj+1)*_JxW;
                                                 MatSetValue(AMATRIX,iInd,jInd,value,ADD_VALUES);
                                             }
@@ -309,7 +309,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                             for(i=1;i<=_nNodesPerBCElmt;++i){
                                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                                 for(k=1;k<=_elmtinfo.nDofs;k++){
-                                    iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
+                                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k-1])-1;
                                     dofids[k-1]=iInd;
                                     
                                     VecGetValues(_Useq,1,&iInd,&value);
@@ -344,7 +344,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                     // assemble the localR to the global one
                                     j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                                     for(k=0;k<_elmtinfo.nDofs;k++){
-                                        iInd=dofHandler.GetIthNodeJthDofIndex(j,DofsIndex[k])-1;
+                                        iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofsIndex[k])-1;
                                         VecSetValue(RHS,iInd,_localR(k+1)*_JxW,ADD_VALUES);
                                     }
                                 }
@@ -361,9 +361,9 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
                                         RunBCLibs(calctype,it._BCType,bcvalue,it._Parameters,_normals,ctan,_elmtinfo,_soln,_shp,_localR,_localK);
                                         // assemble localK to the global one
                                         for(ki=0;ki<_elmtinfo.nDofs;ki++){
-                                            iInd=dofHandler.GetIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
+                                            iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(ii,DofsIndex[ki])-1;
                                             for(kj=0;kj<_elmtinfo.nDofs;kj++){
-                                                jInd=dofHandler.GetIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
+                                                jInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(jj,DofsIndex[kj])-1;
                                                 value=_localK(ki+1,kj+1)*_JxW;
                                                 MatSetValue(AMATRIX,iInd,jInd,value,ADD_VALUES);
                                             }
@@ -422,7 +422,7 @@ void BCSystem::ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,cons
                     for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,e+1);++i){
                         j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
                         for(const auto id:DofsIndex){
-                            iInd=dofHandler.GetIthNodeJthDofIndex(j,id)-1;
+                            iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,id)-1;
                             VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
                         }
                     }

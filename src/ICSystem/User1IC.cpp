@@ -17,7 +17,7 @@
 void ICSystem::User1IC(const int &DofIndex, const vector<double> &Parameters, const vector<string> &DomainList,
                        const Mesh &mesh, const DofHandler &dofHandler, Vec &U){
     if(DofIndex||Parameters.size()||DomainList.size()||
-    mesh.GetDim()||dofHandler.GetDofsNum()){}
+    mesh.GetDim()||dofHandler.GetTotalDofsNum()){}
     int i;
     VecGetSize(U,&i);
     if(i){return;}
