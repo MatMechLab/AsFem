@@ -62,6 +62,10 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::KOBAYASHIMATE:
             KobayashiMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::DIFFNEOHOOKEANMATE:
+            //DiffNeoHookeanMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
+
         //**************************************************************
         //*** for User-Defined-Materials (UMAT)
         //**************************************************************

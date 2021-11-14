@@ -378,6 +378,9 @@ set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
 ### for kobayashi material
 set(inc ${inc} include/MateSystem/KobayashiMaterial.h)
 set(src ${src} src/MateSystem/KobayashiMaterial.cpp)
+### for diffusion coupled neohookean
+#set(inc ${in} include/MateSystem/DiffNeoHookeanMaterial.h)
+#set(src ${src} src/MateSystem/DiffNeoHookeanMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
