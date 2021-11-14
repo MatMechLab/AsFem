@@ -158,6 +158,11 @@ bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &laste
                         elmtBlock._ElmtType=ElmtType::KOBAYASHIELMT;
                         HasElmtType=true;
                     }
+                    else if(substr.find("diffusionfracture")!=string::npos && substr.length()==17){
+                        elmtBlock._ElmtTypeName="diffusionfracture";
+                        elmtBlock._ElmtType=ElmtType::DIFFUSIONFRACTUREELMT;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=StringUtils::SplitStrNum(substr);
                         if(number.size()<1){

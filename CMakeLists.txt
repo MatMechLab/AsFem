@@ -259,6 +259,9 @@ set(src ${src} src/ElmtSystem/KobayashiElmt.cpp)
 ### For stress diffusion element
 set(inc ${inc} include/ElmtSystem/StressDiffusionElmt.h)
 set(src ${src} src/ElmtSystem/StressDiffusionElmt.cpp)
+### For diffusion fracture element
+set(inc ${inc} include/ElmtSystem/DiffusionFractureElmt.h)
+set(src ${src} src/ElmtSystem/DiffusionFractureElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -372,6 +375,9 @@ set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+### For diffusion coupled phase field fracture model
+set(inc ${inc} include/MateSystem/DiffusionFractureMaterial.h)
+set(src ${src} src/MateSystem/DiffusionFractureMaterial.cpp)
 ### for stress decomposition phase field fracture material
 set(inc ${inc} include/MateSystem/StressDecompositionMaterial.h)
 set(src ${src} src/MateSystem/StressDecompositionMaterial.cpp)

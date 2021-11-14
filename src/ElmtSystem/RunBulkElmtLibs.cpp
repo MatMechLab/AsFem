@@ -48,6 +48,9 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
         case ElmtType::KOBAYASHIELMT:
             KobayashiElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
+        case ElmtType::DIFFUSIONFRACTUREELMT:
+            DiffusionFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
+            break;
         //********************************************************
         //*** for user-defined-element(UEL)
         //********************************************************
