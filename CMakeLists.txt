@@ -328,11 +328,12 @@ set(src ${src} src/MateSystem/MateSystem.cpp)
 ### for complex materials class
 set(inc ${inc} include/MateSystem/Materials.h)
 set(src ${src} src/MateSystem/Materials.cpp)
-### for bulk materials
+### for bulk(base) materials
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
 set(inc ${inc} include/MateSystem/PhaseFieldFractureMaterialBase.h)
 set(inc ${inc} include/MateSystem/PlasticMaterialBase.h)
+set(inc ${inc} include/MateSystem/MultiphycisMechanicsMaterialBase.h)
 ### For constant poisson material
 set(inc ${inc} include/MateSystem/ConstPoissonMaterial.h)
 set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
