@@ -49,8 +49,8 @@ void DiffNeoHookeanMaterial::ComputeDeformationGradientTensor(const LocalElmtInf
 }
 //****************************************************************
 void DiffNeoHookeanMaterial::ComputeConstitutiveLaws(const vector<double> &InputParams,const LocalElmtSolution &soln,const RankTwoTensor &F,RankTwoTensor &Strain,RankTwoTensor &Stress,RankFourTensor &Jacobian){
-    double E=InputParams[0];
-    double nu=InputParams[1];
+    double E=InputParams[3-1];
+    double nu=InputParams[4-1];
     double PsiE,Omega,K,G;
     double Js,Je,Je23,dJsdC,C;
     double I1,I1bar;
@@ -58,7 +58,7 @@ void DiffNeoHookeanMaterial::ComputeConstitutiveLaws(const vector<double> &Input
     K=E/(3*(1-2*nu));// bulk modulus
     G=E/(2*(1+nu));  // shear modulus
 
-    Omega=InputParams[2];
+    Omega=InputParams[2-1];
     C=soln.gpU[1];
 
     // the elastic free energy is:
@@ -96,7 +96,7 @@ void DiffNeoHookeanMaterial::ComputeConstitutiveLaws(const vector<double> &Input
 
     // elastic free energy density is:
     //  PsiE=0.5*K(0.5*(Je^2-1)-log(Je))+0.5*G*(I1bar-3.0)
-    PsiE=0.5*K*(0.5*(Je*Je-1)-log(Je))+90.5*G*(I1bar-3.0);
+    PsiE=0.5*K*(0.5*(Je*Je-1)-log(Je))+0.5*G*(I1bar-3.0);
     _Mu=dJsdC*PsiE;
     _dStressdC.SetToZeros();
     _dMudStrain.SetToZeros();
@@ -111,10 +111,12 @@ void DiffNeoHookeanMaterial::ComputeMaterialProperties(const vector<double> &Inp
     //*** get rid of unused warnings
     //*********************************************************
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
-    if(InputParams.size()<2){
-        MessagePrinter::PrintErrorTxt("for the DiffNeoHookeanMaterial, two parameters are required, you need to give: E and nu");
+    if(InputParams.size()<4){
+        MessagePrinter::PrintErrorTxt("for the DiffNeoHookeanMaterial, four parameters are required, you need to give: D, Omega, E, and nu");
         MessagePrinter::AsFem_Exit();
     }
+    Mate.ScalarMaterials("D")=InputParams[1-1];
+    Mate.ScalarMaterials("Omega")=InputParams[2-1];
 
     ComputeDeformationGradientTensor(elmtinfo,elmtsoln,_F);
     ComputeConstitutiveLaws(InputParams,elmtsoln,_F,_Strain,_Stress,_Jac);
@@ -128,7 +130,11 @@ void DiffNeoHookeanMaterial::ComputeMaterialProperties(const vector<double> &Inp
     _devStress=_Stress.Dev();
     Mate.ScalarMaterials("vonMises")=sqrt(1.5*_devStress.DoubleDot(_devStress));
     Mate.Rank2Materials("strain")=_Strain;
-    Mate.Rank2Materials("stress")=_Stress;//-MateOld.Rank2Materials("PK1");
+    Mate.Rank2Materials("stress")=_Stress;
     Mate.Rank4Materials("jacobian")=_Jac;
+
+    Mate.VectorMaterials("GradSigmaH")=0.0;
+    Mate.ScalarMaterials("dSigmaHdC")=0.0;
+    
 
 }

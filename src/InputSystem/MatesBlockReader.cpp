@@ -114,6 +114,11 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::NLDIFFUSIONMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("diffneohookeanmate")!=string::npos&&substr.length()==18){
+                        mateBlock._MateTypeName="diffneohookeanmate";
+                        mateBlock._MateType=MateType::DIFFNEOHOOKEANMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("doublewellpotential")!=string::npos&&substr.length()==19){
                         mateBlock._MateTypeName="doublewellpotential";
                         mateBlock._MateType=MateType::DOUBLEWELLFREENERGYMATE;

@@ -21,16 +21,16 @@
  */
 class DiffNeoHookeanMaterial: public MultiphysicsMechanicsMaterialBase{
 public:
+    
     /**
      * initialize the material properties
      */
-    virtual void InitMaterialProperties(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,Materials &Mate) override;
-
+    virtual void InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate) override;
     /**
      * compute the related material properties
      */
-    virtual void ComputeMaterialProperties(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,const Materials &MateOld,Materials &Mate) override;
-   
+    virtual void ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) override;
+
 private: 
     /**
      * Compute the deformation gradient tensor, it could be small strain \f$\mathbf{\varepsilon}\f$, finite strain deformation gradient tensor \f$\mathbf{F}=\mathbf{U}+\mathbf{I}\f$.
@@ -38,8 +38,7 @@ private:
      * @param elmtsoln the curent element's solution, include the displacement and its gradient
      * @param F the rank-2 strain tensor
      */ 
-    virtual void ComputeDeformationGradientTensor(const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,RankTwoTensor &F) override;
-
+    virtual void ComputeDeformationGradientTensor(const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, RankTwoTensor &F) override;
 
     /**
      * Compute the stress \f$\mathbf{\sigma}\f$ and jacobian matrix \f$\mathbb{C}\f$ .
@@ -49,7 +48,7 @@ private:
      * @param Stress the calculated stress tensor \f$\mathbf{\sigma}\f$ for MechanicsElmt.
      * @param Jacobian the calculated 'elasticity' tensor \f$\mathbb{C}\f$, it is the rank-4 tensor for the general constitutive law.
      */
-    virtual void ComputeConstitutiveLaws(const vector<double> &InputParams,const LocalElmtSolution &soln,const RankTwoTensor &F,RankTwoTensor &Strain,RankTwoTensor &Stress,RankFourTensor &Jacobian) override;
+    virtual void ComputeConstitutiveLaws(const vector<double> &InputParams, const LocalElmtSolution &soln, const RankTwoTensor &F, RankTwoTensor &Strain, RankTwoTensor &Stress, RankFourTensor &Jacobian) override;
 
 private:
     RankTwoTensor _I,_Strain,_devStress,_Stress,_dStressdC,_dMudStrain;

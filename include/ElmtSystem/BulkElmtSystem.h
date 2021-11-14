@@ -36,6 +36,7 @@
 #include "ElmtSystem/CahnHilliardElmt.h"
 #include "ElmtSystem/MieheFractureElmt.h"
 #include "ElmtSystem/KobayashiElmt.h"
+#include "ElmtSystem/StressDiffusionElmt.h"
 // for UEL
 #include "ElmtSystem/User1Elmt.h"
 #include "ElmtSystem/User2Elmt.h"
@@ -68,6 +69,7 @@ class BulkElmtSystem: public PoissonElmt,
                       public CahnHilliardElmt,
                       public MieheFractureElmt,
                       public KobayashiElmt,
+                      public StressDiffusionElmt,
                       public User1Elmt,
                       public User2Elmt,
                       public User3Elmt,

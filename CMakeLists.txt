@@ -256,6 +256,9 @@ set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
 ### For Kobayashi's dendrite element
 set(inc ${inc} include/ElmtSystem/KobayashiElmt.h)
 set(src ${src} src/ElmtSystem/KobayashiElmt.cpp)
+### For stress diffusion element
+set(inc ${inc} include/ElmtSystem/StressDiffusionElmt.h)
+set(src ${src} src/ElmtSystem/StressDiffusionElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -379,8 +382,8 @@ set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
 set(inc ${inc} include/MateSystem/KobayashiMaterial.h)
 set(src ${src} src/MateSystem/KobayashiMaterial.cpp)
 ### for diffusion coupled neohookean
-#set(inc ${in} include/MateSystem/DiffNeoHookeanMaterial.h)
-#set(src ${src} src/MateSystem/DiffNeoHookeanMaterial.cpp)
+set(inc ${inc} include/MateSystem/DiffNeoHookeanMaterial.h)
+set(src ${src} src/MateSystem/DiffNeoHookeanMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
