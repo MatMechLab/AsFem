@@ -33,6 +33,9 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
         case ElmtType::DIFFUSIONELMT:
             DiffusionElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
+        case ElmtType::STRESSDIFFUSIONELMT:
+            StressDiffusionElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
+            break;
         case ElmtType::CAHNHILLIARDELMT:
             CahnHilliardElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
@@ -42,6 +45,15 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
         case ElmtType::MIEHEFRACELMT:
             MieheFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
+        case ElmtType::KOBAYASHIELMT:
+            KobayashiElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
+            break;
+        case ElmtType::DIFFUSIONFRACTUREELMT:
+            DiffusionFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
+            break;
+        //********************************************************
+        //*** for user-defined-element(UEL)
+        //********************************************************
         case ElmtType::USER1ELMT:
             User1Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;

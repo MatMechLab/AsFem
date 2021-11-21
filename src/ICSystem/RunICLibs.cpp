@@ -28,6 +28,9 @@ void ICSystem::RunICLibs(const ICType &ictype,const int &DofIndex,const vector<d
         case ICType::CIRCLEIC:
             ApplyCircleIC(DofIndex,Parameters,DomainList,mesh,dofHandler,U);
             break;
+        case ICType::SMOOTHCIRCLEIC:
+            ApplySmoothCircleIC(DofIndex,Parameters,DomainList,mesh,dofHandler,U);
+            break;
         case ICType::RECTANGLEIC:
             ApplyRectangleIC(DofIndex,Parameters,DomainList,mesh,dofHandler,U);
             break;

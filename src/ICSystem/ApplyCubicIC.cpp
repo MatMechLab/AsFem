@@ -44,7 +44,7 @@ void ICSystem::ApplyCubicIC(const int &DofIndex, const vector<double> &Parameter
                 y=mesh.GetBulkMeshIthNodeJthCoord(j,2);
                 z=mesh.GetBulkMeshIthNodeJthCoord(j,3);
                 if((x>=x0-dx && x<=x0+dx)&&(y>=y0-dy&& y<=y0+dy)&&(z>=z0-dz&&z<=z0+dz)){
-                    iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                     VecSetValues(U,1,&iInd,&value,INSERT_VALUES);
                 }
             }

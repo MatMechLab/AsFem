@@ -83,7 +83,7 @@ void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputP
     I4Sym.SetToIdentitySymmetric4();
 
 
-    ProjPos=Strain.GetPostiveProjTensor();
+    ProjPos=Strain.GetPositiveProjTensor();
     I4Sym.SetToIdentitySymmetric4();
     ProjNeg=I4Sym-ProjPos;
 

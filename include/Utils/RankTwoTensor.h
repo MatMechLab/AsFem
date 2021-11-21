@@ -390,8 +390,9 @@ public:
         double sum=0.0;
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
-                // J.N. Reddy use A_ijB_ji
-                sum+=(*this)(i,j)*a(i,j);// use this to get the positive definite scale!!!
+                // You may see A:B=A_ijB_ji in other books/literature, here we use A_ijB_ij
+                // to keep the same, in Rank4Tensor, we follow the same definition!
+                sum+=(*this)(i,j)*a(i,j);// use this to get the positive definite case!!!
             }
         }
         return sum;
@@ -542,15 +543,15 @@ public:
      */
     void CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec) const;
     /**
-     * calculate the postive projection tensor(a rank-4 tensor), this algorithm is taken from Miehe's paper, for the details, please see the cpp file
+     * calculate the positive projection tensor(a rank-4 tensor), this algorithm is taken from Miehe's paper, for the details, please see the cpp file
      * @param eigval the double array, which stores the eigen value
      * @param eigvec the rank-2 tensor, whoses column stores the related eigen vector
      */
-    RankFourTensor CalcPostiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const;
+    RankFourTensor CalcPositiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const;
     /**
      * calculate the positive projection tensor (rank-4 tensor) based on current rank-2 tensor
      */
-    RankFourTensor GetPostiveProjTensor() const;
+    RankFourTensor GetPositiveProjTensor() const;
     //*******************************************************************
     //*** some setting functions
     //*******************************************************************
@@ -619,9 +620,9 @@ public:
     //********************************************************
     /**
      * fill up current rank-2 tensor with eular angle, which should be used for the rotation tensor
-     * @param theta1 the first eular angle
-     * @param theta2 the second eular angle
-     * @param theta3 the third eular angle
+     * @param theta1 the first eular angle, the angle must be degree
+     * @param theta2 the second eular angle, the angle must be degree
+     * @param theta3 the third eular angle, the angle must be degree
      */
     void SetRotationTensorFromEulerAngle(const double &theta1,const double &theta2,const double &theta3);
     //*******************************************************************

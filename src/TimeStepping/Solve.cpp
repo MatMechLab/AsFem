@@ -41,7 +41,8 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
     VecCopy(solutionSystem._U,solutionSystem._Utemp);
     
     // initialize the history variables
-    feSystem.FormBulkFE(FECalcType::InitHistoryVariable,0.0,_Dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
+    feSystem.FormBulkFE(FECalcType::InitMaterial,0.0,_Dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
+    solutionSystem.UpdateMaterials();
 
     // write result to the head of pvd file
     outputSystem.WritePVDFileHeader();
@@ -72,8 +73,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                 VecCopy(solutionSystem._Unew,solutionSystem._Utemp);
 
                 // then we update the history variables
-                feSystem.FormBulkFE(FECalcType::UpdateHistoryVariable,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
-
+                feSystem.FormBulkFE(FECalcType::UpdateMaterial,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
                 // update the time and step
                 currenttime+=fectrlinfo.dt;
                 fectrlinfo.t+=fectrlinfo.dt;
@@ -96,7 +96,9 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
 
                 // update the step
                 fectrlinfo.CurrentStep+=1;
-                
+                // update the materials
+                solutionSystem.UpdateMaterials();
+
                 // for adaptive time stepping
                 if(IsAdaptive()){
                     if(nonlinearSolver.GetFinalInterations()<=_OptIters){

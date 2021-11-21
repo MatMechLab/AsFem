@@ -181,7 +181,7 @@ void OutputSystem::WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler
             _VTUFile<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
             _VTUFile<<scientific<<setprecision(6);
             for (i = 1; i <= mesh.GetBulkMeshNodesNum(); ++i){
-                iInd = dofHandler.GetIthNodeJthDofIndex(i, j) - 1;
+                iInd = dofHandler.GetBulkMeshIthNodeJthDofIndex(i, j) - 1;
                 VecGetValues(_Useq,1,&iInd,&value);
                 _VTUFile << value << "\n";
             }
@@ -478,7 +478,7 @@ void OutputSystem::WriteResult2VTU(const int &step, const Mesh &mesh, const DofH
             _VTUFile<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
             _VTUFile<<scientific<<setprecision(6);
             for (i = 1; i <= mesh.GetBulkMeshNodesNum(); ++i){
-                iInd = dofHandler.GetIthNodeJthDofIndex(i, j) - 1;
+                iInd = dofHandler.GetBulkMeshIthNodeJthDofIndex(i, j) - 1;
                 VecGetValues(_Useq,1,&iInd,&value);
                 _VTUFile << value << "\n";
             }

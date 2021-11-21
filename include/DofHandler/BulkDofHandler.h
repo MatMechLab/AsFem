@@ -9,6 +9,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2020.07.01
+//+++ Update : 2021.11.13 @ Yang Bai
 //+++ Purpose: Implement general dofhandler for our bulk mesh
 //+++          This class should be capable to manage DoFs, DoF maps...
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -33,108 +34,297 @@ class Mesh;
 class ElmtSystem;
 class BCSystem;
 
+/**
+ * this class implement dof management for the bulk element of AsFem.
+ */
 class BulkDofHandler{
 public:
+    /**
+     * Constructor
+     */
     BulkDofHandler();
 
+    /**
+     * add the dofs name from string vector
+     * @param namelist the string vector for the name of dofs
+     */
     void AddDofNameFromStrVec(vector<string> &namelist);
 
-    void CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem);
+    /**
+     * create the dofs map for bulk elements
+     * @param mesh the mesh class
+     * @param bcSystem the boundary condition system
+     * @param elmtSystem the element system
+     */
+    void CreateBulkMeshDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem);
 
+    /**
+     * get the i-th dof's name(here the dofs means the one defined in [dofs] block)
+     * @param i the index of dofs in [dofs] block
+     */
     inline string GetIthDofName(const int &i)const{return _DofNameList[i-1];}
-    inline int    GetIthDofID(const int &i)const{return _DofIDList[i-1];}
-    inline int    GetDofsNumPerNode()const{return _nDofsPerNode;}
-    inline int    GetDofsNum()const{return _nDofs;}
-    inline int    GetActiveDofsNum()const{return _nActiveDofs;}
-    inline int    GetMaxDofsNumPerBulkElmt()const{return _nMaxDofsPerElmt;}
-    inline int    GetBulkElmtNums()const{return _nBulkElmts;}
-    inline int    GetMaxRowNNZ()const{return _RowMaxNNZ;}
-    int         GetDofIDviaDofName(string dofname)const;
+    
+    /**
+     * get the i-t dof's ID(the id of dofs in [dofs] block)
+     * @param i the dof index
+     */
+    inline int GetIthDofID(const int &i)const{return _DofIDList[i-1];}
+   
+    /**
+     * get the nodes number of single bulk element
+     */
+    inline int GetNodesNumPerBulkElmt()const{return _nNodesPerBulkElmt;} 
+    
+    /**
+     * get the maximum dofs number of each node
+     */
+    inline int GetMaxDofsNumPerNode()const{return _nDofsPerNode;}
+
+    /**
+     * get the maximum dofs number of each node
+     */
+    inline int GetDofsNumPerNode()const{return _nDofsPerNode;}
+    
+    /**
+     * get the total dofs number of the system
+     */
+    inline int GetTotalDofsNum()const{return _nDofs;}
+    
+    /**
+     * get the active dofs number of the system
+     */
+    inline int GetActiveDofsNum()const{return _nActiveDofs;}
+    
+    /**
+     * get the maximum dofs number of single bulk element
+     */
+    inline int GetMaxDofsNumPerBulkElmt()const{return _nMaxDofsPerElmt;}
+    
+    /**
+     * get te bulk elements number
+     */
+    inline int GetBulkMeshBulkElmtsNum()const{return _nBulkElmts;}
+    
+    /**
+     * get the total elements number
+     */
+    inline int GetBulkMeshElmtsNum()const{return _nElmts;}
+
+    /**
+     * et the max non-zero entities of the row
+     */
+    inline int GetMaxRowNNZ()const{return _RowMaxNNZ;}
+    
+    /**
+     * get the dof id by its name
+     * @param dofname the string name of the inquery dof
+     */
+    int GetDofIDviaDofName(string dofname)const;
+
+    /**
+     * get the id index's vector from input dofs' name
+     * @param namelist the input name string vector
+     */
     vector<int> GetDofsIndexFromNameVec(vector<string> namelist)const;
 
-    inline void GetIthBulkElmtDofIndex(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
-        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_ElmtDofsMap[e-1][i];
-            elDofsActiveFlag[i]=_ElmtDofFlag[e-1][i];
-        }
-    }
-    inline void GetIthBulkElmtDofIndex0(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
-        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_ElmtDofsMap[e-1][i]-1;
-            elDofsActiveFlag[i]=_ElmtDofFlag[e-1][i];
-        }
-    }
-
-    inline void GetIthBulkElmtDofIndex0(const int &e,int (&elDofs)[27])const{
-        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_ElmtDofsMap[e-1][i]-1;
-        }
-    }
-    inline void GetIthBulkElmtDofIndex(const int &e,int (&elDofs)[27])const{
-        for(int i=0;i<static_cast<int>(_ElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_ElmtDofsMap[e-1][i];
+    /**
+     * get the i-th bulk element's dof index
+     * @param e the bulk-element's ID
+     * @param elDofs the int vector which stores the elemental dofs' ID
+     * @param elDofsActiveFlag the active flags of the elemental dofs' ID, 1-> for active status,0-> for deactive status
+     */
+    inline void GetBulkMeshIthBulkElmtDofIndex(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
+        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_BulkElmtDofsMap[e-1][i];
+            elDofsActiveFlag[i]=_BulkElmtDofFlag[e-1][i];
         }
     }
 
-    inline int GetIthBulkElmtDofsNum(const int &e)const{
-        return static_cast<int>(_ElmtDofsMap[e-1].size());
+    /**
+     * get the i-th bulk element's dof index
+     * @param e the bulk-element's ID
+     * @param elDofs the int vector which stores the elemental dofs' ID
+     */
+    inline void GetBulkMeshIthBulkElmtDofIndex(const int &e,vector<int> &elDofs)const{
+        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_BulkElmtDofsMap[e-1][i];
+        }
     }
 
-    inline vector<int> GetIthBulkElmtJthKernelDofIndex(const int &i,const int &j)const{
-        return _ElmtLocalDofIndex[i-1][j-1];
-    }
-    inline int GetIthBulkElmtJthKernelMateIndex(const int &i,const int &j)const{
-        return _ElmtElmtMateIndexList[i-1][j-1];
+    /**
+     * get the i-th bulk element's dof index and active flags, where the id index starts from 0!
+     * @param e the bulk element's id
+     * @param elDofs the elemental dofs' id list, start from 0
+     * @param elDofsActiveFlag the elemental dofs' flag list
+     */
+    inline void GetBulkMeshIthBulkElmtDofIndex0(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
+        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_BulkElmtDofsMap[e-1][i]-1;
+            elDofsActiveFlag[i]=_BulkElmtDofFlag[e-1][i];
+        }
     }
 
-    inline int GetIthNodeJthDofIndex(const int &i,const int &j)const{
+    /**
+     * get the i-th bulk element's dof index and active flags, where the id index starts from 0!
+     * @param e the bulk element's id
+     * @param elDofs the elemental dofs' id list, start from 0
+     */
+    inline void GetBulkMeshIthBulkElmtDofIndex0(const int &e,vector<int> &elDofs)const{
+        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_BulkElmtDofsMap[e-1][i]-1;
+        }
+    }
+
+    /**
+     * get the i-th bulk element's dofs id, which starts from 0!!!
+     * @param e the bulk element's id
+     * @param elDofs integer array's pointer
+     */
+    inline void GetBulkMeshIthBulkElmtDofIndex0(const int &e,int *elDofs)const{
+        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_BulkElmtDofsMap[e-1][i]-1;
+        }
+    }
+    
+    /**
+     * get the i-th bulk element's dofs id, which starts from 1!!!
+     * @param e the bulk element's id
+     * @param elDofs integer array's pointer
+     */
+    inline void GetBulkMeshIthBulkElmtDofIndex(const int &e,int *elDofs)const{
+        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
+            elDofs[i]=_BulkElmtDofsMap[e-1][i];
+        }
+    }
+
+    /**
+     * get i-th bulk element dofs number
+     * @param e the element index, start from 1
+     */
+    inline int GetBulkMeshIthBulkElmtDofsNum(const int &e)const{
+        return static_cast<int>(_BulkElmtDofsMap[e-1].size());
+    }
+
+    /**
+     * get the i-th bulk element's j-th sub-element's dofs ID, start from 1 !!!
+     * @param i bulk element id
+     * @param j sub-element id
+     */
+    inline vector<int> GetBulkMeshIthBulkElmtJthSubElmtDofIndex(const int &i,const int &j)const{
+        return _BulkElmtLocalDofIndex[i-1][j-1];
+    }
+
+    /**
+     * get the i-th bulk element's j-th sub-element's material index
+     * @param i bulk element id
+     * @param j sub element id
+     */
+    inline int GetBulkMeshIthBulkElmtJthSubElmtMateIndex(const int &i,const int &j)const{
+        return _BulkElmtElmtMateIndexList[i-1][j-1];
+    }
+
+    /**
+     * get bulk mesh's i-th node's j-th coordinate
+     * @param i node id, start from 1
+     * @param j coordinate component, start from 1
+     */
+    inline int GetBulkMeshIthNodeJthDofIndex(const int &i,const int &j)const{
         return _NodeDofsMap[i-1][j-1];
+    }
+
+    /**
+     * get bulk mesh's i-th node's j-th coordinate, start from 0
+     * @param i node id, start from 0
+     * @param j coordinate component, start from 0
+     */
+    inline int GetBulkMeshIthNodeJthDofIndex0(const int &i,const int &j)const{
+        return _NodeDofsMap[i-1][j-1]-1;
     }
 
     //*********************************************
     //*** for some basic check functions
     //*********************************************
+    /**
+     * check wether the input string is a valid name for one of the [dofs] list
+     * @param dofname input string for the name of inquery dof
+     */
     bool IsValidDofName(string dofname)const;
+    /**
+     * check wether the namelist is a valid string vector for the [dofs] list
+     * @param namelist the string vector for the inquery dofs
+     */
     bool IsValidDofNameVec(vector<string> namelist)const;
 
     //*********************************************
     //*** for some basic getting functions
     //*********************************************
-    inline ElmtType GetIthElmtJthKernelElmtType(const int &i,const int &j)const{
-        return _ElmtElmtMateTypePairList[i-1][j-1].first;
+    /**
+     * get the element type-material type pair of i-th bulk element
+     * @param e the element id
+     */
+    inline vector<pair<ElmtType,MateType>> GetBulkMeshIthBulkElmtElmtMateTypePair(const int &e)const{
+        return _BulkElmtElmtMateTypePairList[e-1];
     }
-    inline vector<pair<ElmtType,MateType>> GetIthElmtElmtMateTypePair(const int &e)const{
-        return _ElmtElmtMateTypePairList[e-1];
+
+    /**
+     * get the elmt type of i-th bulk element's j-th sub-element
+     * @param i i-th bulk element
+     * @param j j-th sub element
+     */
+    inline ElmtType GetBulkMeshIthBulkElmtJthSubElmtElmtType(const int &i,const int &j)const{
+        return _BulkElmtElmtMateTypePairList[i-1][j-1].first;
     }
-    inline vector<ElmtType> GetIthElmtElmtTypeVec(const int &e)const{
+
+    /**
+     * get the element type vector of i-th bulk element
+     * @param e the element id
+     */
+    inline vector<ElmtType> GetBulkMeshIthBulkElmtElmtTypeVec(const int &e)const{
         vector<ElmtType> temp;temp.clear();
-        for(auto it:_ElmtElmtMateTypePairList[e-1]){
+        for(auto it:_BulkElmtElmtMateTypePairList[e-1]){
             temp.push_back(it.first);
         }
         return temp;
     }
-    inline MateType GetIthElmtJthKernelMateType(const int &i,const int &j)const{
-        return _ElmtElmtMateTypePairList[i-1][j-1].second;
+
+    /**
+     * get the material type of i-th bulk element's j-th sub-element
+     * @param i bulk element id
+     * @param j sub element id
+     */
+    inline MateType GetBulkMeshIthBulkElmtJthSubElmtMateType(const int &i,const int &j)const{
+        return _BulkElmtElmtMateTypePairList[i-1][j-1].second;
     }
-    inline vector<MateType> GetIthElmtMateTypeVec(const int &e)const{
+    
+    /**
+     * get the material type vector of i-th bulk element
+     * @param e bulk element id
+     */
+    inline vector<MateType> GetBulkMeshIthBulkElmtMateTypeVec(const int &e)const{
         vector<MateType> temp;temp.clear();
-        for(auto it:_ElmtElmtMateTypePairList[e-1]){
+        for(auto it:_BulkElmtElmtMateTypePairList[e-1]){
             temp.push_back(it.second);
         }
         return temp;
     }
 
+    /**
+     * print out the information of the bulk dofs system
+     */
     void PrintBulkDofInfo()const;
+    /**
+     * print out the details of the bulk dofs system 
+     */
     void PrintBulkDofDetailInfo()const;
 
 protected:
     //*************************************************
     //*** for basic dof information
     //*************************************************
-    int _nElmts,_nNodes,_nBulkElmts;
-    int _nDofsPerNode;
+    int _nElmts,_nBulkElmts;
+    int _nDofsPerNode,_nMaxDofsPerNode;
     int _nDofs,_nActiveDofs;
-    int _nNodesPerBulkElmt;
+    int _nNodesPerBulkElmt,_nNodes;
     int _nMaxDim,_nMinDim;
     int _nMaxDofsPerElmt;
     bool _HasDofMap,_HasSetDofName;
@@ -144,12 +334,12 @@ protected:
     vector<pair<string,int>> _DofName2IDList;
 
     vector<vector<int>> _NodeDofsMap;
-    vector<vector<double>> _NodalDofFlag,_ElmtDofFlag;
-    vector<vector<int>> _ElmtDofsMap;
+    vector<vector<double>> _NodalDofFlag,_BulkElmtDofFlag;
+    vector<vector<int>> _BulkElmtDofsMap;
 
-    vector<vector<pair<ElmtType,MateType>>> _ElmtElmtMateTypePairList;
-    vector<vector<int>> _ElmtElmtMateIndexList; 
-    vector<vector<vector<int>>> _ElmtLocalDofIndex;
+    vector<vector<pair<ElmtType,MateType>>> _BulkElmtElmtMateTypePairList;
+    vector<vector<int>> _BulkElmtElmtMateIndexList; 
+    vector<vector<vector<int>>> _BulkElmtLocalDofIndex;
 
     // for the length of non-zero element per row
     vector<int> _RowNNZ;

@@ -114,6 +114,11 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::NLDIFFUSIONMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("diffneohookeanmate")!=string::npos&&substr.length()==18){
+                        mateBlock._MateTypeName="diffneohookeanmate";
+                        mateBlock._MateType=MateType::DIFFNEOHOOKEANMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("doublewellpotential")!=string::npos&&substr.length()==19){
                         mateBlock._MateTypeName="doublewellpotential";
                         mateBlock._MateType=MateType::DOUBLEWELLFREENERGYMATE;
@@ -180,14 +185,29 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::MIEHEFRACTUREMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("stressdecompositionmate")!=string::npos&&substr.length()==23){
+                        mateBlock._MateTypeName="stressdecompositionmate";
+                        mateBlock._MateType=MateType::STRESSDECOMPOSITIONMATE;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("neohookeanpffracturemate")!=string::npos&&substr.length()==24){
+                        mateBlock._MateTypeName="neohookeanpffracturemate";
+                        mateBlock._MateType=MateType::NEOHOOKEANPFFRACTUREMATE;
+                        HasElmt=true;
+                    }
+                    else if(substr.find("diffusionfracturemate")!=string::npos&&substr.length()==21){
+                        mateBlock._MateTypeName="diffusionfracturemate";
+                        mateBlock._MateType=MateType::DIFFUSIONFRACTUREMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("elasticch")!=string::npos&&substr.length()==9){
                         mateBlock._MateTypeName="elasticch";
                         mateBlock._MateType=MateType::ELASTICCAHNHILLIARDMATE;
                         HasElmt=true;
                     }
-                    else if(substr.find("dendrite")!=string::npos&&substr.length()==8){
-                        mateBlock._MateTypeName="dendrite";
-                        mateBlock._MateType=MateType::DENDRITEMATE;
+                    else if(substr.find("kobayashimate")!=string::npos&&substr.length()==13){
+                        mateBlock._MateTypeName="kobayashimate";
+                        mateBlock._MateType=MateType::KOBAYASHIMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("user")!=string::npos){

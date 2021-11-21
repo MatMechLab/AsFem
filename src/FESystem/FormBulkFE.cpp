@@ -34,9 +34,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         VecSet(solutionSystem._ProjRank2Mate,0.0);
         VecSet(solutionSystem._ProjRank4Mate,0.0);
     }
-    else if(calctype==FECalcType::UpdateHistoryVariable||
-            calctype==FECalcType::InitHistoryVariable||
-            calctype==FECalcType::InitMaterialAndProjection){
+    else if(calctype==FECalcType::InitMaterial||
+            calctype==FECalcType::UpdateMaterial){
         // do nothing!
     }
     else{
@@ -82,8 +81,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         e=ee+1;
         mesh.GetBulkMeshIthBulkElmtNodes(e,_elNodes);
         mesh.GetBulkMeshIthBulkElmtConn(e,_elConn);
-        dofHandler.GetIthBulkElmtDofIndex0(e,_elDofs,_elDofsActiveFlag);
-        nDofs=dofHandler.GetIthBulkElmtDofsNum(e);
+        dofHandler.GetBulkMeshIthBulkElmtDofIndex0(e,_elDofs,_elDofsActiveFlag);
+        nDofs=dofHandler.GetBulkMeshIthBulkElmtDofsNum(e);
         nNodes=mesh.GetBulkMeshIthBulkElmtNodesNum(e);
         nDofsPerNode=nDofs/nNodes;
 
@@ -109,7 +108,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         for(gpInd=1;gpInd<=fe._BulkQPoint.GetQpPointsNum();++gpInd){
             // init all the local K&R array/matrix
             // get local history(old) value on each gauss point
-            if(calctype!=FECalcType::InitHistoryVariable){
+            if(calctype!=FECalcType::InitMaterial){
                 // the scalar/vector/rank-2/rank-4 materials in MateSystem is used by each quadrature point, so it is only used for one single gauss point. The materials of the whole system is stored in solution's materials array!!!
                 mateSystem.GetScalarMateOldPtr()=solutionSystem._ScalarMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
                 mateSystem.GetVectorMateOldPtr()=solutionSystem._VectorMaterialsOld[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1];
@@ -158,19 +157,20 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
             else if(calctype==FECalcType::Projection){
                 for(auto &it:_gpProj) it.second=0.0;
             }
-            else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
-                for(auto &it:solutionSystem._ScalarMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
-                for(auto &it:solutionSystem._VectorMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
-                for(auto &it:solutionSystem._Rank2TensorMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
-                for(auto &it:solutionSystem._Rank4TensorMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
-            }
+            //else if(calctype==FECalcType::InitMaterial||calctype==FECalcType::UpdateMaterial){
+            //    // initialize the current material solution space
+            //    for(auto &it:solutionSystem._ScalarMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
+            //    for(auto &it:solutionSystem._VectorMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
+            //    for(auto &it:solutionSystem._Rank2TensorMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
+            //    for(auto &it:solutionSystem._Rank4TensorMaterials[(e-1)*fe._BulkQPoint.GetQpPointsNum()+gpInd-1]) it.second=0.0;
+            //}
             // now we do the loop for local element, *local element could have multiple contributors according
             // to your model, i.e. one element (or one domain) can be assigned by multiple [elmt] sub block in your input file !!!
-            for(int ielmt=1;ielmt<=static_cast<int>(dofHandler.GetIthElmtElmtMateTypePair(e).size());ielmt++){
-                elmttype=dofHandler.GetIthElmtJthKernelElmtType(e,ielmt);
-                matetype=dofHandler.GetIthElmtJthKernelMateType(e,ielmt);
-                localDofIndex=dofHandler.GetIthBulkElmtJthKernelDofIndex(e,ielmt);
-                mateindex=dofHandler.GetIthBulkElmtJthKernelMateIndex(e,ielmt);
+            for(int ielmt=1;ielmt<=static_cast<int>(dofHandler.GetBulkMeshIthBulkElmtElmtMateTypePair(e).size());ielmt++){
+                elmttype=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtElmtType(e,ielmt);
+                matetype=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtMateType(e,ielmt);
+                localDofIndex=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtDofIndex(e,ielmt);
+                mateindex=dofHandler.GetBulkMeshIthBulkElmtJthSubElmtMateIndex(e,ielmt);
                 nDofsPerSubElmt=static_cast<int>(localDofIndex.size());
 
                 // now we calculate the local dofs and their derivatives
@@ -238,7 +238,7 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                 //*****************************************************
                 //*** For user material calculation(UMAT)
                 //*****************************************************
-                if(calctype==FECalcType::InitHistoryVariable){
+                if(calctype==FECalcType::InitMaterial){
                     mateSystem.InitBulkMateLibs(matetype,mateindex,_elmtinfo,_elmtsoln);
                 }
                 else{
@@ -307,8 +307,8 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
                                                 mateSystem.GetRank4MatePtr(),
                                                 solutionSystem);
             }
-            else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
-                AssembleSubHistToLocal(e,fe._BulkQPoint.GetQpPointsNum(),gpInd,mateSystem.GetMaterialsPtr(),solutionSystem);
+            else if(calctype==FECalcType::InitMaterial||calctype==FECalcType::UpdateMaterial){
+                AssembleLocalMaterialsToGlobal(e,fe._BulkQPoint.GetQpPointsNum(),gpInd,mateSystem.GetMaterialsPtr(),solutionSystem);
             }
         }//----->end of gauss point loop
         mesh.SetBulkMeshIthBulkElmtVolume(e,elVolume);
@@ -321,9 +321,9 @@ void FESystem::FormBulkFE(const FECalcType &calctype,const double &t,const doubl
         else if(calctype==FECalcType::ComputeJacobian){
             AssembleLocalJacobianToGlobalJacobian(nDofs,_elDofs,_K,AMATRIX);
         }
-        else if(calctype==FECalcType::InitHistoryVariable||calctype==FECalcType::UpdateHistoryVariable){
-            AssembleLocalHistToGlobal(e,fe._BulkQPoint.GetQpPointsNum(),solutionSystem);
-        }
+        //else if(calctype==FECalcType::InitMaterial||calctype==FECalcType::UpdateMaterial){
+        //    AssembleLocalHistToGlobal(e,fe._BulkQPoint.GetQpPointsNum(),solutionSystem);
+        //}
     }//------>end of element loop
 
     //********************************************************************

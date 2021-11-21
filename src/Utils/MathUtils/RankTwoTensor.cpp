@@ -378,7 +378,7 @@ void RankTwoTensor::CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTen
     }
 }
 //***********************************************
-RankFourTensor RankTwoTensor::CalcPostiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const{
+RankFourTensor RankTwoTensor::CalcPositiveProjTensor(double (&eigval)[3],RankTwoTensor &eigvec) const{
     // remember, the eigen vec and eigen value should be used in your material
     // code to calculate the stress and the related constitutive law
 
@@ -445,7 +445,7 @@ RankFourTensor RankTwoTensor::CalcPostiveProjTensor(double (&eigval)[3],RankTwoT
     return ProjPos;
 }
 
-RankFourTensor RankTwoTensor::GetPostiveProjTensor() const{
+RankFourTensor RankTwoTensor::GetPositiveProjTensor() const{
     double eigval[3];RankTwoTensor eigvec;
     // Algorithm is taken from:
     // C. Miehe and M. Lambrecht, Commun. Numer. Meth. Engng 2001; 17:337~353

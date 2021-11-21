@@ -32,7 +32,7 @@ void BCSystem::ApplyNodalNeumannBC(const Mesh &mesh,const DofHandler &dofHandler
         for(e=eStart;e<eEnd;++e){
             j=mesh.GetBulkMeshIthNodeIDViaPhyName(bcname,e+1);
             for(const auto &id:dofsindex){
-                iInd=dofHandler.GetIthNodeJthDofIndex(j,id)-1;
+                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,id)-1;
                 VecSetValue(RHS,iInd,bcvalue,ADD_VALUES);
             }
         }

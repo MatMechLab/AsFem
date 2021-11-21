@@ -14,11 +14,12 @@
 
 #include "DofHandler/BulkDofHandler.h"
 
-void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem){
+void BulkDofHandler::CreateBulkMeshDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem){
     _nMinDim=mesh.GetBulkMeshMinDim();
     _nMaxDim=mesh.GetBulkMeshDim();
 
     _nNodes=mesh.GetBulkMeshNodesNum();
+    _nNodesPerBulkElmt=mesh.GetBulkMeshNodesNumPerBulkElmt();
     _nElmts=mesh.GetBulkMeshElmtsNum();// the total number of element(include both the bulk and bc elmts)
     _nBulkElmts=mesh.GetBulkMeshBulkElmtsNum();
 
@@ -26,24 +27,24 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
     _nMaxDofsPerElmt=_nNodesPerBulkElmt*_nDofsPerNode;
 
     _NodalDofFlag.resize(_nNodes,vector<double>(_nDofsPerNode,-1.0));// for dirichlet bc is  : 0
-                                                                    // for neumann bc is    : 1
-                                                                    // for robin/other bc is: 2
-    _ElmtDofFlag.resize(_nBulkElmts,vector<double>(_nMaxDofsPerElmt,-1.0));
+                                                                     // for neumann bc is    : 1
+                                                                     // for robin/other bc is: 2
+    _BulkElmtDofFlag.resize(_nBulkElmts,vector<double>(_nMaxDofsPerElmt,-1.0));
 
     _NodeDofsMap.resize(_nNodes,vector<int>(_nDofsPerNode,-1));
-    _ElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,-1));
+    _BulkElmtDofsMap.resize(_nBulkElmts,vector<int>(_nMaxDofsPerElmt,-1));
 
     vector<pair<ElmtType,MateType>> temp;
     temp.clear();
-    _ElmtElmtMateTypePairList.resize(_nBulkElmts,temp);
-    for(auto &it:_ElmtElmtMateTypePairList){
+    _BulkElmtElmtMateTypePairList.resize(_nBulkElmts,temp);
+    for(auto &it:_BulkElmtElmtMateTypePairList){
         it.clear();
     }
-    _ElmtLocalDofIndex.resize(_nBulkElmts,vector<vector<int>>(0));
-    _ElmtElmtMateIndexList.resize(_nBulkElmts,vector<int>(0));
+    _BulkElmtLocalDofIndex.resize(_nBulkElmts,vector<vector<int>>(0));
+    _BulkElmtElmtMateIndexList.resize(_nBulkElmts,vector<int>(0));
 
 
-    _nDofs=_nNodes*_nDofsPerNode;
+    _nDofs=_nNodes*_nDofsPerNode;// this is our total dofs
 
     _nActiveDofs=0;
 
@@ -88,7 +89,7 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
         MessagePrinter::AsFem_Exit();
     }
 
-    //*** secondly, we check whether all the DoFs have been assigned an [elmt] block
+    //*** secondly, we check whether all the DoFs have been assigned by an [elmt] block
     bool DofHasElmtBlock=false;
     string dofname;
     for(i=1;i<=GetDofsNumPerNode();i++){
@@ -128,9 +129,9 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
         for(auto e:mesh.GetBulkMeshElmtIDsViaPhysicalName(domainname)){
             // now we are in the elmt id vector
             ee=e-(mesh.GetBulkMeshElmtsNum()-mesh.GetBulkMeshBulkElmtsNum());
-            _ElmtElmtMateTypePairList[ee-1].push_back(make_pair(elmttype,matetype));
-            _ElmtLocalDofIndex[ee-1].push_back(dofindex);
-            _ElmtElmtMateIndexList[ee-1].push_back(mateindex);
+            _BulkElmtElmtMateTypePairList[ee-1].push_back(make_pair(elmttype,matetype));
+            _BulkElmtLocalDofIndex[ee-1].push_back(dofindex);
+            _BulkElmtElmtMateIndexList[ee-1].push_back(mateindex);
             for(i=1;i<=mesh.GetBulkMeshIthBulkElmtNodesNum(ee);i++){
                 iInd=mesh.GetBulkMeshIthBulkElmtJthNodeID(ee,i);
                 for(j=1;j<=ndofs;j++){
@@ -200,33 +201,33 @@ void BulkDofHandler::CreateBulkDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtS
                 ii=(j-1)*_nDofsPerNode+k-1;
 
                 if(_NodalDofFlag[iInd-1][k-1]>=0.0){
-                    _ElmtDofsMap[e-1][ii]=_NodeDofsMap[iInd-1][k-1];
+                    _BulkElmtDofsMap[e-1][ii]=_NodeDofsMap[iInd-1][k-1];
                     _RowNNZ[_NodeDofsMap[iInd-1][k-1]-1]+=_nMaxDofsPerElmt;
 
                     if(_RowNNZ[_NodeDofsMap[iInd-1][k-1]-1]>_RowMaxNNZ){
                         _RowMaxNNZ=_RowNNZ[_NodeDofsMap[iInd-1][k-1]-1];
                     }
                     if(_NodalDofFlag[iInd-1][k-1]>0.0){
-                        _ElmtDofFlag[e-1][ii]=1.0;
+                        _BulkElmtDofFlag[e-1][ii]=1.0;
                     }
                     else if(_NodalDofFlag[iInd-1][k-1]==0.0){
-                        _ElmtDofFlag[e-1][ii]=0.0;
+                        _BulkElmtDofFlag[e-1][ii]=0.0;
                     }
                 }
             }
         }
         // remove the zero element space
-        _ElmtDofFlag[e-1].erase(
-            remove(_ElmtDofFlag[e-1].begin(),_ElmtDofFlag[e-1].end(),-1.0),
-            _ElmtDofFlag[e-1].end()
+        _BulkElmtDofFlag[e-1].erase(
+            remove(_BulkElmtDofFlag[e-1].begin(),_BulkElmtDofFlag[e-1].end(),-1.0),
+            _BulkElmtDofFlag[e-1].end()
         );
-        _ElmtDofFlag[e-1].shrink_to_fit();
+        _BulkElmtDofFlag[e-1].shrink_to_fit();
 
-        _ElmtDofsMap[e-1].erase(
-            remove(_ElmtDofsMap[e-1].begin(),_ElmtDofsMap[e-1].end(),-1),
-            _ElmtDofsMap[e-1].end()
+        _BulkElmtDofsMap[e-1].erase(
+            remove(_BulkElmtDofsMap[e-1].begin(),_BulkElmtDofsMap[e-1].end(),-1),
+            _BulkElmtDofsMap[e-1].end()
         );
-        _ElmtDofsMap[e-1].shrink_to_fit();
+        _BulkElmtDofsMap[e-1].shrink_to_fit();
     }
 
 }

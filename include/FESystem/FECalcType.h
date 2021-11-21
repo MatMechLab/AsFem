@@ -20,7 +20,6 @@ enum class FECalcType{
     ComputeResidual,
     ComputeJacobian,
     Projection,
-    InitMaterialAndProjection,
-    InitHistoryVariable,
-    UpdateHistoryVariable
+    InitMaterial,
+    UpdateMaterial
 };

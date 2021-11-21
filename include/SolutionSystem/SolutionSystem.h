@@ -29,6 +29,9 @@
 
 using namespace std;
 
+/**
+ * this class responsible for the solution space operation, i.e., store the solution vectors, store/access the material properties.
+ */
 class SolutionSystem{
 public:
     SolutionSystem();
@@ -135,6 +138,7 @@ public:
     //**********************************************
     bool IsProjection()const{return _IsProjection;}
 
+    void UpdateMaterials();
 
     void PrintProjectionInfo()const;
 

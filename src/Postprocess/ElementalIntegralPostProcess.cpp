@@ -60,7 +60,7 @@ double Postprocess::ElementalIntegralPostProcess(vector<string> domainnamelist,s
             // get the dof value for each nodal point
             for(i=1;i<=nNodesPerElmt;++i){
                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
-                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                 VecGetValues(_Useq,1,&iInd,&dofvalue);
                 elU[i-1]=dofvalue;
             }

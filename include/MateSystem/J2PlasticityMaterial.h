@@ -24,12 +24,12 @@ public:
     /**
      * Initialize material properties in J2PlasticityMaterial
      */
-    virtual void InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate) override;
+    virtual void InitMaterialProperties(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln, Materials &Mate) override;
    
     /**
      * Compute the stress and jacobian in J2PlasticityMaterial
      */ 
-    virtual void ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) override;
+    virtual void ComputeMaterialProperties(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,const Materials &MateOld,Materials &Mate) override;
 
 private:
     /**

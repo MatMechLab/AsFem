@@ -253,6 +253,15 @@ set(src ${src} src/ElmtSystem/CahnHilliardElmt.cpp)
 ### For Miehe's phase field fracture element
 set(inc ${inc} include/ElmtSystem/MieheFractureElmt.h)
 set(src ${src} src/ElmtSystem/MieheFractureElmt.cpp)
+### For Kobayashi's dendrite element
+set(inc ${inc} include/ElmtSystem/KobayashiElmt.h)
+set(src ${src} src/ElmtSystem/KobayashiElmt.cpp)
+### For stress diffusion element
+set(inc ${inc} include/ElmtSystem/StressDiffusionElmt.h)
+set(src ${src} src/ElmtSystem/StressDiffusionElmt.cpp)
+### For diffusion fracture element
+set(inc ${inc} include/ElmtSystem/DiffusionFractureElmt.h)
+set(src ${src} src/ElmtSystem/DiffusionFractureElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -325,11 +334,12 @@ set(src ${src} src/MateSystem/MateSystem.cpp)
 ### for complex materials class
 set(inc ${inc} include/MateSystem/Materials.h)
 set(src ${src} src/MateSystem/Materials.cpp)
-### for bulk materials
+### for bulk(base) materials
 set(inc ${inc} include/MateSystem/BulkMaterialBase.h)
 set(inc ${inc} include/MateSystem/MechanicsMaterialBase.h)
 set(inc ${inc} include/MateSystem/PhaseFieldFractureMaterialBase.h)
 set(inc ${inc} include/MateSystem/PlasticMaterialBase.h)
+set(inc ${inc} include/MateSystem/MultiphycisMechanicsMaterialBase.h)
 ### For constant poisson material
 set(inc ${inc} include/MateSystem/ConstPoissonMaterial.h)
 set(src ${src} src/MateSystem/ConstPoissonMaterial.cpp)
@@ -342,6 +352,9 @@ set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
 ### For incremental small strain material
 set(inc ${inc} include/MateSystem/IncrementSmallStrainMaterial.h)
 set(src ${src} src/MateSystem/IncrementSmallStrainMaterial.cpp)
+### for SaintVenant Material
+set(inc ${inc} include/MateSystem/SaintVenantMaterial.h)
+set(src ${src} src/MateSystem/SaintVenantMaterial.cpp)
 ### For NeoHookean material
 set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
 set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
@@ -362,6 +375,21 @@ set(src ${src} src/MateSystem/IdealSolutionFreeEnergyMaterial.cpp)
 ### For Miehe's linear elastic phase field fracture model
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+### For diffusion coupled phase field fracture model
+set(inc ${inc} include/MateSystem/DiffusionFractureMaterial.h)
+set(src ${src} src/MateSystem/DiffusionFractureMaterial.cpp)
+### for stress decomposition phase field fracture material
+set(inc ${inc} include/MateSystem/StressDecompositionMaterial.h)
+set(src ${src} src/MateSystem/StressDecompositionMaterial.cpp)
+### for neohookean phase-field fracture material
+set(inc ${inc} include/MateSystem/NeoHookeanPFFractureMaterial.h)
+set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
+### for kobayashi material
+set(inc ${inc} include/MateSystem/KobayashiMaterial.h)
+set(src ${src} src/MateSystem/KobayashiMaterial.cpp)
+### for diffusion coupled neohookean
+set(inc ${inc} include/MateSystem/DiffNeoHookeanMaterial.h)
+set(src ${src} src/MateSystem/DiffNeoHookeanMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
@@ -497,6 +525,7 @@ set(src ${src} src/ICSystem/ApplyConstantIC.cpp)
 set(src ${src} src/ICSystem/ApplyRandomIC.cpp)
 set(src ${src} src/ICSystem/ApplyRectangleIC.cpp)
 set(src ${src} src/ICSystem/ApplyCircleIC.cpp)
+set(src ${src} src/ICSystem/ApplySmoothCirlceIC.cpp)
 set(src ${src} src/ICSystem/ApplyCubicIC.cpp)
 set(src ${src} src/ICSystem/ApplySphereIC.cpp)
 set(src ${src} src/ICSystem/User1IC.cpp)
@@ -543,6 +572,7 @@ set(src ${src} src/FE/ShapeFuns/ShapeFun.cpp)
 set(inc ${inc} include/SolutionSystem/SolutionSystem.h)
 set(src ${src} src/SolutionSystem/SolutionSystem.cpp)
 set(src ${src} src/SolutionSystem/InitSolution.cpp)
+set(src ${src} src/SolutionSystem/UpdateMaterials.cpp)
 
 #############################################################
 ### For equation system in AsFem                          ###

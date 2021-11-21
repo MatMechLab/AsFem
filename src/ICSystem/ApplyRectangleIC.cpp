@@ -43,7 +43,7 @@ void ICSystem::ApplyRectangleIC(const int &DofIndex, const vector<double> &Param
                 x=mesh.GetBulkMeshIthNodeJthCoord(j,1);
                 y=mesh.GetBulkMeshIthNodeJthCoord(j,2);
                 if((x>=x0-dx && x<=x0+dx)&&(y>=y0-dy&& y<=y0+dy)){
-                    iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                     VecSetValues(U,1,&iInd,&value,INSERT_VALUES);
                 }
             }

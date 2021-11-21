@@ -25,7 +25,7 @@ void NonlinearSolverBlockReader::PrintHelper(){
     MessagePrinter::PrintNormalTxt("  r_rel_tol=relative-error-of-residual",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("  r_abs_tol=absolute-error-of-residual",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("  stol=error-of-delta-U",MessageColor::BLUE);
-    MessagePrinter::PrintNormalTxt("  solver=ksp,mumps,superlu",MessageColor::BLUE);
+    MessagePrinter::PrintNormalTxt("  solver=gmres,richardson,mumps,superlu",MessageColor::BLUE);
     MessagePrinter::PrintNormalTxt("[end]",MessageColor::BLUE);
     MessagePrinter::PrintStars(MessageColor::BLUE);
 }
@@ -196,7 +196,7 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 MessagePrinter::AsFem_Exit();
             }
             else{
-                if(numbers[0]<=0.0){
+                if(numbers[0]<0.0){
                     MessagePrinter::PrintErrorInLineNumber(linenum);
                     MessagePrinter::PrintErrorTxt("invalid stol= number found in [nonlinearsolver] block, stol=real should be given",false);
                     MessagePrinter::AsFem_Exit();
@@ -210,9 +210,21 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
             int i = str.find_first_of('=');
             string substr = str.substr(i + 1, str.length());
             substr = StringUtils::RemoveStrSpace(substr);
-            if ((substr.find("ksp") != string::npos || substr.find("KSP") != string::npos) &&
-                substr.length() == 3) {
-                _nonlinearSolverBlock._LinearSolverName = "ksp";
+            substr=StringUtils::StrToLower(substr);
+            if (substr.find("gmres") != string::npos && substr.length() == 5) {
+                _nonlinearSolverBlock._LinearSolverName = "gmres";
+            }
+            else if (substr.find("fgmres") != string::npos && substr.length() == 6) {
+                _nonlinearSolverBlock._LinearSolverName = "fgmres";
+            }
+            else if ( substr.find("cg") != string::npos && substr.length() == 2) {
+                _nonlinearSolverBlock._LinearSolverName = "cg";
+            }
+            else if ( substr.find("bicg") != string::npos && substr.length() == 4) {
+                _nonlinearSolverBlock._LinearSolverName = "bicg";
+            }
+            else if ( substr.find("richardson") != string::npos && substr.length() == 10) {
+                _nonlinearSolverBlock._LinearSolverName = "richardson";
             }
             else if ((substr.find("mumps") != string::npos || substr.find("MUMPS") != string::npos) &&
                      substr.length() == 5) {
@@ -225,6 +237,26 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
             else{
                 MessagePrinter::PrintErrorInLineNumber(linenum);
                 MessagePrinter::PrintErrorTxt("invalid solver= option in [nonlinearsolver] block, please use ksp,mumps, and superlu",false);
+                MessagePrinter::AsFem_Exit();
+            }
+        }
+        else if(str.find("debug=")!=string::npos){
+            int i=str.find_first_of('=');
+            string substr=str.substr(i+1,str.length());
+            substr=StringUtils::RemoveStrSpace(substr);
+            if(substr.find("true")!=string::npos||
+               substr.find("True")!=string::npos||
+               substr.find("TRUE")!=string::npos){
+                _nonlinearSolverBlock._CheckJacobian=true;
+            }
+            else if(substr.find("false")!=string::npos||
+                    substr.find("False")!=string::npos||
+                    substr.find("FALSE")!=string::npos){
+                _nonlinearSolverBlock._CheckJacobian=false;
+            }
+            else{
+                MessagePrinter::PrintErrorInLineNumber(linenum);
+                MessagePrinter::PrintErrorTxt("unsupported option in 'debug=' in the [nonlinearsolver] block");
                 MessagePrinter::AsFem_Exit();
             }
         }

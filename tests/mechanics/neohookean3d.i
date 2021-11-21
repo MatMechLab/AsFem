@@ -4,8 +4,8 @@
   type=asfem
   dim=3
   zmax=10.0
-  nx=4
-  ny=4
+  nx=10
+  ny=10
   nz=100
   meshtype=hex8
 [end]
@@ -63,6 +63,14 @@ rank2mate=stress strain
     boundary=front
   [end]
 [end]
+
+[nonlinearsolver]
+  type=nr
+  r_rel_tol=1.0e-12
+  r_abs_tol=1.0e-7
+  solver=cg
+[end]
+
 
 [timestepping]
   type=be

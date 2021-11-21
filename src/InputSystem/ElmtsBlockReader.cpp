@@ -113,6 +113,11 @@ bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &laste
                         elmtBlock._ElmtType=ElmtType::DIFFUSIONELMT;
                         HasElmtType=true;
                     }
+                    else if(substr.find("stressdiffusion")!=string::npos && substr.length()==15){
+                        elmtBlock._ElmtTypeName="stress-diffusion";
+                        elmtBlock._ElmtType=ElmtType::STRESSDIFFUSIONELMT;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("wave")!=string::npos && substr.length()==4){
                         elmtBlock._ElmtTypeName="wave";
                         elmtBlock._ElmtType=ElmtType::WAVEELMT;
@@ -148,9 +153,14 @@ bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &laste
                         elmtBlock._ElmtType=ElmtType::THERMALCONDUCTELMT;
                         HasElmtType=true;
                     }
-                    else if(substr.find("dendrite")!=string::npos && substr.length()==8){
-                        elmtBlock._ElmtTypeName="dendrite";
-                        elmtBlock._ElmtType=ElmtType::DENDRITEELMT;
+                    else if(substr.find("kobayashi")!=string::npos && substr.length()==9){
+                        elmtBlock._ElmtTypeName="kobayashi";
+                        elmtBlock._ElmtType=ElmtType::KOBAYASHIELMT;
+                        HasElmtType=true;
+                    }
+                    else if(substr.find("diffusionfracture")!=string::npos && substr.length()==17){
+                        elmtBlock._ElmtTypeName="diffusionfracture";
+                        elmtBlock._ElmtType=ElmtType::DIFFUSIONFRACTUREELMT;
                         HasElmtType=true;
                     }
                     else if(substr.find("user")!=string::npos){

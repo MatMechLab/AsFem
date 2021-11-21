@@ -30,7 +30,7 @@ double Postprocess::NodeValuePostProcess(const int &nodeid,string variablename,
         MessagePrinter::AsFem_Exit();
     }
 
-    j=dofHandler.GetIthNodeJthDofIndex(nodeid,DofIndex)-1;
+    j=dofHandler.GetBulkMeshIthNodeJthDofIndex(nodeid,DofIndex)-1;
 
     VecScatterCreateToAll(solutionSystem._Unew,&_scatteru,&_Useq);
     VecScatterBegin(_scatteru,solutionSystem._Unew,_Useq,INSERT_VALUES,SCATTER_FORWARD);

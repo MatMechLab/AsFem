@@ -53,7 +53,7 @@ void FEProblem::InitAllComponents(){
     if(_rank==0){
         _TimerStart=chrono::high_resolution_clock::now();
     }
-    _dofHandler.CreateBulkDofsMap(_mesh,_bcSystem,_elmtSystem);
+    _dofHandler.CreateBulkMeshDofsMap(_mesh,_bcSystem,_elmtSystem);
     if(_rank==0){
         _TimerEnd=chrono::high_resolution_clock::now();
         _Duration=Duration(_TimerStart,_TimerEnd);

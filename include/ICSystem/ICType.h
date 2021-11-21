@@ -21,6 +21,7 @@ enum class ICType{
     RECTANGLEIC,
     CUBICIC,
     CIRCLEIC,
+    SMOOTHCIRCLEIC,
     SPHERICALIC,
     USER1IC,
     USER2IC,

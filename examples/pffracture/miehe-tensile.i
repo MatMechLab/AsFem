@@ -26,10 +26,10 @@ name=d ux uy
 
 [nonlinearsolver]
   type=nr
-  maxiters=80
+  maxiters=25
   r_rel_tol=1.0e-9
   r_abs_tol=1.5e-7
-  solver=superlu
+  solver=cg
 [end]
 
 [ics]
@@ -48,8 +48,8 @@ name=d ux uy
 [timestepping]
   type=be
   dt=1.0e-5
-  time=2.0e-1
-  adaptive=true
+  time=5.0e-5
+  adaptive=false
   optiters=3
   growthfactor=1.1
   cutfactor=0.85
@@ -58,7 +58,6 @@ name=d ux uy
 [end]
 
 [projection]
-name=reacforce_x reacforce_y
 scalarmate=vonMises
 rank2mate=stress strain
 [end]
@@ -66,16 +65,6 @@ rank2mate=stress strain
 [postprocess]
   [area]
     type=area
-    side=top
-  [end]
-  [fx]
-    type=projvariablesideintegral
-    projvariable=reacforce_x
-    side=top
-  [end]
-  [fy]
-    type=projvariablesideintegral
-    projvariable=reacforce_y
     side=top
   [end]
   [ux]

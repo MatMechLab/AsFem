@@ -7,9 +7,10 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
-//+++ Purpose: generate the GaussâLegendre points for the integration
+//+++ Author  : Yang Bai
+//+++ Date    : 2020.07.12
+//+++ Reviewer: Xiaoyuan @ 2021.11.21
+//+++ Purpose : generate the Gauss Legendre points for the integration
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FE/QPointGaussLegendre.h"
@@ -172,6 +173,7 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
     {
         // for the details, one is referred to:
         // http://www.ce.memphis.edu/7111/notes/class_notes/chapter_03d_slides.pdf
+        // Thanks for Xiaoyuan's comments, now, the weights are already divided by 2, the correct one.
         switch (GetQpOrder())
         {
         case 0:
@@ -181,7 +183,7 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
             _QpCoords.resize(_nQpPoints * (GetDim() + 1), 0.0);
             (*this)(1, 1) = 1.0 / 3.0;
             (*this)(1, 2) = 1.0 / 3.0;
-            (*this)(1, 0) = 1.0;
+            (*this)(1, 0) = 0.5;
             return;
         }
         case 2:
@@ -190,15 +192,15 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
             _QpCoords.resize(_nQpPoints * (GetDim() + 1), 0.0);
             (*this)(1, 1) = 2.0 / 3.0;
             (*this)(1, 2) = 1.0 / 6.0;
-            (*this)(1, 0) = 1.0 / 3.0;
+            (*this)(1, 0) = 1.0 / 6.0;
 
             (*this)(2, 1) = 1.0 / 6.0;
             (*this)(2, 2) = 2.0 / 3.0;
-            (*this)(2, 0) = 1.0 / 3.0;
+            (*this)(2, 0) = 1.0 / 6.0;
 
             (*this)(3, 1) = 1.0 / 6.0;
             (*this)(3, 2) = 1.0 / 6.0;
-            (*this)(3, 0) = 1.0 / 3.0;
+            (*this)(3, 0) = 1.0 / 6.0;
             return;
         }
         case 3:
@@ -206,21 +208,21 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
             _nQpPoints = 4;
             _QpCoords.resize(_nQpPoints * (GetDim() + 1), 0.0);
 
-            (*this)(1, 1) = double(1.5505102572168219018027159252941e-01L);
-            (*this)(1, 2) = double(1.7855872826361642311703513337422e-01L);
-            (*this)(1, 0) = double(1.5902069087198858469718450103758e-01L);
+            (*this)(1, 1) = 1.550510257216821e-01;
+            (*this)(1, 2) = 1.785587282636164e-01;
+            (*this)(1, 0) = 1.590206908719885e-01;
 
-            (*this)(2, 1) = double(6.4494897427831780981972840747059e-01L);
-            (*this)(2, 2) = double(7.5031110222608118177475598324603e-02L);
-            (*this)(2, 0) = double(9.0979309128011415302815498962418e-02L);
+            (*this)(2, 1) = 6.449489742783178e-01;
+            (*this)(2, 2) = 7.503111022260811e-02;
+            (*this)(2, 0) = 9.097930912801141e-02;
 
-            (*this)(3, 1) = double(1.5505102572168219018027159252941e-01L);
-            (*this)(3, 2) = double(6.6639024601470138670269327409637e-01L);
-            (*this)(3, 0) = double(1.5902069087198858469718450103758e-01L);
+            (*this)(3, 1) = 1.550510257216821e-01;
+            (*this)(3, 2) = 6.663902460147013e-01;
+            (*this)(3, 0) = 1.590206908719885e-01;
 
-            (*this)(4, 1) = double(6.4494897427831780981972840747059e-01L);
-            (*this)(4, 2) = double(2.8001991549907407200279599420481e-01L);
-            (*this)(4, 0) = double(9.0979309128011415302815498962418e-02L);
+            (*this)(4, 1) = 6.449489742783178e-01;
+            (*this)(4, 2) = 2.800199154990740e-01;
+            (*this)(4, 0) = 9.097930912801141e-02;
 
             return;
         }
@@ -231,27 +233,27 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
 
             (*this)(1, 1) = 0.0915762135;
             (*this)(1, 2) = 0.8168475730;
-            (*this)(1, 0) = 0.1099517437;
+            (*this)(1, 0) = 0.1099517437*0.5;
 
             (*this)(2, 1) = 0.0915762135;
             (*this)(2, 2) = 0.0915762135;
-            (*this)(2, 0) = 0.1099517437;
+            (*this)(2, 0) = 0.1099517437*0.5;
 
             (*this)(3, 1) = 0.8168475730;
             (*this)(3, 2) = 0.0915762135;
-            (*this)(3, 0) = 0.1099517437;
+            (*this)(3, 0) = 0.1099517437*0.5;
 
             (*this)(4, 1) = 0.4459484909;
             (*this)(4, 2) = 0.1081030182;
-            (*this)(4, 0) = 0.2233815897;
+            (*this)(4, 0) = 0.2233815897*0.5;
 
             (*this)(5, 1) = 0.4459484909;
             (*this)(5, 2) = 0.4459484909;
-            (*this)(5, 0) = 0.2233815897;
+            (*this)(5, 0) = 0.2233815897*0.5;
 
             (*this)(6, 1) = 0.1081030182;
             (*this)(6, 2) = 0.4459484909;
-            (*this)(6, 0) = 0.2233815897;
+            (*this)(6, 0) = 0.2233815897*0.5;
 
             return;
         }
@@ -262,31 +264,31 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
 
             (*this)(1, 1) = 1.0 / 3.0;
             (*this)(1, 2) = 1.0 / 3.0;
-            (*this)(1, 0) = 0.2250000000;
+            (*this)(1, 0) = 0.2250000000*0.5;
 
             (*this)(2, 1) = 0.1012865073;
             (*this)(2, 2) = 0.7974269854;
-            (*this)(2, 0) = 0.1259391805;
+            (*this)(2, 0) = 0.1259391805*0.5;
 
             (*this)(3, 1) = 0.1012865073;
             (*this)(3, 2) = 0.1012865073;
-            (*this)(3, 0) = 0.1259391805;
+            (*this)(3, 0) = 0.1259391805*0.5;
 
             (*this)(4, 1) = 0.7974269854;
             (*this)(4, 2) = 0.1012865073;
-            (*this)(4, 0) = 0.1259391805;
+            (*this)(4, 0) = 0.1259391805*0.5;
 
             (*this)(5, 1) = 0.0597158718;
             (*this)(5, 2) = 0.4701420641;
-            (*this)(5, 0) = 0.1323941528;
+            (*this)(5, 0) = 0.1323941528*0.5;
 
             (*this)(6, 1) = 0.4701420641;
             (*this)(6, 2) = 0.4701420641;
-            (*this)(6, 0) = 0.1323941528;
+            (*this)(6, 0) = 0.1323941528*0.5;
 
             (*this)(7, 1) = 0.4701420641;
             (*this)(7, 2) = 0.0597158718;
-            (*this)(7, 0) = 0.1323941528;
+            (*this)(7, 0) = 0.1323941528*0.5;
 
             return;
         }

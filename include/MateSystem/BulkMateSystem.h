@@ -44,9 +44,15 @@
 #include "MateSystem/LinearElasticMaterial.h"
 #include "MateSystem/IncrementSmallStrainMaterial.h"
 #include "MateSystem/NeoHookeanMaterial.h"
+#include "MateSystem/SaintVenantMaterial.h"
 #include "MateSystem/Plastic1DMaterial.h"
 #include "MateSystem/J2PlasticityMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
+#include "MateSystem/StressDecompositionMaterial.h"
+#include "MateSystem/NeoHookeanPFFractureMaterial.h"
+#include "MateSystem/KobayashiMaterial.h"
+#include "MateSystem/DiffNeoHookeanMaterial.h"
+#include "MateSystem/DiffusionFractureMaterial.h"
 //*** For user defined materials(UMAT)
 #include "MateSystem/User1Material.h"
 #include "MateSystem/User2Material.h"
@@ -71,9 +77,15 @@ class BulkMateSystem: public ConstPoissonMaterial,
                       public LinearElasticMaterial,
                       public IncrementSmallStrainMaterial,
                       public NeoHookeanMaterial,
+                      public SaintVenantMaterial,
                       public Plastic1DMaterial,
                       public J2PlasticityMaterial,
                       public MieheFractureMaterial,
+                      public StressDecompositionMaterial,
+                      public NeoHookeanPFFractureMaterial,
+                      public KobayashiMaterial,
+                      public DiffNeoHookeanMaterial,
+                      public DiffusionFractureMaterial,
                       public User1Material,
                       public User2Material,
                       public User3Material,

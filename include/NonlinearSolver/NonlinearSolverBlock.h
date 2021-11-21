@@ -23,6 +23,9 @@
 
 using namespace std;
 
+/**
+ * this class stores the basic information of [nonlinearsolver] block
+ */
 class NonlinearSolverBlock{
 public:
     NonlinearSolverBlock(){
@@ -31,9 +34,10 @@ public:
         _MaxIters=25;
         _RAbsTol=4.5e-8;
         _RRelTol=1.0e-9;
-        _STol=1.0e-16; // |dx|<|x|*stol
+        _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="petsc";
+        _LinearSolverName="gmres";
+        _CheckJacobian=false;
     }
 
     string              _SolverTypeName;
@@ -43,6 +47,7 @@ public:
     string _LinearSolverName;// for linear solver, i.e., ksp, mumps, superlu_dist
 
     string _PCTypeName;
+    bool _CheckJacobian=false;/**< if this is true, then SNES will compare your jacobian with the finite difference one */
 
     void Init(){
         _SolverTypeName="newton with line search";
@@ -50,8 +55,9 @@ public:
         _MaxIters=25;
         _RAbsTol=4.5e-8;
         _RRelTol=1.0e-9;
-        _STol=1.0e-16; // |dx|<|x|*stol
+        _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="petsc";
+        _LinearSolverName="gmres";
+        _CheckJacobian=false;
     }
 };

@@ -131,6 +131,50 @@ void RankFourTensor::SetFromSymmetric9(const vector<double> &vec){
         }
     }
 }
+void RankFourTensor::SetToOrthotropic(const vector<double> &vec){
+    if(vec.size()<9){
+        MessagePrinter::PrintErrorTxt("Orthotropic fill method for rank-4 tensor need at least 9 elements!!!");
+        MessagePrinter::AsFem_Exit();
+    }
+    //C1111  C1122  C1133   0     0     0
+    // 0     C2222  C2233   0     0     0
+    // 0      0     C3333   0     0     0
+    // 0      0      0     C2323  0     0
+    // 0      0      0      0    C1313  0
+    // 0      0      0      0     0    C1212
+    // C1111,C1122,C1133,C2222,C2233,C3333,C2323,C1313,C1212
+    // C11,  C12,  C13,  C22,  C23,  C33,  C44,  C55,  C66
+    SetToZeros();
+    (*this)(1,1,1,1)=vec[0];
+    (*this)(1,1,2,2)=vec[1];
+    (*this)(1,1,3,3)=vec[2];
+    (*this)(2,2,2,2)=vec[3];
+    (*this)(2,2,3,3)=vec[4];
+    (*this)(3,3,3,3)=vec[5];
+    (*this)(2,3,2,3)=vec[6];
+    (*this)(1,3,1,3)=vec[7];
+    (*this)(1,2,1,2)=vec[8];
+
+    // complete the symmetric part
+    for(int i=1;i<=_N;++i){
+        for(int j=1;j<=_N;++j){
+            for(int k=1;k<=_N;++k){
+                for(int l=1;l<=_N;++l){
+                    (*this)(i,j,l,k)=(*this)(i,j,k,l);
+
+                    (*this)(j,i,k,l)=(*this)(i,j,k,l);
+                    (*this)(j,i,l,k)=(*this)(i,j,k,l);
+
+                    (*this)(k,l,i,j)=(*this)(i,j,k,l);
+                    (*this)(k,l,j,i)=(*this)(i,j,k,l);
+
+                    (*this)(l,k,j,i)=(*this)(i,j,k,l);
+                    (*this)(l,k,i,j)=(*this)(i,j,k,l);
+                }
+            }
+        }
+    }
+}
 //*** for mixed case *
 RankFourTensor RankFourTensor::operator*(const RankTwoTensor &a) const{
     RankFourTensor temp(0.0);
@@ -174,14 +218,14 @@ RankFourTensor operator*(const RankTwoTensor &lhs,const RankFourTensor &a){
 }
 // for double dot operator
 RankTwoTensor RankFourTensor::DoubleDot(const RankTwoTensor &a) const{
-        // A_ijkl:B_lk = Cij
+        // A_ijkl:B_kl = Cij
         RankTwoTensor temp(0.0);
         for(int i=1;i<=_N;i++){
             for(int j=1;j<=_N;++j){
                 temp(i,j)=0.0;
                 for(int k=1;k<=_N;++k){
                     for(int l=1;l<=_N;++l){
-                        temp(i,j)+=(*this)(i,j,k,l)*a(l,k);
+                        temp(i,j)+=(*this)(i,j,k,l)*a(k,l);
                     }
                 }
             }

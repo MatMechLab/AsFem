@@ -44,7 +44,7 @@ void ICSystem::ApplySphereIC(const int &DofIndex, const vector<double> &Paramete
                 z=mesh.GetBulkMeshIthNodeJthCoord(j,3);
                 dist=sqrt((x-x0)*(x-x0)+(y-y0)*(y-y0)+(z-z0)*(z-z0));
                 if(dist<=r){
-                    iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                     VecSetValues(U,1,&iInd,&value,INSERT_VALUES);
                 }
             }

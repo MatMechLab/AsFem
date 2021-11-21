@@ -38,7 +38,7 @@ double Postprocess::ElementValuePostProcess(const int &elmtid,string variablenam
 
     for(i=1;i<=mesh.GetBulkMeshIthBulkElmtNodesNum(elmtid);i++){
         j=mesh.GetBulkMeshIthBulkElmtJthNodeID(elmtid,i);
-        iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+        iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
         VecGetValues(_Useq,1,&iInd,&val);
         elmtvalue+=val;
     }

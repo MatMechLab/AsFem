@@ -15,11 +15,11 @@
 #include "MateSystem/J2PlasticityMaterial.h"
 
 
-void J2PlasticityMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
+void J2PlasticityMaterial::InitMaterialProperties(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln, Materials &Mate){
     // Here we do not consider any initial internal strains, stress
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
 
-
+    Mate.Rank2Materials("stress").SetToZeros();
     Mate.Rank2Materials("plastic_strain").SetToZeros();
     Mate.ScalarMaterials("effective_plastic_strain")=0;
 
@@ -97,7 +97,7 @@ void J2PlasticityMaterial::ComputeAdmissibleStressState(const vector<double> &In
 
 }
 
-void J2PlasticityMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) {
+void J2PlasticityMaterial::ComputeMaterialProperties(const vector<double> &InputParams,const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,const Materials &MateOld,Materials &Mate) {
 
     //*********************************************************
     //*** get rid of unused warnings

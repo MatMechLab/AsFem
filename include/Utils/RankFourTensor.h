@@ -45,19 +45,19 @@ public:
 
     inline double GetIKjlComponent(const int &i,const int &k,
                                    const Vector3d &grad_test,
-                                   const Vector3d &grad_phi)const{
+                                   const Vector3d &grad_trial)const{
         // function to get K_ik=C_ijkl*N,j*N,l(for assemble local K by using the rank-4 tensor!!!)
         // where j is the index of trial fun
         //       i is the index of test fun
-        return ((*this)(i,1,k,1)*grad_phi(1)
-               +(*this)(i,1,k,2)*grad_phi(2)
-               +(*this)(i,1,k,3)*grad_phi(3))*grad_test(1)
-              +((*this)(i,2,k,1)*grad_phi(1)
-               +(*this)(i,2,k,2)*grad_phi(2)
-               +(*this)(i,2,k,3)*grad_phi(3))*grad_test(2)
-              +((*this)(i,3,k,1)*grad_phi(1)
-               +(*this)(i,3,k,2)*grad_phi(2)
-               +(*this)(i,3,k,3)*grad_phi(3))*grad_test(3);
+        return ((*this)(i,1,k,1)*grad_trial(1)
+               +(*this)(i,1,k,2)*grad_trial(2)
+               +(*this)(i,1,k,3)*grad_trial(3))*grad_test(1)
+              +((*this)(i,2,k,1)*grad_trial(1)
+               +(*this)(i,2,k,2)*grad_trial(2)
+               +(*this)(i,2,k,3)*grad_trial(3))*grad_test(2)
+              +((*this)(i,3,k,1)*grad_trial(1)
+               +(*this)(i,3,k,2)*grad_trial(2)
+               +(*this)(i,3,k,3)*grad_trial(3))*grad_test(3);
     }
     //********************************************
     //*** For operator overload
@@ -148,7 +148,7 @@ public:
     //*** for double dot operator
     RankTwoTensor DoubleDot(const RankTwoTensor &a) const;
     inline RankFourTensor DoubleDot(const RankFourTensor &a) const{
-        // C_ijkl=A_ijmn*B_nmkl
+        // C_ijkl=A_ijmn*B_mnkl
         RankFourTensor temp(0.0);
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
@@ -157,7 +157,7 @@ public:
                         temp(i,j,k,l)=0.0;
                         for(int m=1;m<=_N;++m){
                             for(int n=1;n<=_N;++n){
-                                temp(i,j,k,l)+=(*this)(i,j,m,n)*a(n,m,k,l);
+                                temp(i,j,k,l)+=(*this)(i,j,m,n)*a(m,n,k,l);
                             }
                         }
                     }
@@ -246,7 +246,7 @@ public:
     void SetFromEandNu(const double &E,const double &Nu);
     void SetFromKandG(const double &K,const double &G);
     void SetFromSymmetric9(const vector<double> &vec);
-
+    void SetToOrthotropic(const vector<double> &vec);
 
     //*****************************************
     //*** Print rank-4 tensor

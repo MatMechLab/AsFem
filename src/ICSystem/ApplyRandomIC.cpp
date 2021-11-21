@@ -39,7 +39,7 @@ void ICSystem::ApplyRandomIC(const int &DofIndex, const vector<double> &Paramete
             ee=mesh.GetBulkMeshIthElmtIDViaPhyName(domain,e+1);//global id
             for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(ee);++i){
                 j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
-                iInd=dofHandler.GetIthNodeJthDofIndex(j,DofIndex)-1;
+                iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,DofIndex)-1;
                 PetscRandomGetValue(_rnd,&value);
                 VecSetValues(U,1,&iInd,&value,INSERT_VALUES);
             }

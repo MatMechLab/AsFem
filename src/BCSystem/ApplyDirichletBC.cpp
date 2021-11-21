@@ -45,7 +45,7 @@ void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,
                 _elmtinfo.gpCoords(2)=mesh.GetBulkMeshIthNodeJthCoord(j,2);
                 _elmtinfo.gpCoords(3)=mesh.GetBulkMeshIthNodeJthCoord(j,3);
                 for(k=1;k<=static_cast<int>(dofindex.size());k++){
-                    iInd=dofHandler.GetIthNodeJthDofIndex(j,dofindex[k-1])-1;
+                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,dofindex[k-1])-1;
                     dofids[k-1]=iInd;
                 }
 

@@ -20,6 +20,7 @@ void NeoHookeanMaterial::InitMaterialProperties(const vector<double> &InputParam
     // Here we do not consider any initial internal strains, stress
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
 
+    Mate.Rank2Materials("stress").SetToZeros();
     Mate.Rank2Materials("F").SetToIdentity();
     Mate.Rank2Materials("PK1").SetToZeros();
     Mate.Rank2Materials("PK2").SetToZeros();
