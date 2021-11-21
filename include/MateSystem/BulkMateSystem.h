@@ -53,6 +53,7 @@
 #include "MateSystem/KobayashiMaterial.h"
 #include "MateSystem/DiffNeoHookeanMaterial.h"
 #include "MateSystem/DiffusionFractureMaterial.h"
+#include "MateSystem/LinearElasticCHMaterial.h"
 //*** For user defined materials(UMAT)
 #include "MateSystem/User1Material.h"
 #include "MateSystem/User2Material.h"
@@ -86,6 +87,7 @@ class BulkMateSystem: public ConstPoissonMaterial,
                       public KobayashiMaterial,
                       public DiffNeoHookeanMaterial,
                       public DiffusionFractureMaterial,
+                      public LinearElasticCHMaterial,
                       public User1Material,
                       public User2Material,
                       public User3Material,

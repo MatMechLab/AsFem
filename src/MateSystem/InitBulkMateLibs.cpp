@@ -68,6 +68,9 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::DIFFUSIONFRACTUREMATE:
             DiffusionFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::LINEARELASTICCHMATE:
+            LinearElasticCHMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
         //**************************************************************
         //*** for User-Defined-Materials (UMAT)
         //**************************************************************

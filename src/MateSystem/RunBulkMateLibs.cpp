@@ -68,6 +68,9 @@ void BulkMateSystem::RunBulkMateLibs(const MateType &imate, const int &mateindex
         case MateType::DIFFUSIONFRACTUREMATE:
             DiffusionFractureMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
             break;
+        case MateType::LINEARELASTICCHMATE:
+            LinearElasticCHMaterial::ComputeMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_MaterialsOld,_Materials);
+            break;
         //***************************************************
         //*** for user-defined-material
         //***************************************************
