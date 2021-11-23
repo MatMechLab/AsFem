@@ -210,6 +210,11 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::KOBAYASHIMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("linearelasticchmate")!=string::npos&&substr.length()==19){
+                        mateBlock._MateTypeName="linearelasticchmate";
+                        mateBlock._MateType=MateType::LINEARELASTICCHMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("user")!=string::npos){
                         number=StringUtils::SplitStrNum(substr);
                         if(number.size()<1){

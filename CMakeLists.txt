@@ -262,6 +262,9 @@ set(src ${src} src/ElmtSystem/StressDiffusionElmt.cpp)
 ### For diffusion fracture element
 set(inc ${inc} include/ElmtSystem/DiffusionFractureElmt.h)
 set(src ${src} src/ElmtSystem/DiffusionFractureElmt.cpp)
+### For mechanically coupled CahnHilliard element
+set(inc ${inc} include/ElmtSystem/MechanicsCahnHilliardElmt.h)
+set(src ${src} src/ElmtSystem/MechanicsCahnHilliardElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -390,6 +393,9 @@ set(src ${src} src/MateSystem/KobayashiMaterial.cpp)
 ### for diffusion coupled neohookean
 set(inc ${inc} include/MateSystem/DiffNeoHookeanMaterial.h)
 set(src ${src} src/MateSystem/DiffNeoHookeanMaterial.cpp)
+### for linear elastic coupled cahn-hilliard material
+set(inc ${inc} include/MateSystem/LinearElasticCHMaterial.h)
+set(src ${src} src/MateSystem/LinearElasticCHMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
