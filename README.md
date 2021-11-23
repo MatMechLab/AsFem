@@ -9,7 +9,7 @@ For '**simple**', we try to make the finite element programming and modeling, as
 ```
 git clone https://github.com/M3Group/AsFem.git
 ```
-For the detailed usage, one is referred to [AsFem Page](https://yangbai90.github.io/AsFem/) .
+For the detailed usage, one is referred to [AsFem Page](https://m3group.github.io/AsFem/) .
 
 If one has access issues, the alternative link could be [AsFem-Gitee](https://gitee.com/m3group/AsFem.git), the git clone can be done via:
 ```
@@ -18,7 +18,7 @@ git clone https://gitee.com/m3group/AsFem.git
 
 
 ## Installation
-The installation details of AsFem can be found here [AsFem-Installation](https://yangbai90.github.io/AsFem/install) .
+The installation details of AsFem can be found here [AsFem-Installation](https://m3group.github.io/AsFem/install/) .
 
 After you've installed your PETSc (PETSC_DIR) and MPI (MPI_DIR), all you have to do is:
 ```
@@ -34,7 +34,7 @@ spinodal-decomposition              |  double-notch failure
 ![](figures/CahnHilliard.gif)      |  ![](figures/DoubleNotch.gif)
 
 # Tutorial
-The tutorial is avialable here https://yangbai90.github.io/AsFem/Tutorial/step-0/
+The tutorial is avialable here https://m3group.github.io/AsFem/Tutorial/step-0/
 
 For Chinese users, the video lecture is available on bilibili, please see [AsFem-Lecture](https://space.bilibili.com/100272198/channel/detail?cid=193605).
 
