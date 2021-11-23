@@ -7,13 +7,13 @@ For '**simple**', we try to make the finite element programming and modeling, as
 
 # Download
 ```
-git clone https://github.com/yangbai90/AsFem.git
+git clone https://github.com/M3Group/AsFem.git
 ```
 For the detailed usage, one is referred to [AsFem Page](https://yangbai90.github.io/AsFem/) .
 
-If one has access issues, the alternative link could be [AsFem-Gitee](https://gitee.com/yangbai_ddbc/AsFem), the git clone can be done via:
+If one has access issues, the alternative link could be [AsFem-Gitee](https://gitee.com/m3group/AsFem.git), the git clone can be done via:
 ```
-git clone https://gitee.com/yangbai_ddbc/AsFem.git
+git clone https://gitee.com/m3group/AsFem.git
 ```
 
 
