@@ -58,7 +58,7 @@ void NonlinearSolver::Init(){
     SNESGetKSP(_snes,&_ksp);
     KSPGMRESSetRestart(_ksp,1800);
     KSPGetPC(_ksp,&_pc);
-    PCFactorSetMatSolverType(_pc,MATSOLVERPETSC);
+    //PCFactorSetMatSolverType(_pc,MATSOLVERPETSC); // this line may be not so necessary!
     
 
     if(_LinearSolverName=="gmres"){
@@ -104,8 +104,16 @@ void NonlinearSolver::Init(){
     //*** for different type of nonlinear methods
     //**************************************************
     SNESSetType(_snes,SNESNEWTONLS);// our default method
-    if(_SolverType==NonlinearSolverType::NEWTON||_SolverType==NonlinearSolverType::NEWTONLS){
+    if(_SolverType==NonlinearSolverType::NEWTON || _SolverType==NonlinearSolverType::NEWTONLS){
         SNESSetType(_snes,SNESNEWTONLS);
+        SNESGetLineSearch(_snes,&_sneslinesearch);
+        SNESLineSearchSetType(_sneslinesearch,SNESLINESEARCHBT);
+        SNESLineSearchSetOrder(_sneslinesearch,2);
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONSECANT){
+        SNESSetType(_snes,SNESNEWTONLS);
+        SNESGetLineSearch(_snes,&_sneslinesearch);
+        SNESLineSearchSetType(_sneslinesearch,SNESLINESEARCHL2);
     }
     else if(_SolverType==NonlinearSolverType::NEWTONTR){
         SNESSetType(_snes,SNESNEWTONTR);

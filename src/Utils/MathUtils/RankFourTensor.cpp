@@ -182,7 +182,6 @@ RankFourTensor RankFourTensor::operator*(const RankTwoTensor &a) const{
         for(int j=1;j<=_N;j++){
             for(int k=1;k<=_N;k++){
                 for(int l=1;l<=_N;l++){
-                    temp(i,j,k,l)=0.0;
                     for(int m=1;m<=_N;m++){
                         temp(i,j,k,l)+=(*this)(i,j,k,m)*a(m,l);
                     }
@@ -206,7 +205,6 @@ RankFourTensor operator*(const RankTwoTensor &lhs,const RankFourTensor &a){
         for(int j=1;j<=a._N;++j){
             for(int k=1;k<=a._N;++k){
                 for(int l=1;l<=a._N;++l){
-                    temp(i,j,k,l)=0.0;
                     for(int p=1;p<=a._N;++p){
                         temp(i,j,k,l)+=lhs(i,p)*a(p,j,k,l);
                     }
@@ -218,20 +216,19 @@ RankFourTensor operator*(const RankTwoTensor &lhs,const RankFourTensor &a){
 }
 // for double dot operator
 RankTwoTensor RankFourTensor::DoubleDot(const RankTwoTensor &a) const{
-        // A_ijkl:B_kl = Cij
-        RankTwoTensor temp(0.0);
-        for(int i=1;i<=_N;i++){
-            for(int j=1;j<=_N;++j){
-                temp(i,j)=0.0;
-                for(int k=1;k<=_N;++k){
-                    for(int l=1;l<=_N;++l){
-                        temp(i,j)+=(*this)(i,j,k,l)*a(k,l);
-                    }
+    // A_ijkl:B_kl = Cij
+    RankTwoTensor temp(0.0);
+    for(int i=1;i<=_N;i++){
+        for(int j=1;j<=_N;j++){
+            for(int k=1;k<=_N;k++){
+                for(int l=1;l<=_N;l++){
+                    temp(i,j)+=(*this)(i,j,k,l)*a(k,l);
                 }
             }
         }
-        return temp;
     }
+    return temp;
+}
 //**************************************************
 //*** For rotation of a rank-4 tensor by the rank-2
 //*** rotation tensor
@@ -243,7 +240,6 @@ RankFourTensor RankFourTensor::Rotate(const RankTwoTensor &rotate) const{
         for(int j=1;j<=3;j++){
             for(int k=1;k<=3;k++){
                 for(int l=1;l<=3;l++){
-                    temp(i,j,k,l)=0.0;
                     for(int m=1;m<=3;m++){
                         for(int n=1;n<=3;n++){
                             for(int p=1;p<=3;p++){

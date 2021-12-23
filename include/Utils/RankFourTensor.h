@@ -154,7 +154,6 @@ public:
             for(int j=1;j<=_N;++j){
                 for(int k=1;k<=_N;++k){
                     for(int l=1;l<=_N;++l){
-                        temp(i,j,k,l)=0.0;
                         for(int m=1;m<=_N;++m){
                             for(int n=1;n<=_N;++n){
                                 temp(i,j,k,l)+=(*this)(i,j,m,n)*a(m,n,k,l);

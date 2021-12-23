@@ -17,6 +17,7 @@
 enum class NonlinearSolverType{
     NEWTON,
     NEWTONLS,
+    NEWTONSECANT,
     NEWTONTR,
     NEWTONCG,
     NEWTONGMRES,

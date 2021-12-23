@@ -71,6 +71,12 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 _nonlinearSolverBlock._SolverTypeName="newton with line search";
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONLS;
             }
+            else if((substr.find("newtonsecant")!=string::npos||substr.find("NEWTONSECANT")!=string::npos)&&
+               substr.length()==12){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="newton with secant line search";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONSECANT;
+            }
             else if((substr.find("newtontr")!=string::npos||substr.find("NEWTONTR")!=string::npos)&&
                substr.length()==8){
                 HasType=true;

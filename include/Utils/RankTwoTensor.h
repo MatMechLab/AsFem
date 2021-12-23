@@ -454,6 +454,16 @@ public:
         for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
         return sqrt(sum);
     }
+    
+    /**
+     * return the \f$L_{2}\f$ norm^2 of current rank-2 tensor, result is \f$\sqrt{\sum a_{ij}^{2}}\f$
+     */
+    inline double Norm2() const{
+        double sum=0.0;
+        for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
+        return sum;
+    }
+
     //*** for the different invariants of stress(strain)
     /**
      * return the first invariant of current rank-2 tensor, namely, \f$I_{1}\f$.

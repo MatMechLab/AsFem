@@ -138,10 +138,9 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
 //***************************************************************
 //*** here we setup the subroutine for jacobian 
 //***************************************************************
-PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
+PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
-    int i;
-
+    
     user->_feSystem->ResetMaxAMatrixValue();
     user->_bcSystem->ApplyInitialBC(*user->_mesh,*user->_dofHandler,
                                    user->_fectrlinfo->t+user->_fectrlinfo->dt,
@@ -211,18 +210,22 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
                         *user->_mesh,*user->_dofHandler,*user->_fe,
                         *user->_elmtSystem,*user->_mateSystem,
                         *user->_solutionSystem,
-                        A,user->_equationSystem->_RHS);
+                        B,user->_equationSystem->_RHS);
     
     user->_bcSystem->ApplyBC(*user->_mesh,*user->_dofHandler,*user->_fe,
                             FECalcType::ComputeJacobian,
                             user->_fectrlinfo->t+user->_fectrlinfo->dt,
                             user->_fectrlinfo->ctan,
                             U,user->_solutionSystem->_V,
-                            A,user->_equationSystem->_RHS);
-//    MatView(A,PETSC_VIEWER_STDOUT_WORLD);
+                            B,user->_equationSystem->_RHS);
 
-    MatGetSize(B,&i,&i);
+    int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);
+
+    if(Jac!=B){
+        MatAssemblyBegin(Jac,MAT_FINAL_ASSEMBLY);
+        MatAssemblyEnd(Jac,MAT_FINAL_ASSEMBLY);
+    }
 
     return 0;
 }
