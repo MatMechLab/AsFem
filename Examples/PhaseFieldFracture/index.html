@@ -13,7 +13,7 @@
     
     
       
-        <title>Step 4 - Solve the diffusion problem - AsFem</title>
+        <title>Phasefield fracture model in small strain case - AsFem</title>
       
     
     
@@ -91,7 +91,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Step 4 - Solve the diffusion problem
+              Phasefield fracture model in small strain case
             
           </span>
         </div>
@@ -220,14 +220,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
       
       
@@ -250,7 +248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-0/" class="md-nav__link">
+      <a href="../../Tutorial/step-0/" class="md-nav__link">
         Step-0
       </a>
     </li>
@@ -264,7 +262,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-1/" class="md-nav__link">
+      <a href="../../Tutorial/step-1/" class="md-nav__link">
         Step-1
       </a>
     </li>
@@ -278,7 +276,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-2/" class="md-nav__link">
+      <a href="../../Tutorial/step-2/" class="md-nav__link">
         Step-2
       </a>
     </li>
@@ -292,7 +290,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-3/" class="md-nav__link">
+      <a href="../../Tutorial/step-3/" class="md-nav__link">
         Step-3
       </a>
     </li>
@@ -304,21 +302,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../Tutorial/step-4/" class="md-nav__link">
         Step-4
       </a>
-      
     </li>
   
 
@@ -330,7 +318,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-5/" class="md-nav__link">
+      <a href="../../Tutorial/step-5/" class="md-nav__link">
         Step-5
       </a>
     </li>
@@ -344,7 +332,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-6/" class="md-nav__link">
+      <a href="../../Tutorial/step-6/" class="md-nav__link">
         Step-6
       </a>
     </li>
@@ -358,7 +346,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-7/" class="md-nav__link">
+      <a href="../../Tutorial/step-7/" class="md-nav__link">
         Step-7
       </a>
     </li>
@@ -378,12 +366,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
       
       
       
@@ -404,12 +394,14 @@
               
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" checked>
       
       
       
@@ -430,11 +422,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../Examples/PhaseFieldFracture/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Fracture
       </a>
+      
     </li>
   
 
@@ -674,143 +676,276 @@
                 
 
 <h1 id="introduction">Introduction</h1>
-<p>In this step, we will try to solve the linear diffusion problem.</p>
-<h1 id="the-diffusion-equation">The diffusion equation</h1>
-<p>The problem we want to solve is the diffusion equation that reads as follows:
+<p>In this example, we will try to solve the phase-field fracture model which is implemented based on Prof. Miehe's <a href="https://doi.org/10.1002/nme.2861">Model</a>.</p>
+<h1 id="model">Model</h1>
+<p>In this model, the damage phase is described by an order parameter <span class="arithmatex">\(d\)</span> which varies smoothly from 0 (undamaged case) to 1 (fully damaged case). Therefore, the system free energy can be read as follows:
 $$
 \begin{equation}
-\frac{\partial c}{\partial t}=\nabla\cdot(D\nabla c)
-\label{eq:diffusion-eq}
+\psi=\psi_{d}+\psi_{e}
+\label{eq:psi}
 \tag{1}
 \end{equation}
 $$
-where <span class="arithmatex">\(c\)</span> denotes the concentration of the species. <span class="arithmatex">\(D\)</span> is the diffusion coefficient</p>
-<p>The related boundary conditions can be read as:
+where <span class="arithmatex">\(g(d)\)</span> is the degradation function, and the damage phase free energy <span class="arithmatex">\(\psi_{d}\)</span> is given as follows:
 $$
 \begin{equation}
--D\nabla c\cdot\vec{n}=-0.5\qquad\mathrm{on}\quad\partial\Omega_{N}
-\label{eq:flux}
+\psi_{d}=\mathcal{G}_{c}(\frac{d^{2}}{2l}+\frac{l}{2}\lvert\nabla d\rvert^{2})
+\label{eq:psi-d}
 \tag{2}
 \end{equation}
 $$
-where the flux (<em>Neumann</em>) boundary condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>.</p>
-<h1 id="define-the-mesh">Define the mesh</h1>
-<p>For our calculation, we use a cubic domain here, and then the <code>[mesh]</code> block can be given as:</p>
+with <span class="arithmatex">\(\mathcal{G}_{c}\)</span> and <span class="arithmatex">\(l\)</span> being the critical energy release rate and the length scale parameter, respectively.</p>
+<p>The elastic free energy can be defined as follows:
+$$
+\begin{equation}
+\psi_{e}=g(d)\psi_{e}^{+}+\psi_{e}^{-}
+\label{eq:psi-e}
+\tag{3}
+\end{equation}
+$$
+where
+$$
+\begin{equation}
+\psi_{e}^{+}=\frac{\lambda}{2}\langle\mathrm{tr}(\mathbf{\varepsilon})\rangle_{+}^{2}+\mu \mathrm{tr}[\mathbf{\varepsilon}_{+}^{2}]
+\label{eq:psi-e-positive}
+\tag{4}
+\end{equation}
+$$</p>
+<p>and
+$$
+\begin{equation}
+\psi_{e}^{-}=\frac{\lambda}{2}\langle\mathrm{tr}(\mathbf{\varepsilon})\rangle_{-}^{2}+\mu \mathrm{tr}[\mathbf{\varepsilon}_{-}^{2}]
+\label{eq:psi-e-negative}
+\tag{5}
+\end{equation}
+$$</p>
+<p>Here, <span class="arithmatex">\(\lambda\)</span> and <span class="arithmatex">\(\mu\)</span> are the lame constant and shear moduli, respectively. The positive and negative bracket operators are given as follows:
+$$
+\begin{equation}
+\langle x\rangle_{+}=\frac{x+|x|}{2}\ ,\quad
+\langle x\rangle_{-}=\frac{x-|x|}{2}
+\label{eq:bracket}
+\tag{6}
+\end{equation}
+$$</p>
+<p>Thus the stress can be defined as follows:
+$$
+\begin{equation}
+\mathbf{\sigma}=\frac{\partial\psi}{\partial\mathbf{\varepsilon}}
+=g(d)[\lambda\langle\mathrm{tr}[\mathbf{\varepsilon}]\rangle_{+}\mathbf{I}+2\mu\mathbf{\varepsilon}_{+}]+[\lambda\langle\mathrm{tr}[\mathbf{\varepsilon}]\rangle_{-}\mathbf{I}+2\mu\mathbf{\varepsilon}_{-}]
+\label{eq:stress}
+\tag{7}
+\end{equation}
+$$</p>
+<p>The governing equaitons for this model are list below:
+$$
+\begin{equation}
+\mathbf{\nabla}\cdot\mathbf{\sigma}=\mathbf{0}
+\label{eq:stress-equilibrium}
+\tag{8}
+\end{equation}
+$$
+and
+$$
+\begin{equation}
+\eta\frac{\partial d}{\partial t}=2(1-d)\mathcal{H}-\frac{\mathcal{G}_{c}}{l}(d-l^{2}\Delta d)
+\label{eq:damage-equation}
+\tag{9}
+\end{equation}
+$$
+where <span class="arithmatex">\(\eta\)</span> is the viscosity coefficient. The history variable <span class="arithmatex">\(\mathcal{H}\)</span> is calculated as follows:</p>
+<div class="arithmatex">\[
+\begin{equation}
+\mathcal{H}=
+\begin{cases}
+\psi_{e}^{+} &amp; \mathrm{if}\quad\psi_{e}^{+}&gt;\mathcal{H}_{n}\\
+\mathcal{H}_{n} &amp;\mathrm{otherwise}
+\end{cases}
+\label{eq:hist}
+\tag{10}
+\end{equation}
+\]</div>
+<h1 id="input-file">Input file</h1>
+<p>In the example/pffracture folder, there are several <code>geo</code> file, which can be used to generate the <code>msh</code> mesh file for your simulation. Before we start, you should have the mesh file.</p>
+<h2 id="mesh">Mesh</h2>
+<p>In this case, we'll import the mesh from <code>gmsh</code>, which can be done as follows:</p>
 <pre><code>[mesh]
-  type=asfem
-  dim=3
-  xmax=1.0
-  ymax=1.0
-  zmax=10.0
-  nx=5
-  ny=5
-  nz=50
-  meshtype=hex8
+  type=gmsh
+  file=sample.msh
 [end]
 </code></pre>
-<p>where a <span class="arithmatex">\(1\times1\times10\)</span> mesh is defined.</p>
-<h1 id="define-the-dofs">Define the DoFs</h1>
-<p>The DoFs used in this step is the concentration, namely <span class="arithmatex">\(c\)</span>. Then the <code>[dofs]</code> block can be read as:</p>
+<p>Here, you should use <a href="https://gmsh.info/">gmsh</a> to generate the related msh file!</p>
+<h2 id="dofs">Dofs</h2>
+<p>Next, you need to define the dofs, it should be <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, and <span class="arithmatex">\(u_{y}\)</span> for 2d case, and <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, <span class="arithmatex">\(u_{y}\)</span>, and <span class="arithmatex">\(u_{z}\)</span> for 3d case. The <code>[dofs]</code> block should looks like:</p>
 <pre><code>[dofs]
-name=c
+name=d ux uy
 [end]
 </code></pre>
-<h1 id="element-for-the-diffusion-equation">Element for the diffusion equation</h1>
-<p>The model in Eq.<span class="arithmatex">\(\eqref{eq:diffusion-eq}\)</span> can be applied in the following lines</p>
+<p>or</p>
+<pre><code>[dofs]
+name=d ux uy uz
+[end]
+</code></pre>
+<p>Here, the sequence of your <code>dofs</code> name matters !!!</p>
+<h2 id="elmts-and-mates">[elmts] and [mates]</h2>
+<p>The governings in Eq.<span class="arithmatex">\(\eqref{eq:stress-equilibrium}\)</span> and Eq.<span class="arithmatex">\(\eqref{eq:damage-equation}\)</span> can be implemented by using the following <code>elmts</code>:</p>
 <pre><code>[elmts]
-  [mydiffusion]
-    type=diffusion
-    dofs=c
-    mate=mymate
+  [myfracture]
+    type=miehefrac
+    dofs=d ux uy
+    mate=myfracmate
   [end]
 [end]
 </code></pre>
-<p>where <code>type=diffusion</code> option specifies the element we want to use for the diffusion problem. Moreover, we will use the constant diffusivity material property, therefore, the related material definition will be given in <code>mymate</code> block.</p>
-<h2 id="constant-diffusivity-material-property">Constant diffusivity material property</h2>
-<p>Via the following lines in your <code>[mates]</code> block, the constant diffusivity <span class="arithmatex">\(D\)</span> can be easily defined:</p>
+<p>where <code>type=miehefrac</code> tells AsFem, our users want to call the phase-field fracture model.</p>
+<p>For the material calculation, as mentioned before, several parameters are required, i.e., <span class="arithmatex">\(E\)</span>, <span class="arithmatex">\(\nu\)</span> for the Youngs modulus and poisson ration, <span class="arithmatex">\(\eta\)</span>, <span class="arithmatex">\(\mathcal{G}_{c}\)</span>, and <span class="arithmatex">\(l\)</span> for the damage evolution. Therefore, the related <code>material</code> block can be given as follows:</p>
 <pre><code>[mates]
-  [mymate]
-    type=constdiffusion
-    params=1.0e1
+  [myfracmate]
+    type=miehefracmate
+    params=121.15 80.77 2.7e-3 0.012  1.0e-6   
+    //     lambda mu    Gc     L      viscosity
   [end]
 [end]
 </code></pre>
-<p>where <code>type=constdiffusion</code> specifies constant diffusivity material type. <code>params=</code> defines the diffusivity <span class="arithmatex">\(D\)</span> (<span class="arithmatex">\(D=10.0\)</span>).</p>
-<h1 id="boundary-conditions">Boundary conditions</h1>
-<p>The boundary conditions, as mentioned in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>, can be applied via the <code>[bcs]</code> block. In our case, only the <em>flux</em> boundary (<strong>Neumann</strong>) condition needs to be considered:</p>
+<p>It should be mentioned that, the de-coupled or staggered solution can be done easily by introducing the <code>usehist</code> parameter as follows:</p>
+<pre><code>[mates]
+  [myfracmate]
+    type=miehefracmate
+    params=121.15 80.77 2.7e-3 0.012  1.0e-6     1
+    //     lambda mu    Gc     L      viscosity  usehist
+  [end]
+[end]
+</code></pre>
+<p>then, your <span class="arithmatex">\(\mathcal{H}\)</span> will always use the <span class="arithmatex">\(\mathcal{H}_{old}\)</span> value from previous step.</p>
+<h2 id="boundary-condition">boundary condition</h2>
+<p>For the tensile test, one can use the following <code>bcs</code>:</p>
 <pre><code>[bcs]
-  [flux]
-    type=neumann
-    dof=c
-    value=-0.5
-    boundary=front
+  [fixux]
+    type=dirichlet
+    dofs=ux
+    value=0.0
+    boundary=left right top bottom
+  [end]
+  [fixuy]
+    type=dirichlet
+    dofs=uy
+    value=0.0
+    boundary=bottom
+  [end]
+  [load]
+    type=dirichlet
+    dofs=uy
+    value=1.0*t
+    boundary=top
   [end]
 [end]
 </code></pre>
-<p>where we apply a constant flux to the front surface of our cubic domain.</p>
-<h1 id="transient-analysis">Transient analysis</h1>
-<p>Again, we need a <code>[job]</code> block to start the FEM calculation, which can be given as follows:</p>
-<pre><code>[job]
-  type=transient
-  debug=dep
+<p>and for the shear failure test, one can use:</p>
+<pre><code>[bcs]
+  [fixux]
+    type=dirichlet
+    dofs=ux
+    value=0.0
+    boundary=bottom
+  [end]
+  [fixuy]
+    type=dirichlet
+    dofs=uy
+    value=0.0
+    boundary=bottom left right top
+  [end]
+  [load]
+    type=dirichlet
+    dofs=ux
+    value=1.0*t
+    boundary=top
+  [end]
 [end]
 </code></pre>
-<h1 id="timestepping">Timestepping</h1>
-<p>Wait for a minute, where are the settings for the transient analysis, for instance the initial <span class="arithmatex">\(\Delta_t\)</span> and the final time? Noooo worries, the <code>[timestepping]</code> block can help you to set the different time stepping method as well as the <span class="arithmatex">\(\Delta_t\)</span>, <span class="arithmatex">\(T_{\mathrm{final}}\)</span> stuffs. The layout of this block looks like below:</p>
-<pre><code>[timestepping]
-  type=be
-  dt=1.0e-3
-  time=1.0e0
-[end]
-</code></pre>
-<p>where <code>type=be</code> specifies the <em>Backward-Euler</em> (be) method for implicit time integration. It should be mentioned that, AsFem only support the implicit method, the explicit method like <em>Forward-Euler</em> (fe) is not supported! <code>dt=1.0e-3</code> defines that the initial <span class="arithmatex">\(\Delta_{t}\)</span> is <span class="arithmatex">\(10^{-3}\)</span>, while <code>time=1.0e0</code> means the final time is 1.0.</p>
-<p>Done!</p>
+<p>Done? Yulp, all the things is done!</p>
 <h1 id="run-it-in-asfem">Run it in AsFem</h1>
-<p>Now, let's try your fourth example in AsFem. You can create a new text file and name it as step3.i or whatever you like. Then copy the following lines into your input file:</p>
+<p>Now, let's try your first phase-field fracture model in AsFem. You can create a new text file and name it as tensile.i or whatever you like. Then copy the following lines into your input file:</p>
 <pre><code>[mesh]
-  type=asfem
-  dim=3
-  xmax=1.0
-  ymax=1.0
-  zmax=10.0
-  nx=5
-  ny=5
-  nz=50
-  meshtype=hex8
+  type=gmsh
+  file=sample.msh
 [end]
 
+
 [dofs]
-name=c
+name=d ux uy
 [end]
 
 [elmts]
-  [mydiffusion]
-    type=diffusion
-    dofs=c
-    mate=mymate
+  [myfracture]
+    type=miehefrac
+    dofs=d ux uy
+    mate=myfracmate
   [end]
 [end]
 
 [mates]
-  [mymate]
-    type=constdiffusion
-    params=1.0e1
+  [myfracmate]
+    type=miehefracmate
+    params=121.15 80.77 2.7e-3 0.012 1.0e-6
+    //     lambda mu    Gc     L     viscosity
   [end]
 [end]
 
-[bcs]
-  [flux]
-    type=neumann
-    dof=c
-    value=-0.5
-    boundary=front
+[nonlinearsolver]
+  type=nr
+  maxiters=15
+  r_rel_tol=1.0e-10
+  r_abs_tol=5.5e-7
+[end]
+
+[ics]
+  [constd]
+    type=const
+    dof=d
+    params=0.0
   [end]
+[end]
+
+[output]
+  type=vtu
+  interval=20
 [end]
 
 [timestepping]
   type=be
-  dt=1.0e-3
-  time=1.0e0
+  dt=1.0e-5
+  time=5.0e-5
+  adaptive=false
+  optiters=3
+  growthfactor=1.1
+  cutfactor=0.85
+  dtmin=1.0e-12
+  dtmax=1.0e-4
+[end]
+
+[projection]
+scalarmate=vonMises
+[end]
+
+[bcs]
+  [fixux]
+    type=dirichlet
+    dofs=ux
+    value=0.0
+    boundary=left right top bottom
+  [end]
+  [fixuy]
+    type=dirichlet
+    dofs=uy
+    value=0.0
+    boundary=bottom
+  [end]
+  [load]
+    type=dirichlet
+    dofs=uy
+    value=1.0*t
+    boundary=top
+  [end]
 [end]
 
 [job]
@@ -818,27 +953,10 @@ name=c
   debug=dep
 [end]
 </code></pre>
-<p>You can also find the complete input file in <code>examples/tutorial/step4.i</code>.</p>
+<p>You can also find the complete input file in <code>examples/pffracture/miehe-tensile.i</code>.</p>
 <p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
-<img alt="" src="step4.jpeg" /></p>
-<h1 id="the-outputs">The outputs</h1>
-<p>You may see the following outputs from your terminal:</p>
-<pre><code>***-----------------------------------------------------------------------***
-***   SNES solver:iters=  0,|R|= 1.4306e-02,|dU|= 3.0700e+00,dt=1.00e-03  ***
-***   SNES solver:iters=  1,|R|= 1.3957e-15,|dU|= 2.4301e-03,dt=1.00e-03  ***
-*** Time step=     999, time=  9.99000e-01, dt=  1.00000e-03              ***
-*** Write result to step4-00000999.vtu                                    ***
-***-----------------------------------------------------------------------***
-***   SNES solver:iters=  0,|R|= 1.4303e-02,|dU|= 3.0723e+00,dt=1.00e-03  ***
-***   SNES solver:iters=  1,|R|= 1.3530e-15,|dU|= 2.4296e-03,dt=1.00e-03  ***
-*** Time step=    1000, time=  1.00000e+00, dt=  1.00000e-03              ***
-*** Write result to step4-00001000.vtu                                    ***
-***-----------------------------------------------------------------------***
-*** Time step=      -1, time=  1.00000e+00, dt=  1.00000e-03              ***
-*** Write result to step4-000000-1.vtu                                    ***
-***-----------------------------------------------------------------------***
-</code></pre>
-<p>One can see that, when the current time <span class="arithmatex">\(t\)</span> reaches <span class="arithmatex">\(1.0\)</span>, the related output file name is <code>step4-00001000.vtu</code> (for the 1000-th step). Moreover, AsFem will also give the final output <code>step4-000000-1.vtu</code>, which could be very helpful when <span class="arithmatex">\(t_{\mathrm{old}}+\Delta_{t}&gt;T_{\mathrm{final}}\)</span>.</p>
+<img alt="shear" src="shear.jpeg" /></p>
+<p><img alt="tensile" src="tensile.jpeg" /></p>
 
               
             </article>
@@ -852,7 +970,7 @@ name=c
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../step-3/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-3" rel="prev">
+        <a href="../../Tutorial/step-7/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-7" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -861,20 +979,20 @@ name=c
               <span class="md-footer__direction">
                 Previous
               </span>
-              Step-3
+              Step-7
             </div>
           </div>
         </a>
       
       
         
-        <a href="../step-5/" class="md-footer__link md-footer__link--next" aria-label="Next: Step-5" rel="next">
+        <a href="../../Document/block-mesh/" class="md-footer__link md-footer__link--next" aria-label="Next: mesh block" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Step-5
+              mesh block
             </div>
           </div>
           <div class="md-footer__button md-icon">
