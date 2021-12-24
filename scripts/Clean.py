@@ -14,7 +14,7 @@ print('We are in folder:%s\n'%(currentdir))
 
 ASFEM=0;cmakefolder=0;ideafolder=0;o=0;vtu=0
 metafile=0;csvfile=0;valgrind=0;swp=0
-cmake=0
+cmake=0;cache=0
 for subdir,dirs,files in os.walk(currentdir):
     if ('external/eigen' in subdir) or ('.git' in subdir) or ('figures' in subdir):
         continue
@@ -99,6 +99,16 @@ for subdir,dirs,files in os.walk(currentdir):
             except:
                 if(not IdeaRemove):
                     print('%s is not here'%(dir))
+        elif '.cache' in dir:
+            try:
+                cache+=1
+                removepath=subdir+'/'+dir
+                print('remove folder: ',dir)
+                shutil.rmtree(removepath)
+                CacheRemove=True
+            except:
+                if(not CacheRemove):
+                    print('%s is not here'%(dir))
         elif '.clangd' in dir:
             try:
                 ideafolder+=1
@@ -138,5 +148,6 @@ print('Remove %4d .swp files!'%(swp))
 print('Remove %4d valgrind file!'%(valgrind))
 print('Remove %4d meta files!'%(metafile))
 print('Remove %4d .idea folder!'%(ideafolder))
+print('Remove %4d cache files!'%(cache))
 print('Remove %4d cmake file!'%(cmake))
 print('Remove %4d cmake folder!'%(cmakefolder))

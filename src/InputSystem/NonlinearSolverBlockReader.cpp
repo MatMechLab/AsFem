@@ -65,6 +65,12 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 _nonlinearSolverBlock._SolverTypeName="newton-raphson";
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTON;
             }
+            else if((substr.find("newton")!=string::npos||substr.find("NEWTON")!=string::npos)&&
+               substr.length()==6){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="newton-raphson";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTON;
+            }
             else if((substr.find("newtonls")!=string::npos||substr.find("NEWTONLS")!=string::npos)&&
                substr.length()==8){
                 HasType=true;
