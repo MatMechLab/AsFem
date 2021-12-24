@@ -19,17 +19,17 @@ name=d ux uy uz
 [mates]
   [myfracmate]
     type=neohookeanpffracturemate
-    params=121.15 80.77 2.7e-3 0.015 1.0e-6
-    //     lambda mu    Gc     L     viscosity
+    params=121.15 80.77 2.7e-3 0.0125  1.0e-6
+    //     lambda mu    Gc     L       viscosity
   [end]
 [end]
 
 [nonlinearsolver]
-  type=nr
-  maxiters=25
-  r_rel_tol=1.0e-10
-  r_abs_tol=4.5e-7
-  solver=superlu
+  type=newton
+  maxiters=15
+  r_rel_tol=1.0e-11
+  r_abs_tol=5.5e-7
+  //solver=superlu
 [end]
 
 [ics]
@@ -42,7 +42,7 @@ name=d ux uy uz
 
 [output]
   type=vtu
-  interval=20
+  interval=10
 [end]
 
 [timestepping]
@@ -50,8 +50,8 @@ name=d ux uy uz
   dt=1.0e-5
   time=2.0e-1
   adaptive=true
-  optiters=5
-  growthfactor=1.2
+  optiters=4
+  growthfactor=1.1
   cutfactor=0.85
   dtmax=1.0e-4
 [end]
@@ -65,15 +65,21 @@ scalarmate=vonMises
 [bcs]
   [fixux]
     type=dirichlet
-    dofs=ux uy uz
+    dofs=ux
     value=0.0
-    boundary=bottom
+    boundary=left right
   [end]
   [fixuy]
     type=dirichlet
     dofs=ux
     value=0.0
-    boundary=top
+    boundary=bottom
+  [end]
+  [fixuz]
+    type=dirichlet
+    dofs=uz
+    value=0.0
+    boundary=back
   [end]
   [load]
     type=dirichlet

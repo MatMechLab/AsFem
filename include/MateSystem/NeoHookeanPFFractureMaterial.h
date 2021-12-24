@@ -74,7 +74,7 @@ private:
     RankTwoTensor _Strain,_F,_C,_Cinv,_E;
     RankFourTensor _Jacobian;
     RankTwoTensor _StressPos,_StressNeg;
-    RankFourTensor _JacPos,_JacNeg;
+    RankFourTensor _JacPos,_JacNeg,I4;
     double _J,_J23,_I1,_I1bar;
 
 };

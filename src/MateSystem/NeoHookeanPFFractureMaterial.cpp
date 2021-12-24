@@ -157,7 +157,8 @@ void NeoHookeanPFFractureMaterial::ComputeConstitutiveLaws(const vector<double> 
 
     // for jacobian
     Jacobian.SetToZeros();
-    Jacobian=_JacPos*(g+k)+_JacNeg;
+    I4.SetToIdentity4();
+    Jacobian=I4*_PK2+_F*(_JacPos*(g+k)+_JacNeg)*_F.Transpose();
 
     Mate.ScalarMaterials("H")=0.0;// we use H instead of Hist for our element
                                   // in such a way, users can use the stagger solution!
