@@ -148,6 +148,11 @@ bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &laste
                         elmtBlock._ElmtType=ElmtType::MIEHEFRACELMT;
                         HasElmtType=true;
                     }
+                    else if(substr.find("allencahnfrac")!=string::npos && substr.length()==13){
+                        elmtBlock._ElmtTypeName="allencahnfrac";
+                        elmtBlock._ElmtType=ElmtType::ALLENCAHNFRACELMT;
+                        HasElmtType=true;
+                    }
                     else if(substr.find("thermal")!=string::npos && substr.length()==7){
                         elmtBlock._ElmtTypeName="thermal";
                         elmtBlock._ElmtType=ElmtType::THERMALCONDUCTELMT;

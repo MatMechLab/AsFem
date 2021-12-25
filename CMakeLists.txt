@@ -265,6 +265,9 @@ set(src ${src} src/ElmtSystem/DiffusionFractureElmt.cpp)
 ### For mechanically coupled CahnHilliard element
 set(inc ${inc} include/ElmtSystem/MechanicsCahnHilliardElmt.h)
 set(src ${src} src/ElmtSystem/MechanicsCahnHilliardElmt.cpp)
+### For AllenCahn fracture element
+set(inc ${inc} include/ElmtSystem/AllenCahnFractureElmt.h)
+set(src ${src} src/ElmtSystem/AllenCahnFractureElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)

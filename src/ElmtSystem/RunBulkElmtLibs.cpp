@@ -45,6 +45,9 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
         case ElmtType::MIEHEFRACELMT:
             MieheFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
+        case ElmtType::ALLENCAHNFRACELMT:
+            AllenCahnFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
+            break;
         case ElmtType::KOBAYASHIELMT:
             KobayashiElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
