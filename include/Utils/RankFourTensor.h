@@ -49,6 +49,10 @@ public:
         // function to get K_ik=C_ijkl*N,j*N,l(for assemble local K by using the rank-4 tensor!!!)
         // where j is the index of trial fun
         //       i is the index of test fun
+        if(i<1||i>3 || k<1 || k>3){
+            MessagePrinter::PrintErrorTxt(" your i or k is out of range for GetIKjlComponent function");
+            MessagePrinter::AsFem_Exit();
+        }
         return ((*this)(i,1,k,1)*grad_trial(1)
                +(*this)(i,1,k,2)*grad_trial(2)
                +(*this)(i,1,k,3)*grad_trial(3))*grad_test(1)
@@ -64,9 +68,17 @@ public:
     //********************************************
     // for index based access
     inline double operator()(const int &i,const int &j,const int &k,const int &l) const{
+        if(i<1||i>3 || j<1||j>3 || k<1||k>3 || l<1||l>3){
+            MessagePrinter::PrintErrorTxt("your i or j or k or l is out of range when you call a rank-4 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(((i-1)*_N+j-1)*_N+k-1)*_N+l-1];
     }
     inline double& operator()(const int &i,const int &j,const int &k,const int &l){
+        if(i<1||i>3 || j<1||j>3 || k<1||k>3 || l<1||l>3){
+            MessagePrinter::PrintErrorTxt("your i or j or k or l is out of range when you call a rank-4 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(((i-1)*_N+j-1)*_N+k-1)*_N+l-1];
     }
     // for components based access

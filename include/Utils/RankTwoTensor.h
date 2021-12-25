@@ -100,6 +100,10 @@ public:
      * @param j j index of the rank-2 tensor, start from 1
      */
     inline double operator()(const int &i,const int &j) const{
+        if(i<1||i>3 || j<1||j>3 ){
+            MessagePrinter::PrintErrorTxt("your i or j is out of range when you call a rank-2 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(i-1)*_N+j-1];
     }
     /** for index based access(start from 1, instead of zero !!!)
@@ -107,6 +111,10 @@ public:
      * @param j j index of the rank-2 tensor, start from 1
      */
     inline double& operator()(const int &i,const int &j){
+        if(i<1||i>3 || j<1||j>3 ){
+            MessagePrinter::PrintErrorTxt("your i or j is out of range when you call a rank-2 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(i-1)*_N+j-1];
     }
     //*** for component based access

@@ -129,7 +129,7 @@ void MieheFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const doub
         // K_ux,uz
         localK(2,4)=Mate.Rank4Materials("jacobian").GetIKjlComponent(1,3,shp.grad_test,shp.grad_trial)*ctan[0];
         // K_uy,uz
-        localK(3,4)=Mate.Rank4Materials("jacobian").GetIKjlComponent(2,4,shp.grad_test,shp.grad_trial)*ctan[0];
+        localK(3,4)=Mate.Rank4Materials("jacobian").GetIKjlComponent(2,3,shp.grad_test,shp.grad_trial)*ctan[0];
 
         // K_uz,uz
         localK(4,4)=Mate.Rank4Materials("jacobian").GetIKjlComponent(3,3,shp.grad_test,shp.grad_trial)*ctan[0];
