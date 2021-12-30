@@ -54,8 +54,8 @@ void AllenCahnFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     double Gc=Mate.ScalarMaterials("Gc");
     double L=Mate.ScalarMaterials("L");
     double Hist=Mate.ScalarMaterials("H");
-    double dFdD=Mate.ScalarMaterials("dFdd");
-    RankTwoTensor Stress=Mate.Rank2Materials("stress");
+    double dFdD=Mate.ScalarMaterials("dFdD");
+    RankTwoTensor Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
 
     localR(1)=soln.gpV[1]*shp.test
             +M*2*(soln.gpU[1]-1)*Hist*shp.test
