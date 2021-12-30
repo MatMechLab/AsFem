@@ -174,4 +174,9 @@ void DiffusionFractureMaterial::ComputeMaterialProperties(const vector<double> &
     Mate.VectorMaterials("GradSigmaH")=_GradSigmaH;
     Mate.ScalarMaterials("dSigmaHdC")=_dSigmaHdC;
 
+    // used in AllenCahn fracture element
+    Mate.ScalarMaterials("dFdD")=elmtsoln.gpU[1];
+    Mate.ScalarMaterials("d2FdD2")=1.0;
+    Mate.ScalarMaterials("M")=1.0/InputParams[5-1];// M=1.0/viscosity
+
 }

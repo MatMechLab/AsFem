@@ -62,7 +62,7 @@ void NeoHookeanPFFractureMaterial::ComputeConstitutiveLaws(const vector<double> 
     
     double d;
     double g,dg;// for the degradation function
-    const double k=1.0e-5; // for stabilizer
+    const double k=5.0e-5; // for stabilizer
 
     const double lambda=InputParams[0];
     const double mu=InputParams[1];
@@ -100,6 +100,11 @@ void NeoHookeanPFFractureMaterial::ComputeConstitutiveLaws(const vector<double> 
     double U=0.5*lambda*(0.5*(_J*_J-1)-log(_J));
     double W=0.5*mu*(_I1bar-3.0);
     double PsiPos,PsiNeg;
+
+    _StressPos.SetToZeros();
+    _StressNeg.SetToZeros();
+    _JacPos.SetToZeros();
+    _JacNeg.SetToZeros();
 
     if(_J>=1.0){
         // for tensile loading case
@@ -208,5 +213,10 @@ void NeoHookeanPFFractureMaterial::ComputeMaterialProperties(const vector<double
     Mate.Rank2Materials("strain")=_Strain;
     Mate.Rank2Materials("stress")=_Stress;
     Mate.Rank4Materials("jacobian")=_Jacobian;
+
+    // used in AllenCahn fracture element
+    Mate.ScalarMaterials("dFdD")=elmtsoln.gpU[1];
+    Mate.ScalarMaterials("d2FdD2")=1.0;
+    Mate.ScalarMaterials("M")=1.0/InputParams[5-1];// M=1.0/viscosity
 
 }

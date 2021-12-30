@@ -27,6 +27,7 @@ void MieheFractureMaterial::InitMaterialProperties(const vector<double> &InputPa
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
 
     Mate.ScalarMaterials("Hist")=0.0;
+    Mate.Rank2Materials("stress").SetToZeros();
 }
 //***********************************************************
 double MieheFractureMaterial::DegradationFun(const double &x) {
@@ -58,7 +59,7 @@ void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputP
     
     double d;
     double g,dg;// for the degradation function
-    const double k=1.0e-5; // for stabilizer
+    const double k=5.0e-5; // for stabilizer
 
     const double lambda=InputParams[0];
     const double mu=InputParams[1];
@@ -175,5 +176,10 @@ void MieheFractureMaterial::ComputeMaterialProperties(const vector<double> &Inpu
     Mate.Rank2Materials("strain")=Strain;
     Mate.Rank2Materials("stress")=Stress;
     Mate.Rank4Materials("jacobian")=Jacobian;
+
+    // used in AllenCahn fracture element
+    Mate.ScalarMaterials("dFdD")=elmtsoln.gpU[1];
+    Mate.ScalarMaterials("d2FdD2")=1.0;
+    Mate.ScalarMaterials("M")=1.0/InputParams[5-1];// M=1.0/viscosity
 
 }
