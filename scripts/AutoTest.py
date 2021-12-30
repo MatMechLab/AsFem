@@ -23,7 +23,7 @@ currentdir=os.getcwd()
 parrentdir=Path(currentdir).parent
 if 'AsFem' not in str(parrentdir):
     parrentdir=currentdir
-TestDir=str(parrentdir)+'/tests/'
+TestDir=str(parrentdir)+'/test_input/'
 AsFem=str(parrentdir)+'/bin/asfem'
 
 
