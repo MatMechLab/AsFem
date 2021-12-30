@@ -22,13 +22,12 @@ int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
 
-
     RankFourTensor r4;
     r4.SetFromEandNu(120.0,0.3);
 
     r4.PrintVoigt();
 
-    cout<<r4(4,4,4,4)<<endl;
+    cout<<r4(1,1,1,3)<<endl;
 
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

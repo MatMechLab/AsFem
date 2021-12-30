@@ -81,6 +81,7 @@ public:
         }
         return _vals[(((i-1)*_N+j-1)*_N+k-1)*_N+l-1];
     }
+    double VoigtIJcomponent(const int &i,const int &j) const;
     // for components based access
     inline double  operator[](const int &i) const{
         return _vals[i-1];
@@ -183,7 +184,7 @@ public:
     //*** some setting functions
     //**********************************************
     inline void SetToZeros(){
-        for(int i=0;i<_N4;++i) _vals[i]=0.0;
+        for(int i=0;i<_N4;i++) _vals[i]=0.0;
     }
     inline void SetToIdentity(){
         SetToZeros();

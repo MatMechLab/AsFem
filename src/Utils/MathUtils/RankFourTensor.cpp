@@ -19,11 +19,11 @@
 // for the constructor in different purpose
 RankFourTensor::RankFourTensor()
 :_N(3),_N2(3*3),_N4(3*3*3*3){
-    for(int i=0;i<_N4;++i) _vals[i]=0.0;
+    for(int i=0;i<81;i++) _vals[i]=0.0;
 }
 RankFourTensor::RankFourTensor(const double &val)
 :_N(3),_N2(3*3),_N4(3*3*3*3){
-    for(int i=0;i<_N4;++i) _vals[i]=val;
+    for(int i=0;i<81;i++) _vals[i]=val;
 }
 RankFourTensor::RankFourTensor(const RankFourTensor &a)
 :_N(3),_N2(3*3),_N4(3*3*3*3){
@@ -54,6 +54,128 @@ RankFourTensor::RankFourTensor(const InitMethod &method)
         MessagePrinter::AsFem_Exit();
         break;
     }
+}
+
+double RankFourTensor::VoigtIJcomponent(const int &i,const int &j) const{
+    if(i<1||i>6 || j<1||j>6){
+        MessagePrinter::PrintErrorTxt("your i or j (1~6) is out of range when you call a rank-4 tensor in voigt notation");
+        MessagePrinter::AsFem_Exit();
+    }
+    if(i==1 && j==1){
+        return (*this)(1,1,1,1);
+    }
+    else if(i==1 && j==2){
+        return (*this)(1,1,2,2);
+    }
+    else if(i==1 && j==3){
+        return (*this)(1,1,3,3);
+    }
+    else if(i==1 && j==4){
+        return (*this)(1,1,2,3);
+    }
+    else if(i==1 && j==5){
+        return (*this)(1,1,1,3);
+    }
+    else if(i==1 && j==6){
+        return (*this)(1,1,1,2);
+    }
+    //  
+    else if(i==2 && j==1){
+        return (*this)(2,2,1,1);
+    }
+    else if(i==2 && j==2){
+        return (*this)(2,2,2,2);
+    }
+    else if(i==2 && j==3){
+        return (*this)(2,2,3,3);
+    }
+    else if(i==2 && j==4){
+        return (*this)(2,2,2,3);
+    }
+    else if(i==2 && j==5){
+        return (*this)(2,2,1,3);
+    }
+    else if(i==2 && j==6){
+        return (*this)(2,2,1,2);
+    }
+    //  
+    else if(i==3 && j==1){
+        return (*this)(3,3,1,1);
+    }
+    else if(i==3 && j==2){
+        return (*this)(3,3,2,2);
+    }
+    else if(i==3 && j==3){
+        return (*this)(3,3,3,3);
+    }
+    else if(i==3 && j==4){
+        return (*this)(3,3,2,3);
+    }
+    else if(i==3 && j==5){
+        return (*this)(3,3,1,3);
+    }
+    else if(i==3 && j==6){
+        return (*this)(3,3,1,2);
+    }
+    //  
+    else if(i==4 && j==1){
+        return (*this)(2,3,1,1);
+    }
+    else if(i==4 && j==2){
+        return (*this)(2,3,2,2);
+    }
+    else if(i==4 && j==3){
+        return (*this)(2,3,3,3);
+    }
+    else if(i==4 && j==4){
+        return (*this)(2,3,2,3);
+    }
+    else if(i==4 && j==5){
+        return (*this)(2,3,1,3);
+    }
+    else if(i==4 && j==6){
+        return (*this)(2,3,1,2);
+    }
+    //  
+    else if(i==5 && j==1){
+        return (*this)(3,1,1,1);
+    }
+    else if(i==5 && j==2){
+        return (*this)(3,1,2,2);
+    }
+    else if(i==5 && j==3){
+        return (*this)(3,1,3,3);
+    }
+    else if(i==5 && j==4){
+        return (*this)(3,1,2,3);
+    }
+    else if(i==5 && j==5){
+        return (*this)(3,1,1,3);
+    }
+    else if(i==5 && j==6){
+        return (*this)(3,1,1,2);
+    }
+    //  
+    else if(i==6 && j==1){
+        return (*this)(1,2,1,1);
+    }
+    else if(i==6 && j==2){
+        return (*this)(1,2,2,2);
+    }
+    else if(i==6 && j==3){
+        return (*this)(1,2,3,3);
+    }
+    else if(i==6 && j==4){
+        return (*this)(1,2,2,3);
+    }
+    else if(i==6 && j==5){
+        return (*this)(1,2,1,3);
+    }
+    else if(i==6 && j==6){
+        return (*this)(1,2,1,2);
+    }
+       
+    return 0.0;
 }
 //****************************************
 //*** for fill-in method
