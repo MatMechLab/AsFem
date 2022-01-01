@@ -46,6 +46,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     // write result to the head of pvd file
     outputSystem.WritePVDFileHeader();
+    outputSystem.WritePVDFileEnd();
     if(fectrlinfo.IsProjection){
         feSystem.FormBulkFE(FECalcType::Projection,0.0,_Dt,fectrlinfo.ctan,mesh,dofHandler,fe,elmtSystem,mateSystem,solutionSystem,equationSystem._AMATRIX,equationSystem._RHS);
     }
@@ -131,7 +132,6 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
             break;
         }
     }
-    outputSystem.WritePVDFileEnd();
 
     return true;
 }
