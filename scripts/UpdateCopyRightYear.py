@@ -9,8 +9,8 @@ import os
 import shutil
 import fileinput
 
-OldStr='//* All rights reserved, Yang Bai @ CopyRight 2020'
-NewStr='//* All rights reserved, Yang Bai @ CopyRight 2021'
+OldStr='//* All rights reserved, Yang Bai @ CopyRight 2021'
+NewStr='//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022'
 
 currentdir=os.getcwd()
 print('We are in folder:%s\n'%(currentdir))
