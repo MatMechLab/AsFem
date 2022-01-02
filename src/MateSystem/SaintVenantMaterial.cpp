@@ -49,8 +49,15 @@ void SaintVenantMaterial::ComputeStressAndJacobian(const vector<double> &InputPa
     double E=InputParams[0];
     double nu=InputParams[1];
 
-    Jacobian.SetFromEandNu(E,nu);
-    _pk2=Jacobian.DoubleDot(Strain);
+    double lambda=E*nu/((1+nu)*(1-2*nu));
+    double mu=0.5*E/(1+nu);
+
+    _I.SetToIdentity();
+    _E=Strain;
+    _pk2=_I*lambda*_E.Trace()+_E*2*mu;
+    Jacobian.SetToZeros();
+    _I4Sym.SetToIdentitySymmetric4();
+    Jacobian=_I.OTimes(_I)*lambda+_I4Sym*2*mu;
     Stress=_F*_pk2;// convert it to 1st Piola-Kirchhoff stress
 
 }
@@ -69,8 +76,7 @@ void SaintVenantMaterial::ComputeMaterialProperties(const vector<double> &InputP
     ComputeStrain(elmtinfo,elmtsoln,_Strain);
     ComputeStressAndJacobian(InputParams,_Strain,_Stress,_Jac);
 
-    _I.SetToIdentity();
-    _devStress=_Stress-_I*(_Stress.Trace()/3.0);
+    _devStress=_Stress.Dev();
     Mate.ScalarMaterials("vonMises")=sqrt(1.5*_devStress.DoubleDot(_devStress));
     Mate.Rank2Materials("strain")=_Strain;
     Mate.Rank2Materials("stress")=_Stress;
