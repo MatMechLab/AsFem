@@ -223,7 +223,11 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
             string substr = str.substr(i + 1, str.length());
             substr = StringUtils::RemoveStrSpace(substr);
             substr=StringUtils::StrToLower(substr);
-            if (substr.find("gmres") != string::npos && substr.length() == 5) {
+            
+            if (substr.find("default") != string::npos && substr.length() == 7) {
+                _nonlinearSolverBlock._LinearSolverName = "default";
+            }
+            else if (substr.find("gmres") != string::npos && substr.length() == 5) {
                 _nonlinearSolverBlock._LinearSolverName = "gmres";
             }
             else if (substr.find("fgmres") != string::npos && substr.length() == 6) {

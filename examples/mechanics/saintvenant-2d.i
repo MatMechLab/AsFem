@@ -5,7 +5,7 @@
   ymax=2.0
   nx=50
   ny=50
-  meshtype=quad8
+  meshtype=quad9
 [end]
 
 [qpoint]
@@ -49,11 +49,11 @@ name=ux uy
 [end]
 
 [nonlinearsolver]
-  type=nr
+  type=newtontr
   maxiters=25
   r_rel_tol=1.0e-12
   r_abs_tol=4.0e-7
-  //solver=superlu
+  solver=superlu
 [end]
 
 [timestepping]

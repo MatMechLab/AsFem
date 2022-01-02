@@ -27,7 +27,7 @@ NonlinearSolver::NonlinearSolver(){
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
-    _LinearSolverName="gmres";
+    _LinearSolverName="default";
     _PCTypeName="lu";
     _CheckJacobian=false;
 }
@@ -58,10 +58,13 @@ void NonlinearSolver::Init(){
     SNESGetKSP(_snes,&_ksp);
     KSPGMRESSetRestart(_ksp,1800);
     KSPGetPC(_ksp,&_pc);
-    //PCFactorSetMatSolverType(_pc,MATSOLVERPETSC); // this line may be not so necessary!
-    
 
-    if(_LinearSolverName=="gmres"){
+    if(_LinearSolverName=="default"){
+        // the default solver is the direct solver based petsc
+        KSPSetType(_ksp,KSPPREONLY);
+        PCSetType(_pc,PCLU);
+    }
+    else if(_LinearSolverName=="gmres"){
         KSPSetType(_ksp,KSPGMRES);
     }
     else if(_LinearSolverName=="fgmres"){
@@ -77,13 +80,13 @@ void NonlinearSolver::Init(){
         KSPSetType(_ksp,KSPRICHARDSON);
     }
     else if(_LinearSolverName=="mumps"){
-        PCSetType(_pc,PCLU);
         KSPSetType(_ksp,KSPPREONLY);
+        PCSetType(_pc,PCLU);
         PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
     }
     else if(_LinearSolverName=="superlu"){
-        PCSetType(_pc,PCLU);
         KSPSetType(_ksp,KSPPREONLY);
+        PCSetType(_pc,PCLU);
         PCFactorSetMatSolverType(_pc,MATSOLVERSUPERLU_DIST);
     }
 
@@ -108,7 +111,7 @@ void NonlinearSolver::Init(){
         SNESSetType(_snes,SNESNEWTONLS);
         SNESGetLineSearch(_snes,&_sneslinesearch);
         SNESLineSearchSetType(_sneslinesearch,SNESLINESEARCHBT);
-        SNESLineSearchSetOrder(_sneslinesearch,2);
+        SNESLineSearchSetOrder(_sneslinesearch,3);
     }
     else if(_SolverType==NonlinearSolverType::NEWTONSECANT){
         SNESSetType(_snes,SNESNEWTONLS);

@@ -1,35 +1,28 @@
 [mesh]
   type=asfem
-  dim=3
-  xmax=1.0
-  ymax=1.0
-  zmax=10.0
-  nx=5
-  ny=5
-  nz=50
-  meshtype=hex8
-[end]
-
-[qpoint]
-  type=gauss
-  order=4
+  dim=2
+  xmax=2.0
+  ymax=2.0
+  nx=50
+  ny=50
+  meshtype=quad4
 [end]
 
 [dofs]
-name=ux uy uz
+name=ux uy
 [end]
 
 [elmts]
   [mysolids]
     type=mechanics
-    dofs=ux uy uz
+    dofs=ux uy
     mate=mymate
   [end]
 [end]
 
 [mates]
   [mymate]
-    type=saintvenant
+    type=linearelastic
     params=210.0 0.3
     //     E     nu
   [end]
@@ -38,45 +31,30 @@ name=ux uy uz
 [bcs]
   [fix]
     type=dirichlet
-    dofs=ux uy uz
+    dofs=ux uy
     value=0.0
-    boundary=back
+    boundary=bottom
   [end]
   [loading]
     type=dirichlet
-    dofs=uz
+    dofs=uy
     value=1.0*t
-    boundary=front
+    boundary=top
   [end]
-[end]
-
-[nonlinearsolver]
-  type=newton
-  maxiters=25
-  r_rel_tol=1.0e-12
-  r_abs_tol=4.0e-7
-  //solver=superlu
 [end]
 
 [timestepping]
   type=be
   dt=1.0e-5
-  dtmax=5.0e-2
-  time=5.0e-1
-  optiters=6
+  dtmax=1.0e-2
+  time=1.0e-1
+  optiters=3
   adaptive=true
-[end]
-
-
-[output]
-  type=vtu
-  interval=20
 [end]
 
 [projection]
 scalarmate=vonMises
 rank2mate=stress
-rank4mate=jacobian
 [end]
 
 [job]
