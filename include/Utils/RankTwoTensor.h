@@ -337,7 +337,8 @@ public:
      * @param a right hand side rank-2 tensor
      */
     inline RankTwoTensor& operator*=(const RankTwoTensor &a){
-        RankTwoTensor temp=(*this)*a;
+        RankTwoTensor temp(0.0);
+        temp=(*this)*a;
         (*this)=temp;
         return *this;
     }
@@ -348,6 +349,7 @@ public:
      * @param b double array for 2nd dimension
      */
     inline void VectorOTimes(const double (&a)[3],const double (&b)[3]){
+        this->SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 (*this)(i,j)=a[i-1]*b[j-1];
@@ -361,6 +363,7 @@ public:
      * @param b vector<double> for 2nd dimension
      */
     inline void VectorOTimes(const vector<double> &a,const vector<double> &b){
+        this->SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 (*this)(i,j)=a[i-1]*b[j-1];
@@ -374,6 +377,7 @@ public:
      * @param b vector3d for 2nd dimension
      */
     inline void VectorOTimes(const Vector3d &a,const Vector3d &b){
+        this->SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 (*this)(i,j)=a(i)*b(j);

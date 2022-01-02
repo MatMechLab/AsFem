@@ -180,6 +180,9 @@ public:
     }
     //*** for rotated rank-4 tensor
     RankFourTensor Rotate(const RankTwoTensor &rotate) const;
+    //*** for push forward and pull back operator
+    RankFourTensor PushByF(const RankTwoTensor &F) const;
+    RankFourTensor PushForward(const RankTwoTensor &F) const;
     //**********************************************
     //*** some setting functions
     //**********************************************
@@ -191,13 +194,26 @@ public:
         for(int i=1;i<=_N;++i) (*this)(i,i,i,i)=1.0;
     }
     inline void SetToIdentity4(){
-        // maps a rank2 tensor to itself,i.e. Iden4:rank2=rank2
+        // maps a rank2 tensor to itself(no symmetric consideriation here),i.e. Iden4:rank2=rank2
         SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 for(int k=1;k<=_N;++k){
                     for(int l=1;l<=_N;++l){
-                        (*this)(i,j,k,l)=1.0*((i==l)*(j==k));
+                        (*this)(i,j,k,l)=1.0*((i==k)&&(j==l));
+                    }
+                }
+            }
+        }
+    }
+    inline void SetIdentity4Transpose(){
+        // maps a rank-2 tensor to its transpose, A^{T}=I4:A
+        SetToZeros();
+        for(int i=1;i<=_N;i++){
+            for(int j=1;j<=_N;j++){
+                for(int k=1;k<=_N;k++){
+                    for(int l=1;l<=_N;l++){
+                        (*this)(i,j,k,l)=1.0*((j==k)&&(i==l));
                     }
                 }
             }

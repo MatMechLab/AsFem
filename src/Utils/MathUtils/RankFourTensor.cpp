@@ -19,15 +19,15 @@
 // for the constructor in different purpose
 RankFourTensor::RankFourTensor()
 :_N(3),_N2(3*3),_N4(3*3*3*3){
-    for(int i=0;i<81;i++) _vals[i]=0.0;
+    for(int i=0;i<_N4;i++) _vals[i]=0.0;
 }
 RankFourTensor::RankFourTensor(const double &val)
 :_N(3),_N2(3*3),_N4(3*3*3*3){
-    for(int i=0;i<81;i++) _vals[i]=val;
+    for(int i=0;i<_N4;i++) _vals[i]=val;
 }
 RankFourTensor::RankFourTensor(const RankFourTensor &a)
 :_N(3),_N2(3*3),_N4(3*3*3*3){
-    for(int i=0;i<_N4;++i) _vals[i]=a._vals[i];
+    for(int i=0;i<_N4;i++) _vals[i]=a._vals[i];
 }
 //*********************
 RankFourTensor::RankFourTensor(const InitMethod &method)
@@ -367,6 +367,67 @@ RankFourTensor RankFourTensor::Rotate(const RankTwoTensor &rotate) const{
                             for(int p=1;p<=3;p++){
                                 for(int q=1;q<=3;q++){
                                     temp(i,j,k,l)+=(*this)(m,n,p,q)*rotate(i,m)*rotate(j,n)*rotate(k,p)*rotate(l,q);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return temp;
+}
+//****************************************************
+//*** For push forward operator
+//****************************************************
+RankFourTensor RankFourTensor::PushByF(const RankTwoTensor &F) const{
+    // new Rank-4 tensor=F*R4Old*F^T
+    RankFourTensor A(0.0),B(0.0);
+    RankTwoTensor Ft(0.0);
+    Ft=F.Transpose();
+
+    A.SetToZeros();
+    for(int i=1;i<=_N;i++){
+        for(int j=1;j<=_N;j++){
+            for(int k=1;k<=_N;k++){
+                for(int l=1;l<=_N;l++){
+                    for(int m=1;m<=_N;m++){
+                        A(i,j,k,l)+=F(i,m)*(*this)(m,j,k,l);
+                    }
+                }
+            }
+        }
+    }
+
+    B.SetToZeros();
+    for(int i=1;i<=_N;i++){
+        for(int j=1;j<=_N;j++){
+            for(int k=1;k<=_N;k++){
+                for(int l=1;l<=_N;l++){
+                    for(int m=1;m<=_N;m++){
+                        B(i,j,k,l)+=A(i,j,k,m)*Ft(m,l);
+                    }
+                }
+            }
+        }
+    }
+    return B;
+}
+//*** for the push-forward from reference to current
+RankFourTensor RankFourTensor::PushForward(const RankTwoTensor &F) const{
+    // push forward the jacobian from reference one to the current configuration or similar operation
+    // new Ran-4 tensor ijkl=F_iA*F_jB*F_kC*F_lD*C_ABCD
+    RankFourTensor temp;
+    temp.SetToZeros();
+    for(int i=1;i<=_N;i++){
+        for(int j=1;j<=_N;j++){
+            for(int k=1;k<=_N;k++){
+                for(int l=1;l<=_N;l++){
+                    for(int A=1;A<=_N;A++){
+                        for(int B=1;B<=_N;B++){
+                            for(int C=1;C<=_N;C++){
+                                for(int D=1;D<=_N;D++){
+                                    temp(i,j,k,l)+=F(i,A)*F(j,B)*F(k,C)*F(l,D)*(*this)(A,B,C,D);
                                 }
                             }
                         }
