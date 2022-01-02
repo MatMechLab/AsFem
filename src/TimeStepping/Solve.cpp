@@ -31,6 +31,9 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
     fectrlinfo.dt=_Dt;
     fectrlinfo.t=0.0;
 
+    _IterHist[0]=0;
+    _IterHist[1]=0;
+
     char buff[68];
     string str;
 
@@ -103,13 +106,25 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                 // for adaptive time stepping
                 if(IsAdaptive()){
                     if(nonlinearSolver.GetFinalInterations()<=_OptIters){
-                        fectrlinfo.dt*=_GrowthFactor;
-                        if(fectrlinfo.dt>_DtMax) fectrlinfo.dt=_DtMax;
+                        if(_IterHist[0]<=_OptIters){
+                            // if previous step's iteration is also smaller than optiters, then we change dt
+                            fectrlinfo.dt*=_GrowthFactor;
+                            if(fectrlinfo.dt>_DtMax) fectrlinfo.dt=_DtMax;
+                        }
+                        // otherwise, we continue using the current dt, do not make any changes
                     }
                     else{
                         fectrlinfo.dt*=_CutBackFactor;
                         if(fectrlinfo.dt<_DtMin) fectrlinfo.dt=_DtMin;
                     }
+                }
+
+                if(fectrlinfo.CurrentStep<2){
+                    _IterHist[0]=nonlinearSolver.GetFinalInterations();
+                }
+                else{
+                    _IterHist[0]=_IterHist[1];
+                    _IterHist[1]=nonlinearSolver.GetFinalInterations();
                 }
 
                 HasConvergeSolution=true;
@@ -123,6 +138,7 @@ bool TimeStepping::Solve(Mesh &mesh,DofHandler &dofHandler,
                 str=buff;
                 MessagePrinter::PrintNormalTxt(str,MessageColor::RED);
                 HasConvergeSolution=false;
+                _IterHist[0]=100;// if current step is failed, we assume the previous one is a 'bad' iteration, therefore, no change to dt should happen!
             }//===>end-of-converge-diverge-if-condition
         }//===end-of-while-for-failed-try
         if(!HasConvergeSolution){

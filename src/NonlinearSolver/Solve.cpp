@@ -282,12 +282,12 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     if(_snesreason==SNES_CONVERGED_FNORM_ABS){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"  Converged for |R|<atol, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |R|<atol, final iters=%3d",_monctx.iters);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         else{
-            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters,_monctx.rnorm0,_Rnorm);
             str=buffnew;
             MessagePrinter::PrintNormalTxt(str);
         }
@@ -295,12 +295,12 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_FNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"  Converged for |R|<rtol*|R0|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |R|<rtol*|R0|, final iters=%3d",_monctx.iters);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         else{
-            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters,_monctx.rnorm0,_Rnorm);
             str=buffnew;;
             MessagePrinter::PrintNormalTxt(str);
         }
@@ -308,19 +308,19 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_SNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"  Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         else{
-            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters,_monctx.rnorm0,_Rnorm);
             str=buffnew;
             MessagePrinter::PrintNormalTxt(str);
         }
         return true;
     }
     else{
-        snprintf(buff,65,"  Divergent, SNES nonlinear solver failed, iters=%3d",_monctx.iters+1);
+        snprintf(buff,65,"  Divergent, SNES nonlinear solver failed, iters=%3d",_monctx.iters);
         str=buff;
         MessagePrinter::PrintShortTxt(str);
         return false;

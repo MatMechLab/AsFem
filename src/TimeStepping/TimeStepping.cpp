@@ -27,6 +27,8 @@ TimeStepping::TimeStepping(){
     _OptIters=3;
     _DtMax=1.0e2;
     _DtMin=1.0e-12;
+    _IterHist[0]=0;
+    _IterHist[1]=1;
 }
 
 //****************************************************

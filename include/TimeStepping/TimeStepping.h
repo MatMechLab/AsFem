@@ -101,5 +101,6 @@ private:
     double _GrowthFactor=1.1,_CutBackFactor=0.85;
     int _OptIters;
     double _DtMin,_DtMax;
+    int _IterHist[2];
 
 };
