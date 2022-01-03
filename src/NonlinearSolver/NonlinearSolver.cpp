@@ -138,6 +138,23 @@ void NonlinearSolver::Init(){
     else if(_SolverType==NonlinearSolverType::NEWTONGMRES){
         SNESSetType(_snes,SNESNGMRES);
     }
+    else if(_SolverType==NonlinearSolverType::RICHARDSON){
+        SNESSetType(_snes,SNESNRICHARDSON);
+    }
+    //else if(_SolverType==NonlinearSolverType::NASM){
+    //    SNESSetType(_snes,SNESNASM);
+    //}
+    //else if(_SolverType==NonlinearSolverType::ASPIN){
+    //    SNESSetType(_snes,SNESASPIN);
+    //}
+    else if(_SolverType==NonlinearSolverType::NMS){
+        SNESSetType(_snes,SNESMS);
+        SNESMSSetType(_snes,SNESMSEULER);
+        PCSetType(_pc,PCMG);
+    }
+    else if(_SolverType==NonlinearSolverType::FAS){
+        SNESSetType(_snes,SNESFAS);
+    }
 
     SNESSetFromOptions(_snes);
 }

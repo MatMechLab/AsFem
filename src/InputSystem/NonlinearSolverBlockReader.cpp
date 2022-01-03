@@ -108,10 +108,40 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONGMRES;
             }
             else if((substr.find("ncg")!=string::npos||substr.find("NCG")!=string::npos)&&
-               substr.length()==6){
+               substr.length()==3){
                 HasType=true;
                 _nonlinearSolverBlock._SolverTypeName="ncg";
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONCG;
+            }
+            else if((substr.find("richardson")!=string::npos||substr.find("RICHARDSON")!=string::npos)&&
+               substr.length()==10){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="richardson";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::RICHARDSON;
+            }
+            //else if((substr.find("nasm")!=string::npos||substr.find("NASM")!=string::npos)&&
+            //   substr.length()==4){
+            //    HasType=true;
+            //    _nonlinearSolverBlock._SolverTypeName="nasm";
+            //    _nonlinearSolverBlock._SolverType=NonlinearSolverType::NASM;
+            //}
+            //else if((substr.find("aspin")!=string::npos||substr.find("ASPIN")!=string::npos)&&
+            //   substr.length()==5){
+            //    HasType=true;
+            //    _nonlinearSolverBlock._SolverTypeName="aspin";
+            //    _nonlinearSolverBlock._SolverType=NonlinearSolverType::ASPIN;
+            //}
+            else if((substr.find("nms")!=string::npos||substr.find("NMS")!=string::npos)&&
+               substr.length()==3){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="Multi-stage Smoothers";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NMS;
+            }
+            else if((substr.find("fas")!=string::npos||substr.find("FAS")!=string::npos)&&
+               substr.length()==3){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="Full Approximation Scheme";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::FAS;
             }
             else{
                 MessagePrinter::PrintErrorInLineNumber(linenum);

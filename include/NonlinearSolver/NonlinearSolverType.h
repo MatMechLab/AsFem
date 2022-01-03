@@ -21,6 +21,11 @@ enum class NonlinearSolverType{
     NEWTONTR,
     NEWTONCG,
     NEWTONGMRES,
+    RICHARDSON,
+    NASM,
+    ASPIN,
+    NMS,
+    FAS,
     BFGS,
     BROYDEN,
     BADBROYDEN
