@@ -189,7 +189,8 @@ void FESystem::AssembleLocalProjRank4Mate2Global(const int &nNodes,const double 
                                                  const int &nProj,vector<string> ProjNameVec,
                                                  const Rank4MateType &Rank4Mate,Vec &ProjVec){
     double w;
-    int i,j,k,jInd,iInd;
+    int j,k,jInd,iInd;
+    int i1,j1;
     bool HasName;
     for(j=1;j<=nNodes;j++){
         iInd=_elConn[j-1]-1;
@@ -202,10 +203,12 @@ void FESystem::AssembleLocalProjRank4Mate2Global(const int &nNodes,const double 
                 if(it.first==ProjNameVec[k-1]){
                     HasName=true;
                     // for first component
-                    for(i=1;i<=36;i++){
-                        jInd=iInd*(nProj*36+1)+36*(k-1)+i;
-                        VecSetValue(ProjVec,jInd,w*it.second.GetIthVoigtComponent(i),ADD_VALUES);
-                    }
+                    for(i1=1;i1<=6;i1++){
+                        for(j1=1;j1<=6;j1++){
+                            jInd=iInd*(nProj*36+1)+36*(k-1)+(i1-1)*6+j1;
+                            VecSetValue(ProjVec,jInd,w*it.second.VoigtIJcomponent(i1,j1),ADD_VALUES);
+                        }
+                    }      
                     break;
                 }
             }

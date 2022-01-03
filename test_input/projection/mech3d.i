@@ -2,28 +2,29 @@
 
 [mesh]
   type=asfem
-  dim=2
-  xmax=5.0
-  ymax=5.0
-  nx=20
-  ny=20
-  meshtype=quad9
+  dim=3
+  xmax=2.0
+  ymax=2.0
+  zmax=2.0
+  nx=5
+  ny=5
+  nz=5
+  meshtype=hex8
 [end]
 
 [dofs]
-name=disp_x disp_y
+name=disp_x disp_y disp_z
 [end]
 
 [qpoint]
-  // for quad9 mesh, the order must>=4 !!!
   type=gauss
-  order=4
+  order=2
 [end]
 
 [elmts]
   [elmt1]
     type=mechanics
-    dofs=disp_x disp_y
+    dofs=disp_x disp_y disp_z
     mate=mate1
   [end]
 [end]
@@ -43,6 +44,7 @@ name=disp_x disp_y
   maxiters=50
   r_rel_tol=1.0e-10
   r_abs_tol=1.0e-8
+  solver=mumps
 [end]
 
 [projection]
@@ -61,6 +63,12 @@ rank4mate=jacobian
   [fixbottomy]
     type=dirichlet
     dofs=disp_y
+    value=0.0
+    boundary=bottom
+  [end]
+  [fixbottomz]
+    type=dirichlet
+    dofs=disp_z
     value=0.0
     boundary=bottom
   [end]
