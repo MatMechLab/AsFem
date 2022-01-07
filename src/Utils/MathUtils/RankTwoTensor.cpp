@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -107,7 +107,7 @@ RankTwoTensor::RankTwoTensor(const double &v11,const double &v12,const double &v
     (*this)(3,1)=v31;(*this)(3,2)=v32;(*this)(3,3)=v33;
 }
 //**********************************************************
-//*** Some setting functions (set from F)
+//*** Some setting functions (set from displacement's gradient)
 //**********************************************************
 void RankTwoTensor::SetFromGradU(const Vector3d &gradUx){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=0.0;(*this)(1,3)=0.0;
@@ -358,7 +358,7 @@ RankFourTensor RankTwoTensor::ODot(const RankTwoTensor &a) const{
 //**************************************************************
 void RankTwoTensor::CalcEigenValueAndEigenVectors(double (&eigval)[3],RankTwoTensor &eigvec)const {
     // TODO: change Eigen to Slepc?
-    // I must say, it is quite stupid, since we already has PETSc, why to call Eigen for eigen value?
+    // I must say, it is quite stupid, since we already have PETSc, why to call Eigen for eigen value?
     Eigen::Matrix3d _M;
 
     _M<<(*this)(1,1),(*this)(1,2),(*this)(1,3),

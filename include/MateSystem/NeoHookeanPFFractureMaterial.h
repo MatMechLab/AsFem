@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -74,7 +74,7 @@ private:
     RankTwoTensor _Strain,_F,_C,_Cinv,_E;
     RankFourTensor _Jacobian;
     RankTwoTensor _StressPos,_StressNeg;
-    RankFourTensor _JacPos,_JacNeg;
+    RankFourTensor _JacPos,_JacNeg,I4;
     double _J,_J23,_I1,_I1bar;
 
 };

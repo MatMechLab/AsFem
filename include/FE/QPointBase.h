@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -10,7 +10,7 @@
 //+++ Author : Yang Bai
 //+++ Date   : 2020.07.12
 //+++ Purpose: Define the base class for qpoint
-//+++          the GaussâLegendre rule, GaussâLobatto rules as well
+//+++          the GaussÃÂ¢ÃÂÃÂLegendre rule, GaussÃÂ¢ÃÂÃÂLobatto rules as well
 //+++          as other rules should inherit from this calss
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

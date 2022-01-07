@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -101,5 +101,6 @@ private:
     double _GrowthFactor=1.1,_CutBackFactor=0.85;
     int _OptIters;
     double _DtMin,_DtMax;
+    int _IterHist[2];
 
 };

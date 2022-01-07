@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -165,9 +165,9 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::J2PLASTICITYMATE;
                         HasElmt=true;
                     }
-                    else if(substr.find("constwave")!=string::npos&&substr.length()==9){
-                        mateBlock._MateTypeName="constwave";
-                        mateBlock._MateType=MateType::CONSTWAVEMATE;
+                    else if(substr.find("wavemate")!=string::npos&&substr.length()==8){
+                        mateBlock._MateTypeName="wavemate";
+                        mateBlock._MateType=MateType::WAVEMATE;
                         HasElmt=true;
                     }
                     else if(substr.find("thermelastic")!=string::npos&&substr.length()==12){

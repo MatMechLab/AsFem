@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -100,6 +100,10 @@ public:
      * @param j j index of the rank-2 tensor, start from 1
      */
     inline double operator()(const int &i,const int &j) const{
+        if(i<1||i>3 || j<1||j>3 ){
+            MessagePrinter::PrintErrorTxt("your i or j is out of range when you call a rank-2 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(i-1)*_N+j-1];
     }
     /** for index based access(start from 1, instead of zero !!!)
@@ -107,6 +111,10 @@ public:
      * @param j j index of the rank-2 tensor, start from 1
      */
     inline double& operator()(const int &i,const int &j){
+        if(i<1||i>3 || j<1||j>3 ){
+            MessagePrinter::PrintErrorTxt("your i or j is out of range when you call a rank-2 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(i-1)*_N+j-1];
     }
     //*** for component based access
@@ -329,7 +337,8 @@ public:
      * @param a right hand side rank-2 tensor
      */
     inline RankTwoTensor& operator*=(const RankTwoTensor &a){
-        RankTwoTensor temp=(*this)*a;
+        RankTwoTensor temp(0.0);
+        temp=(*this)*a;
         (*this)=temp;
         return *this;
     }
@@ -340,6 +349,7 @@ public:
      * @param b double array for 2nd dimension
      */
     inline void VectorOTimes(const double (&a)[3],const double (&b)[3]){
+        this->SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 (*this)(i,j)=a[i-1]*b[j-1];
@@ -353,6 +363,7 @@ public:
      * @param b vector<double> for 2nd dimension
      */
     inline void VectorOTimes(const vector<double> &a,const vector<double> &b){
+        this->SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 (*this)(i,j)=a[i-1]*b[j-1];
@@ -366,6 +377,7 @@ public:
      * @param b vector3d for 2nd dimension
      */
     inline void VectorOTimes(const Vector3d &a,const Vector3d &b){
+        this->SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 (*this)(i,j)=a(i)*b(j);
@@ -454,6 +466,16 @@ public:
         for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
         return sqrt(sum);
     }
+    
+    /**
+     * return the \f$L_{2}\f$ norm^2 of current rank-2 tensor, result is \f$\sqrt{\sum a_{ij}^{2}}\f$
+     */
+    inline double Norm2() const{
+        double sum=0.0;
+        for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
+        return sum;
+    }
+
     //*** for the different invariants of stress(strain)
     /**
      * return the first invariant of current rank-2 tensor, namely, \f$I_{1}\f$.

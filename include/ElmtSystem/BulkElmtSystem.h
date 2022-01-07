@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -39,6 +39,8 @@
 #include "ElmtSystem/StressDiffusionElmt.h"
 #include "ElmtSystem/DiffusionFractureElmt.h"
 #include "ElmtSystem/MechanicsCahnHilliardElmt.h"
+#include "ElmtSystem/AllenCahnFractureElmt.h"
+#include "ElmtSystem/WaveElmt.h"
 // for UEL
 #include "ElmtSystem/User1Elmt.h"
 #include "ElmtSystem/User2Elmt.h"
@@ -74,6 +76,8 @@ class BulkElmtSystem: public PoissonElmt,
                       public KobayashiElmt,
                       public StressDiffusionElmt,
                       public DiffusionFractureElmt,
+                      public AllenCahnFractureElmt,
+                      public WaveElmt,
                       public User1Elmt,
                       public User2Elmt,
                       public User3Elmt,

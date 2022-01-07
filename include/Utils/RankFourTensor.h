@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -49,6 +49,10 @@ public:
         // function to get K_ik=C_ijkl*N,j*N,l(for assemble local K by using the rank-4 tensor!!!)
         // where j is the index of trial fun
         //       i is the index of test fun
+        if(i<1||i>3 || k<1 || k>3){
+            MessagePrinter::PrintErrorTxt(" your i or k is out of range for GetIKjlComponent function");
+            MessagePrinter::AsFem_Exit();
+        }
         return ((*this)(i,1,k,1)*grad_trial(1)
                +(*this)(i,1,k,2)*grad_trial(2)
                +(*this)(i,1,k,3)*grad_trial(3))*grad_test(1)
@@ -64,11 +68,20 @@ public:
     //********************************************
     // for index based access
     inline double operator()(const int &i,const int &j,const int &k,const int &l) const{
+        if(i<1||i>3 || j<1||j>3 || k<1||k>3 || l<1||l>3){
+            MessagePrinter::PrintErrorTxt("your i or j or k or l is out of range when you call a rank-4 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(((i-1)*_N+j-1)*_N+k-1)*_N+l-1];
     }
     inline double& operator()(const int &i,const int &j,const int &k,const int &l){
+        if(i<1||i>3 || j<1||j>3 || k<1||k>3 || l<1||l>3){
+            MessagePrinter::PrintErrorTxt("your i or j or k or l is out of range when you call a rank-4 tensor");
+            MessagePrinter::AsFem_Exit();
+        }
         return _vals[(((i-1)*_N+j-1)*_N+k-1)*_N+l-1];
     }
+    double VoigtIJcomponent(const int &i,const int &j) const;
     // for components based access
     inline double  operator[](const int &i) const{
         return _vals[i-1];
@@ -154,7 +167,6 @@ public:
             for(int j=1;j<=_N;++j){
                 for(int k=1;k<=_N;++k){
                     for(int l=1;l<=_N;++l){
-                        temp(i,j,k,l)=0.0;
                         for(int m=1;m<=_N;++m){
                             for(int n=1;n<=_N;++n){
                                 temp(i,j,k,l)+=(*this)(i,j,m,n)*a(m,n,k,l);
@@ -168,24 +180,40 @@ public:
     }
     //*** for rotated rank-4 tensor
     RankFourTensor Rotate(const RankTwoTensor &rotate) const;
+    //*** for push forward and pull back operator
+    RankFourTensor PushByF(const RankTwoTensor &F) const;
+    RankFourTensor PushForward(const RankTwoTensor &F) const;
     //**********************************************
     //*** some setting functions
     //**********************************************
     inline void SetToZeros(){
-        for(int i=0;i<_N4;++i) _vals[i]=0.0;
+        for(int i=0;i<_N4;i++) _vals[i]=0.0;
     }
     inline void SetToIdentity(){
         SetToZeros();
         for(int i=1;i<=_N;++i) (*this)(i,i,i,i)=1.0;
     }
     inline void SetToIdentity4(){
-        // maps a rank2 tensor to itself,i.e. Iden4:rank2=rank2
+        // maps a rank2 tensor to itself(no symmetric consideriation here),i.e. Iden4:rank2=rank2
         SetToZeros();
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 for(int k=1;k<=_N;++k){
                     for(int l=1;l<=_N;++l){
-                        (*this)(i,j,k,l)=1.0*((i==l)*(j==k));
+                        (*this)(i,j,k,l)=1.0*((i==k)&&(j==l));
+                    }
+                }
+            }
+        }
+    }
+    inline void SetIdentity4Transpose(){
+        // maps a rank-2 tensor to its transpose, A^{T}=I4:A
+        SetToZeros();
+        for(int i=1;i<=_N;i++){
+            for(int j=1;j<=_N;j++){
+                for(int k=1;k<=_N;k++){
+                    for(int l=1;l<=_N;l++){
+                        (*this)(i,j,k,l)=1.0*((j==k)&&(i==l));
                     }
                 }
             }

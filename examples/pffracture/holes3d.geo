@@ -1,18 +1,23 @@
 //+
 SetFactory("OpenCASCADE");
 
-dx=0.0075;
+dx=0.005;
 
 r=0.085;
 
-dw=0.015;
+dw=0.025;
 
-Mesh.MinimumCircleNodes=81;
+w=0.7;
+
+n1=66;
+n2=56;
+
+//Mesh.MinimumCircleNodes=121;
 
 Point(1)={0.0,0.0,0.0,dx};
-Point(2)={1.0,0.0,0.0,dx};
-Point(3)={1.0,1.0,0.0,dx};
-Point(4)={0.0,1.0,0.0,dx};//+
+Point(2)={  w,0.0,0.0,dx};
+Point(3)={  w,  w,0.0,dx};
+Point(4)={0.0,  w,0.0,dx};//+
 Line(1) = {1, 2};
 //+
 Line(2) = {2, 3};
@@ -25,95 +30,56 @@ Curve Loop(1) = {4, 1, 2, 3};
 //+
 Plane Surface(1) = {1};
 //+
-Circle(5) = {0.16, 0.72, 0, r, 0, 2*Pi};
+Ellipse(5) = {0.175, 0.425, 0, 0.225, 0.175, 0, 2*Pi};
 //+
-Circle(6) = {0.44, 0.6, 0, r, 0, 2*Pi};
+Ellipse(6) = {0.6, 0.2, 0, 0.15, 0.1, 0, 2*Pi};
 //+
-Circle(7) = {0.7, 0.7, 0, r, 0, 2*Pi};
-//+
-Circle(8) = {0.85, 0.42, 0, r, 0, 2*Pi};
-//+
-Circle(9) = {0.62, 0.2, -0, r, 0, 2*Pi};
-//+
-Circle(10) = {0.3, 0.3, -0, r, 0, 2*Pi};
-//+
-Circle(11) = {0.15, 0.45, -0, r, 0, 2*Pi};
-//+
-Circle(12) = {0.4, 0.83, 0, r, 0, 2*Pi};
-//+
-Circle(13) = {0.6, 0.4, 0, r, 0, 2*Pi};
-//+
-Circle(14) = {0.84, 0.19, 0, r, 0, 2*Pi};
-//+
-Circle(15) = {0.16, 0.15, 0, r, 0, 2*Pi};
-//+
-Circle(16) = {0.84, 0.85, 0, r, 0, 2*Pi};
+Ellipse(7) = {0.825, 0.52, 0, 0.325, 0.1, 0, 2*Pi};
 //+
 Curve Loop(2) = {5};
 //+
 Plane Surface(2) = {2};
 //+
-Curve Loop(3) = {12};
+Curve Loop(3) = {7};
 //+
 Plane Surface(3) = {3};
 //+
-Curve Loop(4) = {16};
+Curve Loop(4) = {6};
 //+
 Plane Surface(4) = {4};
 //+
-Curve Loop(5) = {7};
-//+
-Plane Surface(5) = {5};
-//+
-Curve Loop(6) = {6};
-//+
-Plane Surface(6) = {6};
-//+
-Curve Loop(7) = {11};
-//+
-Plane Surface(7) = {7};
-//+
-Curve Loop(8) = {10};
-//+
-Plane Surface(8) = {8};
-//+
-Curve Loop(9) = {13};
-//+
-Plane Surface(9) = {9};
-//+
-Curve Loop(10) = {8};
-//+
-Plane Surface(10) = {10};
-//+
-Curve Loop(11) = {9};
-//+
-Plane Surface(11) = {11};
-//+
-Curve Loop(12) = {14};
-//+
-Plane Surface(12) = {12};
-//+
-Curve Loop(13) = {15};
-//+
-Plane Surface(13) = {13};
-//+
-BooleanDifference{ Surface{1}; Delete; }{ Surface{2}; Surface{3}; Surface{4}; Surface{5}; Surface{6}; Surface{7}; Surface{8}; Surface{13}; Surface{9}; Surface{10}; Surface{12}; Surface{11}; Delete; }
-
+BooleanDifference{ Surface{1}; Delete; }{ Surface{2}; Surface{3}; Surface{4}; Delete; }
 //+
 Extrude {0, 0, dw} {
   Surface{1}; 
 }
 //+
-Physical Surface("left", 53) = {2};
+Physical Surface("left", 34) = {12, 9};
 //+
-Physical Surface("right", 54) = {5};
+Physical Surface("right", 35) = {3, 5, 7};
 //+
-Physical Surface("bottom", 55) = {4};
+Physical Surface("bottom", 36) = {8};
 //+
-Physical Surface("top", 56) = {3};
+Physical Surface("top", 37) = {2};
 //+
-Physical Surface("back", 57) = {1};
+Physical Surface("back", 38) = {1};
 //+
-Physical Surface("front", 58) = {18};
+Physical Surface("front", 39) = {13};
 //+
-Physical Volume("block", 59) = {1};
+Physical Volume("block", 40) = {1};
+//+
+Transfinite Curve {31, 27, 29, 15, 17, 19, 21} = 11 Using Progression 1;
+//+
+Transfinite Curve {33, 11, 20, 4} = 66 Using Progression 1;
+//+
+Transfinite Curve {8, 28} = 81 Using Progression 1;
+//+
+Transfinite Curve {32, 10, 30, 9} = 121 Using Progression 1;
+//+
+Transfinite Curve {18, 3} = 121 Using Progression 1;
+//+
+Transfinite Curve {22, 5} = 141 Using Progression 1;
+//+
+Transfinite Curve {16, 2} = 21 Using Progression 1;
+//+
+Transfinite Curve {24, 6} = 31 Using Progression 1;

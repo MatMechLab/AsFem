@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -146,6 +146,11 @@ bool ElmtsBlockReader::ReadElmtsBlock(ifstream &in, string str, const int &laste
                     else if(substr.find("miehefrac")!=string::npos && substr.length()==9){
                         elmtBlock._ElmtTypeName="miehefrac";
                         elmtBlock._ElmtType=ElmtType::MIEHEFRACELMT;
+                        HasElmtType=true;
+                    }
+                    else if(substr.find("allencahnfrac")!=string::npos && substr.length()==13){
+                        elmtBlock._ElmtTypeName="allencahnfrac";
+                        elmtBlock._ElmtType=ElmtType::ALLENCAHNFRACELMT;
                         HasElmtType=true;
                     }
                     else if(substr.find("thermal")!=string::npos && substr.length()==7){

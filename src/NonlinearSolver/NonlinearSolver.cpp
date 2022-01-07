@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -27,7 +27,7 @@ NonlinearSolver::NonlinearSolver(){
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
-    _LinearSolverName="gmres";
+    _LinearSolverName="default";
     _PCTypeName="lu";
     _CheckJacobian=false;
 }
@@ -58,10 +58,13 @@ void NonlinearSolver::Init(){
     SNESGetKSP(_snes,&_ksp);
     KSPGMRESSetRestart(_ksp,1800);
     KSPGetPC(_ksp,&_pc);
-    PCFactorSetMatSolverType(_pc,MATSOLVERPETSC);
-    
 
-    if(_LinearSolverName=="gmres"){
+    if(_LinearSolverName=="default"){
+        // the default solver is the direct solver based petsc
+        KSPSetType(_ksp,KSPPREONLY);
+        PCSetType(_pc,PCLU);
+    }
+    else if(_LinearSolverName=="gmres"){
         KSPSetType(_ksp,KSPGMRES);
     }
     else if(_LinearSolverName=="fgmres"){
@@ -77,13 +80,13 @@ void NonlinearSolver::Init(){
         KSPSetType(_ksp,KSPRICHARDSON);
     }
     else if(_LinearSolverName=="mumps"){
-        PCSetType(_pc,PCLU);
         KSPSetType(_ksp,KSPPREONLY);
+        PCSetType(_pc,PCLU);
         PCFactorSetMatSolverType(_pc,MATSOLVERMUMPS);
     }
     else if(_LinearSolverName=="superlu"){
-        PCSetType(_pc,PCLU);
         KSPSetType(_ksp,KSPPREONLY);
+        PCSetType(_pc,PCLU);
         PCFactorSetMatSolverType(_pc,MATSOLVERSUPERLU_DIST);
     }
 
@@ -104,8 +107,16 @@ void NonlinearSolver::Init(){
     //*** for different type of nonlinear methods
     //**************************************************
     SNESSetType(_snes,SNESNEWTONLS);// our default method
-    if(_SolverType==NonlinearSolverType::NEWTON||_SolverType==NonlinearSolverType::NEWTONLS){
+    if(_SolverType==NonlinearSolverType::NEWTON || _SolverType==NonlinearSolverType::NEWTONLS){
         SNESSetType(_snes,SNESNEWTONLS);
+        SNESGetLineSearch(_snes,&_sneslinesearch);
+        SNESLineSearchSetType(_sneslinesearch,SNESLINESEARCHBT);
+        SNESLineSearchSetOrder(_sneslinesearch,3);
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONSECANT){
+        SNESSetType(_snes,SNESNEWTONLS);
+        SNESGetLineSearch(_snes,&_sneslinesearch);
+        SNESLineSearchSetType(_sneslinesearch,SNESLINESEARCHL2);
     }
     else if(_SolverType==NonlinearSolverType::NEWTONTR){
         SNESSetType(_snes,SNESNEWTONTR);
@@ -126,6 +137,23 @@ void NonlinearSolver::Init(){
     }
     else if(_SolverType==NonlinearSolverType::NEWTONGMRES){
         SNESSetType(_snes,SNESNGMRES);
+    }
+    else if(_SolverType==NonlinearSolverType::RICHARDSON){
+        SNESSetType(_snes,SNESNRICHARDSON);
+    }
+    //else if(_SolverType==NonlinearSolverType::NASM){
+    //    SNESSetType(_snes,SNESNASM);
+    //}
+    //else if(_SolverType==NonlinearSolverType::ASPIN){
+    //    SNESSetType(_snes,SNESASPIN);
+    //}
+    else if(_SolverType==NonlinearSolverType::NMS){
+        SNESSetType(_snes,SNESMS);
+        SNESMSSetType(_snes,SNESMSEULER);
+        PCSetType(_pc,PCMG);
+    }
+    else if(_SolverType==NonlinearSolverType::FAS){
+        SNESSetType(_snes,SNESFAS);
     }
 
     SNESSetFromOptions(_snes);

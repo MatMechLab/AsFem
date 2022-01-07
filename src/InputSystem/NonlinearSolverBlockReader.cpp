@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -65,11 +65,23 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 _nonlinearSolverBlock._SolverTypeName="newton-raphson";
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTON;
             }
+            else if((substr.find("newton")!=string::npos||substr.find("NEWTON")!=string::npos)&&
+               substr.length()==6){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="newton-raphson";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTON;
+            }
             else if((substr.find("newtonls")!=string::npos||substr.find("NEWTONLS")!=string::npos)&&
                substr.length()==8){
                 HasType=true;
                 _nonlinearSolverBlock._SolverTypeName="newton with line search";
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONLS;
+            }
+            else if((substr.find("newtonsecant")!=string::npos||substr.find("NEWTONSECANT")!=string::npos)&&
+               substr.length()==12){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="newton with secant line search";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONSECANT;
             }
             else if((substr.find("newtontr")!=string::npos||substr.find("NEWTONTR")!=string::npos)&&
                substr.length()==8){
@@ -96,10 +108,40 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONGMRES;
             }
             else if((substr.find("ncg")!=string::npos||substr.find("NCG")!=string::npos)&&
-               substr.length()==6){
+               substr.length()==3){
                 HasType=true;
                 _nonlinearSolverBlock._SolverTypeName="ncg";
                 _nonlinearSolverBlock._SolverType=NonlinearSolverType::NEWTONCG;
+            }
+            else if((substr.find("richardson")!=string::npos||substr.find("RICHARDSON")!=string::npos)&&
+               substr.length()==10){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="richardson";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::RICHARDSON;
+            }
+            //else if((substr.find("nasm")!=string::npos||substr.find("NASM")!=string::npos)&&
+            //   substr.length()==4){
+            //    HasType=true;
+            //    _nonlinearSolverBlock._SolverTypeName="nasm";
+            //    _nonlinearSolverBlock._SolverType=NonlinearSolverType::NASM;
+            //}
+            //else if((substr.find("aspin")!=string::npos||substr.find("ASPIN")!=string::npos)&&
+            //   substr.length()==5){
+            //    HasType=true;
+            //    _nonlinearSolverBlock._SolverTypeName="aspin";
+            //    _nonlinearSolverBlock._SolverType=NonlinearSolverType::ASPIN;
+            //}
+            else if((substr.find("nms")!=string::npos||substr.find("NMS")!=string::npos)&&
+               substr.length()==3){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="Multi-stage Smoothers";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::NMS;
+            }
+            else if((substr.find("fas")!=string::npos||substr.find("FAS")!=string::npos)&&
+               substr.length()==3){
+                HasType=true;
+                _nonlinearSolverBlock._SolverTypeName="Full Approximation Scheme";
+                _nonlinearSolverBlock._SolverType=NonlinearSolverType::FAS;
             }
             else{
                 MessagePrinter::PrintErrorInLineNumber(linenum);
@@ -211,7 +253,11 @@ bool NonlinearSolverBlockReader::ReadNonlinearSolverBlock(ifstream &in, string s
             string substr = str.substr(i + 1, str.length());
             substr = StringUtils::RemoveStrSpace(substr);
             substr=StringUtils::StrToLower(substr);
-            if (substr.find("gmres") != string::npos && substr.length() == 5) {
+            
+            if (substr.find("default") != string::npos && substr.length() == 7) {
+                _nonlinearSolverBlock._LinearSolverName = "default";
+            }
+            else if (substr.find("gmres") != string::npos && substr.length() == 5) {
                 _nonlinearSolverBlock._LinearSolverName = "gmres";
             }
             else if (substr.find("fgmres") != string::npos && substr.length() == 6) {

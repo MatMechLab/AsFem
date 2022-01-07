@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -53,17 +53,40 @@ void OutputSystem::WritePVDFileEnd(){
 void OutputSystem::WriteResultToPVDFile(const double &timestep,string resultfilename){
     MPI_Comm_rank(PETSC_COMM_WORLD, &_rank);
     if(_rank==0){
+        ifstream in;
+        string line;
+        vector<string> lines;
+        in.open(_PVDFileName,ios::in);
+        while(!in.eof()){
+            getline(in,line);
+            lines.push_back(line);
+        }
+        in.close();
+
+        // remove the last 3 lines
+        lines.pop_back();
+        lines.pop_back();
+        lines.pop_back();
+
         ofstream out;
         char val[20];
-        out.open(_PVDFileName,ios::app|ios::out);
+        out.open(_PVDFileName,ios::out);
         if (!out.is_open()){
             string str="can\'t open pvd file(="+_PVDFileName+")!, please make sure you have write permission";
             MessagePrinter::PrintErrorTxt(str);
             MessagePrinter::AsFem_Exit();
         }
+        for(const auto &line:lines){
+            out<<line<<endl;
+        }
+
         sprintf(val,"%14.6e",timestep);
+
         out<<"<DataSet timestep=\""<<string(val)<<"\" "
            <<"group=\"\" part=\"0\" "
            <<"file=\""<<resultfilename<<"\"/>"<<endl;
+        out<<"</Collection>\n";
+        out<<"</VTKFile>\n";
+        out.close();
     }
 }

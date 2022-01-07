@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai @ CopyRight 2021
-//* https://github.com/yangbai90/AsFem.git
+//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -138,10 +138,9 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
 //***************************************************************
 //*** here we setup the subroutine for jacobian 
 //***************************************************************
-PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
+PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
-    int i;
-
+    
     user->_feSystem->ResetMaxAMatrixValue();
     user->_bcSystem->ApplyInitialBC(*user->_mesh,*user->_dofHandler,
                                    user->_fectrlinfo->t+user->_fectrlinfo->dt,
@@ -211,18 +210,22 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat A,Mat B,void *ctx){
                         *user->_mesh,*user->_dofHandler,*user->_fe,
                         *user->_elmtSystem,*user->_mateSystem,
                         *user->_solutionSystem,
-                        A,user->_equationSystem->_RHS);
+                        B,user->_equationSystem->_RHS);
     
     user->_bcSystem->ApplyBC(*user->_mesh,*user->_dofHandler,*user->_fe,
                             FECalcType::ComputeJacobian,
                             user->_fectrlinfo->t+user->_fectrlinfo->dt,
                             user->_fectrlinfo->ctan,
                             U,user->_solutionSystem->_V,
-                            A,user->_equationSystem->_RHS);
-//    MatView(A,PETSC_VIEWER_STDOUT_WORLD);
+                            B,user->_equationSystem->_RHS);
 
-    MatGetSize(B,&i,&i);
+    int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);
+
+    if(Jac!=B){
+        MatAssemblyBegin(Jac,MAT_FINAL_ASSEMBLY);
+        MatAssemblyEnd(Jac,MAT_FINAL_ASSEMBLY);
+    }
 
     return 0;
 }
@@ -279,12 +282,12 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
 
     if(_snesreason==SNES_CONVERGED_FNORM_ABS){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"  Converged for |R|<atol, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |R|<atol, final iters=%3d",_monctx.iters);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         else{
-            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters,_monctx.rnorm0,_Rnorm);
             str=buffnew;
             MessagePrinter::PrintNormalTxt(str);
         }
@@ -292,12 +295,12 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_FNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"  Converged for |R|<rtol*|R0|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |R|<rtol*|R0|, final iters=%3d",_monctx.iters);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         else{
-            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters,_monctx.rnorm0,_Rnorm);
             str=buffnew;;
             MessagePrinter::PrintNormalTxt(str);
         }
@@ -305,19 +308,19 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
     }
     else if(_snesreason==SNES_CONVERGED_SNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,65,"  Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters+1);
+            snprintf(buff,65,"  Converged for |delta x|<stol|x|, final iters=%3d",_monctx.iters);
             str=buff;
             MessagePrinter::PrintShortTxt(str);
         }
         else{
-            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters+1,_monctx.rnorm0,_Rnorm);
+            snprintf(buffnew,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",_Iters,_monctx.rnorm0,_Rnorm);
             str=buffnew;
             MessagePrinter::PrintNormalTxt(str);
         }
         return true;
     }
     else{
-        snprintf(buff,65,"  Divergent, SNES nonlinear solver failed, iters=%3d",_monctx.iters+1);
+        snprintf(buff,65,"  Divergent, SNES nonlinear solver failed, iters=%3d",_monctx.iters);
         str=buff;
         MessagePrinter::PrintShortTxt(str);
         return false;
