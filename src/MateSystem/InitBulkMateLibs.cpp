@@ -71,6 +71,9 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::LINEARELASTICCHMATE:
             LinearElasticCHMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::WAVEMATE:
+            WaveMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
         //**************************************************************
         //*** for User-Defined-Materials (UMAT)
         //**************************************************************

@@ -268,6 +268,9 @@ set(src ${src} src/ElmtSystem/MechanicsCahnHilliardElmt.cpp)
 ### For AllenCahn fracture element
 set(inc ${inc} include/ElmtSystem/AllenCahnFractureElmt.h)
 set(src ${src} src/ElmtSystem/AllenCahnFractureElmt.cpp)
+### For wave element
+set(inc ${inc} include/ElmtSystem/WaveElmt.h)
+set(src ${src} src/ElmtSystem/WaveElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -399,6 +402,9 @@ set(src ${src} src/MateSystem/DiffNeoHookeanMaterial.cpp)
 ### for linear elastic coupled cahn-hilliard material
 set(inc ${inc} include/MateSystem/LinearElasticCHMaterial.h)
 set(src ${src} src/MateSystem/LinearElasticCHMaterial.cpp)
+### for wave material
+set(inc ${inc} include/MateSystem/WaveMaterial.h)
+set(src ${src} src/MateSystem/WaveMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
