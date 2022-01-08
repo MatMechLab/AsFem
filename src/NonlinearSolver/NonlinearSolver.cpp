@@ -27,7 +27,7 @@ NonlinearSolver::NonlinearSolver(){
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
-    _LinearSolverName="default";
+    _LinearSolverName="default(cg)";
     _PCTypeName="lu";
     _CheckJacobian=false;
 }
@@ -61,7 +61,7 @@ void NonlinearSolver::Init(){
 
     if(_LinearSolverName=="default"){
         // the default solver is the direct solver based petsc
-        KSPSetType(_ksp,KSPPREONLY);
+        KSPSetType(_ksp,KSPCG);
         PCSetType(_pc,PCLU);
     }
     else if(_LinearSolverName=="gmres"){

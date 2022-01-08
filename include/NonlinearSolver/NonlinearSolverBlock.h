@@ -36,7 +36,7 @@ public:
         _RRelTol=1.0e-10;
         _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="default";
+        _LinearSolverName="default(cg)";
         _CheckJacobian=false;
     }
 
@@ -57,7 +57,7 @@ public:
         _RRelTol=1.0e-10;
         _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="default";
+        _LinearSolverName="default(cg)";
         _CheckJacobian=false;
     }
 };

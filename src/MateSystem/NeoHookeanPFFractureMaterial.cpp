@@ -62,10 +62,10 @@ void NeoHookeanPFFractureMaterial::ComputeConstitutiveLaws(const vector<double> 
     
     double d;
     double g,dg;// for the degradation function
-    const double k=5.0e-5; // for stabilizer
+    const double k=1.0e-4; // for stabilizer
 
-    const double lambda=InputParams[0];
-    const double mu=InputParams[1];
+    const double lambda=InputParams[0];// bulk modulus
+    const double mu=InputParams[1];    // shear modulus
     const double Gc=InputParams[2];
     const double L=InputParams[3];
     const double viscosity=InputParams[4];
@@ -134,7 +134,7 @@ void NeoHookeanPFFractureMaterial::ComputeConstitutiveLaws(const vector<double> 
         PsiPos=W;
         PsiNeg=U;
         _I.SetToIdentity();
-        _StressPos=_I*mu*_J23-_Cinv*(mu/3.0)*_I1bar;
+        _StressPos=_I*mu*_J23-_Cinv*(mu/3.0)*_J23*_I1;
         _StressNeg=_Cinv*lambda*0.5*(_J*_J-1);
 
         _JacPos=(
@@ -154,9 +154,7 @@ void NeoHookeanPFFractureMaterial::ComputeConstitutiveLaws(const vector<double> 
     Mate.ScalarMaterials("PsiNeg")=PsiNeg;
 
 
-    Stress=_StressPos*(g+k)+_StressNeg;
-    _PK2=Stress;
-    Stress.SetToZeros();
+    _PK2=_StressPos*(g+k)+_StressNeg;
     Stress=_F*_PK2;
     Mate.Rank2Materials("dstressdD")=_F*_StressPos*dg;
 
