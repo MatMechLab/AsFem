@@ -57,8 +57,13 @@ void NeoHookeanMaterial::ComputeStressAndJacobian(const vector<double> &InputPar
 
     _pk2=(_I-_Cinv)*mu+_Cinv*lambda*log(J);
     Stress=_pk2;
-    Jacobian=_Cinv.ODot(_Cinv)*(mu-lambda*log(J))*2
+    
+    _I4.SetToIdentity4();
+    _T4=_Cinv.ODot(_Cinv)*(mu-lambda*log(J))*2
             +_Cinv.OTimes(_Cinv)*lambda;
+    
+    Jacobian.SetToZeros();
+    Jacobian=_I4.ConjDot(_pk2)+_T4.PushByF(_F);
 
 }
 //***************************************************************
@@ -73,7 +78,7 @@ void NeoHookeanMaterial::ComputeMaterialProperties(const vector<double> &InputPa
         MessagePrinter::AsFem_Exit();
     }
 
-    ComputeStrain(elmtinfo,elmtsoln,_Strain);
+    ComputeStrain(elmtinfo,elmtsoln,_Strain);// calculate F, C, and Cinv
     ComputeStressAndJacobian(InputParams,_Strain,_Stress,_Jac);
 
     Mate.Rank2Materials("F")=_F;

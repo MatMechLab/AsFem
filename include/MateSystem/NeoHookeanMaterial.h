@@ -52,5 +52,5 @@ private:
 private:
     RankTwoTensor _GradU,_Strain,_Stress,_I,_devStress,_F;
     RankTwoTensor _C,_Cinv,_pk2;
-    RankFourTensor _Jac;
+    RankFourTensor _Jac,_I4,_T4;
 };

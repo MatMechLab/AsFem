@@ -56,14 +56,14 @@ name=ux uy
 
 [nonlinearsolver]
   type=newton
-  maxiters=20
+  maxiters=500
   r_rel_tol=1.0e-12
   r_abs_tol=6.0e-7
 [end]
 
 [timestepping]
   type=be
-  dt=2.0e-5
+  dt=1.0e-5
   dtmax=5.0e-1
   //dtmin=5.0e-3
   time=4.0e0
