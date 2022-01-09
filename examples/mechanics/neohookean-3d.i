@@ -3,10 +3,10 @@
   dim=3
   xmax=1.0
   ymax=1.0
-  zmax=4.0
-  nx=10
-  ny=10
-  nz=50
+  zmax=2.0
+  nx=20
+  ny=20
+  nz=40
   meshtype=hex8
 [end]
 
@@ -61,7 +61,7 @@ name=ux uy uz
   maxiters=200
   r_rel_tol=1.0e-12
   r_abs_tol=6.0e-7
-  solver=superlu
+  //solver=superlu
 [end]
 
 [timestepping]
