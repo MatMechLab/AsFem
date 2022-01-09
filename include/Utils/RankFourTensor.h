@@ -183,6 +183,8 @@ public:
     //*** for push forward and pull back operator
     RankFourTensor PushByF(const RankTwoTensor &F) const;
     RankFourTensor PushForward(const RankTwoTensor &F) const;
+    //*** for conjugate dot Cijkl=Aijml*Smk
+    RankFourTensor ConjDot(const RankTwoTensor &a) const;
     //**********************************************
     //*** some setting functions
     //**********************************************

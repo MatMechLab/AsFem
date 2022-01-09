@@ -313,6 +313,23 @@ RankFourTensor RankFourTensor::operator*(const RankTwoTensor &a) const{
     }
     return temp;
 }
+//*** for conjugate dot
+RankFourTensor RankFourTensor::ConjDot(const RankTwoTensor &a) const{
+    // Cijkl=Aijml*a_mk
+    RankFourTensor temp(0.0);
+    for(int i=1;i<=_N;i++){
+        for(int j=1;j<=_N;j++){
+            for(int k=1;k<=_N;k++){
+                for(int l=1;l<=_N;l++){
+                    for(int m=1;m<=_N;m++){
+                        temp(i,j,k,l)=(*this)(i,j,m,l)*a(m,k);
+                    }
+                }
+            }
+        }
+    }
+    return temp;
+}
 //**** for left hand scale value time rank-4 tensor
 RankFourTensor operator*(const double &lhs,const RankFourTensor &a) {
     RankFourTensor temp(0.0);
@@ -383,9 +400,6 @@ RankFourTensor RankFourTensor::Rotate(const RankTwoTensor &rotate) const{
 RankFourTensor RankFourTensor::PushByF(const RankTwoTensor &F) const{
     // new Rank-4 tensor=F*R4Old*F^T
     RankFourTensor A(0.0),B(0.0);
-    RankTwoTensor Ft(0.0);
-    Ft=F.Transpose();
-
     A.SetToZeros();
     for(int i=1;i<=_N;i++){
         for(int j=1;j<=_N;j++){
@@ -405,7 +419,7 @@ RankFourTensor RankFourTensor::PushByF(const RankTwoTensor &F) const{
             for(int k=1;k<=_N;k++){
                 for(int l=1;l<=_N;l++){
                     for(int m=1;m<=_N;m++){
-                        B(i,j,k,l)+=A(i,j,k,m)*Ft(m,l);
+                        B(i,j,k,l)+=A(i,j,m,l)*F(k,m);
                     }
                 }
             }
