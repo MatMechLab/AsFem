@@ -217,9 +217,25 @@ public:
      * @param a the input vector3d
      */
     inline double ODot(const Vector3d &a)const{
-        return _vals[0]*a._vals[0]
-            +_vals[1]*a._vals[1]
-            +_vals[2]*a._vals[2];
+        // Thanks Qingchen&Jie for pointing out the Floating-point underflow issue
+        // Generally using double is enough.
+        double sum = 0.0;
+        if(_vals[0] >= std::numeric_limits<double>::epsilon()/a._vals[0] 
+        || a._vals[0] >= std::numeric_limits<double>::epsilon()/_vals[0]) 
+        {
+            sum += _vals[0] * a._vals[0];
+        }
+        if(_vals[1] >= std::numeric_limits<double>::epsilon()/a._vals[1]
+        || a._vals[1] >= std::numeric_limits<double>::epsilon()/_vals[1])
+        {
+            sum += _vals[1] * a._vals[1];
+        } 
+        if(_vals[2] >= std::numeric_limits<double>::epsilon()/a._vals[2]
+        || a._vals[2] >= std::numeric_limits<double>::epsilon()/_vals[2])
+        {
+            sum += _vals[2] * a._vals[2];
+        } 
+        return sum;
     }
     //*** for *=
     /**
@@ -260,13 +276,25 @@ public:
      * get the square of \f$L_{2}\f$ norm of vector3d, the result is \f$\sum_{i=1}{3}a_{i}*a_{i}\f$
      */
     inline double normsq()const{
-        return _vals[0]*_vals[0]+_vals[1]*_vals[1]+_vals[2]*_vals[2];
+        // Thanks Qingchen&Jie for pointing out the Floating-point underflow issue
+        // Generally using double is enough.
+        double sum = 0.0;
+        if(_vals[0] >= std::numeric_limits<double>::epsilon()/_vals[0]) sum += _vals[0] * _vals[0];
+        if(_vals[1] >= std::numeric_limits<double>::epsilon()/_vals[1]) sum += _vals[1] * _vals[1];
+        if(_vals[2] >= std::numeric_limits<double>::epsilon()/_vals[2]) sum += _vals[2] * _vals[2];
+        return sum;
     }
     /**
      * the \f$L_{2}\f$ norm of vector3d
      */
     inline double norm()const{
-        return sqrt(_vals[0]*_vals[0]+_vals[1]*_vals[1]+_vals[2]*_vals[2]);
+        // Thanks Qingchen&Jie for pointing out the Floating-point underflow issue
+        // Generally using double is enough.
+        double sum = 0.0;
+        if(_vals[0] >= std::numeric_limits<double>::epsilon()/_vals[0]) sum += _vals[0] * _vals[0];
+        if(_vals[1] >= std::numeric_limits<double>::epsilon()/_vals[1]) sum += _vals[1] * _vals[1];
+        if(_vals[2] >= std::numeric_limits<double>::epsilon()/_vals[2]) sum += _vals[2] * _vals[2];
+        return sqrt(sum);
     }
     //*** for output operator
     /**
