@@ -184,7 +184,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
             _SurfaceEntityPhyIDs.resize(numSurfaces*10,0);
             _VolumesEntityPhyIDs.resize(numVolumes*10,0);
 
-            int i;
+            int i,j;
             int nodeid,curveid,surfaceid,volumeid;
 
             //********************************************
@@ -202,8 +202,9 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 getline(_in,str);
                 numbers=StringUtils::SplitStrNum(str);
                 curveid=static_cast<int>(numbers[1-1]);
-                if(static_cast<int>(numbers[8-1])>0){
-                    _CurvesEntityPhyIDS[curveid-1]=static_cast<int>(numbers[9-1]);
+                j=static_cast<int>(numbers[8-1]);
+                if(j>0){
+                    _CurvesEntityPhyIDS[curveid-1]=static_cast<int>(numbers[8+j-1]);
                 }
             }
             //*** read surfaces entities
@@ -211,8 +212,9 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 getline(_in,str);
                 numbers=StringUtils::SplitStrNum(str);
                 surfaceid=static_cast<int>(numbers[1-1]);
-                if(static_cast<int>(numbers[8-1])>0){
-                    _SurfaceEntityPhyIDs[surfaceid-1]=static_cast<int>(numbers[9-1]);
+                j=static_cast<int>(numbers[8-1]);
+                if(j>0){
+                    _SurfaceEntityPhyIDs[surfaceid-1]=static_cast<int>(numbers[8+j-1]);
                 }
             }
             //*** read volumes entities
@@ -220,8 +222,9 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 getline(_in,str);
                 numbers=StringUtils::SplitStrNum(str);
                 volumeid=static_cast<int>(numbers[1-1]);
-                if(static_cast<int>(numbers[8-1])>0){
-                    _VolumesEntityPhyIDs[volumeid-1]=static_cast<int>(numbers[9-1]);
+                j=static_cast<int>(numbers[8-1]);
+                if(j>0){
+                    _VolumesEntityPhyIDs[volumeid-1]=static_cast<int>(numbers[8+j-1]);
                 }
             }
         }
@@ -387,7 +390,7 @@ bool Gmsh4IO::ReadMeshFromFile(Mesh &mesh){
                 if(entityDim>_nMaxDim) _nMaxDim=entityDim;
                 if(entityDim<_nMinDim) _nMinDim=entityDim;
 
-                if(entityTag>MaxPhyIDofElmt) MaxPhyIDofElmt=entityTag;
+                if(phyid>MaxPhyIDofElmt) MaxPhyIDofElmt=phyid;
 
                 for(i=0;i<numElementsInBlock;i++){
                     getline(_in,str);
