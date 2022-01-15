@@ -53,9 +53,12 @@ void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,
                     case BCType::DIRICHLETBC:
                         DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
                         break;
+                    case BCType::CYCLICDIRICHLETBC:
+                        CyclicDirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
+                        break;
                     case BCType::USER1DIRICHLETBC:
                         User1DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break; 
+                        break;
                     case BCType::USER2DIRICHLETBC:
                         User2DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
                         break; 

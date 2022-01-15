@@ -468,6 +468,9 @@ set(inc ${inc} include/BCSystem/DirichletBCBase.h)
 ### for dirichlet boundary condition
 set(inc ${inc} include/BCSystem/DirichletBC.h)
 set(src ${src} src/BCSystem/DirichletBC.cpp)
+### for cyclic dirichlet bc
+set(inc ${inc} include/BCSystem/CyclicDirichletBC.h)
+set(src ${src} src/BCSystem/CyclicDirichletBC.cpp)
 ### for user1 dirichlet bc
 set(inc ${inc} include/BCSystem/User1DirichletBC.h)
 set(src ${src} src/BCSystem/User1DirichletBC.cpp)

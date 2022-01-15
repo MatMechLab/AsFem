@@ -30,6 +30,7 @@ void BCSystem::ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,cons
         DofsIndex=it._DofIDs;
         bcnamelist=it._BoundaryNameList;
         if(it._BCType==BCType::DIRICHLETBC||
+           it._BCType==BCType::CYCLICDIRICHLETBC||
            it._BCType==BCType::USER1DIRICHLETBC||
            it._BCType==BCType::USER2DIRICHLETBC||
            it._BCType==BCType::USER3DIRICHLETBC||
@@ -412,6 +413,24 @@ void BCSystem::ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,cons
         bcnamelist=it._BoundaryNameList;
         DofsIndex=it._DofIDs;
         if(it._BCType==BCType::DIRICHLETBC){
+            for(auto bcname:bcnamelist){
+                rankne=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname)/_size;
+                eStart=_rank*rankne;
+                eEnd=(_rank+1)*rankne;
+                if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
+                for(e=eStart;e<eEnd;++e){
+                    ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);
+                    for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNumViaPhyName(bcname,e+1);++i){
+                        j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
+                        for(const auto id:DofsIndex){
+                            iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,id)-1;
+                            VecSetValues(U,1,&iInd,&bcvalue,INSERT_VALUES);
+                        }
+                    }
+                }
+            }
+        }
+        else if(it._BCType==BCType::CYCLICDIRICHLETBC){
             for(auto bcname:bcnamelist){
                 rankne=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname)/_size;
                 eStart=_rank*rankne;

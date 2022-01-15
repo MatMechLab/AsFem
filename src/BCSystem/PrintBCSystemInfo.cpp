@@ -57,7 +57,7 @@ void BCSystem::PrintBCSystemInfo()const{
         if(it._Parameters.size()>0){
             str="   boundary parameters =";
             for(auto val:it._Parameters){
-                str+=to_string(val);
+                str+=to_string(val)+" ";
             }
             MessagePrinter::PrintNormalTxt(str);
         }
