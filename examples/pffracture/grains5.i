@@ -1,6 +1,7 @@
 [mesh]
   type=gmsh
   file=grains5.msh
+  savemesh=true
 [end]
 
 [dofs]
@@ -8,11 +9,11 @@ name=d ux uy
 [end]
 
 [nonlinearsolver]
-  type=nr
+  type=newton
   maxiters=25
   r_rel_tol=1.0e-10
   r_abs_tol=5.5e-7
-  solver=superlu
+  //solver=superlu
 [end]
 
 [ics]
@@ -31,7 +32,7 @@ name=d ux uy
 [timestepping]
   type=be
   dt=2.0e-5
-  time=2.0e-1
+  time=4.0e-5
   adaptive=true
   optiters=4
   growthfactor=1.2

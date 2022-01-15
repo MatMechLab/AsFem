@@ -580,7 +580,6 @@ bool MeshBlockReader::ReadMeshBlock(ifstream &in, string str, int &linenum, Mesh
                     // if this is a comment line or empty line, we skip it
                     continue;
                 }
-
                 if(str.find("file=")!=string::npos){
                     if(str.compare(str.length()-4,4,".msh")==0){
                         string filename=str0.substr(5,string::npos);
@@ -618,7 +617,7 @@ bool MeshBlockReader::ReadMeshBlock(ifstream &in, string str, int &linenum, Mesh
                         MessagePrinter::AsFem_Exit();
                     }
                 }
-                else if(str.find("savemesh=true")!=string::npos){
+                else if(str.find("savemesh=")!=string::npos){
                     int i=str.find_first_of('=');
                     string substr=str.substr(i+1,str.length());
                     substr=StringUtils::RemoveStrSpace(substr);
@@ -652,7 +651,7 @@ bool MeshBlockReader::ReadMeshBlock(ifstream &in, string str, int &linenum, Mesh
                     MessagePrinter::PrintErrorTxt("unknown option in the [mesh] block");
                     MessagePrinter::AsFem_Exit();
                 } /**< end of option selection */
-                getline(in,str);linenum+=1;
+            
             }/**< end of the while loop */
             if(!HasFileName){
                 IsSuccess=false;
@@ -746,7 +745,6 @@ bool MeshBlockReader::ReadMeshBlock(ifstream &in, string str, int &linenum, Mesh
                     MessagePrinter::PrintErrorTxt("unknown option in the [mesh] block");
                     MessagePrinter::AsFem_Exit();
                 }
-                getline(in,str);linenum+=1;
             }
             if(!HasFileName){
                 IsSuccess=false;
