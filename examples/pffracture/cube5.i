@@ -115,23 +115,23 @@ scalarmate=vonMises
 
 [mates]
   [mymate1]
-    type=stressdecompositionmate
-    params= 2.8269e+02  1.4807e+02  1.4807e+02  1.4134e+02  6.0575e+01  1.4134e+02  4.0385e+01  4.0385e+01  8.0770e+01  2.7000e-03  1.2000e-02  1.0000e-06  5.7787e+01  0.0000e+00  0.0000e+00
+    type=miehefracmate
+    params= 2.1146e+01  3.5436e+01  2.7000e-03  1.2000e-02  1.0000e-06
   [end]
   [mymate2]
-    type=stressdecompositionmate
-    params= 2.8269e+02  1.4807e+02  1.4807e+02  1.4134e+02  6.0575e+01  1.4134e+02  4.0385e+01  4.0385e+01  8.0770e+01  2.7000e-03  1.2000e-02  1.0000e-06  1.2437e+02  0.0000e+00  0.0000e+00
+    type=miehefracmate
+    params= 4.2872e+01  3.6342e+01  2.7000e-03  1.2000e-02  1.0000e-06
   [end]
   [mymate3]
-    type=stressdecompositionmate
-    params= 2.8269e+02  1.4807e+02  1.4807e+02  1.4134e+02  6.0575e+01  1.4134e+02  4.0385e+01  4.0385e+01  8.0770e+01  2.7000e-03  1.2000e-02  1.0000e-06  1.7698e+02  0.0000e+00  0.0000e+00
+    type=miehefracmate
+    params= 1.1830e+02  4.4569e+01  2.7000e-03  1.2000e-02  1.0000e-06
   [end]
   [mymate4]
-    type=stressdecompositionmate
-    params= 2.8269e+02  1.4807e+02  1.4807e+02  1.4134e+02  6.0575e+01  1.4134e+02  4.0385e+01  4.0385e+01  8.0770e+01  2.7000e-03  1.2000e-02  1.0000e-06  1.4904e+02  0.0000e+00  0.0000e+00
+    type=miehefracmate
+    params= 7.4377e+01  1.9289e+01  2.7000e-03  1.2000e-02  1.0000e-06
   [end]
   [mymate5]
-    type=stressdecompositionmate
-    params= 2.8269e+02  1.4807e+02  1.4807e+02  1.4134e+02  6.0575e+01  1.4134e+02  4.0385e+01  4.0385e+01  8.0770e+01  2.7000e-03  1.2000e-02  1.0000e-06  8.4469e+01  0.0000e+00  0.0000e+00
+    type=miehefracmate
+    params= 1.2000e+02  2.2972e+01  2.7000e-03  1.2000e-02  1.0000e-06
   [end]
 [end]
