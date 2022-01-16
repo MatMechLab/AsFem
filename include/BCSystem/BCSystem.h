@@ -119,7 +119,8 @@ public:
     //**************************************************************
     void ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[3],Vec &U,Vec &V,Mat &AMATRIX,Vec &RHS);
     
-    void ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,const double &t,Vec &U);
+    void ApplyPresetBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const double &t,const double (&ctan)[3],Vec &U,Mat &AMATRIX,Vec &RHS);
+    
 
     void PrintBCSystemInfo()const;
 

@@ -38,7 +38,7 @@ name=ux uy
   [loading]
     type=cyclicdirichlet
     dofs=uy
-    params= 0.0 0.0 1.0 1.0
+    params= 0.0 0.0 0.1 0.1 0.2 0.0 0.3 0.2
     boundary=top
   [end]
 [end]
@@ -46,8 +46,8 @@ name=ux uy
 [timestepping]
   type=be
   dt=1.0e-5
-  dtmax=1.0e-2
-  time=2.5e-1
+  dtmax=5.0e-2
+  time=3.5e-1
   optiters=3
   adaptive=true
 [end]
