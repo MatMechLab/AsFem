@@ -47,12 +47,13 @@ void CyclicDirichletBC::ComputeU(const vector<int> &dofids, const double &bcvalu
         MessagePrinter::PrintErrorTxt("your parameters for cyclic dirichlet bc are too less, at least [x0 y0 x1 y1] should be given");
         MessagePrinter::AsFem_Exit();
     }
-    for(int i=0;i<static_cast<int>(params.size()/2);i++){
+    int j=static_cast<int>(params.size()/2.0);
+    for(int i=0;i<j;i++){
         tspan[i]=params[2*i];
         yspan[i]=params[2*i+1];
     }
     for(int i=1;i<=static_cast<int>(dofids.size());i++){
-        localU(i)=PicewiseLinearInterpolation(tspan,yspan,elmtinfo.t);
+        localU(i)=PicewiseLinearInterpolation(j,tspan,yspan,elmtinfo.t);
     }
 
 }
