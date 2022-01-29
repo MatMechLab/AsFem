@@ -11,6 +11,8 @@ markdown_extensions:
 
 theme:
   name: material
+  font:
+    code: Roboto Mono
 
 nav:
   - Home: index.md
@@ -25,6 +27,7 @@ nav:
     - Step-5: Tutorial/step-5.md
     - Step-6: Tutorial/step-6.md
     - Step-7: Tutorial/step-7.md
+    - Step-8: Tutorial/step-8.md
   - Examples:
     - PhaseField:
       - Fracture: Examples/PhaseFieldFracture.md

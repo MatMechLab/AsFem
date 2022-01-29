@@ -30,7 +30,7 @@ $$
 with $E_{0}$ being the constant Youngs modulus, $\delta$ representing fluctuation. $x$ and $y$ are the coordinate.
 
 ## Write code for your umat-1
-AsFem offers several umat(1~10), which means you can easily write your code by editing the cpp file in the `src/MateSystem` folder. In this case, we will use `umat1`, then one can open the `User1Material.cpp` file with whatever text/code editor he/she likes.
+AsFem offers several umat(1~10), which means you can easily write your code by editing the cpp file in the `src/MateSystem` folder. In this case, we will use `umat1`, then one can open the `User1Material.cpp` file with whichever text/code editor he/she likes.
 
 
 ## Constitutive laws
