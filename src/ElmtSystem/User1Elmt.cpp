@@ -43,8 +43,15 @@ void User1Elmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     //*** get rid of unused warning
     //***********************************************************
     if(elmtinfo.dt||soln.gpU[0]||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()) {}
-
-   localR(1)=0.0;
+    double rho,Cp,K,Q;
+    rho=Mate.ScalarMaterials("rho"); // density
+    Cp=Mate.ScalarMaterials("Cp");   // capacity
+    K=Mate.ScalarMaterials("K");     // thermal conductivity coefficient
+    Q=Mate.ScalarMaterials("Q");     // heat source
+    // R_T
+    localR(1)=rho*Cp*soln.gpV[1]*shp.test
+        +K*(soln.gpGradU[1]*shp.grad_test)
+        -Q*shp.test;
 
 }
 //*****************************************************************************
@@ -58,7 +65,14 @@ void User1Elmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const double (&cta
     //***********************************************************
     if(elmtinfo.dt||ctan[0]||soln.gpU[0]||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()||shp.test){}
 
-    localK(1,1)=0.0;
+    double rho,Cp,K;
+    rho=Mate.ScalarMaterials("rho"); // density
+    Cp=Mate.ScalarMaterials("Cp");   // capacity
+    K=Mate.ScalarMaterials("K");     // thermal conductivity coefficient
+
+    // K_T,T
+    localK(1,1)=rho*Cp*shp.trial*shp.test*ctan[1]
+        +K*(shp.grad_trial*shp.grad_test)*ctan[0];
 
 }
 //*******************************************************************************
