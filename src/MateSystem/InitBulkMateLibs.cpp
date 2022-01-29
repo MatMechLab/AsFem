@@ -74,6 +74,9 @@ void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateinde
         case MateType::WAVEMATE:
             WaveMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
             break;
+        case MateType::THERMALMATE:
+            ThermalMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
+            break;
         //**************************************************************
         //*** for User-Defined-Materials (UMAT)
         //**************************************************************

@@ -170,6 +170,11 @@ bool MatesBlockReader::ReadMatesBlock(ifstream &in, string str, const int &laste
                         mateBlock._MateType=MateType::WAVEMATE;
                         HasElmt=true;
                     }
+                    else if(substr.find("thermalmate")!=string::npos&&substr.length()==11){
+                        mateBlock._MateTypeName="thermal-material";
+                        mateBlock._MateType=MateType::THERMALMATE;
+                        HasElmt=true;
+                    }
                     else if(substr.find("thermelastic")!=string::npos&&substr.length()==12){
                         mateBlock._MateTypeName="thermelastic";
                         mateBlock._MateType=MateType::THERMALELASTICMATE;

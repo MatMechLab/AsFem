@@ -405,6 +405,9 @@ set(src ${src} src/MateSystem/LinearElasticCHMaterial.cpp)
 ### for wave material
 set(inc ${inc} include/MateSystem/WaveMaterial.h)
 set(src ${src} src/MateSystem/WaveMaterial.cpp)
+### for thermal material
+set(inc ${inc} include/MateSystem/ThermalMaterial.h)
+set(src ${src} src/MateSystem/ThermalMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
