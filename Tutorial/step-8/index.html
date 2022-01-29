@@ -13,7 +13,7 @@
     
     
       
-        <title>nonlinear block - AsFem</title>
+        <title>Step 8 - Write your own model (user-element) - AsFem</title>
       
     
     
@@ -58,7 +58,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#projection-block" class="md-skip">
+        <a href="#introduction" class="md-skip">
           Skip to content
         </a>
       
@@ -91,7 +91,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              nonlinear block
+              Step 8 - Write your own model (user-element)
             
           </span>
         </div>
@@ -220,12 +220,14 @@
 
   
   
+    
+  
   
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
       
       
       
@@ -248,7 +250,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-0/" class="md-nav__link">
+      <a href="../step-0/" class="md-nav__link">
         Step-0
       </a>
     </li>
@@ -262,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-1/" class="md-nav__link">
+      <a href="../step-1/" class="md-nav__link">
         Step-1
       </a>
     </li>
@@ -276,7 +278,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-2/" class="md-nav__link">
+      <a href="../step-2/" class="md-nav__link">
         Step-2
       </a>
     </li>
@@ -290,7 +292,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-3/" class="md-nav__link">
+      <a href="../step-3/" class="md-nav__link">
         Step-3
       </a>
     </li>
@@ -304,7 +306,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-4/" class="md-nav__link">
+      <a href="../step-4/" class="md-nav__link">
         Step-4
       </a>
     </li>
@@ -318,7 +320,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-5/" class="md-nav__link">
+      <a href="../step-5/" class="md-nav__link">
         Step-5
       </a>
     </li>
@@ -332,7 +334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-6/" class="md-nav__link">
+      <a href="../step-6/" class="md-nav__link">
         Step-6
       </a>
     </li>
@@ -346,7 +348,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Tutorial/step-7/" class="md-nav__link">
+      <a href="../step-7/" class="md-nav__link">
         Step-7
       </a>
     </li>
@@ -358,11 +360,21 @@
               
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../Tutorial/step-8/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         Step-8
       </a>
+      
     </li>
   
 
@@ -461,14 +473,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
       
       
       
@@ -491,7 +501,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-mesh/" class="md-nav__link">
+      <a href="../../Document/block-mesh/" class="md-nav__link">
         mesh block
       </a>
     </li>
@@ -505,7 +515,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-dofs/" class="md-nav__link">
+      <a href="../../Document/block-dofs/" class="md-nav__link">
         dofs block
       </a>
     </li>
@@ -519,7 +529,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-elmts/" class="md-nav__link">
+      <a href="../../Document/block-elmts/" class="md-nav__link">
         elmts block
       </a>
     </li>
@@ -533,7 +543,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-mates/" class="md-nav__link">
+      <a href="../../Document/block-mates/" class="md-nav__link">
         mate block
       </a>
     </li>
@@ -547,7 +557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-bcs/" class="md-nav__link">
+      <a href="../../Document/block-bcs/" class="md-nav__link">
         bcs block
       </a>
     </li>
@@ -561,7 +571,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-ics/" class="md-nav__link">
+      <a href="../../Document/block-ics/" class="md-nav__link">
         ics block
       </a>
     </li>
@@ -575,7 +585,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-qpoint/" class="md-nav__link">
+      <a href="../../Document/block-qpoint/" class="md-nav__link">
         qpoint block
       </a>
     </li>
@@ -587,52 +597,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          projection block
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../Document/block-projection/" class="md-nav__link">
         projection block
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    options
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -644,7 +613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-nonlinearsolver/" class="md-nav__link">
+      <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
         nonlinear solver block
       </a>
     </li>
@@ -658,7 +627,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../block-timestepping/" class="md-nav__link">
+      <a href="../../Document/block-timestepping/" class="md-nav__link">
         timestepping block
       </a>
     </li>
@@ -707,21 +676,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    options
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -733,23 +687,169 @@
               
                 
 
-<h1 id="projection-block">[projection] block</h1>
-<p>The block <code>[projection]</code> is used for projecting the quantities of the gauss point to the nodal point. This block's layout looks as follows:</p>
-<pre><code>[projection]
-  name=x1 x2 x3
-  scalarmate=mate1 mate2 ...
-  vectormate=vmat1 vmat2 ...
-  rank2mate=stress strain ...
-  rank4mate=jacobian ...
+<h1 id="introduction">Introduction</h1>
+<p>In this step, we will try to implement our first user-defined-element (UEL). Now the equation we used here can be whatever you like. Let's take the <a href="https://en.wikipedia.org/wiki/Heat_equation">heat conduct</a> equation as an example.</p>
+<p>The general heat conduct equation takes the following form:
+$$
+\begin{equation}
+\rho c_{p}\frac{\partial T}{\partial t}=\nabla(k\nabla T)+\dot{q}_{v}
+\label{eq:T}
+\tag{1}
+\end{equation}
+$$
+where <span class="arithmatex">\(\rho\)</span> is the density, <span class="arithmatex">\(c_{p}\)</span> denotes the heat capacity, <span class="arithmatex">\(\dot{q}\)</span> is the volumetric heat source, <span class="arithmatex">\(k\)</span> represents the thermal conductivity coefficient.</p>
+<p>The related boundary conditions can be list below:
+$$
+\begin{equation}
+T=T_{g}~\mathrm{on}~\Omega_{D},\qquad\mathrm{with}~-k\nabla T\cdot\vec{n}=j_{0}~\mathrm{on}~\Omega_{N}
+\label{eq:bc}
+\tag{2}
+\end{equation}
+$$</p>
+<h1 id="the-user-defined-element-uel">The user-defined-element (uel)</h1>
+<p>In AsFem, users can define their own model (governing equations) by using the <code>uel</code>. In each uel, user must given the details for the related residual and jacobian calculation.</p>
+<p>In this step, we try to write out the code for our heat equation. The residual and system jacobian matrix for Eq.<span class="arithmatex">\(\eqref{eq:T}\)</span> can be read as follows:</p>
+<div class="arithmatex">\[
+\begin{equation}
+\begin{aligned}
+R_{T}^{I}&amp;=\int_{\Omega}\rho c_{p}\dot{T} N^{I}dV
++\int_{\Omega}k\nabla T\nabla N^{I}dV
+-\int_{\Omega}\dot{q}_{v}N^{I}dV
+-\int_{\partial\Omega}k \nabla T\cdot\vec{n}N^{I} dS \\
+&amp;=\int_{\Omega}\rho c_{p}\dot{T} N^{I}dV
++\int_{\Omega}k\nabla T\nabla N^{I}dV
+-\int_{\Omega}\dot{q}_{v}N^{I}dV
++\int_{\partial\Omega}j_{0}N^{I} dS
+\end{aligned}
+\label{eq:residual}
+\tag{3}
+\end{equation}
+\]</div>
+<p>and
+$$
+\begin{equation}
+K_{TT}^{IJ}=\frac{\partial R_{T}^{I}}{\partial T^{J}}=\int_{\Omega}\rho c_{p}\frac{\partial\dot{T}}{\partial T}N^{J}N^{I}dV
++\int_{\Omega}k\nabla N^{J}\nabla N^{I}dV
+\label{eq:jacobian}
+\tag{4}
+\end{equation}
+$$</p>
+<p>Then, the formulation part is done!</p>
+<h2 id="writing-code-for-your-uel-1">Writing code for your uel-1</h2>
+<p>AsFem offers several uel(1~20), which means you can easily write your code by editing the cpp file in the <code>src/ElmtSystem</code> folder. In this case, we will use <code>uel1</code>, then one can open the <code>User1Elmt.cpp</code> file with whichever text/code editor he/she likes.</p>
+<h3 id="material-properties">Material  properties</h3>
+<p>It is not necessary to call a material code for the calculation, but it could be very flexible if one combines <code>umat</code> and <code>uel</code>. Therefore, one can use one <code>umat</code> to calculate the material properties required by Eq.<span class="arithmatex">\(\eqref{eq:residual}\)</span> and Eq.<span class="arithmatex">\(\eqref{eq:jacobian}\)</span>.</p>
+<p>For example, the built-in <code>thermalmate</code> defines:</p>
+<pre><code>Mate.ScalarMaterials(&quot;rho&quot;)=InputParams[0];// density
+Mate.ScalarMaterials(&quot;Cp&quot;) =InputParams[1];// heat capacity
+Mate.ScalarMaterials(&quot;K&quot;)  =InputParams[2];// thermal conductivity
+Mate.ScalarMaterials(&quot;Q&quot;)  =InputParams[3];// body heat source
+</code></pre>
+<p>therefore, you can use <code>User1Mate</code> or <code>UserXMate</code> for the same purpose. Once your materials are ready, we can move on to the next step, your <strong>first uel</strong>!</p>
+<h3 id="uel">UEL</h3>
+<p>For Eq.<span class="arithmatex">\(\eqref{eq:residual}\)</span>, namely the residual computation, one can write:</p>
+<pre><code>localR(1)=_rho*_Cp*soln.gpV[1]*shp.test
+         +_K*(soln.gpGradU[1]*shp.grad_test)
+         -_Q*shp.test;
+</code></pre>
+<p>next, the system jacobian (Eq.<span class="arithmatex">\(\eqref{eq:jacobian}\)</span>) can be calculated as follows:</p>
+<pre><code>localK(1,1)=_rho*_Cp*shp.trial*shp.test*ctan[1]
+           +_K*(shp.grad_trial*shp.grad_test)*ctan[0];
+</code></pre>
+<p>That's all the code for your model, done!</p>
+<h1 id="solve-the-problem">Solve the problem</h1>
+<h2 id="choose-the-uel-1">Choose the uel-1</h2>
+<p>Since you have wrote the code for your own element, then you should save the <code>User1Elmt.cpp</code> file and <strong>make AsFem again</strong> by running(you should have the <strong>Makefile</strong>, otherwise, please do <code>cmake CMakeLists.txt</code>):</p>
+<pre><code>make -j4
+</code></pre>
+<p>Then, you can tell AsFem to use the <code>User1Elmt</code> via:</p>
+<pre><code>[elmts]
+  [mythermal]
+    type=user1
+    dofs=T
+    mate=mymate
+  [end]
 [end]
 </code></pre>
-<h2 id="options">options</h2>
-<p>The <code>name=</code> option specifies the name of the scalar value you want to project, it should be calculated/defined in your element, it is independent with the material system.</p>
-<p><code>scalarmate=</code> specifies the name of scalar type materials you want to project, which should be defined/calculated in your materials. For example, <code>Mate.ScalarMaterials("myscalar")=0.0</code>, where "myscalar" is the name for the vector type material.</p>
-<p><code>vectormate=</code> specifies the name of vector type materials you want to project, which should be defined/calculated in your materials. For example, <code>Mate.VectorMaterials("myvector")=1.0</code>, where "myvector" is the name for the vector type material.</p>
-<p><code>rank2mate=</code> specifies the name of rank-2 tensor type materials you want to project, which should be defined/calculated in your materials. For example, <code>Mate.Rank2Materials("mystress")=1.0</code>, where "mystress" is the name for the rank-2 tensor type material.</p>
-<p><code>rank4mate=</code> specifies the name of rank-4 tensor type materials you want to project, which should be defined/calculated in your materials. For example, <code>Mate.Rank4Materials("myjacobian")=1.0</code>, where "myjacobian" is the name for the rank-4 tensor type material.</p>
-<p>Once you put the correct name of the material properties there, AsFem will automatically save them into the result file. Then you can check them easily in the Paraview.</p>
+<p>here <code>type=user1</code> means we will use the heat equation defined in <code>User1Elmt.cpp</code>. The related material properties can be defined as follows:</p>
+<pre><code>[mates]
+  [mymate]
+    type=user2
+    params=1.0 1.5 2.0 0.0
+    //     rho Cp  K   Q
+  [end]
+[end]
+</code></pre>
+<h2 id="projection-for-materials">Projection for materials</h2>
+<p>If one want to check the gradient of the temperature, one can define a vector material as follows:</p>
+<pre><code>Mate.VectorMaterials(&quot;gradT&quot;)=elmtsoln.gpGradU[1];
+</code></pre>
+<p>then in your <code>[projection]</code> block, you can use:</p>
+<pre><code>[projection]
+vectormate=gradT
+[end]
+</code></pre>
+<p>Then you will see your <code>gradT</code> in the <code>Paraview</code>.</p>
+<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<p>Now, let's try your first uel example in AsFem. You can create a new text file and name it as step8.i or whatever you like. Then copy the following lines into your input file:</p>
+<pre><code>[mesh]
+  type=asfem
+  dim=2
+  xmax=10.0
+  ymax=2.0
+  nx=100
+  ny=20
+  meshtype=quad9
+[end]
+
+[dofs]
+name=T
+[end]
+
+[elmts]
+  [mythermal]
+    type=user1
+    dofs=T
+    mate=mymate
+  [end]
+[end]
+
+[mates]
+  [mymate]
+    type=user2
+    params=1.0 1.5 2.0 0.0
+    //     rho Cp  K   Q
+  [end]
+[end]
+
+[bcs]
+  [flux]
+    type=neumann
+    dofs=T
+    value=-0.1
+    boundary=right
+  [end]
+[end]
+
+[timestepping]
+  type=be
+  dt=1.0e-5
+  dtmax=1.0e-2
+  time=1.0e-1
+  optiters=3
+  adaptive=true
+[end]
+
+[projection]
+vectormate=gradT
+[end]
+
+[job]
+  type=transient
+  debug=dep
+[end]
+</code></pre>
+<p>You can also find the complete input file in <code>examples/tutorial/step8.i</code>.</p>
 
               
             </article>
@@ -763,7 +863,7 @@
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="../block-qpoint/" class="md-footer__link md-footer__link--prev" aria-label="Previous: qpoint block" rel="prev">
+        <a href="../step-7/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-7" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -772,20 +872,20 @@
               <span class="md-footer__direction">
                 Previous
               </span>
-              qpoint block
+              Step-7
             </div>
           </div>
         </a>
       
       
         
-        <a href="../block-nonlinearsolver/" class="md-footer__link md-footer__link--next" aria-label="Next: nonlinear solver block" rel="next">
+        <a href="../../Examples/PhaseFieldFracture/" class="md-footer__link md-footer__link--next" aria-label="Next: Fracture" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              nonlinear solver block
+              Fracture
             </div>
           </div>
           <div class="md-footer__button md-icon">
