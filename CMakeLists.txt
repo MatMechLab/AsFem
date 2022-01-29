@@ -271,6 +271,9 @@ set(src ${src} src/ElmtSystem/AllenCahnFractureElmt.cpp)
 ### For wave element
 set(inc ${inc} include/ElmtSystem/WaveElmt.h)
 set(src ${src} src/ElmtSystem/WaveElmt.cpp)
+### for thermal element
+set(inc ${inc} include/ElmtSystem/ThermalElmt.h)
+set(src ${src} src/ElmtSystem/ThermalElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
