@@ -24,10 +24,10 @@ int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
 
-    const PetscInt Year=2021;
-    const PetscInt Month=9;
-    const PetscInt Day=1;
-    const PetscReal Version=0.6;
+    const PetscInt Year=2022;
+    const PetscInt Month=1;
+    const PetscInt Day=30;
+    const PetscReal Version=0.7;
 
     Welcome(Year,Month,Day,Version);
 
