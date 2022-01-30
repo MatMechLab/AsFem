@@ -8,34 +8,34 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.28
-//+++ Purpose: the main program of the whole AsFem framework
+//+++ Date   : 2022.01.15
+//+++ Purpose: test cpp for the functionality of AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include <iostream>
 #include "petsc.h"
 
-#include "Welcome.h"
-
-#include "FEProblem/FEProblem.h"
-
+#include "Utils/MathFuns.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
 
-    const PetscInt Year=2022;
-    const PetscInt Month=1;
-    const PetscInt Day=30;
-    const PetscReal Version=0.7;
+    vector<double> xs,ys,xi;
+    
+    xs.push_back(0.0);ys.push_back(0.0);
+    xs.push_back(1.0);ys.push_back(1.0);
+    xs.push_back(2.0);ys.push_back(-1.0);
 
-    Welcome(Year,Month,Day,Version);
+    xi.push_back(0.5);
+    xi.push_back(1.5);
+    xi.push_back(1.8);
+    xi.push_back(2.5);
+    xi.push_back(3.5);
 
-    FEProblem feProblem;
-    feProblem.InitFEProblem(args,argv);
-    feProblem.Run();
-    feProblem.Finalize();
-
+    for(const auto &it:xi){
+        cout<<"xi="<<it<<", interpolated value="<<PicewiseLinearInterpolation(xs,ys,it)<<endl;
+    }
 
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

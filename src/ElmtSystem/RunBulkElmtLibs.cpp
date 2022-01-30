@@ -60,6 +60,9 @@ void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &
         case ElmtType::WAVEELMT:
             WaveElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
             break;
+        case ElmtType::THERMALCONDUCTELMT:
+            ThermalElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
+            break;
         //********************************************************
         //*** for user-defined-element(UEL)
         //********************************************************

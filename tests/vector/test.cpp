@@ -8,34 +8,32 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.28
-//+++ Purpose: the main program of the whole AsFem framework
+//+++ Date   : 2022.01.15
+//+++ Purpose: test cpp for the functionality of AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include <iostream>
 #include "petsc.h"
 
-#include "Welcome.h"
-
-#include "FEProblem/FEProblem.h"
-
+#include "Utils/Vector3d.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
 
-    const PetscInt Year=2022;
-    const PetscInt Month=1;
-    const PetscInt Day=30;
-    const PetscReal Version=0.7;
+    Vector3d myvec;
+    
+    myvec(1)=numeric_limits<double>::epsilon();
+    myvec(2)=numeric_limits<double>::epsilon();
+    myvec(3)=numeric_limits<double>::epsilon();
 
-    Welcome(Year,Month,Day,Version);
+    cout<<"norm is:"<<myvec.norm()<<", normsq is:"<<myvec.normsq()<<endl;
 
-    FEProblem feProblem;
-    feProblem.InitFEProblem(args,argv);
-    feProblem.Run();
-    feProblem.Finalize();
+    myvec(1)=numeric_limits<long double>::epsilon();
+    myvec(2)=numeric_limits<long double>::epsilon();
+    myvec(3)=numeric_limits<long double>::epsilon();
 
+    cout<<"norm is:"<<myvec.norm()<<", normsq is:"<<myvec.normsq()<<endl;
 
     ierr=PetscFinalize();CHKERRQ(ierr);
     return ierr;

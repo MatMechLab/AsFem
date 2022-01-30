@@ -101,6 +101,11 @@ bool BCsBlockReader::ReadBCBlock(ifstream &in, string str, const int &lastendlin
                         bcblock._BCType=BCType::DIRICHLETBC;
                         HasElmt=true;
                     }
+                    else if(substr.find("cyclicdirichlet")!=string::npos && substr.length()==15){
+                        bcblock._BCTypeName="cyclicdirichlet";
+                        bcblock._BCType=BCType::CYCLICDIRICHLETBC;
+                        HasElmt=true;
+                    }
                     else if(substr.find("user1dirichlet")!=string::npos && substr.length()==14){
                         bcblock._BCTypeName="user1dirichlet";
                         bcblock._BCType=BCType::USER1DIRICHLETBC;

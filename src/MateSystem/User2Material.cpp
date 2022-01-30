@@ -29,4 +29,16 @@ void User2Material::ComputeMaterialProperties(const vector<double> &InputParams,
     //**************************************************************
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
 
+    if(InputParams.size()<4){
+        MessagePrinter::PrintErrorTxt("for user2material, you need at least 4 parameters, they are: rho, capacity, K, and Q");
+        MessagePrinter::AsFem_Exit();
+    }
+
+    Mate.ScalarMaterials("rho")=InputParams[1-1];
+    Mate.ScalarMaterials("Cp")=InputParams[2-1];
+    Mate.ScalarMaterials("K")=InputParams[3-1];
+    Mate.ScalarMaterials("Q")=InputParams[4-1];
+
+    Mate.VectorMaterials("gradT")=elmtsoln.gpGradU[1];// gradient of temperature
+
 }

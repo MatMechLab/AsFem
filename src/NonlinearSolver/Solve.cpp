@@ -51,10 +51,16 @@ PetscErrorCode ComputeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
     int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);// just to get rid of unused snes warning
-    user->_bcSystem->ApplyInitialBC(*user->_mesh,*user->_dofHandler,
-                                   user->_fectrlinfo->t+user->_fectrlinfo->dt,// t in fectrlinfo is still the previous one
-                                   U);
+    //user->_bcSystem->ApplyInitialBC(*user->_mesh,*user->_dofHandler,
+    //                               user->_fectrlinfo->t+user->_fectrlinfo->dt,// t in fectrlinfo is still the previous one
+    //                               U);
 
+    user->_bcSystem->ApplyPresetBC(*user->_mesh,*user->_dofHandler,FECalcType::ComputeResidual,
+                                   user->_fectrlinfo->t+user->_fectrlinfo->dt,
+                                   user->_fectrlinfo->ctan,
+                                   U,
+                                   user->_equationSystem->_AMATRIX,
+                                   user->_equationSystem->_RHS);
     // set the ctan array according to different time stepping method
     if(user->_fectrlinfo->_timesteppingtype==TimeSteppingType::STATIC){
         // for static analysis
@@ -142,10 +148,15 @@ PetscErrorCode ComputeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
     AppCtx *user=(AppCtx*)ctx;
     
     user->_feSystem->ResetMaxAMatrixValue();
-    user->_bcSystem->ApplyInitialBC(*user->_mesh,*user->_dofHandler,
+    //user->_bcSystem->ApplyInitialBC(*user->_mesh,*user->_dofHandler,
+    //                               user->_fectrlinfo->t+user->_fectrlinfo->dt,
+    //                               U);
+    user->_bcSystem->ApplyPresetBC(*user->_mesh,*user->_dofHandler,FECalcType::ComputeResidual,
                                    user->_fectrlinfo->t+user->_fectrlinfo->dt,
-                                   U);
-
+                                   user->_fectrlinfo->ctan,
+                                   U,
+                                   user->_equationSystem->_AMATRIX,
+                                   user->_equationSystem->_RHS);
     // set the ctan array according to different time stepping method
     if(user->_fectrlinfo->_timesteppingtype==TimeSteppingType::STATIC){
         // for static analysis
@@ -254,9 +265,13 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
             0,
             fectrlinfo.IsDepDebug};
 
+    _appctx._bcSystem->ApplyPresetBC(*_appctx._mesh,*_appctx._dofHandler,FECalcType::ComputeResidual,
+                                     fectrlinfo.dt,
+                                     fectrlinfo.ctan,
+                                     _appctx._solutionSystem->_Unew,
+                                     _appctx._equationSystem->_AMATRIX,
+                                     _appctx._equationSystem->_RHS);
 
-    _appctx._bcSystem->ApplyInitialBC(*_appctx._mesh,*_appctx._dofHandler,1.0,_appctx._solutionSystem->_Unew);
-    
     SNESSetFunction(_snes,_appctx._equationSystem->_RHS,ComputeResidual,&_appctx);
 
     SNESSetJacobian(_snes,_appctx._equationSystem->_AMATRIX,_appctx._equationSystem->_AMATRIX,ComputeJacobian,&_appctx);

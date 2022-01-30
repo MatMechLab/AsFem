@@ -271,6 +271,9 @@ set(src ${src} src/ElmtSystem/AllenCahnFractureElmt.cpp)
 ### For wave element
 set(inc ${inc} include/ElmtSystem/WaveElmt.h)
 set(src ${src} src/ElmtSystem/WaveElmt.cpp)
+### for thermal element
+set(inc ${inc} include/ElmtSystem/ThermalElmt.h)
+set(src ${src} src/ElmtSystem/ThermalElmt.cpp)
 ### for UEL1
 set(inc ${inc} include/ElmtSystem/User1Elmt.h)
 set(src ${src} src/ElmtSystem/User1Elmt.cpp)
@@ -405,6 +408,9 @@ set(src ${src} src/MateSystem/LinearElasticCHMaterial.cpp)
 ### for wave material
 set(inc ${inc} include/MateSystem/WaveMaterial.h)
 set(src ${src} src/MateSystem/WaveMaterial.cpp)
+### for thermal material
+set(inc ${inc} include/MateSystem/ThermalMaterial.h)
+set(src ${src} src/MateSystem/ThermalMaterial.cpp)
 ### For UMAT1
 set(inc ${inc} include/MateSystem/User1Material.h)
 set(src ${src} src/MateSystem/User1Material.cpp)
@@ -468,6 +474,9 @@ set(inc ${inc} include/BCSystem/DirichletBCBase.h)
 ### for dirichlet boundary condition
 set(inc ${inc} include/BCSystem/DirichletBC.h)
 set(src ${src} src/BCSystem/DirichletBC.cpp)
+### for cyclic dirichlet bc
+set(inc ${inc} include/BCSystem/CyclicDirichletBC.h)
+set(src ${src} src/BCSystem/CyclicDirichletBC.cpp)
 ### for user1 dirichlet bc
 set(inc ${inc} include/BCSystem/User1DirichletBC.h)
 set(src ${src} src/BCSystem/User1DirichletBC.cpp)
@@ -491,6 +500,7 @@ set(src ${src} src/BCSystem/CheckAppliedBCNameIsValid.cpp)
 set(src ${src} src/BCSystem/PrintBCSystemInfo.cpp)
 set(src ${src} src/BCSystem/ApplyBC.cpp)
 set(src ${src} src/BCSystem/ApplyDirichletBC.cpp)
+set(src ${src} src/BCSystem/ApplyPresetBC.cpp)
 set(src ${src} src/BCSystem/ApplyNodalDirichletBC.cpp)
 set(src ${src} src/BCSystem/ApplyNodalNeumannBC.cpp)
 set(src ${src} src/BCSystem/RunBCLibs.cpp)

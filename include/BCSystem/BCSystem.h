@@ -47,6 +47,7 @@
 #include "BCSystem/NeumannBC.h"
 #include "BCSystem/FluxBC.h"
 #include "BCSystem/NodalForceBC.h"
+#include "BCSystem/CyclicDirichletBC.h"
 /**
  * For user-defined dirichlet bc
  */
@@ -78,6 +79,7 @@ class BCSystem:public DirichletBC,
                public NeumannBC,
                public FluxBC,
                public NodalForceBC,
+               public CyclicDirichletBC,
                // for user-defined-dirichlet-type bc
                public User1DirichletBC,
                public User2DirichletBC,
@@ -117,7 +119,8 @@ public:
     //**************************************************************
     void ApplyBC(const Mesh &mesh,const DofHandler &dofHandler,FE &fe,const FECalcType &calctype,const double &t,const double (&ctan)[3],Vec &U,Vec &V,Mat &AMATRIX,Vec &RHS);
     
-    void ApplyInitialBC(const Mesh &mesh,const DofHandler &dofHandler,const double &t,Vec &U);
+    void ApplyPresetBC(const Mesh &mesh,const DofHandler &dofHandler,const FECalcType &calctype,const double &t,const double (&ctan)[3],Vec &U,Mat &AMATRIX,Vec &RHS);
+    
 
     void PrintBCSystemInfo()const;
 
