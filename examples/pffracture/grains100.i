@@ -13,7 +13,7 @@ name=d ux uy
   maxiters=20
   r_rel_tol=5.0e-10
   r_abs_tol=5.5e-7
-  solver=superlu
+  //solver=superlu
 [end]
 
 [ics]

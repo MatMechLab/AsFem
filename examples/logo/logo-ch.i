@@ -58,7 +58,7 @@ name=c mu
 
 [nonlinearsolver]
   type=nr
-  solver=superlu
+  //solver=superlu
 [end]
 
 [ics]

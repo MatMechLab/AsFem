@@ -54,7 +54,8 @@ rank4mate=jacobian
   maxiters=20
   r_rel_tol=5.0e-8
   r_abs_tol=4.5e-7
-  solver=mumps
+  //solver=cg
+  //solver=mumps
 [end]
 
 [job]

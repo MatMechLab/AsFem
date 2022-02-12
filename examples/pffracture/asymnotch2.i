@@ -29,7 +29,6 @@ name=d ux uy
   maxiters=80
   r_rel_tol=5.0e-10
   r_abs_tol=2.5e-7
-  solver=mumps
 [end]
 
 [ics]
