@@ -19,7 +19,7 @@ void User1Material::InitMaterialProperties(const vector<double> &InputParams, co
     //*** get rid of unused warning
     //***************************************************
     if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||Mate.GetScalarMate().size()){}
-
+    Mate.Rank2Materials("stress").SetToZeros();
 }
 
 //********************************************************************

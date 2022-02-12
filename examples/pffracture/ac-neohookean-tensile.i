@@ -30,6 +30,7 @@ name=d ux uy
   r_rel_tol=1.0e-10
   r_abs_tol=5.5e-7
   //solver=superlu
+  //solver=cg
 [end]
 
 [ics]
