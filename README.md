@@ -1,11 +1,13 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4603558.svg?style=flat-square)](https://doi.org/10.5281/zenodo.4603557)
 
 # AsFem
+
 A **simple** finite element method program, which is short for **AsFem**. AsFem is written in C++ and designed for phase-field modeling and multiphysics coupling. The [PETSc](https://www.mcs.anl.gov/petsc/) library is involved in AsFem for the efficient computing.
 
 For '**simple**', we try to make the finite element programming and modeling, as simple as possible.
 
 # Download
+
 ```
 git clone https://github.com/M3Group/AsFem.git
 ```
@@ -17,7 +19,8 @@ git clone https://gitee.com/m3group/AsFem.git
 ```
 
 
-## Installation
+# Installation
+
 The installation details of AsFem can be found here [AsFem-Installation](https://m3group.github.io/AsFem/install/) .
 
 After you've installed your PETSc (PETSC_DIR) and MPI (MPI_DIR), all you have to do is:
@@ -33,16 +36,20 @@ spinodal-decomposition              |  double-notch failure
 :-------------------------:|:-------------------------:
 ![](figures/CahnHilliard.gif)      |  ![](figures/DoubleNotch.gif)
 
-# Tutorial
+# Tutorial & examples
 The tutorial is avialable here https://m3group.github.io/AsFem/Tutorial/step-0/
 
 For Chinese users, the video lecture is available on bilibili, please see [AsFem-Lecture](https://space.bilibili.com/100272198/channel/detail?cid=193605).
+
+Currently, one can find the tested input files in both the `AsFem/examples` folder as well as `AsFem/test_input` folder. For a better understanding of how to use AsFem, please take a look at these input files first.
 
 # Document
 The code is documented by the [Doxygen](https://www.doxygen.nl/index.html) package, one can generate the pdf file or html files via:
 ```
 doxygen
 ```
+
+More documents and details can be found in AsFem's [homepage](https://m3group.github.io/AsFem/).
 
 # Author
 [Yang Bai](https://yangbai90.github.io/)
@@ -63,7 +70,20 @@ doxygen
 }
 ```
 
-# Discussion & bug report
+# Contribute
+
+If you discover bugs in the `AsFem` package, please create an issue at the project repository on GitHub at https://github.com/M3Group/AsFem.
+
+If you find the AsFem package useful, we welcome your code and documentation contributions. To contribute, fork the repository on GitHub, and submit a pull request at https://github.com/M3Group/AsFem.
+
+
+# Contact
+
+Submit bug reports and feature requests on the [repository issue tracker](https://github.com/M3Group/AsFem/issues).
+
+
+# Discussion
+
 If you are interested in AsFem or have any questions, just feel free to send me an email [Mail2Me](mailto:yangbai90@outlook.com) or join the QQ group for more discussion .
 ```
 QQ group: 879908352
