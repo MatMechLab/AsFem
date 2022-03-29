@@ -46,7 +46,7 @@ name=disp_x disp_y
 [end]
 
 [projection]
-name=reacforce_x reacforce_y
+scalarmate=vonMises
 [end]
 
 [bcs]

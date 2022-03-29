@@ -55,7 +55,7 @@ void AllenCahnFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     double L=Mate.ScalarMaterials("L");
     double Hist=Mate.ScalarMaterials("H");
     double dFdD=Mate.ScalarMaterials("dFdD");
-    RankTwoTensor Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
+    RankTwoTensor Stress=Mate.Rank2Materials("stress");
 
     localR(1)=soln.gpV[1]*shp.test
             +M*2*(soln.gpU[1]-1)*Hist*shp.test
@@ -152,8 +152,7 @@ void AllenCahnFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,cons
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.dt||ctan[0]||soln.gpU[0]||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
-    gpProj["reacforce_x"]=Mate.Rank2Materials("stress").IthRow(1)*shp.grad_test;
-    gpProj["reacforce_y"]=Mate.Rank2Materials("stress").IthRow(2)*shp.grad_test;
-    gpProj["reacforce_z"]=Mate.Rank2Materials("stress").IthRow(3)*shp.grad_test;
+    if(elmtinfo.dt||ctan[0]||soln.gpU[0]||shp.test||
+       Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()||
+       gpProj.size()){}
 }

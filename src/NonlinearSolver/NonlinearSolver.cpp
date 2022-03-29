@@ -21,14 +21,14 @@
 NonlinearSolver::NonlinearSolver(){
     _Rnorm0=1.0;_Rnorm=1.0;
     _Enorm0=1.0;_Enorm=1.0;
-    _RAbsTol=4.0e-8;_RRelTol=1.0e-9;
+    _RAbsTol=6.0e-7;_RRelTol=1.0e-9;
     _EAbsTol=1.0e-19;_ERelTol=1.0e-20;
     _MaxIters=25;_Iters=0;
     _STol=1.0e-16;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
-    _LinearSolverName="default(cg)";
-    _PCTypeName="lu";
+    _LinearSolverName="default(GMRES)";
+    _PCTypeName="ilu(single)/bjacob(cpus)";
     _CheckJacobian=false;
 }
 
@@ -56,13 +56,14 @@ void NonlinearSolver::Init(){
     //*** init KSP
     //**************************************************
     SNESGetKSP(_snes,&_ksp);
-    KSPGMRESSetRestart(_ksp,1800);
+    KSPGMRESSetRestart(_ksp,2200);
     KSPGetPC(_ksp,&_pc);
 
     if(_LinearSolverName=="default"){
-        // the default solver is the direct solver based petsc
-        KSPSetType(_ksp,KSPCG);
+        // the default solver is the iterative solver based GMRES
+        //KSPSetType(_ksp,KSPCG);
         PCSetType(_pc,PCLU);
+        // keep the default options
     }
     else if(_LinearSolverName=="gmres"){
         KSPSetType(_ksp,KSPGMRES);
