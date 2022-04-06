@@ -108,7 +108,10 @@ void NonlinearSolver::Init(){
     //*** for different type of nonlinear methods
     //**************************************************
     SNESSetType(_snes,SNESNEWTONLS);// our default method
-    if(_SolverType==NonlinearSolverType::NEWTON || _SolverType==NonlinearSolverType::NEWTONLS){
+    if(_SolverType==NonlinearSolverType::NEWTON){
+        // here we will call the hand-write newton-raphson iteration without line search
+    }
+    else if(_SolverType==NonlinearSolverType::NEWTONLS){
         SNESSetType(_snes,SNESNEWTONLS);
         SNESGetLineSearch(_snes,&_sneslinesearch);
         SNESLineSearchSetType(_sneslinesearch,SNESLINESEARCHBT);

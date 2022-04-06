@@ -614,6 +614,7 @@ set(inc ${inc} include/NonlinearSolver/NonlinearSolverBlock.h)
 set(inc ${inc} include/NonlinearSolver/NonlinearSolver.h)
 set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
 set(src ${src} src/NonlinearSolver/Solve.cpp)
+set(src ${src} src/NonlinearSolver/NewtowRaphsonSolve.cpp)
 
 #############################################################
 ### For time stepping system in AsFem                     ###
