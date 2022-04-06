@@ -9,20 +9,29 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2020.07.12
-//+++ Purpose: implement the GaussÃÂ¢ÃÂÃÂLobatto rule for the integration
+//+++ Purpose: implement the Gauss Lobatto rule for the integration
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
 #include "FE/QPointBase.h"
 
+/**
+ * the class inherit from the QPointBase class, and implement the method for the gauss-lobatto generation
+ */
 class QPointGaussLobatto:public QPointBase{
 public:
+    /**
+     * constructor for different purpose
+     */
     QPointGaussLobatto();
     QPointGaussLobatto(int dim,int order);
     //************************************************
     //*** for basic settings
     //************************************************
+    /**
+     * constructor for different purpose
+     */
     void SetDim(int dim) {_nDim=dim;_HasDim=true;}
     void SetQPointOrder(int order) {_nQpOrder=order;_HasOrder=true;}
     void SetQPointType(QPointType qptype) {_QpType=qptype;_HasSettings=true;}

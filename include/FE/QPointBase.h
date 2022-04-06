@@ -28,13 +28,25 @@
 #include "Mesh/MeshType.h"
 #include "FE/QPointType.h"
 
+/**
+ * this class defines the abstract class for gauss quadrature point generation.
+ * All the other gauss point generator should inherit this one!
+ */
 class QPointBase{
 public:
+    /**
+     * constructor
+     */
     QPointBase(){
         _nQpOrder=1;_nQpPoints=1;_nDim=1;
         _QpCoords.clear();
         _QpType=QPointType::GAUSSLEGENDRE;
     }
+
+    /**
+     * qpoint generation method, which should be implement by the child class
+     * @param meshtype the type of the specific mesh
+     */
     virtual void CreateQpoints(MeshType meshtype)=0;
 
 

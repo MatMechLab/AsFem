@@ -14,6 +14,9 @@
 
 #pragma once
 
+/**
+ * the enum class for different types of nonlinear solver
+ */
 enum class NonlinearSolverType{
     NEWTON,
     NEWTONLS,

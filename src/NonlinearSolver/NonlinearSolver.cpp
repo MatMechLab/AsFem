@@ -21,10 +21,10 @@
 NonlinearSolver::NonlinearSolver(){
     _Rnorm0=1.0;_Rnorm=1.0;
     _Enorm0=1.0;_Enorm=1.0;
-    _RAbsTol=6.0e-7;_RRelTol=1.0e-9;
+    _RAbsTol=7.5e-7;_RRelTol=1.0e-9;
     _EAbsTol=1.0e-19;_ERelTol=1.0e-20;
     _MaxIters=25;_Iters=0;
-    _STol=1.0e-16;
+    _STol=0.0;
     _SolverType=NonlinearSolverType::NEWTONLS;
     _SolverTypeName="newton with line search";
     _LinearSolverName="default(GMRES)";

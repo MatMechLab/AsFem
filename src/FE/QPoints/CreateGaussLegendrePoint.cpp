@@ -15,9 +15,8 @@
 
 #include "FE/QPointGaussLegendre.h"
 
-void QPointGaussLegendre::CreateQpoints(MeshType meshtype)
-{
-    if (!_HasDim && !_HasOrder && !_HasSettings){
+void QPointGaussLegendre::CreateQpoints(MeshType meshtype){
+    if (!_HasDim || !_HasOrder || !_HasSettings){
         MessagePrinter::PrintErrorTxt("can\'t generate gauss-legendre points for the integration, neither the dim, the order or the type is given");
         MessagePrinter::AsFem_Exit();
     }
@@ -34,15 +33,15 @@ void QPointGaussLegendre::CreateQpoints(MeshType meshtype)
 //****************************************************************
 //*** For 1D Gauss-Legendre point generation
 //****************************************************************
-void QPointGaussLegendre::Create1DGaussPoint()
-{
+void QPointGaussLegendre::Create1DGaussPoint(){
+    // taken from https://en.wikipedia.org/wiki/Gauss%E2%80%93Legendre_quadrature
     switch (GetQpOrder())
     {
     case 0:
     case 1:
     {
         _nQpPoints = 1;
-        _QpCoords.resize(2, 0.0);
+        _QpCoords.resize(1*(1+1), 0.0);
         (*this)(1, 0) = 2.0;
         (*this)(1, 1) = 0.0;
         return;
@@ -51,9 +50,10 @@ void QPointGaussLegendre::Create1DGaussPoint()
     case 3:
     {
         _nQpPoints = 2;
-        _QpCoords.resize(2 * (1 + 1), 0.0);
+        _QpCoords.resize(2*(1+1), 0.0);
         (*this)(1, 0) = 1.0;
-        (*this)(1, 1) = -sqrt(1.0 / 3.0);
+        (*this)(1, 1) =-sqrt(1.0 / 3.0);
+
         (*this)(2, 0) = 1.0;
         (*this)(2, 1) = sqrt(1.0 / 3.0);
         return;
@@ -62,13 +62,14 @@ void QPointGaussLegendre::Create1DGaussPoint()
     case 5:
     {
         _nQpPoints = 3;
-        _QpCoords.resize(3 * (1 + 1), 0.0);
-        (*this)(1, 0) = 5.0 / 9.0;
-        (*this)(1, 1) = -sqrt(0.6);
-        (*this)(2, 0) = 8.0 / 9.0;
+        _QpCoords.resize(3*(1+1), 0.0);
+        (*this)(1, 0) = 5.0/9.0;
+        (*this)(1, 1) =-sqrt(0.6);
+
+        (*this)(2, 0) = 8.0/9.0;
         (*this)(2, 1) = 0.0;
 
-        (*this)(3, 0) = 5.0 / 9.0;
+        (*this)(3, 0) = 5.0/9.0;
         (*this)(3, 1) = sqrt(0.6);
         return;
     }
@@ -76,60 +77,113 @@ void QPointGaussLegendre::Create1DGaussPoint()
     case 7:
     {
         _nQpPoints = 4;
-        _QpCoords.resize(4 * (GetDim() + 1), 0.0);
-        const static double t = sqrt(4.8);
+        _QpCoords.resize(4*(1+1),0.0);
+        const double t1=sqrt(3.0/7.0-(2.0/7.0)*sqrt(6.0/5.0));
+        const double t2=sqrt(3.0/7.0+(2.0/7.0)*sqrt(6.0/5.0));
+        const double w1=(18.0+sqrt(30.0))/36.0;
+        const double w2=(18.0-sqrt(30.0))/36.0;
 
-        (*this)(1, 1) = -sqrt((3.0 + t) / 7.0);
-        (*this)(2, 1) = -sqrt((3.0 - t) / 7.0);
-        (*this)(3, 1) = sqrt((3.0 - t) / 7.0);
-        (*this)(4, 1) = sqrt((3.0 + t) / 7.0);
+        (*this)(1,1)=-t2;
+        (*this)(2,1)=-t1;
+        (*this)(3,1)= t1;
+        (*this)(4,1)= t2;
 
-        const static double w = 1.0 / 3.0 / t;
-        (*this)(1, 0) = 0.5 - w;
-        (*this)(2, 0) = 0.5 + w;
-        (*this)(3, 0) = 0.5 + w;
-        (*this)(4, 0) = 0.5 - w;
+        (*this)(1,0)=w2;
+        (*this)(2,0)=w1;
+        (*this)(3,0)=w1;
+        (*this)(4,0)=w2;
         return;
     }
     case 8:
     case 9:
     {
         _nQpPoints = 5;
-        _QpCoords.resize(5 * (GetDim() + 1), 0.0);
-        const static double t = sqrt(1120.0);
+        _QpCoords.resize(5*(1+1),0.0);
+        const double t1=(1.0/3.0)*sqrt(5.0-2.0*sqrt(10.0/7.0));
+        const double t2=(1.0/3.0)*sqrt(5.0+2.0*sqrt(10.0/7.0));
+        const double w1=(322.0+13.0*sqrt(70.0))/900.0;
+        const double w2=(322.0-13.0*sqrt(70.0))/900.0;
 
-        (*this)(1, 1) = -sqrt((70.0 + t) / 126.0);
-        (*this)(2, 1) = -sqrt((70.0 - t) / 126.0);
-        (*this)(3, 1) = 0.0;
-        (*this)(4, 1) = sqrt((70.0 - t) / 126.0);
-        (*this)(5, 1) = sqrt((70.0 + t) / 126.0);
+        (*this)(1,1)=-t2;
+        (*this)(2,1)=-t1;
+        (*this)(3,1)= 0.0;
+        (*this)(4,1)= t1;
+        (*this)(5,1)= t2;
 
-        (*this)(1, 0) = (21.0 * t + 117.60) / (t * (70.0 + t));
-        (*this)(2, 0) = (21.0 * t - 117.60) / (t * (70.0 - t));
-        (*this)(3, 0) = 2.0 * (1.0 - (*this)(1, 0) - (*this)(2, 0));
-        (*this)(4, 0) = (*this)(2, 0);
-        (*this)(5, 0) = (*this)(1, 0);
+        (*this)(1,0)=w2;
+        (*this)(2,0)=w1;
+        (*this)(3,0)=128.0/225.0;
+        (*this)(4,0)=w1;
+        (*this)(5,0)=w2;
         return;
     }
     case 10:
     case 11:
     {
+        // taken from https://pomax.github.io/bezierinfo/legendre-gauss.html
         _nQpPoints = 6;
-        _QpCoords.resize(6 * (GetDim() + 1), 0.0);
-        (*this)(1, 1) = double(-9.3246951420315202781230155449399e-01L);
-        (*this)(2, 1) = double(-6.6120938646626451366139959501991e-01L);
-        (*this)(3, 1) = double(-2.3861918608319690863050172168071e-01L);
-        (*this)(4, 1) = -(*this)(1, 1);
-        (*this)(5, 1) = -(*this)(2, 1);
-        (*this)(6, 1) = -(*this)(3, 1);
+        _QpCoords.resize(6*(GetDim()+1), 0.0);
+        (*this)(1,1)=-0.9324695142031521;
+        (*this)(2,1)=-0.6612093864662645;
+        (*this)(3,1)=-0.2386191860831969;
+        (*this)(4,1)= 0.2386191860831969;
+        (*this)(5,1)= 0.6612093864662645;
+        (*this)(6,1)= 0.9324695142031521;
 
-        (*this)(1, 0) = double(1.7132449237917034504029614217273e-01L);
-        (*this)(2, 0) = double(3.6076157304813860756983351383772e-01L);
-        (*this)(3, 0) = double(4.6791393457269104738987034398955e-01L);
+        (*this)(1,0)=0.1713244923791704;
+        (*this)(2,0)=0.3607615730481386;
+        (*this)(3,0)=0.4679139345726910;
+        (*this)(4,0)=0.4679139345726910;
+        (*this)(5,0)=0.3607615730481386;
+        (*this)(6,0)=0.1713244923791704;
+        return;
+    }
+    case 12:
+    case 13:
+    {
+        // taken from https://pomax.github.io/bezierinfo/legendre-gauss.html
+        _nQpPoints = 7;
+        _QpCoords.resize(7*(GetDim()+1), 0.0);
+        (*this)(1,1)=-0.9491079123427585;
+        (*this)(2,1)=-0.7415311855993945;
+        (*this)(3,1)=-0.4058451513773972;
+        (*this)(4,1)= 0.0;
+        (*this)(5,1)= 0.4058451513773972;
+        (*this)(6,1)= 0.7415311855993945;
+        (*this)(7,1)= 0.9491079123427585;
 
-        (*this)(4, 0) = -(*this)(1, 0);
-        (*this)(5, 0) = -(*this)(2, 0);
-        (*this)(6, 0) = -(*this)(3, 0);
+        (*this)(1,0)=0.1294849661688697;
+        (*this)(2,0)=0.2797053914892766;
+        (*this)(3,0)=0.3818300505051189;
+        (*this)(4,0)=0.4179591836734694;
+        (*this)(5,0)=0.3818300505051189;
+        (*this)(6,0)=0.2797053914892766;
+        (*this)(7,0)=0.1294849661688697;
+        return;
+    }
+    case 14:
+    case 15:
+    {
+        // taken from https://pomax.github.io/bezierinfo/legendre-gauss.html
+        _nQpPoints = 8;
+        _QpCoords.resize(8*(GetDim()+1),0.0);
+        (*this)(1,1)=-0.9602898564975363;
+        (*this)(2,1)=-0.7966664774136267;
+        (*this)(3,1)=-0.5255324099163290;
+        (*this)(4,1)=-0.1834346424956498;
+        (*this)(5,1)= 0.1834346424956498;
+        (*this)(6,1)= 0.5255324099163290;
+        (*this)(7,1)= 0.7966664774136267;
+        (*this)(8,1)= 0.9602898564975363;
+
+        (*this)(1,0)=0.1012285362903763;
+        (*this)(2,0)=0.2223810344533745;
+        (*this)(3,0)=0.3137066458778873;
+        (*this)(4,0)=0.3626837833783620;
+        (*this)(5,0)=0.3626837833783620;
+        (*this)(6,0)=0.3137066458778873;
+        (*this)(7,0)=0.2223810344533745;
+        (*this)(8,0)=0.1012285362903763;
         return;
     }
     default:
@@ -156,10 +210,8 @@ void QPointGaussLegendre::Create2DGaussPoint(MeshType meshtype)
         _QpCoords.resize(_nQpPoints * (GetDim() + 1), 0.0);
         int k = 0;
         // for this regular type mesh , it is just simple tensor product
-        for (int j = 0; j < qp1d.GetQpPointsNum(); j++)
-        {
-            for (int i = 0; i < qp1d.GetQpPointsNum(); i++)
-            {
+        for (int j = 0; j < qp1d.GetQpPointsNum(); j++){
+            for (int i = 0; i < qp1d.GetQpPointsNum(); i++){
                 k += 1;
                 (*this)(k, 1) = qp1d(i + 1, 1);
                 (*this)(k, 2) = qp1d(j + 1, 1);
@@ -332,10 +384,6 @@ void QPointGaussLegendre::Create3DGaussPoint(MeshType meshtype){
                     (*this)(l, 2) = qp1d(j + 1, 1);
                     (*this)(l, 3) = qp1d(k + 1, 1);
                     (*this)(l, 0) = qp1d(i + 1, 0) * qp1d(j + 1, 0) * qp1d(k + 1, 0);
-                    // cout<<"gpInd="<<l
-                    //     <<": xi="<<(*this)(l,1)
-                    //     <<", eta="<<(*this)(l,2)
-                    //     <<": zeta="<<(*this)(l,3)<<endl;
                 }
             }
         }
