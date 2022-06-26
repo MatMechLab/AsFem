@@ -36,7 +36,7 @@ for subdir,dirs,files in os.walk(currentdir):
                     os.remove(removepath)
                 except:
                     print('%s is not here'%(file))
-        elif ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.inp' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.jpeg' in file) or ('.png' in file) or ('.gif' in file) or ('.pdf' in file) or ('.doc' in file) or ('.docx' in file) or ('.f03' in file) or ('.f08' in file) or ('.f90' in file) or ('.f' in file) or ('.xlsx' in file) or ('Doxyfile' in file):
+        elif ('.i' in file) or ('.cpp' in file) or ('.C' in file) or ('.c' in file and 'cmake_install.cmake' not in file and 'CTestTestfile.cmake' not in file) or ('.h' in file) or ('.hpp' in file) or ('.msh' in file) or ('.geo' in file) or ('.gmsh2' in file) or ('.inp' in file) or ('.py' in file) or ('.C' in file) or ('.txt' in file and 'CMakeCache.txt' not in file) or ('.tex' in file) or ('.jpg' in file) or ('.jpeg' in file) or ('.png' in file) or ('.gif' in file) or ('.pdf' in file) or ('.doc' in file) or ('.docx' in file) or ('.f03' in file) or ('.f08' in file) or ('.f90' in file) or ('.f' in file) or ('.xlsx' in file) or ('Doxyfile' in file):
             continue
         elif ('ASFEM' in file) or ('asfem' in file) or ('asfem-test' in file):
             try:
@@ -66,7 +66,7 @@ for subdir,dirs,files in os.walk(currentdir):
                 os.remove(removepath)
             except:
                 print('%s is not here'%(file))
-        elif ('CMakeCache.txt' in file) or ('cmake_install.cmake' in file) or ('Makefile' in file):
+        elif ('CMakeCache.txt' in file) or ('cmake_install.cmake' in file) or ('Makefile' in file) or ('CTestTestfile.cmake' in file):
             try:
                 cmake+=1
                 removepath=subdir+'/'+file
@@ -129,7 +129,7 @@ for subdir,dirs,files in os.walk(currentdir):
             except:
                 if(not DocumentRemove):
                     print('%s is not here'%(dir))
-        elif ('cmake-build-debug' in dir) or ('build' in dir) or ('CMakeFiles' in dir):
+        elif ('cmake-build-debug' in dir) or ('build' in dir) or ('CMakeFiles' in dir) or ('Testing' in dir):
             try:
                 cmakefolder+=1
                 removepath=subdir+'/'+dir

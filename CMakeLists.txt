@@ -696,6 +696,12 @@ target_link_libraries(asfem PUBLIC ${MPI_LIB})
 target_link_libraries(asfem PUBLIC ${PETSC_LIB})
 
 ##################################################
+### for test
+##################################################
+enable_testing (test)
+add_test (NAME asfem COMMAND /scripts/AutoTest.py "-n" "8")
+
+##################################################
 ### Following lines are used by vim            ###
 ### you can delete all of them                 ###
 ##################################################
