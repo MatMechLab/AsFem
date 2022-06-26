@@ -150,8 +150,8 @@ void MieheFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const do
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.dt||ctan[0]||soln.gpU[0]||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
-    gpProj["reacforce_x"]=Mate.Rank2Materials("stress").IthRow(1)*shp.grad_test;
-    gpProj["reacforce_y"]=Mate.Rank2Materials("stress").IthRow(2)*shp.grad_test;
-    gpProj["reacforce_z"]=Mate.Rank2Materials("stress").IthRow(3)*shp.grad_test;
+    if(elmtinfo.dt||ctan[0]||soln.gpU[0]||shp.test||
+       Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()||
+       gpProj.size()){}
+
 }

@@ -176,4 +176,27 @@ private:
     AppCtx _appctx;
     MonitorCtx _monctx;
 
+private:
+    /**
+     * this function implement the hand-code for the newton-raphson method,
+     * if the system is converged then return true else the false is returned.
+     * @param mesh the mesh class
+     * @param dofHandler the dof manager class
+     * @param elmtSystem the elmtSystem class
+     * @param mateSystem the material system class
+     * @param bcSystem the boundary condition class
+     * @param icSystem the initial condition class
+     * @param solutionSystem the solution class
+     * @param equationSystem the equation system class
+     * @param fe the FE space class
+     * @param feSystem the feSystem for FE calculation
+     * @param fectrlinfo the fe control structure
+     */
+    bool NewtowRaphsonSolve(Mesh &mesh,DofHandler &dofHandler,
+            ElmtSystem &elmtSystem,MateSystem &mateSystem,
+            BCSystem &bcSystem,
+            SolutionSystem &solutionSystem,EquationSystem &equationSystem,
+            FE &fe,FESystem &feSystem,
+            FEControlInfo &fectrlinfo);
+
 };

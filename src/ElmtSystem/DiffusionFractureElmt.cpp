@@ -64,17 +64,21 @@ void DiffusionFractureElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     Gc=Mate.ScalarMaterials("Gc");
     L=Mate.ScalarMaterials("L");
     Hist=Mate.ScalarMaterials("H");
+    // R_d
     localR(2)=viscosity*soln.gpV[2]*shp.test
         +2*(soln.gpU[2]-1)*Hist*shp.test
         +(Gc/L)*soln.gpU[2]*shp.test
         +Gc*L*(soln.gpGradU[2]*shp.grad_test);
     //***************************************************
     // For mechanics part
-    Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
+    Stress=Mate.Rank2Materials("stress");
+    // R_ux
     localR(3)=Stress.IthRow(1)*shp.grad_test;
     if(elmtinfo.nDim>=2){
+        // R_uy
         localR(4)=Stress.IthRow(2)*shp.grad_test;
         if(elmtinfo.nDim==3){
+            // R_uz
             localR(5)=Stress.IthRow(3)*shp.grad_test;
         }
     }
@@ -105,7 +109,7 @@ void DiffusionFractureElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const 
     localK(1,2)=0.0;
     // K_c,ux
     localK(1,3)=0.0;
-    if(elmtinfo.nDim==2) localK(1,4)=0.0;// K_c,uy
+    if(elmtinfo.nDim>=2) localK(1,4)=0.0;// K_c,uy
     if(elmtinfo.nDim==3) localK(1,5)=0.0;// K_c,uz
 
     //*********************************************
@@ -188,9 +192,8 @@ void DiffusionFractureElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,cons
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
+    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||
+       Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()||
+       gpProj.size()){}
 
-    gpProj["reacforce_x"]=Mate.Rank2Materials("stress").IthRow(1)*shp.grad_test;
-    gpProj["reacforce_y"]=Mate.Rank2Materials("stress").IthRow(2)*shp.grad_test;
-    gpProj["reacforce_z"]=Mate.Rank2Materials("stress").IthRow(3)*shp.grad_test;
 }

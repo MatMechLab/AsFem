@@ -60,11 +60,14 @@ void MechanicsCahnHilliardElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     localR(2)=soln.gpU[2]*shp.test-dFdC*shp.test-kappa*soln.gpGradU[1]*shp.grad_test;
     //***************************************************
     // For mechanics part
-    Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
+    Stress=Mate.Rank2Materials("stress");
+    // For R_ux
     localR(3)=Stress.IthRow(1)*shp.grad_test;
     if(elmtinfo.nDim>=2){
+        // For R_uy
         localR(4)=Stress.IthRow(2)*shp.grad_test;
         if(elmtinfo.nDim==3){
+            // For R_uz
             localR(5)=Stress.IthRow(3)*shp.grad_test;
         }
     }

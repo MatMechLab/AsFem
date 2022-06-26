@@ -61,7 +61,7 @@ public:
     /**
      * clean the whole vector
      */
-    void Clean(){_vals.clear();}
+    void Clean(){_vals.clear();_M=0;}
     
     /**
      * get the pointer of the vector's data
@@ -95,7 +95,7 @@ public:
      * @param val right hand side scalar
      */
     inline VectorXd& operator=(const double &val){
-        for(int i=0;i<_M;++i) _vals[i]=val;
+        fill(_vals.begin(),_vals.end(),val);
         return *this;
     }
     /**
@@ -117,7 +117,6 @@ public:
                 MessagePrinter::PrintErrorTxt("a=b cant be applied for two vectors with different size");
                 MessagePrinter::AsFem_Exit();
             }
-
         }
         return *this;
     }
@@ -126,7 +125,7 @@ public:
      * '+' operator for scalar
      * @param val the right hand side scalar
      */
-    inline VectorXd operator+(const double &val){
+    inline VectorXd operator+(const double &val)const{
         VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]+val;
         return temp;
@@ -135,7 +134,7 @@ public:
      * '+' for vector
      * @param a the right hand side vector
      */
-    inline VectorXd operator+(const VectorXd &a){
+    inline VectorXd operator+(const VectorXd &a)const{
         VectorXd temp(_M);
         if(_M==a.GetM()){
             for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]+a._vals[i];
@@ -145,7 +144,6 @@ public:
             MessagePrinter::PrintErrorTxt("a+b cant be applied for two vectors with different size");
             MessagePrinter::AsFem_Exit();
         }
-
         return temp;
     }
     //*** for +=
@@ -178,7 +176,7 @@ public:
      * '-' operator for scalar
      * @param val right hand side scalar value
      */
-    inline VectorXd operator-(const double &val){
+    inline VectorXd operator-(const double &val)const{
         VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]-val;
         return temp;
@@ -187,7 +185,7 @@ public:
      * '-' operator for vector
      * @param a right hand side vector
      */
-    inline VectorXd operator-(const VectorXd &a){
+    inline VectorXd operator-(const VectorXd &a)const{
         VectorXd temp(_M);
         if(_M==a.GetM()){
             VectorXd temp(_M);
@@ -230,7 +228,7 @@ public:
      * '*' operator for scalar
      * @param val right hand side scalar
      */
-    inline VectorXd operator*(const double &val){
+    inline VectorXd operator*(const double &val)const{
         VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]*val;
         return temp;
@@ -250,12 +248,12 @@ public:
      * '/' operator for scalar
      * @param val right hand side scalar
      */
-    inline VectorXd operator/(const double &val){
-        VectorXd temp(_M);
+    inline VectorXd operator/(const double &val)const{
         if(abs(val)<1.0e-16){
             MessagePrinter::PrintErrorTxt("x/0 is not acceptable for '/' operator");
             MessagePrinter::AsFem_Exit();
         }
+        VectorXd temp(_M);
         for(int i=0;i<_M;++i) temp._vals[i]=_vals[i]/val;
         return temp;
     }

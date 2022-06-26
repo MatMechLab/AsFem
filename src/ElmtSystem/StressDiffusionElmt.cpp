@@ -56,11 +56,14 @@ void StressDiffusionElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
         +D*soln.gpU[1]*Omega*GradSigmaH*shp.grad_test;
     //***************************************************
     // For mechanics part
-    Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
+    Stress=Mate.Rank2Materials("stress");
+    // For R_ux
     localR(2)=Stress.IthRow(1)*shp.grad_test;
     if(elmtinfo.nDim>=2){
+        // For R_uy
         localR(3)=Stress.IthRow(2)*shp.grad_test;
         if(elmtinfo.nDim==3){
+            // For R_uz
             localR(4)=Stress.IthRow(3)*shp.grad_test;
         }
     }
@@ -88,8 +91,8 @@ void StressDiffusionElmt::ComputeJacobian(const LocalElmtInfo &elmtinfo,const do
         +D*soln.gpU[1]*Omega*dSigmaHdC*shp.grad_trial*shp.grad_test*ctan[0];
     // K_c,ux
     localK(1,2)=0.0;
-    if(elmtinfo.nDim==2) localK(1,3)=0.0;
-    if(elmtinfo.nDim==3) localK(1,4)=0.0;
+    if(elmtinfo.nDim>=2) localK(1,3)=0.0;// K_c,uy
+    if(elmtinfo.nDim==3) localK(1,4)=0.0;// K_c,uz
 
     //*********************************************
     //*** for stress equilibrium equation
@@ -133,9 +136,8 @@ void StressDiffusionElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const 
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
+    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||
+       Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()||
+       gpProj.size()){}
 
-    gpProj["reacforce_x"]=Mate.Rank2Materials("stress").IthRow(1)*shp.grad_test;
-    gpProj["reacforce_y"]=Mate.Rank2Materials("stress").IthRow(2)*shp.grad_test;
-    gpProj["reacforce_z"]=Mate.Rank2Materials("stress").IthRow(3)*shp.grad_test;
 }

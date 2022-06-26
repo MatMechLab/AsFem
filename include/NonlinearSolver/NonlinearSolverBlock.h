@@ -32,11 +32,11 @@ public:
         _SolverTypeName="newton with line search";
         _SolverType=NonlinearSolverType::NEWTONLS;
         _MaxIters=25;
-        _RAbsTol=4.5e-7;
+        _RAbsTol=7.5e-7;
         _RRelTol=1.0e-10;
         _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="default(cg)";
+        _LinearSolverName="default(gmres)";
         _CheckJacobian=false;
     }
 
@@ -53,11 +53,11 @@ public:
         _SolverTypeName="newton with line search";
         _SolverType=NonlinearSolverType::NEWTONLS;
         _MaxIters=25;
-        _RAbsTol=4.5e-7;
+        _RAbsTol=7.5e-7;
         _RRelTol=1.0e-10;
         _STol=0.0; // |dx|<|x|*stol
         _PCTypeName="lu";
-        _LinearSolverName="default(cg)";
+        _LinearSolverName="default(gmres)";
         _CheckJacobian=false;
     }
 };

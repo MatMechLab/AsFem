@@ -14,6 +14,9 @@
 
 #pragma once
 
+/**
+ * enum class for the type of qpoint
+ */
 enum class QPointType{
     GAUSSLEGENDRE,
     GAUSSLOBATTO

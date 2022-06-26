@@ -79,7 +79,6 @@ name=d ux uy
 [end]
 
 [projection]
-name=reacforce_x reacforce_y
 scalarmate=vonMises
 rank2mate=stress strain
 [end]
@@ -89,16 +88,6 @@ rank2mate=stress strain
   [area]
     type=area
     side=bottom
-  [end]
-  [fx]
-    type=projvariablesideintegral
-    projvariable=reacforce_x
-    side=top
-  [end]
-  [fy]
-    type=projvariablesideintegral
-    projvariable=reacforce_y
-    side=top
   [end]
   [ux]
     type=sideintegral

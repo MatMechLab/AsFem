@@ -47,11 +47,13 @@ void MechanicsElmt::ComputeResidual(const LocalElmtInfo &elmtinfo,
     if(elmtinfo.dt||soln.gpU.size()||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
     // calculate the residual contribution of Mechanics problem
     // For R_ux
-    Stress=Mate.Rank2Materials("stress")-MateOld.Rank2Materials("stress");
+    Stress=Mate.Rank2Materials("stress");
     localR(1)=Stress.IthRow(1)*shp.grad_test;
     if(elmtinfo.nDim>=2){
+        // For R_uy
         localR(2)=Stress.IthRow(2)*shp.grad_test;
         if(elmtinfo.nDim==3){
+            // For R_uz
             localR(3)=Stress.IthRow(3)*shp.grad_test;
         }
     }
@@ -99,9 +101,9 @@ void MechanicsElmt::ComputeProjection(const LocalElmtInfo &elmtinfo,const double
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||Mate.GetScalarMate().size()||MateOld.GetScalarMate().size()){}
+    if(elmtinfo.dt||ctan[0]||soln.gpU.size()||shp.test||
+       Mate.GetScalarMate().size()||
+       MateOld.GetScalarMate().size()||
+       gpProj.size()){}
 
-    gpProj["reacforce_x"]=Mate.Rank2Materials("stress").IthRow(1)*shp.grad_test;
-    gpProj["reacforce_y"]=Mate.Rank2Materials("stress").IthRow(2)*shp.grad_test;
-    gpProj["reacforce_z"]=Mate.Rank2Materials("stress").IthRow(3)*shp.grad_test;
 }

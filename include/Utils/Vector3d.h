@@ -22,11 +22,10 @@
 
 #include "petsc.h"
 
-
 //*****************************************
 //*** for AsFem's own header files
 //*****************************************
-
+#include "Utils/MessagePrinter.h"
 
 using namespace std;
 
@@ -208,9 +207,9 @@ public:
      * this will return a scalar value \f$\sum_{i=1}{3}b_{i}*a_{i}\f$
      */
     inline double operator*(const Vector3d &a)const{
-        return _vals[0]*a._vals[0]
-              +_vals[1]*a._vals[1]
-              +_vals[2]*a._vals[2];
+        return static_cast<double>(_vals[0]*a._vals[0]
+                                  +_vals[1]*a._vals[1]
+                                  +_vals[2]*a._vals[2]);
     }
     /**
      * Save function as '*' operator between two vector3d
@@ -243,9 +242,9 @@ public:
      * @param val the right hand side scalar
      */
     inline Vector3d& operator*=(const double &val){
-        _vals[0]=_vals[0]*val;
-        _vals[1]=_vals[1]*val;
-        _vals[2]=_vals[2]*val;
+        _vals[0]=static_cast<double>(_vals[0]*val);
+        _vals[1]=static_cast<double>(_vals[1]*val);
+        _vals[2]=static_cast<double>(_vals[2]*val);
         return (*this);
     }
     //*** for /
@@ -254,10 +253,14 @@ public:
      * @param right hand side scalar
      */
     inline Vector3d operator/(const double &val){
+        if(abs(val)<1.0e-16){
+            MessagePrinter::PrintErrorTxt("can\'t appyl x/0 in Vector3d, the div value is zero");
+            MessagePrinter::AsFem_Exit();
+        }
         Vector3d temp(0.0);
-        temp._vals[0]=_vals[0]/val;
-        temp._vals[1]=_vals[1]/val;
-        temp._vals[2]=_vals[2]/val;
+        temp._vals[0]=static_cast<double>(_vals[0]/val);
+        temp._vals[1]=static_cast<double>(_vals[1]/val);
+        temp._vals[2]=static_cast<double>(_vals[2]/val);
         return temp;
     }
     //*** for /=
@@ -266,9 +269,13 @@ public:
      * @param val the right hand side scalar
      */
     inline Vector3d& operator/=(const double &val){
-        _vals[0]=_vals[0]/val;
-        _vals[1]=_vals[1]/val;
-        _vals[2]=_vals[2]/val;
+        if(abs(val)<1.0e-16){
+            MessagePrinter::PrintErrorTxt("can\'t appyl x/0 in Vector3d, the div value is zero");
+            MessagePrinter::AsFem_Exit();
+        }
+        _vals[0]=static_cast<double>(_vals[0]/val);
+        _vals[1]=static_cast<double>(_vals[1]/val);
+        _vals[2]=static_cast<double>(_vals[2]/val);
         return (*this);
     }
     //*** for different norm calculation

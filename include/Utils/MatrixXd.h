@@ -10,7 +10,7 @@
 //+++ Author   : Yang Bai
 //+++ Date     : 2020.10.18
 //+++ Reviewer : Xiaoyuan @ 2021.08.20
-//+++ Purpose  : Define the general Matrix  in AsFem
+//+++ Purpose  : Define the general Dense Matrix  in AsFem
 //+++            we mainly use this for the calculation of jacobian
 //+++            If one wants to use Eigen's MatrixXd, please use
 //+++            Eigen::MatrixXd, which is different with ours !!!
@@ -80,7 +80,7 @@ public:
     /**
      * Clean the whole matrix data
      */
-    void Clean(){_vals.clear();}
+    void Clean(){_vals.clear();_M=0;_N=0;}
     //*****************************************
     //*** Operator overload
     //*****************************************
@@ -132,6 +132,7 @@ public:
      */
     inline MatrixXd& operator=(const MatrixXd &a){
         if(_M==0&&_N==0){
+            // if this is an empty matrix, then resize and fill it with a!
             _M=a.GetM();_N=a.GetN();
             _MN=_M*_N;_vals.resize(_MN,0.0);
             for(int i=0;i<_MN;++i) _vals[i]=a._vals[i];
@@ -192,7 +193,6 @@ public:
      * @param a the right-hand side matrix (the dimensions should be the same)
      */
     inline MatrixXd& operator+=(const MatrixXd &a){
-        MatrixXd temp(_M,_N);
         if(_M==a.GetM()&&_N==a.GetN()){
             for(int i=0;i<_MN;++i) _vals[i]=_vals[i]+a._vals[i];
             return *this;
@@ -226,10 +226,9 @@ public:
             return temp;
         }
         else{
-            MessagePrinter::PrintErrorTxt("a-b cant be applied for two matrix with different size");
+            MessagePrinter::PrintErrorTxt("a-b can\'t be applied for two matrix with different size");
             MessagePrinter::AsFem_Exit();
         }
-
         return temp;
     }
     //*** for -=
@@ -246,7 +245,6 @@ public:
      * @param a the right-hand side matrix (the dimensions should be the same)
      */
     inline MatrixXd& operator-=(const MatrixXd &a){
-        MatrixXd temp(_M,_N);
         if(_M==a.GetM()&&_N==a.GetN()){
             for(int i=0;i<_MN;++i) _vals[i]=_vals[i]-a._vals[i];
             return *this;
@@ -255,7 +253,6 @@ public:
             MessagePrinter::PrintErrorTxt("a-b cant be applied for two matrix with different size");
             MessagePrinter::AsFem_Exit();
         }
-
         return *this;
     }
     //****************************
@@ -330,6 +327,10 @@ public:
      */
     inline MatrixXd operator/(const double &val)const{
         MatrixXd temp(_M,_N);
+        if(abs(val)<1.0e-16){
+            MessagePrinter::PrintErrorTxt("x/0 can\'t be applied due to singularity");
+            MessagePrinter::AsFem_Exit();
+        }
         for(int i=0;i<_MN;++i) temp._vals[i]=_vals[i]/val;
         return temp;
     }
@@ -339,6 +340,10 @@ public:
      * @param val the right-hand side scalar (double type)
      */
     inline MatrixXd& operator/=(const double &val){
+        if(abs(val)<1.0e-16){
+            MessagePrinter::PrintErrorTxt("x/0 can\'t be applied due to singularity");
+            MessagePrinter::AsFem_Exit();
+        }
         for(int i=0;i<_MN;++i) _vals[i]=_vals[i]/val;
         return *this;
     }

@@ -250,41 +250,49 @@ bool NonlinearSolver::Solve(Mesh &mesh,DofHandler &dofHandler,
                         SolutionSystem &solutionSystem,EquationSystem &equationSystem,
                         FE &fe,FESystem &feSystem,
                         FEControlInfo &fectrlinfo){
-    
-    _appctx=AppCtx{&mesh,&dofHandler,
+
+    if(_SolverType==NonlinearSolverType::NEWTON){
+        _monctx=MonitorCtx{0.0,1.0,
+                0.0,1.0,
+                0.0,1.0,
+                0,
+                fectrlinfo.IsDepDebug};
+        return NewtowRaphsonSolve(mesh,dofHandler,
+                                  elmtSystem,mateSystem,
+                                  bcSystem,solutionSystem,equationSystem,
+                                  fe,feSystem,fectrlinfo);
+    }
+    else{
+        _appctx=AppCtx{&mesh,&dofHandler,
                    &bcSystem,
                    &elmtSystem,&mateSystem,
                    &solutionSystem,&equationSystem,
                    &fe,&feSystem,
                    &fectrlinfo
                    };
-    
-    _monctx=MonitorCtx{0.0,1.0,
-            0.0,1.0,
-            0.0,1.0,
-            0,
-            fectrlinfo.IsDepDebug};
-
-    _appctx._bcSystem->ApplyPresetBC(*_appctx._mesh,*_appctx._dofHandler,FECalcType::ComputeResidual,
+        _monctx=MonitorCtx{0.0,1.0,
+                0.0,1.0,
+                0.0,1.0,
+                0,
+                fectrlinfo.IsDepDebug};
+                
+                
+        _appctx._bcSystem->ApplyPresetBC(*_appctx._mesh,*_appctx._dofHandler,FECalcType::ComputeResidual,
                                      fectrlinfo.dt,
                                      fectrlinfo.ctan,
                                      _appctx._solutionSystem->_Unew,
                                      _appctx._equationSystem->_AMATRIX,
                                      _appctx._equationSystem->_RHS);
-
-    SNESSetFunction(_snes,_appctx._equationSystem->_RHS,ComputeResidual,&_appctx);
-
-    SNESSetJacobian(_snes,_appctx._equationSystem->_AMATRIX,_appctx._equationSystem->_AMATRIX,ComputeJacobian,&_appctx);
-
-    SNESMonitorSet(_snes,Monitor,&_monctx,0);
-
-    SNESSetForceIteration(_snes,PETSC_TRUE);
-
-    SNESSetFromOptions(_snes);
-    
-    SNESSolve(_snes,NULL,_appctx._solutionSystem->_Unew);
-   
-    SNESGetConvergedReason(_snes,&_snesreason);
+                                     
+        SNESSetFunction(_snes,_appctx._equationSystem->_RHS,ComputeResidual,&_appctx);
+        SNESSetJacobian(_snes,_appctx._equationSystem->_AMATRIX,_appctx._equationSystem->_AMATRIX,ComputeJacobian,&_appctx);
+        
+        SNESMonitorSet(_snes,Monitor,&_monctx,0);
+        SNESSetForceIteration(_snes,PETSC_TRUE);
+        SNESSetFromOptions(_snes);
+        SNESSolve(_snes,NULL,_appctx._solutionSystem->_Unew);
+        SNESGetConvergedReason(_snes,&_snesreason);
+    }
     
     _Iters=_monctx.iters;
     _Rnorm=_monctx.rnorm;

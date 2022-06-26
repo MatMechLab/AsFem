@@ -236,6 +236,14 @@ public:
         for(int i=0;i<_N2;++i) _vals[i]+=a._vals[i];
         return *this;
     }
+    /**
+     * add Identity tensor to the current one, its value will be modified!
+     * @param a the identity value a*delta_ij
+     */
+    inline RankTwoTensor& addIa(const double &a) {
+        (*this)(1,1)+=a;(*this)(2,2)+=a;(*this)(3,3)+=a;
+        return *this;
+    }
     //*** for - operator
     /**
      * '-' for scalar
@@ -403,7 +411,7 @@ public:
         for(int i=1;i<=_N;++i){
             for(int j=1;j<=_N;++j){
                 // You may see A:B=A_ijB_ji in other books/literature, here we use A_ijB_ij
-                // to keep the same, in Rank4Tensor, we follow the same definition!
+                // to keep the same rule, in Rank4Tensor, we follow the same definition!
                 sum+=(*this)(i,j)*a(i,j);// use this to get the positive definite case!!!
             }
         }
@@ -415,11 +423,11 @@ public:
      * @param a the right hand side scalar
      */
     inline RankTwoTensor operator/(const double &a) const{
-        RankTwoTensor temp(0.0);
         if(abs(a)<1.0e-16){
             MessagePrinter::PrintErrorTxt("rank-2/0 is singular, the input scalar is zero, which is invalid for '/' operator of a rank-2 tensor");
             MessagePrinter::AsFem_Exit();
         }
+        RankTwoTensor temp(0.0);
         for(int i=0;i<_N2;++i) temp._vals[i]=_vals[i]/a;
         return temp;
     }
@@ -463,7 +471,7 @@ public:
      */
     inline double Norm() const{
         double sum=0.0;
-        for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
+        for(int i=0;i<_N2;i++) sum+=static_cast<double>(_vals[i]*_vals[i]);
         return sqrt(sum);
     }
     
@@ -472,7 +480,7 @@ public:
      */
     inline double Norm2() const{
         double sum=0.0;
-        for(int i=0;i<_N2;i++) sum+=_vals[i]*_vals[i];
+        for(int i=0;i<_N2;i++) sum+=static_cast<double>(_vals[i]*_vals[i]);
         return sum;
     }
 

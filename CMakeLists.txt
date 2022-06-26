@@ -14,40 +14,49 @@ endif()
 ### The only things to modify is the        ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
-
-
 if(EXISTS $ENV{MPI_DIR})
     set(MPI_DIR $ENV{MPI_DIR})
     message("MPI dir is: ${MPI_DIR}")
+    include_directories("${MPI_DIR}/include")
+    find_library(MPI_LIB NAMES mpi HINTS PATHS ${MPI_DIR}/lib ${MPI_DIR}/lib64)
+    if(NOT MPI_LIB)
+        message(ERROR " MPI lib dir can\'t be found!")
+    endif()
 else()
-    message (WARNING "MPI location (MPI_DIR) is not defined in your PATH, AsFem will use the one defined in CMakeLists.txt")
-    set(MPI_DIR "/home/by/Programs/openmpi/4.1.0")
-    message("MPI dir set to be: ${MPI_DIR}")
-    message (WARNING "If the path is not correct, you should modify line-24 in your CMakeLists.txt")
+    FIND_PATH(MPI_INC NAMES mpi.h  PATHS /usr/lib/x86_64-linux-gnu/openmpi/include /lib64/mpi/gcc/openmpi4/include /usr/lib64/petsc/*/linux-gnu-c-opt/include/petsc/mpiuni)
+    FIND_LIBRARY(MPI_LIB NAMES mpi PATHS /usr/lib /usr/lib64 /usr/lib64/mpi/gcc/openmpi4/lib64 /opt/openmpi/lib)
+    message (WARNING "MPI location (MPI_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your mpi path is not correct, please modifiy MPI_INC and MPI_LIB in your CMakeList.txt")
+    if(NOT MPI_LIB)
+        message(ERROR " MPI lib dir can\'t be found!")
+    endif()
+    message("MPI include dir is: ${MPI_INC}")
+    message("MPI library dir is: ${MPI_LIB}")
+    include_directories("${MPI_INC}")
 endif()
 
 
 if(EXISTS $ENV{PETSC_DIR})
     set(PETSC_DIR $ENV{PETSC_DIR})
     message("PETSC dir is: ${PETSC_DIR}")
+    include_directories("${PETSC_DIR}/include")
+    find_library(PETSC_LIB NAMES petsc PATHS ${PETSC_DIR}/lib ${PETSC_DIR}/lib64)
+    if(NOT PETSC_LIB)
+        message(ERROR " PETSc lib dir can\'t be found!")
+    endif()
 else()
-    message (WARNING "PETSc location (PETSC_DIR) is not defined in your PATH, AsFem will use the one defined in CMakeLists.txt")
-    set(PETSC_DIR "/home/by/Programs/petsc/3.14.3")
-    message("PETSc dir set to be:${PETSC_DIR}")
-    message (WARNING "If the path is not correct, you should modify line-35 in your CMakeLists.txt")
-endif()
-
-
-###############################################
-### For include files of PETSc and mpi      ###
-###############################################
-include_directories("${PETSC_DIR}/include")
-include_directories("${MPI_DIR}/include")
-if(UNIX)
-    link_libraries("${PETSC_DIR}/lib/libpetsc.so")
-    link_libraries("${MPI_DIR}/lib/libmpi.so")
-elseif(MSVC)
-    link_libraries("${PETSC_DIR}/lib/libpetsc.lib")
+    message (WARNING "PETSC location (PETSC_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your PETSC_DIR path is not correct, please modifiy PETSC_INC and PETSC_LIB in your CMakeList.txt")
+    find_path(PETSC_INC NAMES include/petsc.h PATHS /usr/lib/petsc /usr/lib/petscdir/* /opt/petsc/linux-c-opt /opt/local/lib/petsc /usr/lib64/petsc/*/linux-gnu-c-opt /usr/lib64/mpi/gcc/openmpi4/lib64/ /usr/lib64/mpi/gcc/openmpi4/lib64/petsc/*/linux-gnu-c-opt/lib)
+    find_library(PETSC_LIB NAMES petsc PATHS /usr)
+    if(NOT PETSC_INC)
+        message(ERROR " PETSc include dir can\'t be found!")
+    endif()
+    if(NOT PETSC_LIB)
+        message(ERROR " PETSc lib dir can\'t be found!")
+    endif()
+    message(" PETSc include dir is: ${PETSC_INC}/include")
+    message(" PETSc library dir is: ${PETSC_LIB}")
+    link_directories("${PETSC_LIB}")
+    include_directories("${PETSC_INC}/include")
 endif()
 
 ###############################################
@@ -69,9 +78,9 @@ endif ()
 ###############################################
 if(UNIX)
     if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2 -fopenmp")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -O2")
     elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fopenmp -O3 -march=native -DNDEBUG")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -march=native -DNDEBUG ")
     else()
         message (FATAL_ERROR "Unknown compiler flags (CMAKE_CXX_FLAGS)")
     endif()
@@ -614,6 +623,7 @@ set(inc ${inc} include/NonlinearSolver/NonlinearSolverBlock.h)
 set(inc ${inc} include/NonlinearSolver/NonlinearSolver.h)
 set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
 set(src ${src} src/NonlinearSolver/Solve.cpp)
+set(src ${src} src/NonlinearSolver/NewtowRaphsonSolve.cpp)
 
 #############################################################
 ### For time stepping system in AsFem                     ###
@@ -682,7 +692,8 @@ set(src ${src} src/FEProblem/RunTransientAnalysis.cpp)
 
 ##################################################
 add_executable(asfem ${inc} ${src})
-
+target_link_libraries(asfem PUBLIC ${MPI_LIB})
+target_link_libraries(asfem PUBLIC ${PETSC_LIB})
 
 ##################################################
 ### Following lines are used by vim            ###

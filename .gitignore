@@ -9,6 +9,11 @@ __pycache__/
 # for gmsh
 #.msh
 
+# for vscode config
+.vscode/
+
+# for vim
+
 # Distribution / packaging
 .Python
 build/

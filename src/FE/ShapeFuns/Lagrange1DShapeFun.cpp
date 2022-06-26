@@ -49,13 +49,14 @@ void Lagrange1DShapeFun::Calc1DShapeFun(const MeshType &meshtype, const double &
             _nNodes=3;
             break;
         case MeshType::EDGE4:
+            // Reference: http://www.sd.ruhr-uni-bochum.de/downloads/Shape_funct.pdf
             shape_val[ 0]=-(3.0*xi+1.0)*(3.0*xi-1.0)*(    xi-1.0)/16.0;
             shape_grad[0].setZero();
             shape_grad[0](1)=-27.0*xi*xi/16.0+9.0*xi/8.0+ 1.0/16.0;
 
             shape_val[ 1]= (3.0*xi+3.0)*(3.0*xi-1.0)*(3.0*xi-3.0)/16.0;
             shape_grad[1].setZero();
-            shape_grad[1](1)=-27.0*xi*xi/16.0+9.0*xi/8.0+ 1.0/16.0;
+            shape_grad[1](1)= 81.0*xi*xi/16.0-9.0*xi/8.0-27.0/16.0;
 
             shape_val[ 2]=-(3.0*xi+3.0)*(3.0*xi+1.0)*(3.0*xi-3.0)/16.0;
             shape_grad[2].setZero();
