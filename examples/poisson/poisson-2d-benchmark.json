@@ -1,0 +1,76 @@
+{
+	"description":{
+		"domain":"the size must be [0,1]x[0,1]",
+		"bcs":"phi(on the boundary)=1.0+x^2+2*y^2",
+		"sigma":"sigma=1",
+		"f":"f=6"
+	},
+	"mesh":{
+		"type":"asfem",
+		"dim":2,
+		"nx":10,
+		"ny":10,
+		"xmax":1.0,
+		"ymax":1.0,
+		"meshtype":"quad4",
+		"savemesh":true
+	},
+	"dofs":{
+		"names":["phi"]
+	},
+	"elements":{
+		"elmt1":{
+			"type":"poisson",
+			"dofs":["phi"],
+			"material":{
+				"type":"poisson2d-benchmark",
+				"parameters":{
+					"sigma":1.0,
+					"f":6.0
+				},
+				"description":{
+					"equation":"sigma*Lap(phi)=f",
+					"source term":"f=-6",
+					"parameters":"sigma=1",
+					"analytical solution":"phi=1+x^2+2*y^2"
+				}
+			}
+		}
+	},
+	"projection":{
+		"type":"default",
+		"scalarmate":["exactsolution"],
+		"vectormate":["gradu"]
+	},
+	"bcs":{
+		"fixed":{
+			"type":"poisson2dbenchmark",
+			"dofs":["phi"],
+			"bcvalue":0.0,
+			"side":["left","right","bottom","top"]
+		}
+	},
+	"nlsolver":{
+		"type":"newton",
+		"solver":"gmres",
+		"maxiters":50,
+		"abs-tolerance":5.0e-7,
+		"rel-tolerance":5.0e-10,
+		"s-tolerance":0.0,
+		"preconditioner":"lu"
+	},
+	"output":{
+		"type":"vtu",
+		"interval":1
+	},
+	"qpoints":{
+		"bulk":{
+			"type":"gauss-legendre",
+			"order":3
+		}
+	},
+	"job":{
+		"type":"static",
+		"print":"dep"
+	}
+}

@@ -21,6 +21,8 @@
 #ifndef EIGEN_PACKET_MATH_SYCL_H
 #define EIGEN_PACKET_MATH_SYCL_H
 #include <type_traits>
+#include "../../InternalHeaderCheck.h"
+
 namespace Eigen {
 
 namespace internal {
@@ -475,25 +477,19 @@ pabs<cl::sycl::cl_double2>(const cl::sycl::cl_double2& a) {
 template <typename Packet>
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE Packet sycl_pcmp_le(const Packet &a,
                                                           const Packet &b) {
-  return ((a <= b)
-              .template convert<typename unpacket_traits<Packet>::type,
-                                cl::sycl::rounding_mode::automatic>());
+  return (a <= b).template as<Packet>();
 }
 
 template <typename Packet>
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE Packet sycl_pcmp_lt(const Packet &a,
                                                           const Packet &b) {
-  return ((a < b)
-              .template convert<typename unpacket_traits<Packet>::type,
-                                cl::sycl::rounding_mode::automatic>());
+  return (a < b).template as<Packet>();
 }
 
 template <typename Packet>
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE Packet sycl_pcmp_eq(const Packet &a,
                                                           const Packet &b) {
-  return ((a == b)
-              .template convert<typename unpacket_traits<Packet>::type,
-                                cl::sycl::rounding_mode::automatic>());
+  return (a == b).template as<Packet>();
 }
 
 #define SYCL_PCMP(OP, TYPE)                                                    \
@@ -510,76 +506,6 @@ SYCL_PCMP(le, cl::sycl::cl_double2)
 SYCL_PCMP(lt, cl::sycl::cl_double2)
 SYCL_PCMP(eq, cl::sycl::cl_double2)
 #undef SYCL_PCMP
-
-template <typename T> struct convert_to_integer;
-
-template <> struct convert_to_integer<float> {
-  using type = std::int32_t;
-  using packet_type = cl::sycl::cl_int4;
-};
-template <> struct convert_to_integer<double> {
-  using type = std::int64_t;
-  using packet_type = cl::sycl::cl_long2;
-};
-
-template <typename PacketIn>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE typename convert_to_integer<
-    typename unpacket_traits<PacketIn>::type>::packet_type
-vector_as_int(const PacketIn &p) {
-  return (
-      p.template convert<typename convert_to_integer<
-                             typename unpacket_traits<PacketIn>::type>::type,
-                         cl::sycl::rounding_mode::automatic>());
-}
-
-template <typename packetOut, typename PacketIn>
-EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE packetOut
-convert_vector(const PacketIn &p) {
-  return (p.template convert<typename unpacket_traits<packetOut>::type,
-                             cl::sycl::rounding_mode::automatic>());
-}
-
-#define SYCL_PAND(TYPE)                                                        \
-  template <>                                                                  \
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TYPE pand<TYPE>(const TYPE &a,         \
-                                                        const TYPE &b) {       \
-    return convert_vector<TYPE>(vector_as_int(a) & vector_as_int(b));          \
-  }
-SYCL_PAND(cl::sycl::cl_float4)
-SYCL_PAND(cl::sycl::cl_double2)
-#undef SYCL_PAND
-
-#define SYCL_POR(TYPE)                                                         \
-  template <>                                                                  \
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TYPE por<TYPE>(const TYPE &a,          \
-                                                       const TYPE &b) {        \
-    return convert_vector<TYPE>(vector_as_int(a) | vector_as_int(b));          \
-  }
-
-SYCL_POR(cl::sycl::cl_float4)
-SYCL_POR(cl::sycl::cl_double2)
-#undef SYCL_POR
-
-#define SYCL_PXOR(TYPE)                                                        \
-  template <>                                                                  \
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TYPE pxor<TYPE>(const TYPE &a,         \
-                                                        const TYPE &b) {       \
-    return convert_vector<TYPE>(vector_as_int(a) ^ vector_as_int(b));          \
-  }
-
-SYCL_PXOR(cl::sycl::cl_float4)
-SYCL_PXOR(cl::sycl::cl_double2)
-#undef SYCL_PXOR
-
-#define SYCL_PANDNOT(TYPE)                                                     \
-  template <>                                                                  \
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TYPE pandnot<TYPE>(const TYPE &a,      \
-                                                           const TYPE &b) {    \
-    return convert_vector<TYPE>(vector_as_int(a) & (~vector_as_int(b)));       \
-  }
-SYCL_PANDNOT(cl::sycl::cl_float4)
-SYCL_PANDNOT(cl::sycl::cl_double2)
-#undef SYCL_PANDNOT
 
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void ptranspose(
     PacketBlock<cl::sycl::cl_float4, 4>& kernel) {

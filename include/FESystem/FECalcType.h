@@ -1,25 +1,26 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.11.29
-//+++ Purpose: Define some commonly used calculation type in FEM
-//+++          calculation, i.e. compute residual, compute jacobian
-//+++          projection from gauss point to nodal point
+//+++ Date   : 2022.05.13
+//+++ Purpose: defines the basic calculations of FEM
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
+/**
+ * the basic fem calculation type
+ */
 enum class FECalcType{
-    ComputeResidual,
-    ComputeJacobian,
-    Projection,
-    InitMaterial,
-    UpdateMaterial
+    COMPUTERESIDUAL,
+    COMPUTEJACOBIAN,
+    INITMATERIAL,
+    UPDATEMATERIAL,
+    UPDATEU
 };

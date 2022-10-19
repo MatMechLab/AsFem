@@ -1,47 +1,66 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.26
-//+++ Purpose: Define equation system in AsFem, here you can access
-//+++          K matrix and Residual of our system equations
+//+++ Date   : 2022.07.24
+//+++ Purpose: the equation system in AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "EquationSystem/EquationSystem.h"
 
 EquationSystem::EquationSystem(){
-    _nDofs=0;
+    m_dofs=0;
+    m_allocated=false;
 }
-//**************************************************
-void EquationSystem::InitEquationSystem(const int &ndofs,const int &maxrownnz){
-    _nDofs=ndofs;
 
-    VecCreate(PETSC_COMM_WORLD,&_RHS);
-    VecSetSizes(_RHS,PETSC_DECIDE,_nDofs);
-    VecSetUp(_RHS);
-    VecSet(_RHS,0.0);
-
-    //***************************************************************
-    //*** here the maxrownnz should come from our dofhandler, where we create the dof map,
-    //*** thereby, we can get the maximum non-zero entities of all the rows
-    //***************************************************************
-    MatCreateAIJ(PETSC_COMM_WORLD,PETSC_DECIDE,PETSC_DECIDE,_nDofs,_nDofs,maxrownnz,NULL,maxrownnz,NULL,&_AMATRIX);
-
-    //*************************************************************************************************************
-    //*** here we allow PETSc to allocate or extend the width of each row in our matrix
-    //*** after the first element-loop, once our matrix is initialized, we should disable the new allocation !!!
-    //*************************************************************************************************************
-    MatSetOption(_AMATRIX,MAT_NEW_NONZERO_ALLOCATION_ERR,PETSC_FALSE);
+void EquationSystem::init(const DofHandler &t_dofHandler){
+    m_dofs=t_dofHandler.getActiveDofs();
+    m_rhs.resize(m_dofs,0.0);
+    m_amatrix.resize(m_dofs,m_dofs,t_dofHandler.getMaxNNZ());
+    m_allocated=true;
 }
-//*********************************************************************************
 
-void EquationSystem::ReleaseMem(){
-    MatDestroy(&_AMATRIX);
-    VecDestroy(&_RHS);
+void EquationSystem::createSparsityPattern(const DofHandler &t_dofHandler){
+    vector<int> eldofs;
+    vector<double> elvals;
+    int n;
+
+    PetscMPIInt rank,size;
+    MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
+    MPI_Comm_size(PETSC_COMM_WORLD,&size);
+
+    eldofs.resize(t_dofHandler.getMaxDofsPerElmt()+1,0);
+    elvals.resize(t_dofHandler.getMaxDofsPerElmt()+1,0.0);
+
+    int rankne=t_dofHandler.getBulkElmtsNum()/size;
+    int eStart=rank*rankne;
+    int eEnd=(rank+1)*rankne;
+    if(rank==size-1) eEnd=t_dofHandler.getBulkElmtsNum();
+    int e;
+    for(int ee=eStart;ee<eEnd;++ee){
+        e=ee+1;
+        t_dofHandler.getIthBulkElmtDofIDs0(e,eldofs);// index start from 0
+        n=t_dofHandler.getIthBulkElmtDofsNum(e);
+        for(int i=0;i<n;i++){
+            for(int j=0;j<n;j++){
+                m_amatrix.addValue(eldofs[i]+1,eldofs[j]+1,elvals[i]);
+            }
+        }
+    }
+    m_amatrix.assemble();
+    m_amatrix.disableReallocation();// the following operation can not modify the sparsity pattern anymore!!!
+
+    eldofs.clear();
+    elvals.clear();
+}
+
+void EquationSystem::releaseMemory(){
+    m_rhs.releaseMemory();
+    m_amatrix.releaseMemory();
 }

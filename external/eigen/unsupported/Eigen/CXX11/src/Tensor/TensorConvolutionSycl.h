@@ -15,6 +15,8 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_CONVOLUTION_SYCL_H
 #define EIGEN_CXX11_TENSOR_TENSOR_CONVOLUTION_SYCL_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen {
 
 /** \class TensorConvolution
@@ -275,9 +277,9 @@ template <typename Indices, typename InputArgType, typename KernelArgType>
 struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelArgType>, Eigen::SyclDevice> {
   typedef TensorConvolutionOp<Indices, InputArgType, KernelArgType> XprType;
 
-  static const int NumDims =
+  static constexpr int NumDims =
       internal::array_size<typename TensorEvaluator<InputArgType, Eigen::SyclDevice>::Dimensions>::value;
-  static const int NumKernelDims = internal::array_size<Indices>::value;
+  static constexpr int NumKernelDims = internal::array_size<Indices>::value;
   typedef typename XprType::Index Index;
   typedef DSizes<Index, NumDims> Dimensions;
   typedef typename TensorEvaluator<KernelArgType, Eigen::SyclDevice>::Dimensions KernelDimensions;
@@ -285,18 +287,18 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
   typedef typename XprType::CoeffReturnType CoeffReturnType;
   typedef typename PacketType<CoeffReturnType, Eigen::SyclDevice>::type PacketReturnType;
   typedef typename InputArgType::Scalar Scalar;
-  static const int PacketSize = PacketType<CoeffReturnType, Device>::size;
+  static constexpr int PacketSize = PacketType<CoeffReturnType, Device>::size;
   typedef StorageMemory<CoeffReturnType, Eigen::SyclDevice> Storage;
   typedef typename Storage::Type EvaluatorPointerType;
   typedef StorageMemory<const CoeffReturnType, Eigen::SyclDevice> KernelStorage;
 
+  static constexpr int Layout = TensorEvaluator<InputArgType, Eigen::SyclDevice>::Layout;
   enum {
     IsAligned = TensorEvaluator<InputArgType, Eigen::SyclDevice>::IsAligned &
                 TensorEvaluator<KernelArgType, Eigen::SyclDevice>::IsAligned,
     PacketAccess = false,
     BlockAccess = false,
     PreferBlockAccess = false,
-    Layout = TensorEvaluator<InputArgType, Eigen::SyclDevice>::Layout,
     CoordAccess = false,  // to be implemented
     RawAccess = false
   };
@@ -305,7 +307,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
   typedef internal::TensorBlockNotImplemented TensorBlock;
   //===--------------------------------------------------------------------===//
 
-  EIGEN_DEVICE_FUNC TensorEvaluator(const XprType &op, const Eigen::SyclDevice &device)
+  TensorEvaluator(const XprType &op, const Eigen::SyclDevice &device)
       : m_inputImpl(op.inputExpression(), device),
         m_kernelArg(op.kernelExpression()),
         m_kernelImpl(op.kernelExpression(), device),
@@ -334,7 +336,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
 
   EIGEN_DEVICE_FUNC const Dimensions &dimensions() const { return m_dimensions; }
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE bool evalSubExprsIfNeeded(EvaluatorPointerType data) {
+  EIGEN_STRONG_INLINE bool evalSubExprsIfNeeded(EvaluatorPointerType data) {
     preloadKernel();
     m_inputImpl.evalSubExprsIfNeeded(NULL);
     if (data) {
@@ -348,7 +350,7 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
     }
   }
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void cleanup() {
+  EIGEN_STRONG_INLINE void cleanup() {
     m_inputImpl.cleanup();
     if (m_buf) {
       m_device.deallocate_temp(m_buf);
@@ -392,8 +394,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
         const size_t numX = dimensions()[m_indices[0]];
         const size_t numP = dimensions().TotalSize() / numX;
         const auto input_dim = std::array<size_t, 2>{numX, numP};
-        auto global_range = cl::sycl::range<2>{};
-        auto local_range = cl::sycl::range<2>{};
+        auto global_range = cl::sycl::range<2>{1, 1};
+        auto local_range = cl::sycl::range<2>{1, 1};
         const size_t kernel_size = m_kernelImpl.dimensions().TotalSize();
 
         m_device.parallel_for_setup(input_dim, global_range, local_range);
@@ -423,8 +425,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
         const size_t numP = dimensions().TotalSize() / (numX * numY);
         auto input_dim = std::array<size_t, 3>{numX, numY, numP};
 
-        auto global_range = cl::sycl::range<3>{};
-        auto local_range = cl::sycl::range<3>{};
+        auto global_range = cl::sycl::range<3>{1, 1, 1};
+        auto local_range = cl::sycl::range<3>{1, 1, 1};
 
         m_device.parallel_for_setup(input_dim, global_range, local_range);
 
@@ -467,8 +469,8 @@ struct TensorEvaluator<const TensorConvolutionOp<Indices, InputArgType, KernelAr
 
         internal::IndexMapper<Index, InputDims, 3, Layout> indexMapper(m_inputImpl.dimensions(), kernel_dims, indices);
 
-        auto global_range = cl::sycl::range<3>{};
-        auto local_range = cl::sycl::range<3>{};
+        auto global_range = cl::sycl::range<3>{1, 1, 1};
+        auto local_range = cl::sycl::range<3>{1, 1, 1};
 
         m_device.parallel_for_setup(input_dim, global_range, local_range);
         auto local_memory_range = (local_range + kernel_size - 1);

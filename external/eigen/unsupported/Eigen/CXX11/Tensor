@@ -8,12 +8,10 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-//#ifndef EIGEN_CXX11_TENSOR_MODULE
-//#define EIGEN_CXX11_TENSOR_MODULE
+//#ifndef EIGEN_CXX11_TENSOR_MODULE_H
+#define EIGEN_CXX11_TENSOR_MODULE_H
 
 #include "../../../Eigen/Core"
-
-#if EIGEN_HAS_CXX11
 
 #include "../SpecialFunctions"
 
@@ -38,28 +36,10 @@
 #include <cmath>
 #include <cstddef>
 #include <cstring>
+#include <iterator>
+#include <numeric>
 #include <random>
 #include <thread>
-
-#ifdef _WIN32
-typedef __int16 int16_t;
-typedef unsigned __int16 uint16_t;
-typedef __int32 int32_t;
-typedef unsigned __int32 uint32_t;
-typedef __int64 int64_t;
-typedef unsigned __int64 uint64_t;
-#include <windows.h>
-#else
-#include <stdint.h>
-#endif
-
-#ifdef _WIN32
-#include <windows.h>
-#elif defined(__APPLE__)
-#include <mach/mach_time.h>
-#else
-#include <time.h>
-#endif
 
 #if defined(EIGEN_USE_THREADS) || defined(EIGEN_USE_SYCL)
 #include "ThreadPool"
@@ -95,6 +75,8 @@ typedef unsigned __int64 uint64_t;
 #include "src/Tensor/TensorUInt128.h"
 #include "src/Tensor/TensorIntDiv.h"
 #include "src/Tensor/TensorGlobalFunctions.h"
+
+#include "src/Tensor/TensorIO.h"
 
 #include "src/Tensor/TensorBase.h"
 #include "src/Tensor/TensorBlock.h"
@@ -149,9 +131,8 @@ typedef unsigned __int64 uint64_t;
 #include "src/Tensor/TensorMap.h"
 #include "src/Tensor/TensorRef.h"
 
-#include "src/Tensor/TensorIO.h"
+
 
 #include "../../../Eigen/src/Core/util/ReenableStupidWarnings.h"
 
-#endif  // EIGEN_HAS_CXX11
-//#endif // EIGEN_CXX11_TENSOR_MODULE
+//#endif // EIGEN_CXX11_TENSOR_MODULE_H

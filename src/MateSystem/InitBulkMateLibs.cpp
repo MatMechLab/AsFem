@@ -1,118 +1,79 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.04.09
-//+++ Purpose: Init all material properties, set the intial status
-//+++          of history variables
+//+++ Date   : 2020.11.30
+//+++ Purpose: call all the materials list in MateSystem, include
+//+++          built-in materials and UMAT
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "MateSystem/BulkMateSystem.h"
 
 
-void BulkMateSystem::InitBulkMateLibs(const MateType &imate, const int &mateindex, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln){
-    switch (imate){
-        case MateType::NULLMATE:
-            break;
-        case MateType::CONSTPOISSONMATE:
-            ConstPoissonMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::CONSTDIFFUSIONMATE:
-            ConstDiffusionMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::DOUBLEWELLFREENERGYMATE:
-            DoubleWellFreeEnergyMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::IDEALSOLUTIONFREENERGYMATE:
-            IdealSolutionFreeEnergyMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::LINEARELASTICMATE:
-            LinearElasticMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::INCREMENTSMALLSTRAINMATE:
-            IncrementSmallStrainMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::NEOHOOKEANMATE:
-            NeoHookeanMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::SAINTVENANTMATE:
-            SaintVenantMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::PLASTIC1DMATE:
-            Plastic1DMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::J2PLASTICITYMATE:
-            J2PlasticityMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::MIEHEFRACTUREMATE:
-            MieheFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::STRESSDECOMPOSITIONMATE:
-            StressDecompositionMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::NEOHOOKEANPFFRACTUREMATE:
-            NeoHookeanPFFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::KOBAYASHIMATE:
-            KobayashiMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::DIFFNEOHOOKEANMATE:
-            DiffNeoHookeanMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::DIFFUSIONFRACTUREMATE:
-            DiffusionFractureMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::LINEARELASTICCHMATE:
-            LinearElasticCHMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::WAVEMATE:
-            WaveMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::THERMALMATE:
-            ThermalMaterial::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        //**************************************************************
-        //*** for User-Defined-Materials (UMAT)
-        //**************************************************************
-        case MateType::USER1MATE:
-            User1Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER2MATE:
-            User2Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER3MATE:
-            User3Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER4MATE:
-            User4Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER5MATE:
-            User5Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER6MATE:
-            User6Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER7MATE:
-            User7Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER8MATE:
-            User8Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER9MATE:
-            User9Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        case MateType::USER10MATE:
-            User10Material::InitMaterialProperties(_BulkMateBlockList[mateindex-1]._Parameters,elmtinfo,elmtsoln,_Materials);
-            break;
-        default:
-            MessagePrinter::PrintErrorTxt("unsupported material type in InitBulkMateLibs of the MateSystem, please check either your code or your input file");
-            MessagePrinter::AsFem_Exit();
-            break;
+void BulkMateSystem::initBulkMateLibs(const MateType &t_matetype,const nlohmann::json &t_params,
+                                      const LocalElmtInfo &t_elmtinfo,const LocalElmtSolution &t_elmtsoln){
+    switch (t_matetype)
+    {
+    case MateType::CONSTPOISSONMATE:
+        ConstPoissonMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::POISSON1DBENCHMARKMATE:
+        Poisson1DBenchmarkMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::POISSON2DBENCHMARKMATE:
+        Poisson2DBenchmarkMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::NONLINEARPOISSON2DMATE:
+        NonlinearPoisson2DMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::NONLINEARPOISSON3DMATE:
+        NonlinearPoisson3DMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::CONSTDIFFUSIONNMATE:
+        ConstDiffusionMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::NONLINEARDIFFUSION2DMATE:
+        NonlinearDiffusion2DMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    //******************************************
+    //*** for free energy materials
+    //******************************************
+    case MateType::DOUBLEWELLMATE:
+        DoubleWellPotentialMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::BINARYMIXMATE:
+        BinaryMixtureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    //******************************************
+    //*** for mechanics materials
+    //******************************************
+    case MateType::LINEARELASTICMATE:
+        LinearElasticMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::SAINTVENANTMATE:
+        SaintVenantMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::NEOHOOKEANMATE:
+        NeoHookeanMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    //******************************************
+    //*** for coupled materials
+    //******************************************
+    case MateType::SMALLSTRAINDIFFUSIONMATE:
+        SmallStrainDiffusionMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    case MateType::LINEARELASTICFRACMATE:
+        LinearElasticFractureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
+    default:
+        MessagePrinter::printErrorTxt("Unsupported material type in initBulkMateLibs, please check your code");
+        MessagePrinter::exitAsFem();
+        break;
     }
 }

@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -14,87 +14,93 @@
 //+++          by this class
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#pragma once 
+#pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-#include <string>
-#include <sstream>
+#include "OutputSystem/ResultFileFormat.h"
+
+#include "OutputSystem/VTUWriter.h"
 
 
-#include "OutputSystem/OutputBlock.h"
-
-#include "Mesh/Mesh.h"
-#include "DofHandler/DofHandler.h"
-#include "SolutionSystem/SolutionSystem.h"
-
-
-using namespace std;
-
-
-class OutputSystem{
+/**
+ * This class implement the result output function
+ */
+class OutputSystem:public VTUWriter{
 public:
+    /**
+     * constructor
+     */
     OutputSystem();
 
-    void Init(string inputfilename);
-    void InitFromOutputBlock(OutputBlock &outputblock);
-    //************************************************************
-    //*** basic settings
-    //************************************************************
-    inline void SetInputFileName(string inputfilename){_InputFileName=inputfilename;}
-    void SetOutputType(OutputType outputtype);
-    //************************************************************
-    //*** basic getting functions
-    //************************************************************
-    inline int GetIntervalNum()const{return _Interval;}
-    inline string GetOutputFileName()const{return _OutputFileName;}
-    inline string GetPVDFileName()const{return _PVDFileName;}
-    //************************************************************
-    //*** write out our results to files with different format
-    //************************************************************
-    void WriteResultToFile(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
-    void WriteResultToFile(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
+    /**
+     * setup the input file name
+     * @param filename the string name of input file
+     */
+    void setInputFileName(const string &filename){m_inputfile_name=filename;}
+    /**
+     * setup the output interval
+     */
+    void setIntervalNum(const int &interval){m_intervals=interval;}
+    /**
+     * setup the output file format
+     * @param t_format the file format type
+     */
+    void setFileFormat(const ResultFileFormat &t_format){m_fileformat=t_format;}
 
-    //*************************************************
-    //*** for pvd file
-    //*************************************************
-    void WritePVDFileHeader();
-    void WritePVDFileEnd();
-    void WriteResultToPVDFile(const double &timestep,string resultfilename);
-
-    void PrintInfo()const;
+    /**
+     * save result to different files according to the output format
+     * @param t_step the time step, -1 for static analysis output
+     * @param t_mesh the mesh class
+     * @param t_dofHandler the dofhandler class
+     * @param t_solution the solution class
+     * @param t_projection the projection class
+     */
+    void saveResults(const int &t_step,
+                     const Mesh &t_mesh,
+                     const DofHandler &t_dofHandler,
+                     SolutionSystem &t_solution,
+                     ProjectionSystem &t_projection);
     
-private:
-    void WriteResult2VTU(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
-    void WriteResult2VTU(const int &step,const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
-    void WriteResult2VTK(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
-    void WriteResult2CSV(const Mesh &mesh,const DofHandler &dofHandler,const SolutionSystem &solutionSystem);
-    //**************************
+    /**
+     * save result info to pvd file, this is used by vtu file
+     * @param current_time the time of current time step
+     */
+    void savePVDResults(const double &current_time);
+    /**
+     * save the header info of pvd file
+     */
+    void savePVDHead();
+    /**
+     * save the end info of pvd file
+     */
+    void savePVDEnd();
+
+    //*****************************************************
+    //*** general gettings
+    //*****************************************************
+    /**
+     * get the string name of the output file
+     */
+    inline string getOutputFileName()const{return m_outputfile_name;}
+    /**
+     * get the output interval number
+     */
+    inline int getIntervalNum()const{return m_intervals;}
+
+    /**
+     * print out the output system info
+     */
+    void printInfo()const;
+
 
 private:
-    int _Interval;
-    OutputType _OutputType;
-    string _OutputFileName,_InputFileName;
-    string _OutputTypeName;
-    string _OutputFolderName;
-    string _PVDFileName;
-    vector<string> _CSVFieldNameList;
+    string m_inputfile_name;/**< for the string name of input file */
+    string m_outputfile_name;/**< for the string name of output file */
+    string m_pvdfile_name;/**< for the stringname of pvd file */
+    ResultFileFormat m_fileformat;/**< for the result file format */
+
+    int m_intervals;/**< the output interval number */
 
 private:
-    //****************************************
-    //*** for PETSc vec
-    //****************************************
-    Vec _Useq,_ProjSeq,_ProjScalarSeq,_ProjVectorSeq,_ProjRank2Seq,_ProjRank4Seq;
-    VecScatter _scatterU,_scatterProj,_scatterProjScalar;
-    VecScatter _scatterProjVector,_scatterProjRank2,_scatterProjRank4;
-    PetscMPIInt _rank;
-
-private:
-    //****************************************
-    //*** for file I/O
-    //****************************************
-    string _VTUFileName;
-    string _OutputFilePrefix;
+    PetscMPIInt m_rank;/** for the processor id */
 
 };

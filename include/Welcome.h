@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -18,36 +18,44 @@
 
 #include <iostream>
 #include <string>
-#include <cstdio>
 
 #include "petsc.h"
 #include "Utils/MessagePrinter.h"
 
 using namespace std;
-void Welcome(const PetscInt &year,const PetscInt &month,const PetscInt &day,const PetscReal &version){
+
+/**
+ * print the welcome message in your terminal
+ * @param year the integer number of release year
+ * @param month the integer number of release month
+ * @param day the integer number of release day
+ * @param version the double number of release version (2-digital)
+ */
+void welcome(const int &year,const int &month,const int &day,const double &version){
     PetscInt Major,Minor,SubMinor;
     PetscGetVersionNumber(&Major,&Minor,&SubMinor,NULL);
     char buff[50];
     string str;
     
-    MessagePrinter::PrintStars(MessageColor::CYAN);
-    MessagePrinter::PrintWelcomeTxt("Welcome to use AsFem");
-    MessagePrinter::PrintWelcomeTxt("A Simple Finite Element Method Program");
+    MessagePrinter::printStars(MessageColor::BLUE);
+    MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                      AAA");
+    MessagePrinter::printWelcomeTxt("A Simple Finite Element Method Program                   // \\\\");
 
     snprintf(buff,50,"Version: %-10.2f  Release @ %4d-%02d-%02d",version,year,month,day);
     str=buff;
-    MessagePrinter::PrintWelcomeTxt(str);
+    MessagePrinter::printWelcomeTxt(str+"               //   \\\\");
 
     snprintf(buff,50,"PETSc version: %2d.%2d.%-2d",Major,Minor,SubMinor);
     str=buff;
-    MessagePrinter::PrintWelcomeTxt(str);
+    MessagePrinter::printWelcomeTxt(str+"                                //     \\\\");
     
-    MessagePrinter::PrintWelcomeTxt("License: GPL-3.0");
-    MessagePrinter::PrintWelcomeTxt("Author: Yang Bai");
-    MessagePrinter::PrintWelcomeTxt("Contact: walkandthinker@gmail.com");
+    MessagePrinter::printWelcomeTxt("License: GPL-3.0                                      //       \\\\");
+    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ M3-Group                          //_________\\\\");
+    MessagePrinter::printWelcomeTxt("Contact: yangbai90@outlook.com                      //-----------\\\\");
 
-    MessagePrinter::PrintWelcomeTxt("QQ Group: 879908352");
-    MessagePrinter::PrintWelcomeTxt("Website: https://github.com/yangbai90/AsFem");
-    MessagePrinter::PrintWelcomeTxt("Feel free to use and discuss  .:.");
-    MessagePrinter::PrintStars(MessageColor::CYAN);
+    MessagePrinter::printWelcomeTxt("QQ Group: 879908352                                //             \\\\");
+    MessagePrinter::printWelcomeTxt("Website: https://github.com/M3Group/AsFem         //               \\\\");
+    MessagePrinter::printWelcomeTxt("Feel free to use and discuss  .:.                **                 **");
+    MessagePrinter::printStars(MessageColor::BLUE);
+
 }

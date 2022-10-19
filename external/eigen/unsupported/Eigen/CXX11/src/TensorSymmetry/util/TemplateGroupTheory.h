@@ -10,6 +10,8 @@
 #ifndef EIGEN_CXX11_TENSORSYMMETRY_TEMPLATEGROUPTHEORY_H
 #define EIGEN_CXX11_TENSORSYMMETRY_TEMPLATEGROUPTHEORY_H
 
+#include "../InternalHeaderCheck.h"
+
 namespace Eigen {
 
 namespace internal {
@@ -126,11 +128,11 @@ template<
 >
 struct strip_identities<Equality, id, type_list<t, ts...>>
 {
-  typedef typename conditional<
+  typedef std::conditional_t<
     Equality<id, t>::value,
     typename strip_identities<Equality, id, type_list<ts...>>::type,
     typename concat<type_list<t>, typename strip_identities<Equality, id, type_list<ts...>>::type>::type
-  >::type type;
+  > type;
   constexpr static int global_flags = Equality<id, t>::global_flags | strip_identities<Equality, id, type_list<ts...>>::global_flags;
 };
 
@@ -637,21 +639,21 @@ struct enumerate_group_elements_noid<Multiply, Equality, id, type_list<>, initia
   * \tparam Equality      The equality check operation that checks if two group elements
   *                       are equal to another.
   * \tparam id            The identity element
-  * \tparam _generators   A list of (possibly redundant) generators of the group
+  * \tparam Generators_   A list of (possibly redundant) generators of the group
   */
 template<
   template<typename, typename> class Multiply,
   template<typename, typename> class Equality,
   typename id,
-  typename _generators
+  typename Generators_
 >
 struct enumerate_group_elements
   : public enumerate_group_elements_noid<
       Multiply,
       Equality,
       id,
-      typename strip_identities<Equality, id, _generators>::type,
-      strip_identities<Equality, id, _generators>::global_flags
+      typename strip_identities<Equality, id, Generators_>::type,
+      strip_identities<Equality, id, Generators_>::global_flags
     >
 {
 };

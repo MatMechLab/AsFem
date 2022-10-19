@@ -10,6 +10,8 @@
 #ifndef EIGEN_SPARSE_COMPRESSED_BASE_H
 #define EIGEN_SPARSE_COMPRESSED_BASE_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen { 
 
 template<typename Derived> class SparseCompressedBase;
@@ -194,8 +196,7 @@ class SparseCompressedBase<Derived>::InnerIterator
       }
     }
 
-    explicit InnerIterator(const SparseCompressedBase& mat)
-      : m_values(mat.valuePtr()), m_indices(mat.innerIndexPtr()), m_outer(0), m_id(0), m_end(mat.nonZeros())
+    explicit InnerIterator(const SparseCompressedBase& mat) : InnerIterator(mat, Index(0))
     {
       EIGEN_STATIC_ASSERT_VECTOR_ONLY(Derived);
     }

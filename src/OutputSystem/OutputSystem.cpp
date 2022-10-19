@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -16,53 +16,25 @@
 
 #include "OutputSystem/OutputSystem.h"
 
-
 OutputSystem::OutputSystem(){
-    _Interval=1;
-    _OutputType=OutputType::VTU;
-    _OutputTypeName="vtu";
-    _OutputFolderName.clear();    
-    _OutputFileName.clear();
-    _InputFileName.clear();
-    _CSVFieldNameList.clear();
+    m_inputfile_name.clear();
+    m_outputfile_name.clear();
+    m_pvdfile_name.clear();
+    m_fileformat=ResultFileFormat::VTU;
+    m_intervals=1;
 }
 
-void OutputSystem::Init(string inputfilename){
-    _Interval=1;
-    _OutputType=OutputType::VTU;
-    _OutputTypeName="vtu";
-    _OutputFolderName.clear();    
-    _OutputFileName.clear();
-    _InputFileName=inputfilename;
-    _CSVFieldNameList.clear();
-}
-
-void OutputSystem::InitFromOutputBlock(OutputBlock &outputblock){
-    _Interval=outputblock._Interval;
-    _OutputType=outputblock._OutputType;
-    _OutputTypeName=outputblock._OutputFormatName;
-    _OutputFolderName=outputblock._OutputFolderName;
-}
-
-void OutputSystem::SetOutputType(OutputType outputtype){
-    if(outputtype==OutputType::CSV){
-        _OutputType=OutputType::CSV;
-        _OutputTypeName="csv";
+void OutputSystem::printInfo()const{
+    MessagePrinter::printNormalTxt("Output information summary:");
+    if(m_fileformat==ResultFileFormat::VTU){
+        MessagePrinter::printNormalTxt("  output file format = vtu");
     }
-    else if(outputtype==OutputType::VTK){
-        _OutputType=OutputType::VTK;
-        _OutputTypeName="vtk";
+    else if(m_fileformat==ResultFileFormat::VTK){
+        MessagePrinter::printNormalTxt("  output file format = vtk");
     }
-    else if(outputtype==OutputType::VTU){
-        _OutputType=OutputType::VTU;
-        _OutputTypeName="vtu";
+    else if(m_fileformat==ResultFileFormat::CSV){
+        MessagePrinter::printNormalTxt("  output file format = csv");
     }
-}
-
-//****************************************************
-void OutputSystem::PrintInfo()const{
-    MessagePrinter::PrintNormalTxt("Output system information summary:");
-    MessagePrinter::PrintNormalTxt("  output file format ="+_OutputTypeName);
-    MessagePrinter::PrintNormalTxt("  output interval="+to_string(_Interval));
-    MessagePrinter::PrintDashLine();
+    MessagePrinter::printNormalTxt("  output interval = "+to_string(m_intervals));
+    MessagePrinter::printStars();
 }

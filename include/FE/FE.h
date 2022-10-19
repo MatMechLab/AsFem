@@ -1,74 +1,75 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
-//+++ Purpose: implement the general FE space for FEM calculation
-//+++          in AsFem, here one can use:
-//+++            1) gauss integration 
-//+++            2) shape functions for different mesh
+//+++ Date   : 2022.06.05
+//+++ Purpose: this class offers the functions and management of
+//+++          shape function class and qpoint class for FEM calc
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-
-#include "Mesh/Mesh.h"
 #include "FE/QPoint.h"
 #include "FE/ShapeFun.h"
 
-class Mesh;
+#include "Mesh/Mesh.h"
 
+/**
+ * This class implement the general function and management of both shape functions and qpoints classes
+ */
 class FE{
 public:
+    /**
+     * constructor
+     */
     FE();
-    void SetDim(int dim){_nDim=dim;_HasDimSet=true;}
-    void SetMinDim(int dim){_nMinDim=dim;}
-    void InitFE(Mesh &mesh);
-    //***********************************************
-    //*** for QPoint
-    //***********************************************
-    void SetQPointType(QPointType qptype);
-    void SetBulkQpOrder(int order);
-    void SetBCQpOrder(int order);
-    void CreateQPoints(Mesh &mesh);
-    //***********************************************
-    //*** for shape functions
-    //***********************************************
-    void CreateShapeFuns(Mesh &mesh);
+    /**
+     * initialize the FE class, this option assumes that no info is given in your input file
+     * @param t_mesh the mesh class for FE initializing
+     */
+    void initdefault(const Mesh &t_mesh);
 
+    /**
+     * init the FE class with preset info(defined in your input file)
+     * @param t_mesh the mesh class for FE initializing
+     */
+    void init(const Mesh &t_mesh);
 
-    //***********************************************
-    //*** for get functions
-    //***********************************************
-    inline int GetDim()const{return _nDim;}
-    inline int GetMinDim()const{return _nMinDim;}
+    /**
+     * get the maximum dim of FE space
+     */
+    inline int getMaxDim()const{return m_maxdim;}
+    /**
+     * get the mini dim of FE space
+     */
+    inline int getMinDim()const{return m_mindim;}
 
-    QPoint& GetBulkQPointPtr(){return _BulkQPoint;}
-    QPoint& GetLineQPointPtr(){return _LineQPoint;}
-    QPoint& GetSurfaceQPointPtr(){return _SurfaceQPoint;}
-
-    ShapeFun& GetBulkShpPtr(){return _BulkShp;}
-    ShapeFun& GetSurfaceShpPtr(){return _SurfaceShp;}
-    ShapeFun& GetLineShpPtr(){return _LineShp;}
-
-
-    void PrintFEInfo()const;
+    /**
+     * print out the summary info of FE space
+     */
+    void printFEInfo()const;
+    /**
+     * release allocated memory
+     */
+    void releaseMemory();
 
 public:
-    QPoint _BulkQPoint,_LineQPoint,_SurfaceQPoint;
-    ShapeFun _BulkShp,_LineShp,_SurfaceShp;
-    Nodes _BulkNodes,_SurfaceNodes,_LineNodes;
+    ShapeFun m_bulk_shp;/**< shapefun for the bulk element */
+    ShapeFun m_surface_shp;/**< shapefun for the surface element (for 3d case) */
+    ShapeFun m_line_shp;/**< shapefun for the line element (for 2d case) */
+
+    QPoint m_bulk_qpoints;/**< gauss integration points for the bulk element */
+    QPoint m_surface_qpoints;/**< gauss integration points for the surface element */
+    QPoint m_line_qpoints;/**< gauss integration points for the line element */
 
 private:
-    int _nDim,_nMinDim;
-    bool _HasDimSet=false;
-    bool _IsInit=false;
-    int _nBulkQpOrder,_nBCQpOrder;
-    
+    int m_maxdim;/**< the max dimension of fe space */
+    int m_mindim;/**< the min dimension of fe space */
+
 };

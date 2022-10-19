@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -19,39 +19,36 @@
 
 #include "MateSystem/ConstPoissonMaterial.h"
 
-void ConstPoissonMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
+void ConstPoissonMaterial::initMaterialProperties(const nlohmann::json &inputparams,
+                                        const LocalElmtInfo &elmtinfo,
+                                        const LocalElmtSolution &elmtsoln,
+                                        MaterialsContainer &mate){
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||Mate.GetScalarMate().size()){}
+    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
 //********************************************************************
-void ConstPoissonMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate){
+void ConstPoissonMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
+                                           const LocalElmtInfo &elmtinfo,
+                                           const LocalElmtSolution &elmtsoln,
+                                           const MaterialsContainer &mateold,
+                                           MaterialsContainer &mate){
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU[0]||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
-
-
-
-    if(InputParams.size()<2){
-        MessagePrinter::PrintErrorTxt("for const poisson material, two parameters are required. sigma*div(grad(phi))=F, so sigma and F are required");
-        MessagePrinter::AsFem_Exit();
-    }
+    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+       mateold.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
     //************************
     //*** here the poisson equation is:
     //*** div(sigma*grad(phi))=F
-    //**** MateVals[0]-->store sigma
-    //**** MateVals[1]-->store dsigma/dphi(for constant case, it is zero)
-    //**** MateVals[2]-->store F
-    //**** MateVals[3]-->store dF/dphi (for constant case, it is zero)
-    Mate.ScalarMaterials("sigma")=InputParams[0];// sigma
-    Mate.ScalarMaterials("dsigmadu")=0.0;// dsigma/dphi
-    Mate.ScalarMaterials("f")=InputParams[1];// F
-    Mate.ScalarMaterials("dfdu")=0.0;// dF/dphi
-    Mate.VectorMaterials("gradu")=elmtsoln.gpGradU[1];// the gradient of u
+    mate.ScalarMaterial("sigma")=JsonUtils::getValue(inputparams,"sigma");// sigma
+    mate.ScalarMaterial("dsigmadu")=0.0;// dsigma/dphi
+    mate.ScalarMaterial("f")=JsonUtils::getValue(inputparams,"f");// F
+    mate.ScalarMaterial("dfdu")=0.0;// dF/dphi
+    mate.VectorMaterial("gradu")=elmtsoln.m_gpGradU[1];// the gradient of u
 
 }

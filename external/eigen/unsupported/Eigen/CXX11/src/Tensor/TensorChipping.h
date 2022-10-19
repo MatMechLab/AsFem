@@ -10,6 +10,8 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_CHIPPING_H
 #define EIGEN_CXX11_TENSOR_TENSOR_CHIPPING_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen {
 
 /** \class TensorKChippingReshaping
@@ -29,9 +31,9 @@ struct traits<TensorChippingOp<DimId, XprType> > : public traits<XprType>
   typedef typename XprTraits::StorageKind StorageKind;
   typedef typename XprTraits::Index Index;
   typedef typename XprType::Nested Nested;
-  typedef typename remove_reference<Nested>::type _Nested;
-  static const int NumDimensions = XprTraits::NumDimensions - 1;
-  static const int Layout = XprTraits::Layout;
+  typedef std::remove_reference_t<Nested> Nested_;
+  static constexpr int NumDimensions = XprTraits::NumDimensions - 1;
+  static constexpr int Layout = XprTraits::Layout;
   typedef typename XprTraits::PointerType PointerType;
 };
 
@@ -98,7 +100,7 @@ class TensorChippingOp : public TensorBase<TensorChippingOp<DimId, XprType> >
     const Index dim() const { return m_dim.actualDim(); }
 
     EIGEN_DEVICE_FUNC
-    const typename internal::remove_all<typename XprType::Nested>::type&
+    const internal::remove_all_t<typename XprType::Nested>&
     expression() const { return m_xpr; }
 
     EIGEN_TENSOR_INHERIT_ASSIGNMENT_OPERATORS(TensorChippingOp)
@@ -115,31 +117,31 @@ template<DenseIndex DimId, typename ArgType, typename Device>
 struct TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device>
 {
   typedef TensorChippingOp<DimId, ArgType> XprType;
-  static const int NumInputDims = internal::array_size<typename TensorEvaluator<ArgType, Device>::Dimensions>::value;
-  static const int NumDims = NumInputDims-1;
+  static constexpr int NumInputDims = internal::array_size<typename TensorEvaluator<ArgType, Device>::Dimensions>::value;
+  static constexpr int NumDims = NumInputDims-1;
   typedef typename XprType::Index Index;
   typedef DSizes<Index, NumDims> Dimensions;
   typedef typename XprType::Scalar Scalar;
   typedef typename XprType::CoeffReturnType CoeffReturnType;
   typedef typename PacketType<CoeffReturnType, Device>::type PacketReturnType;
-  static const int PacketSize = PacketType<CoeffReturnType, Device>::size;
+  static constexpr int PacketSize = PacketType<CoeffReturnType, Device>::size;
   typedef StorageMemory<CoeffReturnType, Device> Storage;
   typedef typename Storage::Type EvaluatorPointerType;
+  static constexpr int Layout = TensorEvaluator<ArgType, Device>::Layout;
 
   enum {
     // Alignment can't be guaranteed at compile time since it depends on the
     // slice offsets.
     IsAligned         = false,
-    Layout            = TensorEvaluator<ArgType, Device>::Layout,
     PacketAccess      = TensorEvaluator<ArgType, Device>::PacketAccess,
     BlockAccess       = TensorEvaluator<ArgType, Device>::BlockAccess,
     // Chipping of outer-most dimension is a trivial operation, because we can
     // read and write directly from the underlying tensor using single offset.
-    IsOuterChipping   = (static_cast<int>(Layout) == ColMajor && DimId == NumInputDims - 1) ||
-                        (static_cast<int>(Layout) == RowMajor && DimId == 0),
+    IsOuterChipping   = (Layout == ColMajor && DimId == NumInputDims - 1) ||
+                        (Layout == RowMajor && DimId == 0),
     // Chipping inner-most dimension.
-    IsInnerChipping   = (static_cast<int>(Layout) == ColMajor && DimId == 0) ||
-                        (static_cast<int>(Layout) == RowMajor && DimId == NumInputDims - 1),
+    IsInnerChipping   = (Layout == ColMajor && DimId == 0) ||
+                        (Layout == RowMajor && DimId == NumInputDims - 1),
     // Prefer block access if the underlying expression prefers it, otherwise
     // only if chipping is not trivial.
     PreferBlockAccess = TensorEvaluator<ArgType, Device>::PreferBlockAccess ||
@@ -148,7 +150,7 @@ struct TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device>
     RawAccess         = false
   };
 
-  typedef typename internal::remove_const<Scalar>::type ScalarNoConst;
+  typedef std::remove_const_t<Scalar> ScalarNoConst;
 
   //===- Tensor block evaluation strategy (see TensorBlock.h) -------------===//
   typedef internal::TensorBlockDescriptor<NumDims, Index> TensorBlockDesc;
@@ -164,7 +166,7 @@ struct TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device>
       TensorBlock;
   //===--------------------------------------------------------------------===//
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
+  EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
       : m_impl(op.expression(), device), m_dim(op.dim()), m_device(device)
   {
     EIGEN_STATIC_ASSERT((NumInputDims >= 1), YOU_MADE_A_PROGRAMMING_MISTAKE);
@@ -200,12 +202,12 @@ struct TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device>
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Dimensions& dimensions() const { return m_dimensions; }
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE bool evalSubExprsIfNeeded(EvaluatorPointerType) {
+  EIGEN_STRONG_INLINE bool evalSubExprsIfNeeded(EvaluatorPointerType) {
     m_impl.evalSubExprsIfNeeded(NULL);
     return true;
   }
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void cleanup() {
+  EIGEN_STRONG_INLINE void cleanup() {
     m_impl.cleanup();
   }
 
@@ -217,14 +219,13 @@ struct TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device>
   template<int LoadMode>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE PacketReturnType packet(Index index) const
   {
-    EIGEN_STATIC_ASSERT((PacketSize > 1), YOU_MADE_A_PROGRAMMING_MISTAKE)
     eigen_assert(index+PacketSize-1 < dimensions().TotalSize());
 
     if (isInnerChipping()) {
       // m_stride is equal to 1, so let's avoid the integer division.
       eigen_assert(m_stride == 1);
       Index inputIndex = index * m_inputStride + m_inputOffset;
-      EIGEN_ALIGN_MAX typename internal::remove_const<CoeffReturnType>::type values[PacketSize];
+      EIGEN_ALIGN_MAX std::remove_const_t<CoeffReturnType> values[PacketSize];
       EIGEN_UNROLL_LOOP
       for (int i = 0; i < PacketSize; ++i) {
         values[i] = m_impl.coeff(inputIndex);
@@ -244,7 +245,7 @@ struct TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device>
         return m_impl.template packet<LoadMode>(inputIndex);
       } else {
         // Cross the stride boundary. Fallback to slow path.
-        EIGEN_ALIGN_MAX typename internal::remove_const<CoeffReturnType>::type values[PacketSize];
+        EIGEN_ALIGN_MAX std::remove_const_t<CoeffReturnType> values[PacketSize];
        EIGEN_UNROLL_LOOP
         for (int i = 0; i < PacketSize; ++i) {
           values[i] = coeff(index);
@@ -412,14 +413,14 @@ struct TensorEvaluator<TensorChippingOp<DimId, ArgType>, Device>
 {
   typedef TensorEvaluator<const TensorChippingOp<DimId, ArgType>, Device> Base;
   typedef TensorChippingOp<DimId, ArgType> XprType;
-  static const int NumInputDims = internal::array_size<typename TensorEvaluator<ArgType, Device>::Dimensions>::value;
-  static const int NumDims = NumInputDims-1;
+  static constexpr int NumInputDims = internal::array_size<typename TensorEvaluator<ArgType, Device>::Dimensions>::value;
+  static constexpr int NumDims = NumInputDims-1;
   typedef typename XprType::Index Index;
   typedef DSizes<Index, NumDims> Dimensions;
   typedef typename XprType::Scalar Scalar;
   typedef typename XprType::CoeffReturnType CoeffReturnType;
   typedef typename PacketType<CoeffReturnType, Device>::type PacketReturnType;
-  static const int PacketSize = PacketType<CoeffReturnType, Device>::size;
+  static constexpr int PacketSize = PacketType<CoeffReturnType, Device>::size;
 
   enum {
     IsAligned     = false,
@@ -433,7 +434,7 @@ struct TensorEvaluator<TensorChippingOp<DimId, ArgType>, Device>
   typedef internal::TensorBlockDescriptor<NumDims, Index> TensorBlockDesc;
   //===--------------------------------------------------------------------===//
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
+  EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
     : Base(op, device)
     { }
 
@@ -445,12 +446,10 @@ struct TensorEvaluator<TensorChippingOp<DimId, ArgType>, Device>
   template <int StoreMode> EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE
   void writePacket(Index index, const PacketReturnType& x)
   {
-    EIGEN_STATIC_ASSERT((PacketSize > 1), YOU_MADE_A_PROGRAMMING_MISTAKE)
-
     if (this->isInnerChipping()) {
       // m_stride is equal to 1, so let's avoid the integer division.
       eigen_assert(this->m_stride == 1);
-      EIGEN_ALIGN_MAX typename internal::remove_const<CoeffReturnType>::type values[PacketSize];
+      EIGEN_ALIGN_MAX std::remove_const_t<CoeffReturnType> values[PacketSize];
       internal::pstore<CoeffReturnType, PacketReturnType>(values, x);
       Index inputIndex = index * this->m_inputStride + this->m_inputOffset;
       EIGEN_UNROLL_LOOP
@@ -470,7 +469,7 @@ struct TensorEvaluator<TensorChippingOp<DimId, ArgType>, Device>
         this->m_impl.template writePacket<StoreMode>(inputIndex, x);
       } else {
         // Cross stride boundary. Fallback to slow path.
-        EIGEN_ALIGN_MAX typename internal::remove_const<CoeffReturnType>::type values[PacketSize];
+        EIGEN_ALIGN_MAX std::remove_const_t<CoeffReturnType> values[PacketSize];
         internal::pstore<CoeffReturnType, PacketReturnType>(values, x);
         EIGEN_UNROLL_LOOP
         for (int i = 0; i < PacketSize; ++i) {
@@ -484,7 +483,7 @@ struct TensorEvaluator<TensorChippingOp<DimId, ArgType>, Device>
   template <typename TensorBlock>
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void writeBlock(
       const TensorBlockDesc& desc, const TensorBlock& block) {
-    assert(this->m_impl.data() != NULL);
+    eigen_assert(this->m_impl.data() != NULL);
 
     const Index chip_dim = this->m_dim.actualDim();
 

@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -19,118 +19,82 @@
 #include "BCSystem/BCSystem.h"
 
 BCSystem::BCSystem(){
-    _nBCBlocks=0;
-    _BCBlockList.clear();
+    m_bclock_list.clear();
+    m_bcblocks_num=0;
+    m_dirichlet_penalty=1.0e16;
+}
 
-    _PenaltyFactor=1.0e15;
-    _nBCDim=0;_nBulkDim=0;_nNodesPerBCElmt=0;
-    _xi=0.0;_eta=0.0;_JxW=0.0;
-    
-    _xs[0][0]=0.0;_xs[0][1]=0.0;_xs[0][2]=0.0;
-    _xs[1][0]=0.0;_xs[1][1]=0.0;_xs[1][2]=0.0;
-    _xs[2][0]=0.0;_xs[2][1]=0.0;_xs[2][2]=0.0;
+void BCSystem::init(const int &dofs){
+    m_localK.resize(dofs+1,dofs+1,0.0);
+    m_localR.resize(dofs+1,0.0);
+    m_nodes0.resize(27+1);
+    m_nodes.resize(27+1);
 
-    _dist=0.0;
+    m_local_elmtsoln.m_gpU.resize(dofs+1,0.0);
+    m_local_elmtsoln.m_gpUold.resize(dofs+1,0.0);
+    m_local_elmtsoln.m_gpUolder.resize(dofs+1,0.0);
+    m_local_elmtsoln.m_gpV.resize(dofs+1,0.0);
 
-    _normals=0.0;
+    m_local_elmtsoln.m_gpGradU.resize(dofs+1,0.0);
+    m_local_elmtsoln.m_gpGradUold.resize(dofs+1,0.0);
+    m_local_elmtsoln.m_gpGradUolder.resize(dofs+1,0.0);
 
-    _elmtinfo.dt=0.0;
-    _elmtinfo.t=0.0;
-    _elmtinfo.gpCoords=0.0;
-    _elmtinfo.nDim=0;
-    _elmtinfo.nDofs=0;
-    _elmtinfo.nNodes=0;
+    m_local_elmtsoln.m_gpGradV.resize(dofs+1,0.0);
 
-    // here we assume the maximum dofs of each BC element is 10!
-    _soln.gpU.resize(10);
-    _soln.gpGradU.resize(10);
-    _soln.gpV.resize(10);
-    _soln.gpGradV.resize(10);
-    // for the old solution in the previous step
-    // do we realy need this?
-    _soln.gpUold.resize(10);
-    _soln.gpGradUold.resize(10);
-    _soln.gpVold.resize(10);
-    _soln.gpGradVold.resize(10);
-
-    // for shape functions
-    _shp.test=0.0;
-    _shp.grad_test=0.0;
-    _shp.trial=0.0;
-    _shp.grad_trial=0.0;
-
-    _localR.Resize(10);
-    _localK.Resize(10,10);
+    // m_Utemp.resize(468,0.0);
 
 }
 
-//************************************
-void BCSystem::AddBCBlock2List(BCBlock &bcblock){
-    string msg;
-    if(_BCBlockList.size()<1){
-        _BCBlockList.push_back(bcblock);
-        _nBCBlocks=int(_BCBlockList.size());
+void BCSystem::releaseMemory(){
+
+    m_bclock_list.clear();
+    m_bcblocks_num=0;
+
+    m_localK.clean();
+    m_localR.clean();
+    m_nodes0.clear();
+    m_nodes.clear();
+
+    m_local_elmtsoln.m_gpU.clear();
+    m_local_elmtsoln.m_gpUold.clear();
+    m_local_elmtsoln.m_gpUolder.clear();
+    m_local_elmtsoln.m_gpV.clear();
+
+    m_local_elmtsoln.m_gpGradU.clear();
+    m_local_elmtsoln.m_gpGradUold.clear();
+    m_local_elmtsoln.m_gpGradUolder.clear();
+
+    m_local_elmtsoln.m_gpGradV.clear();
+}
+
+void BCSystem::addBCBlock2List(const BCBlock &t_bcblock){
+    if(m_bclock_list.size()<1){
+        m_bclock_list.push_back(t_bcblock);
+        m_bcblocks_num=1;
     }
     else{
         bool NotInList=true;
-        for(const auto &it:_BCBlockList){
-            if(it._BCBlockName==bcblock._BCBlockName){
-                NotInList=false;
-                break;
+        for(const auto &it:m_bclock_list){
+            if(it.m_bcBlockName==t_bcblock.m_bcBlockName){
+                NotInList=false;break;
             }
         }
         if(NotInList){
-            _BCBlockList.push_back(bcblock);
-            _nBCBlocks=static_cast<int>(_BCBlockList.size());
+            m_bclock_list.push_back(t_bcblock);
+            m_bcblocks_num+=1;
         }
         else{
-            msg="duplicated ["+bcblock._BCBlockName+"] in the [bcs] sub block";
-            MessagePrinter::PrintErrorTxt(msg);
-            MessagePrinter::AsFem_Exit();
+            MessagePrinter::printErrorTxt("duplicate ["+t_bcblock.m_bcBlockName+"] in your [bcs] sub block,"
+                                          " please check your input file");
+            MessagePrinter::exitAsFem();
         }
     }
 }
 
-void BCSystem::InitBCSystem(const Mesh &mesh){
-    _PenaltyFactor=1.0e15;
-    _nBCDim=0;
-    _nBulkDim=mesh.GetBulkMeshDim();
-    _nNodesPerBCElmt=mesh.GetBulkMeshNodesNumPerBulkElmt();
-    _elNodes.InitNodes(mesh.GetBulkMeshNodesNumPerBulkElmt());
-
-    _xi=0.0;_eta=0.0;_JxW=0.0;
-    
-    _xs[0][0]=0.0;_xs[0][1]=0.0;_xs[0][2]=0.0;
-    _xs[1][0]=0.0;_xs[1][1]=0.0;_xs[1][2]=0.0;
-    _xs[2][0]=0.0;_xs[2][1]=0.0;_xs[2][2]=0.0;
-
-    _dist=0.0;
-
-    _normals=0.0;
-    
-    _elmtinfo.dt=0.0;
-    _elmtinfo.t=0.0;
-    _elmtinfo.gpCoords=0.0;
-    _elmtinfo.nDim=0;
-    _elmtinfo.nDofs=0;
-    _elmtinfo.nNodes=0;
-
-    // here we assume the maximum dofs of each BC element is 10!
-    _soln.gpU.resize(10);
-    _soln.gpGradU.resize(10);
-    _soln.gpV.resize(10);
-    _soln.gpGradV.resize(10);
-    // for the old solution in the previous step
-    // do we realy need this?
-    _soln.gpUold.resize(10);
-    _soln.gpGradUold.resize(10);
-    _soln.gpVold.resize(10);
-    _soln.gpGradVold.resize(10);
-
-    // for shape functions
-    _shp.test=0.0;
-    _shp.grad_test=0.0;
-    _shp.trial=0.0;
-    _shp.grad_trial=0.0;
-
+void BCSystem::printBCSystemInfo()const{
+    MessagePrinter::printNormalTxt("Boundary condition system information summary");
+    for(const auto &it:m_bclock_list){
+        it.printBCBlockInfo();
+    }
+    MessagePrinter::printStars();
 }
