@@ -44,8 +44,14 @@ void BulkElmtSystem::runBulkElmtLibs(const FECalcType &t_calctype,const double (
     case ElmtType::STRESSDIFFUSIONELMT:
         StressDiffusionElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
         break;
+    case ElmtType::MIEHEFRACTUREELMT:
+        MieheFractureElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
     case ElmtType::ALLENCAHNFRACTUREELMT:
         AllenCahnFractureElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::STRESSCAHNHILLIARDELMT:
+        StressCahnHilliardElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
         break;
     default:
         MessagePrinter::printErrorTxt("unsupported bulk element type in runElmtLibs, please check your code");

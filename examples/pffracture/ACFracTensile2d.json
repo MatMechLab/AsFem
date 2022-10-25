@@ -14,10 +14,10 @@
 			"material":{
 				"type":"linearelasticfracture",
 				"parameters":{
-					"L":1.0e5,
+					"L":1.0e6,
 					"Gc":2.7e-3,
-					"eps":0.01,
-					"Lame":121.15,
+					"eps":0.012,
+					"K":121.15,
 					"G":80.77,
 					"stabilizer":1.0e-5
 				}
@@ -52,7 +52,7 @@
 	"nlsolver":{
 		"type":"newton",
 		"solver":"gmres",
-		"maxiters":50,
+		"maxiters":10,
 		"abs-tolerance":8.0e-7,
 		"rel-tolerance":1.0e-9,
 		"s-tolerance":0.0,
@@ -63,7 +63,7 @@
 		"dt0":1.0e-4,
 		"dtmax":1.0e-3,
 		"dtmin":1.0e-12,
-		"optimize-iters":3,
+		"optimize-iters":4,
 		"end-time":2.5e-1,
 		"growth-factor":1.1,
 		"cutback-factor":0.85,
@@ -71,12 +71,12 @@
 	},
 	"output":{
 		"type":"vtu",
-		"interval":1
+		"interval":10
 	},
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":1
+			"order":2
 		}
 	},
 	"postprocess":{
@@ -86,13 +86,21 @@
 			"side":["top"]
 		},
 		"fy":{
-			"type":"sideaveragerank2mate",
+			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
 				"rank2mate":"stress",
-				"i-index":1,
-				"j-index":1
+				"i-index":2,
+				"j-index":2
 			}
+		},
+		"area":{
+			"type":"area",
+			"side":["top"]
+		},
+		"volume":{
+			"type":"volume",
+			"domain":["alldomain"]
 		}
 	},
 	"job":{

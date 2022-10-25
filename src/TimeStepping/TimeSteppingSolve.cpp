@@ -98,6 +98,9 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
             }
             if(postprocess.hasPostprocess()){
                 if(fectrlinfo.CurrentStep%postprocess.getInterval()==0){
+                    if(fectrlinfo.CurrentStep%output.getIntervalNum()!=0){
+                        projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
+                    }
                     postprocess.executePostprocess(mesh,dofhandler,fe,matesystem,projection,solutionsystem);
                     postprocess.savePPSResults2CSVFile(fectrlinfo.t);
                     MessagePrinter::printDashLine(MessageColor::BLUE);

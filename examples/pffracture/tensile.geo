@@ -9,11 +9,12 @@ n1=211;
 n2=8;
 n3=16;
 
-dx=0.05;
-dw1=0.01;
-n1=81;
+dx=0.04;
+dw1=0.0095;
+n1=501;
 n2=11;
 n3=21;
+n4=81;
 
 Point(1)={0.0,0.0,0.0,dx};
 Point(2)={1.0,0.0,0.0,dx};
@@ -82,4 +83,5 @@ Transfinite Curve {6, 3} = n1 Using Progression 1;
 //+
 //Transfinite Curve {5, 4} = n2 Using Progression 1;
 //+
-Transfinite Curve {7} = n3 Using Progression 1;
+Transfinite Curve {7} = n3 Using Progression 1;//+
+Transfinite Curve {9} = n4 Using Progression 1;

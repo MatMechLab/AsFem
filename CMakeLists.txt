@@ -374,6 +374,12 @@ set(src ${src} src/ElmtSystem/StressDiffusionElement.cpp)
 ###
 set(inc ${inc} include/ElmtSystem/AllenCahnFractureElement.h)
 set(src ${src} src/ElmtSystem/AllenCahnFractureElement.cpp)
+###
+set(inc ${inc} include/ElmtSystem/MieheFractureElement.h)
+set(src ${src} src/ElmtSystem/MieheFractureElement.cpp)
+###
+set(inc ${inc} include/ElmtSystem/StressCahnHilliardElement.h)
+set(src ${src} src/ElmtSystem/StressCahnHilliardElement.cpp)
 ### for element system
 set(inc ${inc} include/ElmtSystem/ElmtSystem.h)
 set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
@@ -437,6 +443,12 @@ set(src ${src} src/MateSystem/SmallStrainDiffusionMaterial.cpp)
 ###
 set(inc ${inc} include/MateSystem/LinearElasticFractureMaterial.h)
 set(src ${src} src/MateSystem/LinearElasticFractureMaterial.cpp)
+###
+set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
+set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
+###
+set(inc ${inc} include/MateSystem/CahnHilliardMechanicsMaterial.h)
+set(src ${src} src/MateSystem/CahnHilliardMechanicsMaterial.cpp)
 ### for material system
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)

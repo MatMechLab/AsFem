@@ -8,28 +8,31 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.10.10
-//+++ Purpose: Calculate the material properties required by stress-diffusion
-//+++          element. In this code, we can define:
+//+++ Date   : 2022.10.25
+//+++ Purpose: implement the material properties calculation for phase-field fracture 
+//             model based on Prof. Miehe's CMAME paper
+//+++ Ref    : A phase field model for rate-independent crack propagation: 
+//             Robust algorithmic implementation based on operator splits
+//+++ DOI    : https://doi.org/10.1016/j.cma.2010.04.011
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/LinearElasticFractureMaterial.h"
+#include "MateSystem/MieheFractureMaterial.h"
 #include "MathUtils/MathFuns.h"
 
-LinearElasticFractureMaterial::LinearElasticFractureMaterial(){
+MieheFractureMaterial::MieheFractureMaterial(){
     m_args.resize(11);
     m_F.resize(11);
     m_dFdargs.resize(11);
     m_d2Fdargs2.resize(11,11);
 }
-LinearElasticFractureMaterial::~LinearElasticFractureMaterial(){
+MieheFractureMaterial::~MieheFractureMaterial(){
     m_args.resize(11);
     m_F.resize(11);
     m_dFdargs.resize(11);
     m_d2Fdargs2.resize(11,11);
 }
 //******************************************************
-void LinearElasticFractureMaterial::initMaterialProperties(const nlohmann::json &inputparams,
+void MieheFractureMaterial::initMaterialProperties(const nlohmann::json &inputparams,
                                         const LocalElmtInfo &elmtinfo,
                                         const LocalElmtSolution &elmtsoln,
                                         MaterialsContainer &mate){
@@ -40,7 +43,7 @@ void LinearElasticFractureMaterial::initMaterialProperties(const nlohmann::json 
     mate.ScalarMaterial("H")=0.0;
 }
 //********************************************************************
-void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
+void MieheFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
                                            const LocalElmtInfo &elmtinfo,
                                            const LocalElmtSolution &elmtsoln,
                                            const MaterialsContainer &mateold,
@@ -50,7 +53,7 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
     //**************************************************************
     if(mateold.getScalarMaterialsNum()){}
 
-    mate.ScalarMaterial("L")=JsonUtils::getValue(inputparams,"L");
+    mate.ScalarMaterial("viscosity")=JsonUtils::getValue(inputparams,"viscosity");
     mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
     mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
 
@@ -61,7 +64,7 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
         m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
     }
     else{
-        MessagePrinter::printErrorTxt("LinearElasticFractureMaterial works only for 2d and 3d case, please check your input file");
+        MessagePrinter::printErrorTxt("MieheFractureMaterial works only for 2d and 3d case, please check your input file");
         MessagePrinter::exitAsFem();
     }
 
@@ -102,7 +105,7 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
 
 }
 //**************************************************************************
-void LinearElasticFractureMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
+void MieheFractureMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
                                                  const VectorXd &args,
                                                  VectorXd       &F,
                                                  VectorXd       &dFdargs,
@@ -117,13 +120,13 @@ void LinearElasticFractureMaterial::computeFreeEnergyAndDerivatives(const nlohma
 
 }
 //**************************************************************************
-void LinearElasticFractureMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
+void MieheFractureMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
     if(dim){}
     m_I.setToIdentity();
     strain=(gradU+gradU.transpose())*0.5;// here the strain is small strain
 }
 //**************************************************************************
-void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::json &params,
+void MieheFractureMaterial::computeStressAndJacobian(const nlohmann::json &params,
                                           const int &dim,
                                           const Rank2Tensor &strain,
                                           Rank2Tensor &stress,
@@ -164,7 +167,7 @@ void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::jso
         K=lame+2.0*G/3.0;
     }
     else{
-        MessagePrinter::printErrorTxt("Invalid parameters, for linear elastic fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
+        MessagePrinter::printErrorTxt("Invalid parameters, for Prof. Miehe's fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
         MessagePrinter::exitAsFem();
     }
 
@@ -179,14 +182,14 @@ void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::jso
     double trEps,signpos,signneg;
 
     trEps=strain.trace();
-    m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
-    m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+    m_psipos=0.5*K*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+    m_psineg=0.5*K*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
     m_psi=g(m_d)*m_psipos+m_psineg;
 
     // for different stresses
     m_I.setToIdentity();// identity tensor
-    m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
-    m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+    m_stress_pos=m_I*K*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+    m_stress_neg=m_I*K*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
     stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
     m_dstress_dD=m_stress_pos*dg(m_d);
 
@@ -196,7 +199,7 @@ void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::jso
     signneg=0.0;
     if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
 
-    jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
-             +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+    jacobian=(m_I.otimes(m_I)*K*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+             +m_I.otimes(m_I)*K*signneg+m_projneg*2.0*G;
 
 }

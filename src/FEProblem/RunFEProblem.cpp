@@ -26,10 +26,18 @@ void FEProblem::run(){
         MessagePrinter::printNormalTxt(to_string(cpus)+" CPUs are used for the simulation",MessageColor::BLUE);
     }
     MessagePrinter::printDashLine(MessageColor::BLUE);
-    if(m_jobblock.m_jobtype==FEJobType::STATIC){
-        runStaticAnalysis();
+
+    if(!m_inputSystem.isReadOnly()){
+        if(m_jobblock.m_jobtype==FEJobType::STATIC){
+            runStaticAnalysis();
+        }
+        else if(m_jobblock.m_jobtype==FEJobType::TRANSIENT){
+            runTransientAnalysis();
+        }
     }
-    else if(m_jobblock.m_jobtype==FEJobType::TRANSIENT){
-        runTransientAnalysis();
+    else{
+        MessagePrinter::printNormalTxt("AsFem has been executed in 'read-only' mode");
+        m_timer.endTimer();
+        m_timer.printElapseTime("'Simulation' is done");
     }
 }

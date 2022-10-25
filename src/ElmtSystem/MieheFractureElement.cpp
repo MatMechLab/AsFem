@@ -8,18 +8,19 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.12.25
-//+++ Purpose: implement the residual and jacobian for allen-cahn 
-//+++          type phase-field fracture model
+//+++ Date   : 2022.10.25
+//+++ Purpose: implement the residual and jacobian for phase-field fracture 
+//             model based on Prof. Miehe's CMAME paper
 //+++          1) dD/dt=-L*(delta f/delta D)
 //+++          2) div(\Sigma)=0
-//+++ Ref    : A continuum phase field model for fracture, by Prof. M\"uller
-//+++ DOI    : https://doi.org/10.1016/j.engfracmech.2010.08.009
+//+++ Ref    : A phase field model for rate-independent crack propagation: 
+//             Robust algorithmic implementation based on operator splits
+//+++ DOI    : https://doi.org/10.1016/j.cma.2010.04.011
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "ElmtSystem/AllenCahnFractureElement.h"
+#include "ElmtSystem/MieheFractureElement.h"
 
-void AllenCahnFractureElement::computeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
+void MieheFractureElement::computeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
             const LocalElmtSolution &soln,const LocalShapeFun &shp,
             const MaterialsContainer &mate_old,const MaterialsContainer &mate,
             MatrixXd &localK,VectorXd &localR) {
@@ -30,12 +31,12 @@ void AllenCahnFractureElement::computeAll(const FECalcType &calctype,const Local
         computeJacobian(elmtinfo,ctan,soln,shp,mate_old,mate,localK);
     }
     else{
-        MessagePrinter::printErrorTxt("unsupported calculation type in AllenCahnFractureElmt, please check your related code");
+        MessagePrinter::printErrorTxt("unsupported calculation type in MieheFractureElement, please check your related code");
         MessagePrinter::exitAsFem();
     }
 }
 //***************************************************************************
-void AllenCahnFractureElement::computeResidual(const LocalElmtInfo &elmtinfo,
+void MieheFractureElement::computeResidual(const LocalElmtInfo &elmtinfo,
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const MaterialsContainer &mate_old,
@@ -47,20 +48,20 @@ void AllenCahnFractureElement::computeResidual(const LocalElmtInfo &elmtinfo,
     if(mate_old.getScalarMaterialsNum()) {}
 
     if(elmtinfo.m_dim<2){
-        MessagePrinter::printErrorTxt("AllenCahnFractureElmt works only for 2d and 3d case");
+        MessagePrinter::printErrorTxt("MieheFractureElement works only for 2d and 3d case");
         MessagePrinter::exitAsFem();
     }
-    double L=mate.ScalarMaterial("L");
+    double viscosity=mate.ScalarMaterial("viscosity");
     double Gc=mate.ScalarMaterial("Gc");
     double eps=mate.ScalarMaterial("eps");
     double Hist=mate.ScalarMaterial("H");
     double dFdD=mate.ScalarMaterial("dFdD");
     Rank2Tensor Stress=mate.Rank2Material("stress");
     // R_d
-    localR(1)=soln.m_gpV[1]*shp.m_test
-             +L*dg(soln.m_gpU[1])*Hist*shp.m_test
-             +L*dFdD*shp.m_test
-             +L*Gc*eps*(soln.m_gpGradU[1]*shp.m_grad_test);
+    localR(1)=viscosity*soln.m_gpV[1]*shp.m_test
+             +dg(soln.m_gpU[1])*Hist*shp.m_test
+             +dFdD*shp.m_test
+             +Gc*eps*(soln.m_gpGradU[1]*shp.m_grad_test);
     // R_ux
     localR(2)=Stress.getIthRow(1)*shp.m_grad_test;
     // R_uy
@@ -72,7 +73,7 @@ void AllenCahnFractureElement::computeResidual(const LocalElmtInfo &elmtinfo,
 
 }
 //*****************************************************************************
-void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
+void MieheFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const MaterialsContainer &mate_old,
@@ -85,7 +86,7 @@ void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,con
 
     int k;
     double valx,valy,valz;
-    double L=mate.ScalarMaterial("L");
+    double viscosity=mate.ScalarMaterial("viscosity");
     double Gc=mate.ScalarMaterial("Gc");
     double eps=mate.ScalarMaterial("eps");
     double Hist=mate.ScalarMaterial("H");
@@ -94,10 +95,10 @@ void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,con
     Rank2Tensor dHdstrain=mate.Rank2Material("dHdstrain");
 
     // K_d,d
-    localK(1,1)=shp.m_trial*shp.m_test*ctan[1]
-               +L*d2g(soln.m_gpU[1])*shp.m_trial*Hist*shp.m_test*ctan[0]
-               +L*d2FdD2*shp.m_trial*shp.m_test*ctan[0]
-               +L*Gc*eps*(shp.m_grad_trial*shp.m_grad_test)*ctan[0];
+    localK(1,1)=viscosity*shp.m_trial*shp.m_test*ctan[1]
+               +d2g(soln.m_gpU[1])*shp.m_trial*Hist*shp.m_test*ctan[0]
+               +d2FdD2*shp.m_trial*shp.m_test*ctan[0]
+               +Gc*eps*(shp.m_grad_trial*shp.m_grad_test)*ctan[0];
     //*******************************
     valx=0.0;valy=0.0;valz=0.0;
     for(k=1;k<=3;k++){
@@ -106,9 +107,9 @@ void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,con
         valz+=0.5*(dHdstrain(3,k)+dHdstrain(k,3))*shp.m_grad_trial(k);
     }
     // K_d,ux
-    localK(1,2)=L*dg(soln.m_gpU[1])*valx*shp.m_test*ctan[0];
+    localK(1,2)=dg(soln.m_gpU[1])*valx*shp.m_test*ctan[0];
     // K_d,uy
-    localK(1,3)=L*dg(soln.m_gpU[1])*valy*shp.m_test*ctan[0];
+    localK(1,3)=dg(soln.m_gpU[1])*valy*shp.m_test*ctan[0];
 
     // K_ux,d
     localK(2,1)=dStressdD.getIthRow(1)*shp.m_trial*shp.m_grad_test*ctan[0];
@@ -126,7 +127,7 @@ void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,con
 
     if(elmtinfo.m_dim==3){
         // K_d,uz
-        localK(1,4)=L*dg(soln.m_gpU[1])*valz*shp.m_test*ctan[0];
+        localK(1,4)=dg(soln.m_gpU[1])*valz*shp.m_test*ctan[0];
 
         // K_ux,uz
         localK(2,4)=mate.Rank4Material("jacobian").getIKComponent(1,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];

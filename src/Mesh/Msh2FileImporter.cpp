@@ -198,7 +198,6 @@ bool Msh2FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
             meshdata.m_lineelmts=0;
             meshdata.m_surfaceelmts=0;
             meshdata.m_bulkelmts=0;
-            meshdata.m_elements=0;
 
             meshdata.m_lineelmt_type=MeshType::EDGE2;
             meshdata.m_surfaceelmt_type=MeshType::TRI3;

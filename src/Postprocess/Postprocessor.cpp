@@ -65,7 +65,7 @@ void Postprocessor::addPPSBlock2List(const PostprocessorBlock &t_block){
 }
 //**********************************************
 void Postprocessor::printInfo()const{
-    MessagePrinter::printNormalTxt("postprocess information summary");
+    MessagePrinter::printNormalTxt("Postprocess information summary");
     MessagePrinter::printNormalTxt("  number of postprocess block="+to_string(getPPSBlocksNum()));
     if(getPPSBlocksNum()){
         string str;

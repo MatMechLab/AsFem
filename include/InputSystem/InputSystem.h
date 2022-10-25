@@ -102,11 +102,12 @@ public:
      */
     inline string getInputFileName()const{return m_inputfile_name;}
 
-private:
     /**
      * check whether the read-only flag is true
      */
     bool isReadOnly()const{return m_readonly;}
+
+private:
     /**
      * read the mesh block from json file
      * @param t_json the json parse which contains 'mesh'

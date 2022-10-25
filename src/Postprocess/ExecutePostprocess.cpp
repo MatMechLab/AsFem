@@ -69,7 +69,7 @@ void Postprocessor::executePostprocess(const Mesh &t_mesh,
         case PostprocessorType::VOLUMEINTEGRATERANK2MATERIALVALUE:
         case PostprocessorType::VOLUMEINTEGRATERANK4MATERIALVALUE:
         {
-            m_pps_values[i-1]=executeVolumeIntegralPostprocess(pps_type,dofid,getIthPPSBlock(i).m_sidenamelist,getIthPPSBlock(i).m_parameters,t_mesh,t_dofhandler,t_fe,t_solution,t_projsystem);
+            m_pps_values[i-1]=executeVolumeIntegralPostprocess(pps_type,dofid,getIthPPSBlock(i).m_domainnamelist,getIthPPSBlock(i).m_parameters,t_mesh,t_dofhandler,t_fe,t_solution,t_projsystem);
             break;
         }
         default:

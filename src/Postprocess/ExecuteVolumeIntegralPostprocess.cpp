@@ -86,7 +86,6 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                     m_local_elmtinfo.m_gpCoords0=0.0;
                     for(i=1;i<=nNodesPerElmt;i++){
                         j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
-                        iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
                 
                         m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
                         m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
@@ -100,9 +99,20 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                         m_local_shp.m_trial=0.0;
                         m_local_shp.m_grad_trial=0.0;
                         j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
-                        iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
-                        
-                        pps_value+=JxW*runVolumeIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                        if(dofid<1){
+                            // if no dofid is given, then we use the first one
+                            iInd=t_dofhandler.getIthNodeJthDofID(j,1);
+                        }
+                        else{
+                            iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
+                        }
+
+                        if(pps_type==PostprocessorType::VOLUME){
+                            pps_value+=(1.0/nNodesPerElmt)*JxW*runVolumeIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                        }
+                        else{
+                            pps_value+=JxW*runVolumeIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                        }
                     
                     }// end-of-node-loop-for-qpoint-quantities-accumulation
 

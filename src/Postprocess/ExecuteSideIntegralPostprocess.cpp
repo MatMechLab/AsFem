@@ -35,9 +35,9 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
 
     t_soln.m_u_current.makeGhostCopy();
-    // t_soln.m_u_old.makeGhostCopy();
-    // t_soln.m_u_older.makeGhostCopy();
-    // t_soln.m_v.makeGhostCopy();
+    t_soln.m_u_old.makeGhostCopy();
+    t_soln.m_u_older.makeGhostCopy();
+    t_soln.m_v.makeGhostCopy();
 
     pps_value=0.0;
     side_area=0.0;
@@ -151,13 +151,6 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                     m_local_elmtinfo.m_gpCoords0=0.0;
                     for(i=1;i<=nNodesPerBCElmt;i++){
                         j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);//global id
-                        if(dofid<1){
-                            // this means no dof is given in the postprocess block, it is processing the material properties
-                            iInd=t_dofhandler.getIthNodeJthDofID(j,1);
-                        }
-                        else{
-                            iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
-                        }
 
                         if(m_local_elmtinfo.m_dim==1){
                             m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
@@ -192,8 +185,13 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                         else{
                             iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
                         }
-                        
-                        pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+
+                        if(pps_type==PostprocessorType::AREA){
+                            pps_value+=(1.0/nNodesPerBCElmt)*JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                        }
+                        else{
+                            pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                        }
                     
                     }// end-of-node-loop-for-qpoint-quantities-accumulation
 
@@ -204,9 +202,9 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
     }// end-of-side-name-loop
 
     t_soln.m_u_current.destroyGhostCopy();
-    // t_soln.m_u_old.destroyGhostCopy();
-    // t_soln.m_u_older.destroyGhostCopy();
-    // t_soln.m_v.destroyGhostCopy();
+    t_soln.m_u_old.destroyGhostCopy();
+    t_soln.m_u_older.destroyGhostCopy();
+    t_soln.m_v.destroyGhostCopy();
 
     // collect all the results from different cpus
     MPI_Allreduce(&pps_value,&pps_value_global,1,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
@@ -219,5 +217,6 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
        pps_type==PostprocessorType::SIDEAVERAGERANK4MATERIALVALUE){
         pps_value_global/=side_area_global;
     }
+    
     return pps_value_global;
 }

@@ -66,8 +66,8 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
                 elmtBlock.m_elmttype=ElmtType::DENDRITEELMT;
             }
             // for coupled cases
-            else if(elmtBlock.m_elmt_typename=="chmechanics"){
-                elmtBlock.m_elmttype=ElmtType::CAHNHILLIARDMECHANICSELMT;
+            else if(elmtBlock.m_elmt_typename=="stresscahnhilliard"){
+                elmtBlock.m_elmttype=ElmtType::STRESSCAHNHILLIARDELMT;
             }
             else if(elmtBlock.m_elmt_typename=="stressdiffusion"){
                 elmtBlock.m_elmttype=ElmtType::STRESSDIFFUSIONELMT;
@@ -267,7 +267,7 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
                 elmtBlock.m_matetype=MateType::WAVEMATE;
             }
             // for coupled material
-            else if(elmtBlock.m_mate_typename=="chmechanics"){
+            else if(elmtBlock.m_mate_typename=="canhhilliardmechanics"){
                 elmtBlock.m_matetype=MateType::CAHNHILLIARDMECHANICSMATE;
             }
             else if(elmtBlock.m_mate_typename=="smallstraindiffusion"){
@@ -275,6 +275,9 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             }
             else if(elmtBlock.m_mate_typename=="linearelasticfracture"){
                 elmtBlock.m_matetype=MateType::LINEARELASTICFRACMATE;
+            }
+            else if(elmtBlock.m_mate_typename=="miehefracture"){
+                elmtBlock.m_matetype=MateType::MIEHEFRACTUREMATE;
             }
             // for user-defined-materials(UMAT)
             else if(elmtBlock.m_mate_typename=="user1"){

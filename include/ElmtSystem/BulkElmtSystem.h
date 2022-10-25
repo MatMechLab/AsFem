@@ -42,7 +42,9 @@
 #include "ElmtSystem/MechanicsElement.h"
 #include "ElmtSystem/CahnHilliardElement.h"
 #include "ElmtSystem/StressDiffusionElement.h"
+#include "ElmtSystem/MieheFractureElement.h"
 #include "ElmtSystem/AllenCahnFractureElement.h"
+#include "ElmtSystem/StressCahnHilliardElement.h"
 
 
 
@@ -56,7 +58,9 @@ class BulkElmtSystem:public PoissonElement,
                      public MechanicsElement,
                      public CahnHilliardElement,
                      public StressDiffusionElement,
-                     public AllenCahnFractureElement{
+                     public MieheFractureElement,
+                     public AllenCahnFractureElement,
+                     public StressCahnHilliardElement{
 public:
     /**
      * constructor

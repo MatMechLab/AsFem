@@ -1,7 +1,7 @@
 {
 	"mesh":{
 		"type":"msh2",
-		"file":"recthole.msh",
+		"file":"recthole2.msh",
 		"savemesh":true
 	},
 	"dofs":{

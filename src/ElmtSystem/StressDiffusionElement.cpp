@@ -82,14 +82,14 @@ void StressDiffusionElement::computeJacobian(const LocalElmtInfo &elmtinfo,const
     localK(1,3)=0.0;
 
     // K_ux,c
-    localK(2,1)=mate.Rank2Material("dstressdc").getIthRow(1)*shp.m_trial*shp.m_grad_test;
+    localK(2,1)=mate.Rank2Material("dstressdc").getIthRow(1)*shp.m_trial*shp.m_grad_test*ctan[0];
     // K_ux,ux
     localK(2,2)=mate.Rank4Material("jacobian").getIKComponent(1,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
     // K_ux,uy
     localK(2,3)=mate.Rank4Material("jacobian").getIKComponent(1,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
 
     // K_uy,c
-    localK(3,1)=mate.Rank2Material("dstressdc").getIthRow(2)*shp.m_trial*shp.m_grad_test;
+    localK(3,1)=mate.Rank2Material("dstressdc").getIthRow(2)*shp.m_trial*shp.m_grad_test*ctan[0];
     // K_uy,ux
     localK(3,2)=mate.Rank4Material("jacobian").getIKComponent(2,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
     // K_uy,uy
@@ -106,7 +106,7 @@ void StressDiffusionElement::computeJacobian(const LocalElmtInfo &elmtinfo,const
         localK(3,4)=mate.Rank4Material("jacobian").getIKComponent(2,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
 
         // K_uz,c
-        localK(4,1)=mate.Rank2Material("dstressdc").getIthRow(3)*shp.m_trial*shp.m_grad_test;
+        localK(4,1)=mate.Rank2Material("dstressdc").getIthRow(3)*shp.m_trial*shp.m_grad_test*ctan[0];
         // K_uz,ux
         localK(4,2)=mate.Rank4Material("jacobian").getIKComponent(3,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
         // K_uz,uy

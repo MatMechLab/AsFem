@@ -18,6 +18,7 @@ InputSystem::InputSystem(){
     m_inputfile_name.clear();
     m_meshfile_name.clear();
     m_json.clear();
+    m_readonly=false;
 }
 InputSystem::~InputSystem(){
     m_inputfile_name.clear();
@@ -25,6 +26,7 @@ InputSystem::~InputSystem(){
     m_json.clear();
 }
 InputSystem::InputSystem(int args,char *argv[]){
+    m_readonly=false;
     if(args==1){
         // ./asfem or asfem
         m_inputfile_name.clear();
@@ -33,6 +35,7 @@ InputSystem::InputSystem(int args,char *argv[]){
     }
     else if(args==3){
         // ./asfem -i input.json or asfem -i input.json
+        m_readonly=false;
         if(string(argv[1]).find("-i")!=string::npos){
             if(string(argv[2]).size()<5){
                 MessagePrinter::printErrorTxt("invalid input file name after '-i', it must be xxx.json");
@@ -76,6 +79,7 @@ InputSystem::InputSystem(int args,char *argv[]){
 }
 //*************************************************
 void InputSystem::init(int args,char *argv[]){
+    m_readonly=false;
     if(args==1){
         // ./asfem or asfem
         m_inputfile_name.clear();
