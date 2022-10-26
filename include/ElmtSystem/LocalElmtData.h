@@ -22,7 +22,7 @@
 
 #include "MathUtils/Vector3d.h"
 
-using namespace std;
+using std::vector;
 
 /**
  * This structure stores the basic information

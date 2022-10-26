@@ -15,12 +15,8 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
 
 #include "Utils/MessagePrinter.h"
-
-using namespace std;
 
 
 /**

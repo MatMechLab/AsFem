@@ -26,8 +26,8 @@ void OutputSystem::saveResults(const int &t_step,
     }
     else{
         // for nonzero value, the output file should be step-dependent
-        ostringstream ss;
-        ss<<setfill('0')<<setw(8)<<t_step;
+        std::ostringstream ss;
+        ss<<std::setfill('0')<<std::setw(8)<<t_step;
         m_outputfile_name=m_inputfile_name.substr(0,m_inputfile_name.size()-5);// remove ".i" extension name
         m_outputfile_name = m_outputfile_name+"-"+ss.str()+ ".vtu";
     }
@@ -43,8 +43,8 @@ void OutputSystem::savePVDHead(){
     MPI_Comm_rank(PETSC_COMM_WORLD, &m_rank);
     if(m_rank == 0){
         m_pvdfile_name=m_inputfile_name.substr(0,m_inputfile_name.size()-5)+".pvd";// remove ".json" extension name
-        ofstream out;
-        out.open(m_pvdfile_name,ios::out);
+        std::ofstream out;
+        out.open(m_pvdfile_name,std::ios::out);
         if (!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t create a new pvd file(="+m_pvdfile_name+")!, please make sure you have the write permission");
             MessagePrinter::exitAsFem();
@@ -60,8 +60,8 @@ void OutputSystem::savePVDHead(){
 void OutputSystem::savePVDEnd(){
     MPI_Comm_rank(PETSC_COMM_WORLD, &m_rank);
     if(m_rank==0){
-        ofstream out;
-        out.open(m_pvdfile_name,ios::app|ios::out);
+        std::ofstream out;
+        out.open(m_pvdfile_name,std::ios::app|std::ios::out);
         if (!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t open pvd file(="+m_pvdfile_name+")!, please make sure you have the write permission");
             MessagePrinter::exitAsFem();
@@ -74,10 +74,10 @@ void OutputSystem::savePVDEnd(){
 void OutputSystem::savePVDResults(const double &current_time){
     MPI_Comm_rank(PETSC_COMM_WORLD, &m_rank);
     if(m_rank==0){
-        ifstream in;
+        std::ifstream in;
         string line;
         vector<string> lines;
-        in.open(m_pvdfile_name,ios::in);
+        in.open(m_pvdfile_name,std::ios::in);
         while(!in.eof()){
             getline(in,line);
             lines.push_back(line);
@@ -89,9 +89,9 @@ void OutputSystem::savePVDResults(const double &current_time){
         lines.pop_back();
         lines.pop_back();
 
-        ofstream out;
+        std::ofstream out;
         char val[20];
-        out.open(m_pvdfile_name,ios::out);
+        out.open(m_pvdfile_name,std::ios::out);
         if (!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t open pvd file(="+m_pvdfile_name+")! please make sure you have the write permission");
             MessagePrinter::exitAsFem();

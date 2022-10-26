@@ -15,11 +15,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <map>
-#include <vector>
 
 #include "MathUtils/Vector3d.h"
 #include "MathUtils/VectorXd.h"

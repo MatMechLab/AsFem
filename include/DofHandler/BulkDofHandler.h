@@ -27,7 +27,8 @@
 #include "Mesh/Mesh.h"
 #include "ElmtSystem/ElmtSystem.h"
 
-using namespace std;
+using std::vector;
+using std::string;
 
 
 /**

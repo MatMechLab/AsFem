@@ -15,12 +15,15 @@
 #pragma once
 
 #include <iostream>
+#include<cmath>
 #include <vector>
 
 #include "Mesh/MeshType.h"
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::vector;
+using std::abs;
+using std::sqrt;
 
 /**
  * This class defines the abstract class for gauss point generation, the child class should offer

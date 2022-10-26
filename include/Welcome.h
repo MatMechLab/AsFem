@@ -22,7 +22,7 @@
 #include "petsc.h"
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::string;
 
 /**
  * print the welcome message in your terminal

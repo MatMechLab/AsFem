@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
 #include "Utils/MessagePrinter.h"
 #include "MateSystem/MaterialsName.h"
 

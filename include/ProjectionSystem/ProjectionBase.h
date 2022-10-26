@@ -21,6 +21,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "Utils/MessagePrinter.h"
 
 #include "ProjectionSystem/ProjectionData.h"
 #include "Mesh/Mesh.h"
@@ -28,7 +29,8 @@
 #include "FE/ShapeFun.h"
 #include "MateSystem/MaterialsContainer.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 
 /**

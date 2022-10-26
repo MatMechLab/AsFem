@@ -18,8 +18,8 @@ void Postprocessor::prepareCSVFileHeader(){
     m_csv_filename=m_inputfilename.substr(0,m_inputfilename.size()-5)+".csv";
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     if(m_rank==0){
-        ofstream out;
-        out.open(m_csv_filename.c_str(),ios::out);
+        std::ofstream out;
+        out.open(m_csv_filename.c_str(),std::ios::out);
         if(!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t open "+m_csv_filename+", please make sure you have the write permission");
             MessagePrinter::exitAsFem();
@@ -35,13 +35,13 @@ void Postprocessor::prepareCSVFileHeader(){
 void Postprocessor::savePPSResults2CSVFile(const double &time){
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     if(m_rank==0){
-        ofstream out;
-        out.open(m_csv_filename.c_str(),ios::app|ios::out);
+        std::ofstream out;
+        out.open(m_csv_filename.c_str(),std::ios::app|std::ios::out);
         if(!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t open "+m_csv_filename+", please make sure you have the write permission");
             MessagePrinter::exitAsFem();
         }
-        out<<scientific;
+        out<<std::scientific;
         out<<time;
         for(auto it:m_pps_values){
             out<<","<<it;

@@ -17,7 +17,6 @@
 #pragma once
 
 #include "OutputSystem/ResultFileFormat.h"
-
 #include "OutputSystem/VTUWriter.h"
 
 

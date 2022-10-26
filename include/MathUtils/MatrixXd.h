@@ -18,16 +18,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
-
 #include "Eigen/Eigen"
 
 #include "Utils/MessagePrinter.h"
 #include "MathUtils/VectorXd.h"
 
-using namespace std;
+using std::fill;
 
 /**
  * This class implements the general matrix calculation, it shoul be noted that the vector

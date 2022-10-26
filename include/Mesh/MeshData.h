@@ -18,10 +18,15 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <utility>
 
 #include "Mesh/MeshType.h"
 
-using namespace std;
+using std::vector;
+using std::map;
+using std::pair;
+using std::string;
+
 /**
  * the data structure for mesh, it stores the nodal coordinates,
  * elemental connectivity, boundary element information, physical group information, and so on.

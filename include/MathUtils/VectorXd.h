@@ -17,16 +17,16 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
-
+#include <cmath>
+#include <algorithm>
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::sqrt;
+using std::abs;
+using std::fill;
 
 /**
- * This class implements the vector with dynamic size, which different from the vector3d(fixed size, mainly used in shape function calculation)
+ * This class implements the vector with dynamic size, which is different from the vector3d(fixed size, mainly used in shape function calculation)
  */
 class VectorXd{
 public:

@@ -18,15 +18,10 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-
 #include "petsc.h"
-
 #include "Utils/MessagePrinter.h"
 #include "DofHandler/DofHandler.h"
 
-using namespace std;
 
 /**
  * This class implements the general operations for sparse matrix

@@ -14,16 +14,12 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
 
 /**
  * for AsFem's headers
  */
 #include "ElmtSystem/BulkElmtSystem.h"
 
-using namespace std;
 
 /**
  * This class implement the calculation of bulk and interface elements

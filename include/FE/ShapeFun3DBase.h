@@ -22,7 +22,9 @@
 #include "Utils/MessagePrinter.h"
 #include "MathUtils/Vector3d.h"
 
-using namespace std;
+using std::vector;
+using std::abs;
+using std::sqrt;
 
 /**
  * The base class for 3d lagrange shape function

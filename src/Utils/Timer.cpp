@@ -17,16 +17,16 @@
 Timer::Timer(){
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     if(m_rank==0){
-        m_start_timer=chrono::high_resolution_clock::now();
-        m_end_timer=chrono::high_resolution_clock::now();
+        m_start_timer=std::chrono::high_resolution_clock::now();
+        m_end_timer=std::chrono::high_resolution_clock::now();
         m_duration_seconds=0.0;
     }
 }
 void Timer::resetTimer(){
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     if(m_rank==0){
-        m_start_timer=chrono::high_resolution_clock::now();
-        m_end_timer=chrono::high_resolution_clock::now();
+        m_start_timer=std::chrono::high_resolution_clock::now();
+        m_end_timer=std::chrono::high_resolution_clock::now();
         m_duration_seconds=0.0;
     }
 }
@@ -34,13 +34,13 @@ void Timer::resetTimer(){
 void Timer::startTimer(){
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     if(m_rank==0){
-        m_start_timer=chrono::high_resolution_clock::now();
+        m_start_timer=std::chrono::high_resolution_clock::now();
     }
 }
 void Timer::endTimer(){
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     if(m_rank==0){
-        m_end_timer=chrono::high_resolution_clock::now();
+        m_end_timer=std::chrono::high_resolution_clock::now();
     }
 }
 void Timer::printElapseTime(const string &instr,const bool &flag)const{

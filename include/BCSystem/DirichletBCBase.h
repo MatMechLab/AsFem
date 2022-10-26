@@ -34,7 +34,9 @@
 
 #include "nlohmann/json.hpp"
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::map;
 
 /**
  * This class defines the abstract class for dirichlet type boundary condition

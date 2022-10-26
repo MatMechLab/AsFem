@@ -81,8 +81,8 @@ void BulkDofHandler::printBulkElementalDofsInfo(const bool &flag)const{
         MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
         if(rank==0){
             string str;
-            ofstream out;
-            out.open("dofs.map",ios::out);
+            std::ofstream out;
+            out.open("dofs.map",std::ios::out);
             if (!out.is_open()){
                 MessagePrinter::printErrorTxt("can\'t create dofs.map file, please ensure you have the write permission");
                 MessagePrinter::exitAsFem();

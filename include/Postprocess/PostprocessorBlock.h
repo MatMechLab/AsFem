@@ -22,6 +22,8 @@
 
 #include "Utils/MessagePrinter.h"
 
+using std::vector;
+using std::string;
 
 /**
  * This class defines the postprocessor block for the input file reading

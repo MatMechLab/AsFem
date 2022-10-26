@@ -14,12 +14,10 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <iomanip>
 #include <cmath>
-
 #include "Utils/MessagePrinter.h"
+
+using std::abs;
 
 /**
  * This class offers some general functions for math calc.

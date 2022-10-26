@@ -28,7 +28,8 @@
 #include "Utils/MessagePrinter.h"
 #include "Utils/JsonUtils.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 
 /**

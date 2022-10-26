@@ -15,13 +15,14 @@
 
 #pragma once
 
-#include <iostream>
+
 #include <cmath>
-#include <vector>
 
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::sqrt;
+using std::abs;
+using std::fill;
 
 
 /**

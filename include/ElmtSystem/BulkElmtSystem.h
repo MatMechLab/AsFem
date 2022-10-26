@@ -14,10 +14,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
-
 /**
  * for AsFem's headers
  */
@@ -47,8 +43,6 @@
 #include "ElmtSystem/StressCahnHilliardElement.h"
 
 
-
-using namespace std;
 /**
  * This class implement the elemental calculation for residual, jacobian, projection, etc.
  */

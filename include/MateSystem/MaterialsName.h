@@ -23,7 +23,9 @@
 #include "MathUtils/Rank2Tensor.h"
 #include "MathUtils/Rank4Tensor.h"
 
-using namespace std;
+using std::map;
+using std::string;
+using std::vector;
 //*******************************************
 //*** for type redfine, in order to use its short name
 typedef map<string,double>      ScalarMateType;/**< for scalar materials */

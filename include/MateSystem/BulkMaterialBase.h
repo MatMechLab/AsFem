@@ -20,6 +20,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <map>
 
 // For AsFem's own header files
 #include "MateSystem/MaterialsContainer.h"
@@ -31,8 +32,11 @@
 
 #include "nlohmann/json.hpp"
 #include "Utils/JsonUtils.h"
+#include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::vector;
+using std::string;
+using std::map;
 
 /**
  * This abstract bulk material base class, which defines the common functions for 

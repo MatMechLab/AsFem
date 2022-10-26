@@ -18,8 +18,6 @@
 
 #include <iostream>
 #include <cmath>
-#include <vector>
-#include <ctime>
 
 #include "MathUtils/Vector3d.h"
 #include "MathUtils/Rank4Tensor.h"
@@ -28,7 +26,10 @@
 
 class Rank4Tensor;
 
-using namespace std;
+using std::fill;
+using std::sqrt;
+using std::abs;
+
 /**
  * This class implement the general manipulation for rank-2 tensor.
  */

@@ -18,10 +18,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-
 /**
  * for AsFem's own header files
  */

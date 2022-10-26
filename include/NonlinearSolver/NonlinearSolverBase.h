@@ -15,12 +15,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <cmath>
-#include <vector>
-
 #include "Utils/MessagePrinter.h"
 
 #include "Mesh/Mesh.h"
@@ -34,8 +28,6 @@
 #include "SolutionSystem/SolutionSystem.h"
 #include "EquationSystem/EquationSystem.h"
 #include "FEProblem/FEControlInfo.h"
-
-using namespace std;
 
 
 /**

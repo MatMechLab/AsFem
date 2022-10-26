@@ -15,9 +15,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-
 #include "Mesh/Mesh.h"
 #include "DofHandler/DofHandler.h"
 #include "BCSystem/BCSystem.h"
@@ -36,9 +33,6 @@
 #include "TimeStepping/TimeSteppingType.h"
 #include "TimeStepping/TimeSteppingData.h"
 
-
-
-using namespace std;
 
 /**
  * This class resposible for the time stepping in transient analysis

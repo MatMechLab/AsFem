@@ -28,8 +28,8 @@ void VTUWriter::saveResults(const string &t_filename,
     t_projection.getProjectionDataRef().m_proj_rank4mate_vec.makeGhostCopy();
 
     if(m_rank==0){
-        ofstream out;
-        out.open(t_filename,ios::out);
+        std::ofstream out;
+        out.open(t_filename,std::ios::out);
         if(!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t create/open "+t_filename+", please make sure you have the write permission");
             MessagePrinter::exitAsFem();
@@ -46,7 +46,7 @@ void VTUWriter::saveResults(const string &t_filename,
 
         //*****************************
         // print out node coordinates
-        out <<scientific << setprecision(6);
+        out <<std::scientific << std::setprecision(6);
         for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
             out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 1) << " ";
             out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 2) << " ";
@@ -135,7 +135,7 @@ void VTUWriter::saveResults(const string &t_filename,
         for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
             dofname =t_dofHandler.getIthDofName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
-            out<<scientific<<setprecision(6);
+            out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
                 iInd = t_dofHandler.getIthNodeJthDofID(i,j);
                 value=t_solution.m_u_current.getIthValueFromGhost(iInd);
@@ -153,7 +153,7 @@ void VTUWriter::saveResults(const string &t_filename,
         for (j = 1;j<=nproj;j++){
             dofname = t_projection.getIthScalarMateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
-            out<<scientific<<setprecision(6);
+            out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
                 iInd = (i-1)*(1+nproj)+j+1;
                 value=t_projection.getProjectionDataRef().m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
@@ -169,7 +169,7 @@ void VTUWriter::saveResults(const string &t_filename,
         for (j = 1;j<=nproj;j++){
             dofname = t_projection.getIthVectorMateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"3\" format=\"ascii\">\n";
-            out<<scientific<<setprecision(6);
+            out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
                 for(k=1;k<=3;k++){
                     iInd = (i-1)*(1+nproj*3)+3*(j-1)+k+1;
@@ -188,7 +188,7 @@ void VTUWriter::saveResults(const string &t_filename,
         for (j = 1;j<=nproj;j++){
             dofname = t_projection.getIthRank2MateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"9\" format=\"ascii\">\n";
-            out<<scientific<<setprecision(6);
+            out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
                 for(k=1;k<=9;k++){
                     iInd = (i-1)*(1+nproj*9)+9*(j-1)+k+1;
@@ -207,7 +207,7 @@ void VTUWriter::saveResults(const string &t_filename,
         for (j = 1;j<=nproj;j++){
             dofname = t_projection.getIthRank4MateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"36\" format=\"ascii\">\n";
-            out<<scientific<<setprecision(6);
+            out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
                 for(k=1;k<=36;k++){
                     iInd = (i-1)*(1+nproj*36)+36*(j-1)+k+1;

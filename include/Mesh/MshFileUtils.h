@@ -14,8 +14,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "Utils/MessagePrinter.h"
 #include "Mesh/MeshType.h"
 

@@ -14,17 +14,11 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
-#include <string>
-
 #include "nlohmann/json.hpp"
 
 #include "ElmtSystem/ElmtType.h"
 #include "MateSystem/MateType.h"
 #include "Utils/MessagePrinter.h"
-
-using namespace std;
 
 /**
  * This class defines the basic information for one single element block in input file

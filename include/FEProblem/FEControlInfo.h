@@ -15,12 +15,9 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "TimeStepping/TimeSteppingType.h"
 #include "petsc.h"
 
-using namespace std;
 
 /**
  * This class defines the basic information to control to FE calculation

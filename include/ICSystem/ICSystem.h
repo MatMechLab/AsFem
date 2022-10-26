@@ -18,10 +18,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <vector>
-
 
 //******************************************
 //*** for AsFem own header
@@ -33,7 +29,6 @@
 
 #include "MathUtils/Vector.h"
 
-
 #include "ICSystem/ICBlock.h"
 #include "ICSystem/ICType.h"
 
@@ -44,7 +39,6 @@
 #include "ICSystem/RandomIC.h"
 #include "ICSystem/CircleIC.h"
 
-using namespace std;
 
 /**
  * This class implement the initial condition management for the FEM simulation

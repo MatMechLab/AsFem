@@ -15,9 +15,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <vector>
-
 #include "MathUtils/Vector.h"
 #include "MateSystem/MaterialsName.h"
 #include "DofHandler/DofHandler.h"

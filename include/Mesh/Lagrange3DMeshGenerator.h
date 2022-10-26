@@ -14,11 +14,8 @@
 
 #pragma once
 
-#include <algorithm>
-
 #include "Mesh/MeshGeneratorBase.h"
 
-using namespace std;
 /**
  * the mesh generator for 3d lagrange mesh
  */

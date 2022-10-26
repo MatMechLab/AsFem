@@ -14,13 +14,8 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-
 #include "Utils/MessagePrinter.h"
 #include "FEProblem/FEJobType.h"
-
-using namespace std;
 
 /**
  * This class defines the basic info for a job block

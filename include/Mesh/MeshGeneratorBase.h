@@ -14,8 +14,14 @@
 
 #pragma once
 
+#include <iostream>
+#include <algorithm>
+
 #include "Mesh/MeshData.h"
 #include "Mesh/MeshType.h"
+
+using std::sort;
+using std::make_pair;
 
 /**
  * this is the base class for mesh generator, all the generator should inherit this base class

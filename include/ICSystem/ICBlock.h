@@ -22,7 +22,8 @@
 #include "ICSystem/ICType.h"
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::vector;
+using std::string;
 
 /**
  * This class defines the basic information for one single ic block in the input file

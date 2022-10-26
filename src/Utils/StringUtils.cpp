@@ -21,21 +21,21 @@ StringUtils::StringUtils(){
 
 string StringUtils::strToLowerCase(string instr){
     string outstr=instr;
-    transform(outstr.begin(),outstr.end(),outstr.begin(),
+    std::transform(outstr.begin(),outstr.end(),outstr.begin(),
             [](unsigned char c){ return tolower(c);});
     return outstr;
 }
 string StringUtils::strToUpperCase(string instr){
     string outstr=instr;
-    transform(outstr.begin(),outstr.end(),outstr.begin(),
+    std::transform(outstr.begin(),outstr.end(),outstr.begin(),
             [](unsigned char c){ return toupper(c);});
     return outstr;
 }
 string StringUtils::removeStrSpace(string instr){
     string outstr=instr;
-    outstr.erase(remove(outstr.begin(),outstr.end(),' '),outstr.end());
-    outstr.erase(remove(outstr.begin(),outstr.end(),'\t'),outstr.end());
-    outstr.erase(remove(outstr.begin(),outstr.end(),'\n'),outstr.end());
+    outstr.erase(std::remove(outstr.begin(),outstr.end(),' '),outstr.end());
+    outstr.erase(std::remove(outstr.begin(),outstr.end(),'\t'),outstr.end());
+    outstr.erase(std::remove(outstr.begin(),outstr.end(),'\n'),outstr.end());
     return outstr;
 }
 
@@ -84,9 +84,7 @@ vector<double> StringUtils::splitStrNum(string instr){
                 end=i;
             }
         }
-        //cout<<"i="<<i<<" start="<<start<<"<--->end="<<end<<endl;
         if(end>=start&&end==i&&start>=0){
-            //cout<<"start="<<start<<"<--->end="<<end<<endl;
             result.push_back(atof(instr.substr(start,end+1-start).c_str()));
         }
     }

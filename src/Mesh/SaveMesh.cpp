@@ -29,8 +29,8 @@ void BulkMesh::saveBulkMesh2VTU(const string &inputfilename)const{
             int i=inputfilename.find_last_of(".");
             _MeshFileName=inputfilename.substr(0,i)+"-mesh"+".vtu";
         }
-        ofstream meshout;
-        meshout.open(_MeshFileName,ios::out);
+        std::ofstream meshout;
+        meshout.open(_MeshFileName,std::ios::out);
         if(!meshout.is_open()){
             snprintf(buff,110,"can\'t write mesh to vtu file(=%28s), please make sure you have the write permission",_MeshFileName.c_str());
             str=buff;
@@ -53,7 +53,7 @@ void BulkMesh::saveBulkMesh2VTU(const string &inputfilename)const{
         meshout<<"<DataArray type=\"Float64\" Name=\"nodes\"  NumberOfComponents=\"3\"  format=\"ascii\">\n";
         //*****************************
         // print out node coordinates
-        meshout<<scientific<<setprecision(6);
+        meshout<<std::scientific<<std::setprecision(6);
         for(i=1;i<=getBulkMeshNodesNum();++i){
             meshout<<getBulkMeshIthNodeJthCoord0(i,1)<<" ";
             meshout<<getBulkMeshIthNodeJthCoord0(i,2)<<" ";

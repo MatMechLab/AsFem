@@ -24,14 +24,19 @@
 #include <cstdio>
 #include <vector>
 #include <algorithm>
-#include <map>
+
 
 #include "Utils/MessagePrinter.h"
 
 #include "Mesh/MeshData.h"
 #include "Mesh/MeshType.h"
 
-using namespace std;
+using std::transform;
+using std::remove;
+using std::ifstream;
+using std::ios;
+using std::istringstream;
+using std::make_pair;
 
 /**
  * This is the abstract class for mesh file reader, if one wants to have the specific mesh file import, one 

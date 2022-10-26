@@ -21,7 +21,8 @@
 #include "NonlinearSolver/NonlinearSolverType.h"
 
 
-using namespace std;
+using std::vector;
+using std::string;
 
 /**
  * this class stores the basic information of [nonlinearsolver] block

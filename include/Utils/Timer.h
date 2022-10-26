@@ -23,7 +23,7 @@
  */
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::string;
 
 /**
  * this class implement the timer for time elapse estimation
@@ -61,7 +61,7 @@ public:
      */
     inline double getDurationInSecond()const{
         if(m_rank==0){
-            return chrono::duration_cast<std::chrono::milliseconds>(m_end_timer-m_start_timer).count()/1.0e3;
+            return std::chrono::duration_cast<std::chrono::milliseconds>(m_end_timer-m_start_timer).count()/1.0e3;
         }
         return 0.0;
     }
@@ -70,14 +70,14 @@ public:
      */
     inline double getDurationInMinute()const{
         if(m_rank==0){
-            return chrono::duration_cast<std::chrono::milliseconds>(m_end_timer-m_start_timer).count()/1.0e3/60.0;
+            return std::chrono::duration_cast<std::chrono::milliseconds>(m_end_timer-m_start_timer).count()/1.0e3/60.0;
         }
         return 0.0;
     }
 
 private:
-    chrono::high_resolution_clock::time_point m_start_timer;/**< the start timer */
-    chrono::high_resolution_clock::time_point m_end_timer;/**< the end timer */
+    std::chrono::high_resolution_clock::time_point m_start_timer;/**< the start timer */
+    std::chrono::high_resolution_clock::time_point m_end_timer;/**< the end timer */
     double m_duration_seconds;/**< duration time in seconds */
     int m_rank;/**< rank number */
 

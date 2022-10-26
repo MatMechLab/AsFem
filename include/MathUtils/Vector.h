@@ -17,16 +17,9 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <cmath>
-
 #include "petsc.h"
-
 #include "Utils/MessagePrinter.h"
 
-
-using namespace std;
 /**
  * This class implements the general vector class with API to PETSc and other packages. This vector
  * should be used for global right hand side vector(with large size)

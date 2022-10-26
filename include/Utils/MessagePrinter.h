@@ -25,7 +25,11 @@
 
 #include "Utils/MessageColor.h"
 
-using namespace std;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
+using std::to_string;
 
 /**
  * this class offers general message output in the command-line

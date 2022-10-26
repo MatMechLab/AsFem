@@ -15,15 +15,6 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #pragma once
 
-
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <vector>
-#include <map>
-#include <cmath>
-#include <algorithm>
-
 /**
  * For AsFem's own headers
  */

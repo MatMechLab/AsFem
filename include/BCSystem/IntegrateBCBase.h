@@ -34,7 +34,9 @@
 #include "ElmtSystem/LocalElmtData.h"
 #include "FESystem/FECalcType.h"
 
-using namespace std;
+using std::string;
+using std::vector;
+using std::map;
 
 /**
  * This class defines the abstract class for the integrated boundary condition

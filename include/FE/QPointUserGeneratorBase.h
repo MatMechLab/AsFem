@@ -16,11 +16,14 @@
 
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 #include "Mesh/MeshType.h"
 #include "Utils/MessagePrinter.h"
 
-using namespace std;
+using std::vector;
+using std::sqrt;
+using std::abs;
 
 /**
  * This class defines the abstract class for gauss point generation, the child class should offer

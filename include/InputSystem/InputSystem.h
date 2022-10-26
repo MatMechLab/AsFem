@@ -42,7 +42,8 @@
 #include "Postprocess/Postprocessor.h"
 #include "FEProblem/FEJobBlock.h"
 
-using namespace std;
+using std::string;
+using std::vector;
 
 /**
  * this class implement the input file reading for AsFem
