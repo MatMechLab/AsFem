@@ -19,8 +19,9 @@
 #include <string>
 #include <algorithm>
 #include <sstream>
-
-using namespace std;
+#include <vector>
+using std::vector;
+using std::string;
 
 /**
  * This class implements the general manipulation of strings.
