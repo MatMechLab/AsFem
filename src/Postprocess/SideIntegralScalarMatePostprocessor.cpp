@@ -18,10 +18,11 @@
 double SideIntegralScalarMatePostprocessor::computeSideIntegralValue(const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &parameters,
+                                            const LocalElmtInfo &elmtinfo,
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()){}
+    if(dofid||soln.getDofsNum()||elmtinfo.m_dim){}
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"scalarmate"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the SideIntegralScalarMatePostprocessor, "
                                       "the 'scalarmate' is the only parameter you need,"

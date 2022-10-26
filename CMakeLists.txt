@@ -723,6 +723,9 @@ set(src ${src} src/Postprocess/SideIntegralRank2MatePostprocessor.cpp)
 ###
 set(inc ${inc} include/Postprocess/SideIntegralRank4MatePostprocessor.h)
 set(src ${src} src/Postprocess/SideIntegralRank4MatePostprocessor.cpp)
+###
+set(inc ${inc} include/Postprocess/User1SideIntegralPostprocessor.h)
+set(src ${src} src/Postprocess/User1SideIntegralPostprocessor.cpp)
 ### for volume integral pps
 set(inc ${inc} include/Postprocess/VolumeIntegralPostprocessorBase.h)
 ###

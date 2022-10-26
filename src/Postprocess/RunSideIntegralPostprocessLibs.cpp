@@ -18,6 +18,7 @@ double Postprocessor::runSideIntegralPostprocessLibs(const PostprocessorType &pp
                                           const int &dofid,
                                           const int &nodeid,
                                           const nlohmann::json &t_parameters,
+                                          const LocalElmtInfo &t_elmtinfo,
                                           const LocalShapeFun &t_shp,
                                           SolutionSystem &t_soln,
                                           ProjectionSystem &t_projsystem){
@@ -26,27 +27,30 @@ double Postprocessor::runSideIntegralPostprocessLibs(const PostprocessorType &pp
     switch (pps_type)
     {
     case PostprocessorType::AREA:
-        pps_result=AreaPostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=AreaPostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::SIDEINTEGRATEVALUE:
     case PostprocessorType::SIDEAVERAGEVALUE:
-        pps_result=SideIntegralValuePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=SideIntegralValuePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::SIDEINTEGRATESCALARMATERIALVALUE:
     case PostprocessorType::SIDEAVERAGESCALARMATERIALVALUE:
-        pps_result=SideIntegralScalarMatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=SideIntegralScalarMatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::SIDEINTEGRATEVECTORMATERIALVALUE:
     case PostprocessorType::SIDEAVERAGEVECTORMATERIALVALUE:
-        pps_result=SideIntegralVectorMatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=SideIntegralVectorMatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::SIDEINTEGRATERANK2MATERIALVALUE:
     case PostprocessorType::SIDEAVERAGERANK2MATERIALVALUE:
-        pps_result=SideIntegralRank2MatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=SideIntegralRank2MatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::SIDEINTEGRATERANK4MATERIALVALUE:
     case PostprocessorType::SIDEAVERAGERANK4MATERIALVALUE:
-        pps_result=SideIntegralRank4MatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=SideIntegralRank4MatePostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
+        break;
+    case PostprocessorType::USER1SIDEINTEGRALPPS:
+        pps_result=User1SideIntegralPostprocessor::computeSideIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     default:
         MessagePrinter::printErrorTxt("Unsupported side integral postprocess type in runSideIntegralPostprocessLibs, "

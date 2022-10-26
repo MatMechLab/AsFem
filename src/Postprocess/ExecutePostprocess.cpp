@@ -53,6 +53,7 @@ void Postprocessor::executePostprocess(const Mesh &t_mesh,
         case PostprocessorType::SIDEINTEGRATEVECTORMATERIALVALUE:
         case PostprocessorType::SIDEINTEGRATERANK2MATERIALVALUE:
         case PostprocessorType::SIDEINTEGRATERANK4MATERIALVALUE:
+        case PostprocessorType::USER1SIDEINTEGRALPPS:
         {
             m_pps_values[i-1]=executeSideIntegralPostprocess(pps_type,dofid,getIthPPSBlock(i).m_sidenamelist,getIthPPSBlock(i).m_parameters,t_mesh,t_dofhandler,t_fe,t_solution,t_projsystem);
             break;

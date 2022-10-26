@@ -17,17 +17,18 @@
 
 double SideIntegralValuePostprocessor::computeSideIntegralValue(const int &dofid,
                                             const int &nodeid,
-                                            const nlohmann::json &t_parameters,
-                                            const LocalShapeFun &t_shp,
-                                            SolutionSystem &t_soln,
-                                            ProjectionSystem &t_projsystem){
-    if(nodeid||t_parameters.size()||t_projsystem.getNodesNum()) {}
-    if(dofid<1||dofid>t_soln.getDofsNum()){
+                                            const nlohmann::json &parameters,
+                                            const LocalElmtInfo &elmtinfo,
+                                            const LocalShapeFun &shp,
+                                            SolutionSystem &soln,
+                                            ProjectionSystem &projsystem){
+    if(nodeid||parameters.size()||projsystem.getNodesNum()||elmtinfo.m_dim) {}
+    if(dofid<1||dofid>soln.getDofsNum()){
         MessagePrinter::printErrorTxt("dof id="+to_string(dofid)+" is out of range for SideIntegralValuePostprocessor");
         MessagePrinter::exitAsFem();
     }
     
-    m_ppsvalue=t_soln.m_u_current.getIthValueFromGhost(dofid)*t_shp.m_test;
+    m_ppsvalue=soln.m_u_current.getIthValueFromGhost(dofid)*shp.m_test;
     
     return m_ppsvalue;
 }

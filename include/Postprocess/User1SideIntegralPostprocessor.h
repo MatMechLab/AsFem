@@ -8,9 +8,9 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.09.30
-//+++ Purpose: This class calculates the integration of the specific
-//+++          vector material on the specific side
+//+++ Date   : 2022.10.26
+//+++ Purpose: This class carry out the side integration for the user-1
+//+++          defined calculation.
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
@@ -18,9 +18,9 @@
 #include "Postprocess/SideIntegralPostprocessorBase.h"
 
 /**
- * This class implements the integration of specific vector material on specific side
+ * This class implements the side integral for the user-1 defined calculation/formulation.
  */
-class SideIntegralVectorMatePostprocessor:public SideIntegralPostprocessorBase{
+class User1SideIntegralPostprocessor:public SideIntegralPostprocessorBase{
 protected:
     /**
      * compute the nodal value for nodal pps
@@ -41,8 +41,5 @@ protected:
                                             ProjectionSystem &t_projsystem) override;
 
 private:
-    double m_ppsvalue=0.0;/** the postprocess result */  
-    Vector3d m_vectorvalue=0.0;/**< the vector value */    
-    int m_component=0;/**< the component of the specific vector material */
-    string m_vectormatename="";/**< string name of the vector material */                
+    double m_ppsvalue=0.0;/** the postprocess result */                      
 };

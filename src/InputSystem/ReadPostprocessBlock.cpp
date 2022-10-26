@@ -87,6 +87,9 @@ bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
             else if(ppsblock.m_pps_typename=="sideintegralrank4mate"){
                 ppsblock.m_pps_type=PostprocessorType::SIDEINTEGRATERANK4MATERIALVALUE;
             }
+            else if(ppsblock.m_pps_typename=="user1sideintegral"){
+                ppsblock.m_pps_type=PostprocessorType::USER1SIDEINTEGRALPPS;
+            }
             // for volume integral type pps
             else if(ppsblock.m_pps_typename=="volume"){
                 ppsblock.m_pps_type=PostprocessorType::VOLUME;

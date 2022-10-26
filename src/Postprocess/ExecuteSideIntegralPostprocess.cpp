@@ -55,6 +55,7 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
 
         for(e=eStart;e<eEnd;e++){
             nNodesPerBCElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(sidename,e+1);
+            m_local_elmtinfo.m_nodesnum=nNodesPerBCElmt;
             JxW=0.0;
             if(m_local_elmtinfo.m_dim==0){
                 // for 'point' case
@@ -70,7 +71,7 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                     m_local_shp.m_grad_test=0.0;
                     m_local_shp.m_trial=0.0;
                     m_local_shp.m_grad_trial=0.0;
-                    pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                    pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
                 }
             }// end-of-dim=0-case
             else{
@@ -187,10 +188,10 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                         }
 
                         if(pps_type==PostprocessorType::AREA){
-                            pps_value+=(1.0/nNodesPerBCElmt)*JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                            pps_value+=(1.0/nNodesPerBCElmt)*JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
                         }
                         else{
-                            pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
+                            pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
                         }
                     
                     }// end-of-node-loop-for-qpoint-quantities-accumulation

@@ -8,23 +8,27 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.09.29
-//+++ Purpose: This class calculates the area of the specific side
+//+++ Date   : 2022.10.26
+//+++ Purpose: This class carry out the side integration for the user-1
+//+++          defined calculation.
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "Postprocess/AreaPostprocessor.h"
+#include "Postprocess/User1SideIntegralPostprocessor.h"
 
-double AreaPostprocessor::computeSideIntegralValue(const int &dofid,
+double User1SideIntegralPostprocessor::computeSideIntegralValue(const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &parameters,
                                             const LocalElmtInfo &elmtinfo,
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||nodeid||parameters.size()||elmtinfo.m_dim||shp.m_test||soln.getDofsNum()||projsystem.getNodesNum()) {}
+    if(nodeid||parameters.size()||projsystem.getNodesNum()||shp.m_test) {}
+    if(dofid<1||dofid>soln.getDofsNum()){
+        MessagePrinter::printErrorTxt("dof id="+to_string(dofid)+" is out of range for User1SideIntegralPostprocessor");
+        MessagePrinter::exitAsFem();
+    }
     
-    
-    m_ppsvalue=1.0;
+    m_ppsvalue=std::cos(elmtinfo.m_gpCoords0(1))/elmtinfo.m_nodesnum;// return cos(x) for int(cos(x))dx integration
     
     return m_ppsvalue;
 }

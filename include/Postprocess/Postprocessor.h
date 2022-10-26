@@ -48,6 +48,8 @@
 #include "Postprocess/SideIntegralVectorMatePostprocessor.h"
 #include "Postprocess/SideIntegralRank2MatePostprocessor.h"
 #include "Postprocess/SideIntegralRank4MatePostprocessor.h"
+// for user-X side integral postprocessors
+#include "Postprocess/User1SideIntegralPostprocessor.h"
 
 // for volume integral postprocessors
 #include "Postprocess/VolumePostprocessor.h"
@@ -72,6 +74,7 @@ class Postprocessor:public NodalValuePostprocessor,
                     public SideIntegralVectorMatePostprocessor,
                     public SideIntegralRank2MatePostprocessor,
                     public SideIntegralRank4MatePostprocessor,
+                    public User1SideIntegralPostprocessor,
                     // for volume integral pps
                     public VolumePostprocessor,
                     public VolumeIntegralValuePostprocessor,
@@ -231,6 +234,7 @@ private:
      * @param dofid the global id of the specific dof
      * @param nodeid the global id of the specific node
      * @param t_parameters the json parameters taken from input file
+     * @param t_elmtinfo the local element info structure
      * @param t_shp the shape function class
      * @param t_soln the solution system
      * @param t_projsystem the projection system
@@ -239,6 +243,7 @@ private:
                                           const int &dofid,
                                           const int &nodeid,
                                           const nlohmann::json &t_parameters,
+                                          const LocalElmtInfo &t_elmtinfo,
                                           const LocalShapeFun &t_shp,
                                           SolutionSystem &t_soln,
                                           ProjectionSystem &t_projsystem);
