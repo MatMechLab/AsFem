@@ -21,7 +21,7 @@ int Msh4FileImporter::getMaxMeshDim(const string &filename)const{
     ifstream in;
     string str;
     int maxdim;
-    in.open(filename,ios::in);
+    in.open(filename.c_str(),ios::in);
     if(!in.is_open()){
         MessagePrinter::printErrorTxt("can\'t read the .msh file("+filename+"),please make sure file name is correct"
                                       " or you have the access permission");
@@ -108,7 +108,7 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
     vector<int> ElmtIDFlag;
 
     ifstream in;
-    in.open(filename,ios::in);
+    in.open(filename.c_str(),ios::in);
     if(!in.is_open()){
         MessagePrinter::printErrorTxt("can\'t read the .msh file("+filename+"),please make sure file name is correct"
                                       " or you have the access permission");
