@@ -110,7 +110,7 @@ elseif(MSVC)
 endif()
 
 message("AsFem will be compiled in ${CMAKE_BUILD_TYPE} mode !")
-
+message("Compiling options are: ${CMAKE_CXX_FLAGS}")
 
 ###############################################
 ### Do not edit the following two lines !!! ###
