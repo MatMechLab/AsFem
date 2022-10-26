@@ -21,10 +21,9 @@ double AreaPostprocessor::computeSideIntegralValue(const int &dofid,
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||nodeid||parameters.size()||elmtinfo.m_dim||shp.m_test||soln.getDofsNum()||projsystem.getNodesNum()) {}
+    if(dofid||nodeid||parameters.size()||shp.m_test||soln.getDofsNum()||projsystem.getNodesNum()) {}
     
-    
-    m_ppsvalue=1.0;
+    m_ppsvalue=1.0/elmtinfo.m_nodesnum;
     
     return m_ppsvalue;
 }

@@ -187,12 +187,7 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                             iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
                         }
 
-                        if(pps_type==PostprocessorType::AREA){
-                            pps_value+=(1.0/nNodesPerBCElmt)*JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
-                        }
-                        else{
-                            pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
-                        }
+                        pps_value+=JxW*runSideIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
                     
                     }// end-of-node-loop-for-qpoint-quantities-accumulation
 

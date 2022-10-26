@@ -4,6 +4,7 @@
 		"dim":2,
 		"nx":50,
 		"ny":50,
+		"xmax":2.0,
 		"meshtype":"quad4",
 		"savemesh":true
 	},
@@ -58,6 +59,10 @@
 	"postprocess":{
 		"sin(x)":{
 			"type":"user1sideintegral",
+			"side":["top"]
+		},
+		"area":{
+			"type":"area",
 			"side":["top"]
 		}
 	},

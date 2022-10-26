@@ -41,7 +41,7 @@ void Postprocessor::savePPSResults2CSVFile(const double &time){
             MessagePrinter::printErrorTxt("can\'t open "+m_csv_filename+", please make sure you have the write permission");
             MessagePrinter::exitAsFem();
         }
-        out<<std::scientific;
+        out<<std::scientific<<std::setprecision(8);
         out<<time;
         for(auto it:m_pps_values){
             out<<","<<it;
