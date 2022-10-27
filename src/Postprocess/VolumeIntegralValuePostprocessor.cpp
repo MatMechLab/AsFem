@@ -18,10 +18,11 @@
 double VolumeIntegralValuePostprocessor::computeVolumeIntegralValue(const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &t_parameters,
+                                            const LocalElmtInfo &elmtinfo,
                                             const LocalShapeFun &t_shp,
                                             SolutionSystem &t_soln,
                                             ProjectionSystem &t_projsystem){
-    if(nodeid||t_parameters.size()||t_projsystem.getNodesNum()) {}
+    if(nodeid||t_parameters.size()||t_projsystem.getNodesNum()||elmtinfo.m_dim) {}
     
     if(dofid<1||dofid>t_soln.getDofsNum()){
         MessagePrinter::printErrorTxt("dof id="+to_string(dofid)+" is out of range for VolumeIntegralValuePostprocessor");

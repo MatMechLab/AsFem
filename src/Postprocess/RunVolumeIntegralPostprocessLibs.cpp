@@ -18,6 +18,7 @@ double Postprocessor::runVolumeIntegralPostprocessLibs(const PostprocessorType &
                                             const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &t_parameters,
+                                            const LocalElmtInfo &t_elmtinfo,
                                             const LocalShapeFun &t_shp,
                                             SolutionSystem &t_soln,
                                             ProjectionSystem &t_projsystem){
@@ -26,27 +27,27 @@ double Postprocessor::runVolumeIntegralPostprocessLibs(const PostprocessorType &
     switch (pps_type)
     {
     case PostprocessorType::VOLUME:
-        pps_result=VolumePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=VolumePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::VOLUMEINTEGRATEVALUE:
     case PostprocessorType::VOLUMEAVERAGEVALUE:
-        pps_result=VolumeIntegralValuePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=VolumeIntegralValuePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::VOLUMEINTEGRATESCALARMATERIALVALUE:
     case PostprocessorType::VOLUMEAVERAGESCALARMATERIALVALUE:
-        pps_result=VolumeIntegralScalarMatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=VolumeIntegralScalarMatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::VOLUMEINTEGRATEVECTORMATERIALVALUE:
     case PostprocessorType::VOLUMEAVERAGEVECTORMATERIALVALUE:
-        pps_result=VolumeIntegralVectorMatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=VolumeIntegralVectorMatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::VOLUMEINTEGRATERANK2MATERIALVALUE:
     case PostprocessorType::VOLUMEAVERAGERANK2MATERIALVALUE:
-        pps_result=VolumeIntegralRank2MatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=VolumeIntegralRank2MatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     case PostprocessorType::VOLUMEINTEGRATERANK4MATERIALVALUE:
     case PostprocessorType::VOLUMEAVERAGERANK4MATERIALVALUE:
-        pps_result=VolumeIntegralRank4MatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_shp,t_soln,t_projsystem);
+        pps_result=VolumeIntegralRank4MatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
     default:
         MessagePrinter::printErrorTxt("Unsupported side integral postprocess type in runVolumeIntegralPostprocessLibs, "

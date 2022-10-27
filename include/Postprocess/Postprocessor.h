@@ -275,6 +275,7 @@ private:
      * @param dofid the global id of the specific dof
      * @param nodeid the global id of the specific node
      * @param t_parameters the json parameters taken from input file
+     * @param t_elmtinfo the element info structure
      * @param t_shp the shape function class
      * @param t_soln the solution system
      * @param t_projsystem the projection system
@@ -283,6 +284,7 @@ private:
                                             const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &t_parameters,
+                                            const LocalElmtInfo &t_elmtinfo,
                                             const LocalShapeFun &t_shp,
                                             SolutionSystem &t_soln,
                                             ProjectionSystem &t_projsystem);

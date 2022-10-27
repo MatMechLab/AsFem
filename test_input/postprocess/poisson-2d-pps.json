@@ -86,6 +86,10 @@
 				"vectormate":"gradu",
 				"component":1
 			}
+		},
+		"volume":{
+			"type":"volume",
+			"domain":["alldomain"]
 		}
 	},
 	"job":{

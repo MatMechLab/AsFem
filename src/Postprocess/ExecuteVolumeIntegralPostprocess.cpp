@@ -54,6 +54,7 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
 
         for(e=eStart;e<eEnd;e++){
             nNodesPerElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(domainname,e+1);
+            m_local_elmtinfo.m_nodesnum=nNodesPerElmt;
             JxW=0.0;
             if(m_local_elmtinfo.m_dim<=0){
                 MessagePrinter::printErrorTxt("Invalid dim(<=0) for volume integral postprocess, please check your input file or your code");
@@ -107,12 +108,7 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                             iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
                         }
 
-                        if(pps_type==PostprocessorType::VOLUME){
-                            pps_value+=(1.0/nNodesPerElmt)*JxW*runVolumeIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
-                        }
-                        else{
-                            pps_value+=JxW*runVolumeIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_shp,t_soln,t_projsystem);
-                        }
+                        pps_value+=JxW*runVolumeIntegralPostprocessLibs(pps_type,iInd,j,t_parameters,m_local_elmtinfo,m_local_shp,t_soln,t_projsystem);
                     
                     }// end-of-node-loop-for-qpoint-quantities-accumulation
 

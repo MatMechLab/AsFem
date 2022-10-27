@@ -18,10 +18,11 @@
 double VolumeIntegralScalarMatePostprocessor::computeVolumeIntegralValue(const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &parameters,
+                                            const LocalElmtInfo &elmtinfo,
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()) {}
+    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()||elmtinfo.m_dim) {}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"scalarmate"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the VolumeIntegralScalarMatePostprocessor, "

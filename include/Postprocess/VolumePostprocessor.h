@@ -26,6 +26,7 @@ protected:
      * @param dofid the global dof id, start from 1
      * @param nodeid the global node id, starts from 1
      * @param t_parameters the parameters from json
+     * @param t_elmtinfo the local element info structure
      * @param t_shp the local shape function
      * @param t_soln the solution class
      * @param t_projsystem the projection class
@@ -33,6 +34,7 @@ protected:
     virtual double computeVolumeIntegralValue(const int &dofid,
                                               const int &nodeid,
                                               const nlohmann::json &t_parameters,
+                                              const LocalElmtInfo &t_elmtinfo,
                                               const LocalShapeFun &t_shp,
                                               SolutionSystem &t_soln,
                                               ProjectionSystem &t_projsystem) override;

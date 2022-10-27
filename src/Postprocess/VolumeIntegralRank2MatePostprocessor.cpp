@@ -18,10 +18,11 @@
 double VolumeIntegralRank2MatePostprocessor::computeVolumeIntegralValue(const int &dofid,
                                             const int &nodeid,
                                             const nlohmann::json &parameters,
+                                            const LocalElmtInfo &elmtinfo,
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()) {}
+    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()||elmtinfo.m_dim) {}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"rank2mate","i-index","j-index"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the SideIntegralRank2MatePostprocessor, "
