@@ -28,12 +28,12 @@ AsFem=str(parrentdir)+'/bin/asfem'
 
 
 print('**********************************************************************************')
-print('*** We start to run the auto test script for all the test input file ...')
-print('*** We are in folder:%s'%(currentdir))
+print('*** We start to run the auto test script for all the test input files ...')
+print('*** We are in folder: %s'%(currentdir))
 print('*** Parent dir is: %s'%(parrentdir))
-print('*** AsFem executable file is :%s'%(AsFem))
-print('*** Test input file folder is :%s'%(TestDir))
-print('*** Using %d cpus for auto-test'%(cpus))
+print('*** AsFem executable file is : %s'%(AsFem))
+print('*** Test input file folder is : %s'%(TestDir))
+print('*** Using %d cpus for the auto-test'%(cpus))
 
 timestart=time.time()
 
@@ -43,11 +43,11 @@ for subdir,dirs,files in os.walk(TestDir):
     print('***----------------------------------------------------------------------------***')
     print('***   start to run input files in %s'%(subdir))
     for file in files:
-        if ('.i' in file) and ('.inp' not in file):
+        if ('.json' in file) and ('input-template.json' not in file):
             arg=subdir+'/'+file
-            print('***     running %s'%(file))
+            print('***     running test for %s'%(file))
             os.chdir(subdir)
-            if 'mesh' in subdir:
+            if ('mesh' in subdir) or ('dofs' in subdir):
                 args='mpirun -np %d '%(cpus)+AsFem+' -i '+file+' --read-only'
                 result=subprocess.run(args,shell=True,capture_output=True) 
             else:
@@ -56,20 +56,20 @@ for subdir,dirs,files in os.walk(TestDir):
             nFiles+=1
             if ('AsFem exit due to some errors' in result.stdout.decode("utf-8")) or ('Error' in result.stdout.decode("utf-8")):
                 sys.stdout.write("\033[1;31m") # set to red color
-                print('***     %s is failed!'%(file))
+                print('***     %s fails !'%(file))
                 sys.stdout.write("\033[0;0m")  # reset color
                 FailedFileList.append(file)
             else:
                 nSucess+=1
                 sys.stdout.write("\033[1;34m") # set to blue color
-                print('***     %s is success!'%(file))
+                print('***     %s is done (success) !'%(file))
                 sys.stdout.write("\033[0;0m")  # reset
 
 timeend=time.time()
 duration=timeend-timestart
 
 print('**********************************************************************************')
-print('*** Test finished, test files=%d, success=%d, failed=%d [elapse time=%13.5e]!'%(nFiles,nSucess,nFiles-nSucess,duration))
+print('*** Tests finished, test files=%d, success=%d, failure=%d [elapse time=%12.4e]!'%(nFiles,nSucess,nFiles-nSucess,duration))
 if len(FailedFileList)>0:
     print('*** The failed input files are:')
     print(FailedFileList)
