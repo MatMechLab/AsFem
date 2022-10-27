@@ -49,7 +49,7 @@
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
 		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"preconditioner":"jacobi"
 	},
 	"output":{
 		"type":"vtu",
