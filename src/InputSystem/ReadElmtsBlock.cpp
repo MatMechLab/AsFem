@@ -267,8 +267,8 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
                 elmtBlock.m_matetype=MateType::WAVEMATE;
             }
             // for coupled material
-            else if(elmtBlock.m_mate_typename=="canhhilliardmechanics"){
-                elmtBlock.m_matetype=MateType::CAHNHILLIARDMECHANICSMATE;
+            else if(elmtBlock.m_mate_typename=="smallstraincahnhilliard"){
+                elmtBlock.m_matetype=MateType::SMALLSTRAINCAHNHILLIARDMATE;
             }
             else if(elmtBlock.m_mate_typename=="smallstraindiffusion"){
                 elmtBlock.m_matetype=MateType::SMALLSTRAINDIFFUSIONMATE;

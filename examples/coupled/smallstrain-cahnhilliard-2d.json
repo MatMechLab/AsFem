@@ -17,7 +17,7 @@
 			"type":"stresscahnhilliard",
 			"dofs":["c","mu","ux","uy"],
 			"material":{
-				"type":"canhhilliardmechanics",
+				"type":"smallstraincahnhilliard",
 				"parameters":{
 					"D":1.0,
 					"Height":3.5e0,

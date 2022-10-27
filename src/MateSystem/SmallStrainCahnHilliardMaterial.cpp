@@ -13,22 +13,22 @@
 //+++          element.
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/CahnHilliardMechanicsMaterial.h"
+#include "MateSystem/SmallStrainCahnHilliardMaterial.h"
 
-CahnHilliardMechanicsMaterial::CahnHilliardMechanicsMaterial(){
+SmallStrainCahnHilliardMaterial::SmallStrainCahnHilliardMaterial(){
     m_args.resize(11);
     m_F.resize(11);
     m_dFdargs.resize(11);
     m_d2Fdargs2.resize(11,11);
 }
-CahnHilliardMechanicsMaterial::~CahnHilliardMechanicsMaterial(){
+SmallStrainCahnHilliardMaterial::~SmallStrainCahnHilliardMaterial(){
     m_args.resize(11);
     m_F.resize(11);
     m_dFdargs.resize(11);
     m_d2Fdargs2.resize(11,11);
 }
 //*******************************************************
-void CahnHilliardMechanicsMaterial::initMaterialProperties(const nlohmann::json &inputparams,
+void SmallStrainCahnHilliardMaterial::initMaterialProperties(const nlohmann::json &inputparams,
                                         const LocalElmtInfo &elmtinfo,
                                         const LocalElmtSolution &elmtsoln,
                                         MaterialsContainer &mate){
@@ -40,7 +40,7 @@ void CahnHilliardMechanicsMaterial::initMaterialProperties(const nlohmann::json 
 }
 
 //********************************************************************
-void CahnHilliardMechanicsMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
+void SmallStrainCahnHilliardMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
                                            const LocalElmtInfo &elmtinfo,
                                            const LocalElmtSolution &elmtsoln,
                                            const MaterialsContainer &mateold,
@@ -67,7 +67,7 @@ void CahnHilliardMechanicsMaterial::computeMaterialProperties(const nlohmann::js
         m_GradU.setFromGradU(elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4],elmtsoln.m_gpGradU[5]);// grad(ux), grad(uy)
     }
     else{
-        MessagePrinter::printErrorTxt("CahnHilliardMechanicsMaterial works only for 2d and 3d case, please check your input file");
+        MessagePrinter::printErrorTxt("SmallStrainCahnHilliardMaterial works only for 2d and 3d case, please check your input file");
         MessagePrinter::exitAsFem();
     }
 
@@ -104,12 +104,12 @@ void CahnHilliardMechanicsMaterial::computeMaterialProperties(const nlohmann::js
 
 }
 //**************************************************************************
-void CahnHilliardMechanicsMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
+void SmallStrainCahnHilliardMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
     if(dim){}
     m_I.setToIdentity();
     strain=(gradU+gradU.transpose())*0.5;// here the strain is small strain
 }
-void CahnHilliardMechanicsMaterial::computeStressAndJacobian(const nlohmann::json &params,
+void SmallStrainCahnHilliardMaterial::computeStressAndJacobian(const nlohmann::json &params,
                                           const int &dim,
                                           const Rank2Tensor &strain,
                                           Rank2Tensor &stress,
@@ -151,7 +151,7 @@ void CahnHilliardMechanicsMaterial::computeStressAndJacobian(const nlohmann::jso
 
 }
 //**************************************************************************
-void CahnHilliardMechanicsMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
+void SmallStrainCahnHilliardMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
                                                  const VectorXd &args,
                                                  VectorXd       &F,
                                                  VectorXd       &dFdargs,

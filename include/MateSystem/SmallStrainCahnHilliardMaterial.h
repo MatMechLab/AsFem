@@ -22,12 +22,12 @@
 /**
  * This class calculate the material properties for the mechanically coupled cahn-hilliard equation
  */
-class CahnHilliardMechanicsMaterial:public BulkMaterialBase,
-                                    public FreeEnergyMaterialBase,
-                                    public ElasticMaterialBase{
+class SmallStrainCahnHilliardMaterial:public BulkMaterialBase,
+                                     public FreeEnergyMaterialBase,
+                                     public ElasticMaterialBase{
 public:
-    CahnHilliardMechanicsMaterial();
-    ~CahnHilliardMechanicsMaterial();
+    SmallStrainCahnHilliardMaterial();
+    ~SmallStrainCahnHilliardMaterial();
 protected:
     /**
      * Initial the preset material properties, if you don't need the history information of some materials, 

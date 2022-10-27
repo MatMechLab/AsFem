@@ -74,8 +74,8 @@ void BulkMateSystem::initBulkMateLibs(const MateType &t_matetype,const nlohmann:
     case MateType::MIEHEFRACTUREMATE:
         MieheFractureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;
-    case MateType::CAHNHILLIARDMECHANICSMATE:
-        CahnHilliardMechanicsMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+    case MateType::SMALLSTRAINCAHNHILLIARDMATE:
+        SmallStrainCahnHilliardMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;
     default:
         MessagePrinter::printErrorTxt("Unsupported material type in initBulkMateLibs, please check your code");
