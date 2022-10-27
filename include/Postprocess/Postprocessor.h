@@ -58,6 +58,7 @@
 #include "Postprocess/VolumeIntegralVectorMatePostprocessor.h"
 #include "Postprocess/VolumeIntegralRank2MatePostprocessor.h"
 #include "Postprocess/VolumeIntegralRank4MatePostprocessor.h"
+#include "Postprocess/User1VolumeIntegralPostprocessor.h"
 
 /**
  * This class implement the general postprocess (i.e., nodal value, side integration, volume integration) in AsFem
@@ -81,7 +82,8 @@ class Postprocessor:public NodalValuePostprocessor,
                     public VolumeIntegralScalarMatePostprocessor,
                     public VolumeIntegralVectorMatePostprocessor,
                     public VolumeIntegralRank2MatePostprocessor,
-                    public VolumeIntegralRank4MatePostprocessor{
+                    public VolumeIntegralRank4MatePostprocessor,
+                    public User1VolumeIntegralPostprocessor{
 public:
     /**
      * constructor

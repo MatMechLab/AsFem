@@ -49,6 +49,9 @@ double Postprocessor::runVolumeIntegralPostprocessLibs(const PostprocessorType &
     case PostprocessorType::VOLUMEAVERAGERANK4MATERIALVALUE:
         pps_result=VolumeIntegralRank4MatePostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
         break;
+    case PostprocessorType::USER1VOLUMEINTEGRALPPS:
+        pps_result=User1VolumeIntegralPostprocessor::computeVolumeIntegralValue(dofid,nodeid,t_parameters,t_elmtinfo,t_shp,t_soln,t_projsystem);
+        break;
     default:
         MessagePrinter::printErrorTxt("Unsupported side integral postprocess type in runVolumeIntegralPostprocessLibs, "
                                       "please check your code or your input file");

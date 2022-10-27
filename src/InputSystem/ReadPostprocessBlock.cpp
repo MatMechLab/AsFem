@@ -124,6 +124,9 @@ bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
             else if(ppsblock.m_pps_typename=="volumeintegralrank4mate"){
                 ppsblock.m_pps_type=PostprocessorType::VOLUMEINTEGRATERANK4MATERIALVALUE;
             }
+            else if(ppsblock.m_pps_typename=="user1volumeintegral"){
+                ppsblock.m_pps_type=PostprocessorType::USER1VOLUMEINTEGRALPPS;
+            }
             else{
                 MessagePrinter::printErrorTxt("unsupported element type in "+ppsblock.m_block_name+", please check your input file");
                 MessagePrinter::exitAsFem();

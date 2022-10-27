@@ -749,6 +749,9 @@ set(src ${src} src/Postprocess/VolumeIntegralRank2MatePostprocessor.cpp)
 ###
 set(inc ${inc} include/Postprocess/VolumeIntegralRank4MatePostprocessor.h)
 set(src ${src} src/Postprocess/VolumeIntegralRank4MatePostprocessor.cpp)
+###
+set(inc ${inc} include/Postprocess/User1VolumeIntegralPostprocessor.h)
+set(src ${src} src/Postprocess/User1VolumeIntegralPostprocessor.cpp)
 
 #############################################################
 ### For FEProblem class                                   ###
