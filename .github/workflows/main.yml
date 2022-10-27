@@ -67,7 +67,7 @@ jobs:
           ls -l
           curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.gz
           echo "******************************************************"
-          echo "*** Openmpi 4.1.4 is download !"
+          echo "*** Openmpi 4.1.4 has been downloaded !"
           echo "******************************************************"
           ls -l
       - name: compile and install openmpi
@@ -79,11 +79,11 @@ jobs:
           tar -xf openmpi-4.1.4.tar.gz
           cd openmpi-4.1.4
           ./configure --prefix=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
-          make -j8 > mymake.log
+          make -j8
           echo "******************************************************"
           echo "*** Make -j8 is done for openmpi-4.1.4"
           echo "******************************************************"
-          make install > mymakeinstall.log
+          make install
           echo "******************************************************"
           echo "*** Make install is done for openmpi-4.1.4"
           echo "******************************************************"
@@ -102,11 +102,11 @@ jobs:
           echo "*** download petsc"
           echo "******************************************************"
           cd /home/runner/work/AsFem/AsFem/temp
-          curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.17.5.tar.gz
-          tar -xf petsc-lite-3.17.5.tar.gz
+          curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.18.1.tar.gz
+          tar -xf petsc-lite-3.18.1.tar.gz
       - name: compile and install PETSc
         run: |
-          cd /home/runner/work/AsFem/AsFem/temp/petsc-3.17.5
+          cd /home/runner/work/AsFem/AsFem/temp/petsc-3.18.1
           echo "******************************************************"
           echo "*** Config petsc ..."
           echo "******************************************************"
@@ -119,6 +119,7 @@ jobs:
           --with-shared-libraries=1 \
           --with-fortran-bindings=0 \
           --with-sowing=0 \
+          --download-fblaslapack=1 \
           COPTFLAGS='-fPIC -O3 ' \
           CXXOPTFLAGS='-fPIC -O3 ' \
           FOPTFLAGS='-fPIC -O3 ' \
@@ -126,11 +127,11 @@ jobs:
           echo "******************************************************"
           echo "*** Make petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.17.5 PETSC_ARCH=arch-linux-c-opt all > mymake.log
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.1 PETSC_ARCH=arch-linux-c-opt all
           echo "******************************************************"
           echo "*** Install petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.17.5 PETSC_ARCH=arch-linux-c-opt install > mymakeinstall.log
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.1 PETSC_ARCH=arch-linux-c-opt install
       - name: compile AsFem
         run: |
           cd /home/runner/work/AsFem/AsFem
@@ -139,6 +140,10 @@ jobs:
           echo "*********************************************************************"
           export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
+          export CC=$MPI_DIR/bin/mpicc
+          export CXX=$MPI_DIR/bin/mpicxx
+          export F90=$MPI_DIR/bin/mpif90
+          export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
           export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
@@ -150,22 +155,29 @@ jobs:
           echo "*********************************************************************"
           echo "*** Make AsFem"
           echo "*********************************************************************"
-          make -j8 > mymake.log
+          make -j8
           echo "*********************************************************************"
-          echo "*** AsFem is successuflly installed !"
+          echo "*** AsFem has been successuflly installed !"
           echo "*********************************************************************"
+          ls
       - name: run AsFem test script
         run: |
           cd /home/runner/work/AsFem/AsFem
           echo "*********************************************************************"
           echo "*** Start to run AsFem autotest"
           echo "*********************************************************************"
+          ls
           python3 scripts/AutoTest.py
       - name: run step2-2d in parallel
         run: |
           cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          ls
           export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
+          export CC=$MPI_DIR/bin/mpicc
+          export CXX=$MPI_DIR/bin/mpicxx
+          export F90=$MPI_DIR/bin/mpif90
+          export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
           export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
@@ -177,8 +189,13 @@ jobs:
       - name: run step2-3d in parallel
         run: |
           cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          ls
           export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
+          export CC=$MPI_DIR/bin/mpicc
+          export CXX=$MPI_DIR/bin/mpicxx
+          export F90=$MPI_DIR/bin/mpif90
+          export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
           export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
