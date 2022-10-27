@@ -22,7 +22,7 @@ double ProjectionSystem::getIthNodeScalarMateViaMateName(const int &nodeid,const
     matevalue=0.0;
     hasValue=false;
     for(int i=1;i<=getScalarMaterialNum();i++){
-        if(m_data.m_vectormate_namelist[i-1]==matename){
+        if(m_data.m_scalarmate_namelist[i-1]==matename){
             iInd=(nodeid-1)*(1+getScalarMaterialNum())+i+1;
             // m_data.m_proj_scalarmate_vec.makeGhostCopy();
             matevalue=m_data.m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
@@ -73,15 +73,17 @@ Vector3d ProjectionSystem::getIthNodeVectorMateViaMateName(const int &nodeid,con
 Rank2Tensor ProjectionSystem::getIthNodeRank2MateViaMateName(const int &nodeid,const string &matename){
     Rank2Tensor matevalue;
     bool hasValue;
-    int iInd;
+    int iInd,k;
     matevalue=0.0;
     hasValue=false;
     for(int i=1;i<=getRank2MaterialNum();i++){
         if(m_data.m_rank2mate_namelist[i-1]==matename){
             // m_data.m_proj_rank2mate_vec.makeGhostCopy();
+            k=0;
             for(int ii=1;ii<=3;ii++){
                 for(int jj=1;jj<=3;jj++){
-                    iInd=(nodeid-1)*(1+getVectorMaterialNum()*9)+9*(i-1)+(ii-1)*3+jj+1;
+                    k+=1;
+                    iInd=(nodeid-1)*(1+getRank2MaterialNum()*9)+9*(i-1)+k+1;
                     matevalue(ii,jj)=m_data.m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
                 }
             }
@@ -109,7 +111,7 @@ Rank4Tensor ProjectionSystem::getIthNodeRank4MateViaMateName(const int &nodeid,c
             // m_data.m_proj_rank4mate_vec.makeGhostCopy();
             for(int ii=1;ii<=6;ii++){
                 for(int jj=1;jj<=6;jj++){
-                    iInd=(nodeid-1)*(1+getVectorMaterialNum()*36)+36*(i-1)+(ii-1)*6+jj+1;
+                    iInd=(nodeid-1)*(1+getRank4MaterialNum()*36)+36*(i-1)+(ii-1)*6+jj+1;
                     matevalue.voigtComponent(ii,jj)=m_data.m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
                 }
             }

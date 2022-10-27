@@ -63,6 +63,51 @@
 			"order":2
 		}
 	},
+	"postprocess":{
+		"vonMises":{
+			"type":"sideintegralscalarmate",
+			"side":["top"],
+			"parameters":{
+				"scalarmate":"vonMises-stress"
+			}
+		},
+		"p11":{
+			"type":"sideintegralrank2mate",
+			"side":["top"],
+			"parameters":{
+				"rank2mate":"stress",
+				"i-index":1,
+				"j-index":1
+			}
+		},
+		"p12":{
+			"type":"sideintegralrank2mate",
+			"side":["top"],
+			"parameters":{
+				"rank2mate":"stress",
+				"i-index":1,
+				"j-index":2
+			}
+		},
+		"p21":{
+			"type":"sideintegralrank2mate",
+			"side":["top"],
+			"parameters":{
+				"rank2mate":"stress",
+				"i-index":2,
+				"j-index":1
+			}
+		},
+		"p22":{
+			"type":"sideintegralrank2mate",
+			"side":["top"],
+			"parameters":{
+				"rank2mate":"stress",
+				"i-index":2,
+				"j-index":2
+			}
+		}
+	},
 	"job":{
 		"type":"static",
 		"print":"dep",

@@ -201,7 +201,7 @@ void VTUWriter::saveResults(const string &t_filename,
         }
 
         //**************************************
-        //*** for projected rank-2 output
+        //*** for projected rank-4 output
         //**************************************
         nproj=t_projection.getRank4MaterialNum();
         for (j = 1;j<=nproj;j++){
