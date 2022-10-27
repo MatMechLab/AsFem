@@ -20,17 +20,17 @@ if len(sys.argv)>=3:
             cpus=1
 
 currentdir=os.getcwd()
-parrentdir=Path(currentdir).parent
-if 'AsFem' not in str(parrentdir):
-    parrentdir=currentdir
-TestDir=str(parrentdir)+'/test_input/'
-AsFem=str(parrentdir)+'/bin/asfem'
+scriptdir=Path(__file__).parent.resolve()
+asfemdir=Path(scriptdir).parent
+TestDir=str(asfemdir)+'/test_input/'
+AsFem=str(asfemdir)+'/bin/asfem'
 
 
 print('**********************************************************************************')
 print('*** We start to run the auto test script for all the test input files ...')
 print('*** We are in folder: %s'%(currentdir))
-print('*** Parent dir is: %s'%(parrentdir))
+print('*** AutoTest script is in folder: %s'%(scriptdir))
+print('*** AsFem dir is: %s'%(asfemdir))
 print('*** AsFem executable file is : %s'%(AsFem))
 print('*** Test input file folder is : %s'%(TestDir))
 print('*** Using %d cpus for the auto-test'%(cpus))
@@ -59,11 +59,16 @@ for subdir,dirs,files in os.walk(TestDir):
                 print('***     %s fails !'%(file))
                 sys.stdout.write("\033[0;0m")  # reset color
                 FailedFileList.append(file)
-            else:
+            elif ('Static analysis is done' in result.stdout.decode("utf-8")) or ('Transient analysis is done' in result.stdout.decode("utf-8")):
                 nSucess+=1
                 sys.stdout.write("\033[1;34m") # set to blue color
                 print('***     %s is done (success) !'%(file))
                 sys.stdout.write("\033[0;0m")  # reset
+            else:
+                sys.stdout.write("\033[1;31m") # set to red color
+                print('***     %s fails (maybe no executable file?)!'%(file))
+                sys.stdout.write("\033[0;0m")  # reset color
+                FailedFileList.append(file)
 
 timeend=time.time()
 duration=timeend-timestart
