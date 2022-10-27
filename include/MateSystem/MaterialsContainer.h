@@ -47,6 +47,9 @@ public:
      */
     inline MaterialsContainer& operator=(const MaterialsContainer &a){
         clean();
+        for(const auto &it:a.m_boolean_materials){
+            m_boolean_materials[it.first]=it.second;
+        }
         for(const auto &it:a.m_scalar_materials){
             m_scalar_materials[it.first]=it.second;
         }
@@ -64,6 +67,19 @@ public:
     //**************************************************************
     //*** general gettings
     //**************************************************************
+    /**
+     * get the boolean material value
+     * @param matename the string name of inquery material
+     */
+    bool BooleanMaterial(const string &matename)const;
+    /**
+     * get the boolean material value
+     * @param matename the string name of inquery material
+     */
+    inline bool& BooleanMaterial(const string &matename){
+        return m_boolean_materials[matename];
+    }
+
     /**
      * get the scalar material value
      * @param matename the string name of inquery material
@@ -117,6 +133,19 @@ public:
     }
 
     /**
+     * get the reference of boolean materials
+     */
+    inline BooleanMateType& getBooleanMaterialsRef(){
+        return m_boolean_materials;
+    }
+    /**
+     * get the copy of boolean materials
+     */
+    inline BooleanMateType getBooleanMaterialsCopy()const{
+        return m_boolean_materials;
+    }
+
+    /**
      * get the reference of scalar materials
      */
     inline ScalarMateType& getScalarMaterialsRef(){
@@ -128,6 +157,7 @@ public:
     inline ScalarMateType getScalarMaterialsCopy()const{
         return m_scalar_materials;
     }
+
     /**
      * get the reference of vector materials
      */
@@ -140,6 +170,7 @@ public:
     inline VectorMateType getVectorMaterialsCopy()const{
         return m_vector_materials;
     }
+
     /**
      * get the reference of rank-2 materials
      */
@@ -152,6 +183,7 @@ public:
     inline Rank2MateType getRank2MaterialsCopy()const{
         return m_rank2_materials;
     }
+
     /**
      * get the reference of rank-4 materials
      */
@@ -163,6 +195,13 @@ public:
      */
     inline Rank4MateType getRank4MaterialsCopy()const{
         return m_rank4_materials;
+    }
+
+    /**
+     * get the number of boolean materials
+     */
+    inline int getBooleanMaterialsNum()const{
+        return static_cast<int>(m_boolean_materials.size());
     }
     /**
      * get the number of scalar materials
@@ -191,9 +230,10 @@ public:
     
 
 private:
-    ScalarMateType m_scalar_materials;
-    VectorMateType m_vector_materials;
-    Rank2MateType  m_rank2_materials;
-    Rank4MateType  m_rank4_materials;
+    BooleanMateType m_boolean_materials;/**< boolean materials */
+    ScalarMateType m_scalar_materials;/**< scalar materials */
+    VectorMateType m_vector_materials;/**< vector materials */
+    Rank2MateType  m_rank2_materials;/**< rank-2 materials */
+    Rank4MateType  m_rank4_materials;/**< rank-4 materials */
 
 };

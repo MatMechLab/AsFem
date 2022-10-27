@@ -60,7 +60,7 @@ void NeoHookeanMaterial::computeMaterialProperties(const nlohmann::json &inputpa
         mate.VectorMaterial("graduy")=elmtsoln.m_gpGradU[2];
         if(elmtinfo.m_dim==3) mate.VectorMaterial("graduz")=elmtsoln.m_gpGradU[3];
     }
-    mate.Rank2Material("strain")=m_strain;
+    mate.Rank2Material("strain")=m_strain;// the Lagrangian-Green strain
     mate.Rank2Material("stress")=m_stress;// the stress should be 1st PK stress, not 2nd PK stress !
     mate.Rank2Material("cauchy-stress")=m_F*m_pk2_stress*m_F.transpose()*(1.0/m_F.det());
 

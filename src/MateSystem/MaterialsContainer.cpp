@@ -17,12 +17,14 @@
 #include "MateSystem/MaterialsContainer.h"
 
 MaterialsContainer::MaterialsContainer(){
+    m_boolean_materials.clear();
     m_scalar_materials.clear();
     m_vector_materials.clear();
     m_rank2_materials.clear();
     m_rank4_materials.clear();
 }
 void MaterialsContainer::clean(){
+    m_boolean_materials.clear();
     m_scalar_materials.clear();
     m_vector_materials.clear();
     m_rank2_materials.clear();
@@ -30,6 +32,9 @@ void MaterialsContainer::clean(){
 }
 MaterialsContainer::MaterialsContainer(const MaterialsContainer &a){
     clean();
+    for(const auto &it:a.m_boolean_materials){
+        m_boolean_materials[it.first]=it.second;
+    }
     for(const auto &it:a.m_scalar_materials){
         m_scalar_materials[it.first]=it.second;
     }
@@ -46,6 +51,16 @@ MaterialsContainer::MaterialsContainer(const MaterialsContainer &a){
 //*******************************************************
 //*** for the access to each material
 //*******************************************************
+bool MaterialsContainer::BooleanMaterial(const string &matename)const{
+    for(const auto &it:m_boolean_materials){
+        if(it.first==matename){
+            return it.second;
+        }
+    }
+    MessagePrinter::printErrorTxt("boolean material ("+matename+") is not defined in your materials");
+    MessagePrinter::exitAsFem();
+    return false;
+}
 double MaterialsContainer::ScalarMaterial(const string &matename)const{
     for(const auto &it:m_scalar_materials){
         if(it.first==matename){

@@ -50,6 +50,13 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
     //**************************************************************
     if(mateold.getScalarMaterialsNum()){}
 
+    if(JsonUtils::hasValue(inputparams,"finite-strain")){
+        mate.BooleanMaterial("finite-strain")=JsonUtils::getBoolean(inputparams,"finite-strain");
+    }
+    else{
+        mate.BooleanMaterial("finite-strain")=false;// use small strain deformation as the default option
+    }
+
     mate.ScalarMaterial("L")=JsonUtils::getValue(inputparams,"L");
     mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
     mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
