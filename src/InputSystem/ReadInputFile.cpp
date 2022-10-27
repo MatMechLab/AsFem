@@ -431,6 +431,11 @@ bool InputSystem::readInputFile(Mesh &t_mesh,DofHandler &t_dofhandler,
         MessagePrinter::exitAsFem();
     }
 
+    if(t_jobblock.m_jobtype==FEJobType::STATIC&&HasTimeSteppingBlock){
+        MessagePrinter::printErrorTxt("[timestepping] block is found in your input file for a static job, this dosen\'t make sense");
+        MessagePrinter::exitAsFem();
+    }
+
     if(!HasJobBlock && !m_readonly){
         MessagePrinter::printErrorTxt("no [job] block found in your input file, one can\'t do FEM analysis without a job");
         MessagePrinter::exitAsFem();
