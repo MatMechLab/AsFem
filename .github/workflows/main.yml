@@ -115,11 +115,15 @@ jobs:
           --with-debugging=0 \
           --with-ssl=0 \
           --with-pic=1 \
+          --with-openmp=0 \
           --with-mpi-dir=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi \
           --with-shared-libraries=1 \
           --with-fortran-bindings=0 \
           --with-sowing=0 \
           --download-fblaslapack=1 \
+          --download-scalapack=1 \
+          --download-mumps=1 \
+          --download-superlu_dist=1 \
           COPTFLAGS='-fPIC -O3 ' \
           CXXOPTFLAGS='-fPIC -O3 ' \
           FOPTFLAGS='-fPIC -O3 ' \
