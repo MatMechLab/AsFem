@@ -123,7 +123,6 @@ jobs:
           --download-fblaslapack=1 \
           --download-scalapack=1 \
           --download-mumps=1 \
-          --download-superlu_dist=1 \
           COPTFLAGS='-fPIC -O3 ' \
           CXXOPTFLAGS='-fPIC -O3 ' \
           FOPTFLAGS='-fPIC -O3 ' \
@@ -171,7 +170,7 @@ jobs:
           echo "*** Start to run AsFem autotest"
           echo "*********************************************************************"
           ls
-          python3 scripts/AutoTest.py
+          python3 scripts/AutoTest.py -n 1
       - name: run step2-2d in parallel
         run: |
           cd /home/runner/work/AsFem/AsFem/examples/tutorial

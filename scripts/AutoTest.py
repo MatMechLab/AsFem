@@ -59,7 +59,7 @@ for subdir,dirs,files in os.walk(TestDir):
                 print('***     %s fails !'%(file))
                 sys.stdout.write("\033[0;0m")  # reset color
                 FailedFileList.append(file)
-            elif ('Static analysis is done' in result.stdout.decode("utf-8")) or ('Transient analysis is done' in result.stdout.decode("utf-8")):
+            elif ('Static analysis is done' in result.stdout.decode("utf-8")) or ('Transient analysis is done' in result.stdout.decode("utf-8")) or ('\'Simulation is done\'' in result.stdout.decode("utf-8")) or ('AsFem has been executed in \'read-only\' mode' in result.stdout.decode("utf-8")):
                 nSucess+=1
                 sys.stdout.write("\033[1;34m") # set to blue color
                 print('***     %s is done (success) !'%(file))
@@ -67,8 +67,10 @@ for subdir,dirs,files in os.walk(TestDir):
             else:
                 sys.stdout.write("\033[1;31m") # set to red color
                 print('***     %s fails (maybe no executable file?)!'%(file))
+                print('*** The error message is:\n ',result.stdout.decode("utf-8"))
                 sys.stdout.write("\033[0;0m")  # reset color
                 FailedFileList.append(file)
+                sys.exit()
 
 timeend=time.time()
 duration=timeend-timestart
