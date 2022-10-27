@@ -1,0 +1,12 @@
+{
+	"mesh":{
+		"type":"asfem",
+		"dim":2,
+		"nx":5,
+		"ny":15,
+		"xmax":0.5,
+		"ymax":1.5,
+		"meshtype":"quad4",
+		"savemesh":true
+	}
+}

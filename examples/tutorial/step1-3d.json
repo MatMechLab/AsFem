@@ -1,0 +1,14 @@
+{
+	"mesh":{
+		"type":"asfem",
+		"dim":3,
+		"nx":5,
+		"ny":20,
+		"nz":20,
+		"xmax":0.5,
+		"ymax":0.5,
+		"zmax":2.0,
+		"meshtype":"hex8",
+		"savemesh":true
+	}
+}
