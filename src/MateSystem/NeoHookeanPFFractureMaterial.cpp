@@ -13,23 +13,23 @@
 //+++          element. In this code, we can define:
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MateSystem/LinearElasticFractureMaterial.h"
+#include "MateSystem/NeoHookeanPFFractureMaterial.h"
 #include "MathUtils/MathFuns.h"
 
-LinearElasticFractureMaterial::LinearElasticFractureMaterial(){
+NeoHookeanPFFractureMaterial::NeoHookeanPFFractureMaterial(){
     m_args.resize(11);
     m_F.resize(11);
     m_dFdargs.resize(11);
     m_d2Fdargs2.resize(11,11);
 }
-LinearElasticFractureMaterial::~LinearElasticFractureMaterial(){
+NeoHookeanPFFractureMaterial::~NeoHookeanPFFractureMaterial(){
     m_args.resize(11);
     m_F.resize(11);
     m_dFdargs.resize(11);
     m_d2Fdargs2.resize(11,11);
 }
 //******************************************************
-void LinearElasticFractureMaterial::initMaterialProperties(const nlohmann::json &inputparams,
+void NeoHookeanPFFractureMaterial::initMaterialProperties(const nlohmann::json &inputparams,
                                         const LocalElmtInfo &elmtinfo,
                                         const LocalElmtSolution &elmtsoln,
                                         MaterialsContainer &mate){
@@ -40,7 +40,7 @@ void LinearElasticFractureMaterial::initMaterialProperties(const nlohmann::json 
     mate.ScalarMaterial("H")=0.0;
 }
 //********************************************************************
-void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
+void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
                                            const LocalElmtInfo &elmtinfo,
                                            const LocalElmtSolution &elmtsoln,
                                            const MaterialsContainer &mateold,
@@ -52,13 +52,13 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
 
     if(JsonUtils::hasValue(inputparams,"finite-strain")){
         mate.BooleanMaterial("finite-strain")=JsonUtils::getBoolean(inputparams,"finite-strain");
-        if(mate.BooleanMaterial("finite-strain")){
-            MessagePrinter::printErrorTxt("Linear elastic fracture material works only in small strain case. Please check your input file and set 'finite-strain'=false");
+        if(!mate.BooleanMaterial("finite-strain")){
+            MessagePrinter::printErrorTxt("For neohookean fracture material, you must enable finite-strain option. Please check your input file");
             MessagePrinter::exitAsFem();
         }
     }
     else{
-        mate.BooleanMaterial("finite-strain")=false;// use small strain deformation as the default option
+        mate.BooleanMaterial("finite-strain")=true;// use finite strain deformation as the default option
     }
 
     mate.ScalarMaterial("L")=JsonUtils::getValue(inputparams,"L");
@@ -72,39 +72,39 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
         m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
     }
     else{
-        MessagePrinter::printErrorTxt("LinearElasticFractureMaterial works only for 2d and 3d case, please check your input file");
+        MessagePrinter::printErrorTxt("NeoHookeanPFFractureMaterial works only for 2d and 3d case, please check your input file");
         MessagePrinter::exitAsFem();
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_dim,m_GradU,m_mechstrain);
+    computeStrain(elmtinfo.m_dim,m_GradU,m_Estrain);
     
     m_d=elmtsoln.m_gpU[1];
 
     m_args(1)=m_d;
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
     
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_mechstrain,m_stress,m_jacobian);
+    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_Estrain,m_PK1stress,m_jacobian);
 
-    m_devstress=m_stress.dev();
+    m_devstress=m_PK1stress.dev();
 
     mate.ScalarMaterial("F")=m_F(1);
     mate.ScalarMaterial("dFdD")=m_dFdargs(1);
     mate.ScalarMaterial("d2FdD2")=m_d2Fdargs2(1,1);
 
     mate.ScalarMaterial("vonMises-stress")=sqrt(1.5*m_devstress.doubledot(m_devstress));
-    mate.ScalarMaterial("hydrostatic-stress")=m_stress.trace()/3.0;
+    mate.ScalarMaterial("hydrostatic-stress")=m_PK1stress.trace()/3.0;
 
-    mate.Rank2Material("strain")=m_mechstrain;
-    mate.Rank2Material("stress")=m_stress;
-    mate.Rank2Material("dstressdD")=m_dstress_dD;
+    mate.Rank2Material("strain")=m_Estrain;
+    mate.Rank2Material("stress")=m_PK1stress;
+    mate.Rank2Material("dstressdD")=m_dPK1stress_dD;
 
-    mate.Rank4Material("jacobian")=m_jacobian;
+    mate.Rank4Material("jacobian")=m_I.ikXlj(m_PK2stress)+m_jacobian.conjPushForward(m_Fe);
 
     // for history variables
     if(m_psipos>mateold.ScalarMaterial("H")){
         mate.ScalarMaterial("H")=m_psipos;
-        mate.Rank2Material("dHdstrain")=m_stress_pos;
+        mate.Rank2Material("dHdstrain")=m_Fe*m_PK2stress_pos;
     }
     else{
         mate.ScalarMaterial("H")=mateold.ScalarMaterial("H");
@@ -113,7 +113,7 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
 
 }
 //**************************************************************************
-void LinearElasticFractureMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
+void NeoHookeanPFFractureMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
                                                  const VectorXd &args,
                                                  VectorXd       &F,
                                                  VectorXd       &dFdargs,
@@ -125,21 +125,22 @@ void LinearElasticFractureMaterial::computeFreeEnergyAndDerivatives(const nlohma
     F(1)=0.5*d*d*Gc/eps;
     dFdargs(1)=d*Gc/eps;
     d2Fdargs2(1,1)=Gc/eps;
-
 }
 //**************************************************************************
-void LinearElasticFractureMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
+void NeoHookeanPFFractureMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
     if(dim){}
     m_I.setToIdentity();
-    strain=(gradU+gradU.transpose())*0.5;// here the strain is small strain
+    m_Fe=gradU+m_I;
+    m_Ce=m_Fe.transpose()*m_Fe;// Ce=Fe^t*Fe
+    strain=(m_Ce-m_I)*0.5;// here the strain is E, the Lagrangian-Green strain
 }
 //**************************************************************************
-void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::json &params,
+void NeoHookeanPFFractureMaterial::computeStressAndJacobian(const nlohmann::json &params,
                                           const int &dim,
                                           const Rank2Tensor &strain,
                                           Rank2Tensor &stress,
                                           Rank4Tensor &jacobian){
-    if(dim){}
+    if(dim||strain(1,1)){}
 
     m_stabilizer=JsonUtils::getValue(params,"stabilizer");
     double E=0.0,nu=0.0;
@@ -175,39 +176,63 @@ void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::jso
         K=lame+2.0*G/3.0;
     }
     else{
-        MessagePrinter::printErrorTxt("Invalid parameters, for linear elastic fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
+        MessagePrinter::printErrorTxt("Invalid parameters, for neohookean fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
         MessagePrinter::exitAsFem();
     }
 
-    m_projpos=strain.getPositiveProjectionTensor();
-    m_i4sym.setToIdentity4Symmetric();
-    m_projneg=m_i4sym-m_projpos;
+    m_Je=m_Fe.det();
+    m_Je23=std::pow(m_Je,-2.0/3.0);
+    m_I1=m_Ce.trace();
+    m_I1bar=m_I1*m_Je23;
 
-    // strain splitting
-    m_strain_pos=m_projpos.doubledot(strain);
-    m_strain_neg=strain-m_strain_pos;
+    if(m_Je>1){
+        // for tensile loading
+        m_psipos=0.5*K*(0.5*(m_Je*m_Je-1.0)-std::log(m_Je))
+                +0.5*G*(m_I1bar-3.0);
+        m_psineg=0.0;
+        m_I.setToIdentity();
+        m_PK2stress_pos=m_CeInv*0.5*K*(m_Je*m_Je-1.0)
+                       -m_CeInv*(G/3.0)*m_Je23*m_I1
+                       +m_I*G*m_Je23;
+        m_PK2stress_neg.setToZeros();
 
-    double trEps,signpos,signneg;
+        m_jacobian_pos=m_CeInv.otimes(m_CeInv)*K*m_Je*m_Je
+                      -m_CeInv.odot(m_CeInv)*K*(m_Je*m_Je-1.0)
+                      +(
+                        m_CeInv.otimes(m_CeInv)*(m_I1/3.0)
+                       -m_CeInv.otimes(m_I)
+                       +m_CeInv.odot(m_CeInv)*m_I1
+                       -m_I.otimes(m_CeInv)
+                      )*(2.0*G/3.0)*m_Je23;
+        m_jacobian_neg.setToZeros();
+    }
+    else{
+        m_psipos=0.5*G*(m_I1bar-3.0);
+        m_psineg=0.5*K*(0.5*(m_Je*m_Je-1.0)-std::log(m_Je));
 
-    trEps=strain.trace();
-    m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
-    m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
-    m_psi=g(m_d)*m_psipos+m_psineg;
+        m_PK2stress_pos=m_I*G*m_Je23-m_CeInv*(G/3.0)*m_Je23*m_I1;
+        m_PK2stress_neg=m_CeInv*K*0.5*(m_Je*m_Je-1.0);
 
-    // for different stresses
-    m_I.setToIdentity();// identity tensor
-    m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
-    m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
-    stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
-    m_dstress_dD=m_stress_pos*dg(m_d);
+        m_jacobian_pos=(
+                        m_CeInv.otimes(m_CeInv)*(m_I1/3.0)
+                       -m_CeInv.otimes(m_I)
+                       +m_CeInv.odot(m_CeInv)*m_I1
+                       -m_I.otimes(m_CeInv)
+                      )*(2.0*G/3.0)*m_Je23;
+        m_jacobian_neg=m_CeInv.otimes(m_CeInv)*K*m_Je*m_Je
+                      -m_CeInv.odot(m_CeInv)*K*(m_Je*m_Je-1.0);
+    }
 
-    signpos=0.0;
-    if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+    m_psi=m_psipos*(g(m_d)+m_stabilizer)+m_psineg;
 
-    signneg=0.0;
-    if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+    // for different stresses and their derivatives
+    m_PK2stress=m_PK2stress_pos*(g(m_d)+m_stabilizer)+m_PK2stress_neg;
+    m_dPK2stress_dD=m_PK2stress_pos*dg(m_d);
 
-    jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
-             +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+    stress=m_Fe*m_PK2stress;// the 1st PK stress
+    m_dPK1stress_dD=m_Fe*m_dPK2stress_dD;// the 1st PK stress's derivative wrt d
+
+    // for the jacobian in reference configuration
+    jacobian=m_jacobian_pos*(g(m_d)+m_stabilizer)+m_jacobian_neg;
 
 }

@@ -71,6 +71,9 @@ void BulkMateSystem::initBulkMateLibs(const MateType &t_matetype,const nlohmann:
     case MateType::LINEARELASTICFRACMATE:
         LinearElasticFractureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;
+    case MateType::NEOHOOKEANPFFRACTUREMATE:
+        NeoHookeanPFFractureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
     case MateType::MIEHEFRACTUREMATE:
         MieheFractureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;

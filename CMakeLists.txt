@@ -447,6 +447,9 @@ set(src ${src} src/MateSystem/LinearElasticFractureMaterial.cpp)
 set(inc ${inc} include/MateSystem/MieheFractureMaterial.h)
 set(src ${src} src/MateSystem/MieheFractureMaterial.cpp)
 ###
+set(inc ${inc} include/MateSystem/NeoHookeanPFFractureMaterial.h)
+set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
+###
 set(inc ${inc} include/MateSystem/SmallStrainCahnHilliardMaterial.h)
 set(src ${src} src/MateSystem/SmallStrainCahnHilliardMaterial.cpp)
 ### for material system

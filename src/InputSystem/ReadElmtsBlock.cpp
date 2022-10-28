@@ -276,6 +276,9 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_mate_typename=="linearelasticfracture"){
                 elmtBlock.m_matetype=MateType::LINEARELASTICFRACMATE;
             }
+            else if(elmtBlock.m_mate_typename=="neohookeanpffracture"){
+                elmtBlock.m_matetype=MateType::NEOHOOKEANPFFRACTUREMATE;
+            }
             else if(elmtBlock.m_mate_typename=="miehefracture"){
                 elmtBlock.m_matetype=MateType::MIEHEFRACTUREMATE;
             }

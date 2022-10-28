@@ -43,6 +43,7 @@
 #include "MateSystem/LinearElasticFractureMaterial.h"
 #include "MateSystem/MieheFractureMaterial.h"
 #include "MateSystem/SmallStrainCahnHilliardMaterial.h"
+#include "MateSystem/NeoHookeanPFFractureMaterial.h"
 
 
 /**
@@ -65,6 +66,7 @@ class BulkMateSystem:public ConstPoissonMaterial,
                      // for coupled materials
                      public SmallStrainDiffusionMaterial,
                      public LinearElasticFractureMaterial,
+                     public NeoHookeanPFFractureMaterial,
                      public MieheFractureMaterial,
                      public SmallStrainCahnHilliardMaterial{
 public:
