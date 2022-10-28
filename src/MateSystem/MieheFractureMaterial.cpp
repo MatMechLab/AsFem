@@ -53,6 +53,17 @@ void MieheFractureMaterial::computeMaterialProperties(const nlohmann::json &inpu
     //**************************************************************
     if(mateold.getScalarMaterialsNum()){}
 
+    if(JsonUtils::hasValue(inputparams,"finite-strain")){
+        mate.BooleanMaterial("finite-strain")=JsonUtils::getBoolean(inputparams,"finite-strain");
+        if(mate.BooleanMaterial("finite-strain")){
+            MessagePrinter::printErrorTxt("Miehe fracture material works only in small strain case. Please check your input file and set 'finite-strain'=false");
+            MessagePrinter::exitAsFem();
+        }
+    }
+    else{
+        mate.BooleanMaterial("finite-strain")=false;// use small strain deformation as the default option
+    }
+
     mate.ScalarMaterial("viscosity")=JsonUtils::getValue(inputparams,"viscosity");
     mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
     mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");

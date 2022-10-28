@@ -100,10 +100,21 @@ void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,con
                +L*Gc*eps*(shp.m_grad_trial*shp.m_grad_test)*ctan[0];
     //*******************************
     valx=0.0;valy=0.0;valz=0.0;
-    for(k=1;k<=3;k++){
-        valx+=0.5*(dHdstrain(1,k)+dHdstrain(k,1))*shp.m_grad_trial(k);
-        valy+=0.5*(dHdstrain(2,k)+dHdstrain(k,2))*shp.m_grad_trial(k);
-        valz+=0.5*(dHdstrain(3,k)+dHdstrain(k,3))*shp.m_grad_trial(k);
+    if(mate.BooleanMaterial("finite-strain")){
+        // for finite strain case
+        for(k=1;k<=3;k++){
+            valx+=dHdstrain(1,k)*shp.m_grad_trial(k);
+            valy+=dHdstrain(2,k)*shp.m_grad_trial(k);
+            valz+=dHdstrain(3,k)*shp.m_grad_trial(k);
+        }
+    }
+    else{
+        // for small strain case
+        for(k=1;k<=3;k++){
+            valx+=0.5*(dHdstrain(1,k)+dHdstrain(k,1))*shp.m_grad_trial(k);
+            valy+=0.5*(dHdstrain(2,k)+dHdstrain(k,2))*shp.m_grad_trial(k);
+            valz+=0.5*(dHdstrain(3,k)+dHdstrain(k,3))*shp.m_grad_trial(k);
+        }
     }
     // K_d,ux
     localK(1,2)=L*dg(soln.m_gpU[1])*valx*shp.m_test*ctan[0];
