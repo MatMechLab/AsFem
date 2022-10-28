@@ -92,7 +92,30 @@ public:
             MessagePrinter::printNormalTxt("  parameters are:");
             char buff[69];
             for(auto it=m_json_params.begin();it!=m_json_params.end();it++){
-                snprintf(buff,69,"    %16s = %14.5e",it.key().c_str(),static_cast<double>(it.value()));
+                if(it.value().is_boolean()){
+                    if(it.value()==true){
+                        snprintf(buff,69,"    %16s =    true",it.key().c_str());
+                    }
+                    else{
+                        snprintf(buff,69,"    %16s =    false",it.key().c_str());
+                    }
+                }
+                else if(it.value().is_string()){
+                    string substr=it.value();
+                    snprintf(buff,69,"    %16s = %16s",it.key().c_str(),substr.c_str());
+                }
+                else if(it.value().is_array()){
+                    if(it.value().size()<3){
+                        MessagePrinter::printErrorTxt("Invalid vector size in "+it.key()+" of your parameters in "+m_elmt_blockname+", please check your input file");
+                        MessagePrinter::exitAsFem();
+                    }
+                    snprintf(buff,69,"    %15s = %13.5e %13.5e %13.5e",it.key().c_str(),static_cast<double>(it.value().at(0)),
+                                                                                        static_cast<double>(it.value().at(1)),
+                                                                                        static_cast<double>(it.value().at(2)));
+                }
+                else{
+                    snprintf(buff,69,"    %16s = %14.5e",it.key().c_str(),static_cast<double>(it.value()));
+                }
                 str=buff;
                 MessagePrinter::printNormalTxt(str);
             }
