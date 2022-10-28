@@ -176,7 +176,7 @@ void NeoHookeanPFFractureMaterial::computeStressAndJacobian(const nlohmann::json
         K=lame+2.0*G/3.0;
     }
     else{
-        MessagePrinter::printErrorTxt("Invalid parameters, for neohookean fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
+        MessagePrinter::printErrorTxt("Invalid parameters, for neohookean pf fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
         MessagePrinter::exitAsFem();
     }
 
@@ -185,12 +185,15 @@ void NeoHookeanPFFractureMaterial::computeStressAndJacobian(const nlohmann::json
     m_I1=m_Ce.trace();
     m_I1bar=m_I1*m_Je23;
 
-    if(m_Je>1){
+    m_I.setToIdentity();// identity tensor
+    m_CeInv=m_Ce.inverse();// inverse of Ce
+
+    if(m_Je>1.0){
         // for tensile loading
         m_psipos=0.5*K*(0.5*(m_Je*m_Je-1.0)-std::log(m_Je))
                 +0.5*G*(m_I1bar-3.0);
         m_psineg=0.0;
-        m_I.setToIdentity();
+        
         m_PK2stress_pos=m_CeInv*0.5*K*(m_Je*m_Je-1.0)
                        -m_CeInv*(G/3.0)*m_Je23*m_I1
                        +m_I*G*m_Je23;
@@ -207,6 +210,7 @@ void NeoHookeanPFFractureMaterial::computeStressAndJacobian(const nlohmann::json
         m_jacobian_neg.setToZeros();
     }
     else{
+        // for compressive case
         m_psipos=0.5*G*(m_I1bar-3.0);
         m_psineg=0.5*K*(0.5*(m_Je*m_Je-1.0)-std::log(m_Je));
 
