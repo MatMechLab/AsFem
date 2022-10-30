@@ -115,4 +115,6 @@ void SaintVenantMaterial::computeStressAndJacobian(const nlohmann::json &params,
     m_I4Sym.setToIdentity4Symmetric();
     jacobian=m_I.otimes(m_I)*lame+m_I4Sym*2.0*G;
 
+    //TODO: add plane-stress modification
+
 }

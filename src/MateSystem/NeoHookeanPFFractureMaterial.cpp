@@ -239,4 +239,6 @@ void NeoHookeanPFFractureMaterial::computeStressAndJacobian(const nlohmann::json
     // for the jacobian in reference configuration
     jacobian=m_jacobian_pos*(g(m_d)+m_stabilizer)+m_jacobian_neg;
 
+    // TODO: add plane-stress modification !
+
 }

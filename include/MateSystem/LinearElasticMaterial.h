@@ -72,6 +72,8 @@ private:
                                           Rank4Tensor &jacobian) override;
 
 private:
+    double m_eps_zz;/**< strain of z-axis */
+    double m_sig_zz;/**< stress of z-axis */
     Rank2Tensor m_devStress,m_devStrain;/**< for the deviatoric part of stress and strain */
     Rank2Tensor m_gradU;/**< the displacement gradient */
     Rank2Tensor m_strain,m_stress;/**< local stress and strain tensor */

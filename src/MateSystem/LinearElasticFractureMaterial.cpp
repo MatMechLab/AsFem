@@ -77,14 +77,18 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_dim,m_GradU,m_mechstrain);
+    computeStrain(elmtinfo.m_dim,m_GradU,m_strain);
     
     m_d=elmtsoln.m_gpU[1];
 
     m_args(1)=m_d;
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
     
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_mechstrain,m_stress,m_jacobian);
+    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_strain,m_stress,m_jacobian);
+
+    if(elmtinfo.m_dim==2){
+        m_strain(3,3)=m_eps_zz;
+    }
 
     m_devstress=m_stress.dev();
 
@@ -95,7 +99,7 @@ void LinearElasticFractureMaterial::computeMaterialProperties(const nlohmann::js
     mate.ScalarMaterial("vonMises-stress")=sqrt(1.5*m_devstress.doubledot(m_devstress));
     mate.ScalarMaterial("hydrostatic-stress")=m_stress.trace()/3.0;
 
-    mate.Rank2Material("strain")=m_mechstrain;
+    mate.Rank2Material("strain")=m_strain;
     mate.Rank2Material("stress")=m_stress;
     mate.Rank2Material("dstressdD")=m_dstress_dD;
 
@@ -139,7 +143,6 @@ void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::jso
                                           const Rank2Tensor &strain,
                                           Rank2Tensor &stress,
                                           Rank4Tensor &jacobian){
-    if(dim){}
 
     m_stabilizer=JsonUtils::getValue(params,"stabilizer");
     double E=0.0,nu=0.0;
@@ -161,53 +164,174 @@ void LinearElasticFractureMaterial::computeStressAndJacobian(const nlohmann::jso
         K=JsonUtils::getValue(params,"K");
         G=JsonUtils::getValue(params,"G");
         lame=K-G*2.0/3.0;
+        E=9.0*K*G/(3.0*K+G);
+        nu=(3.0*K-2.0*G)/(2.0*(3.0*K+G));
     }
     else if(JsonUtils::hasValue(params,"Lame")&&
             JsonUtils::hasValue(params,"mu")){
         lame=JsonUtils::getValue(params,"Lame");
         G=JsonUtils::getValue(params,"mu");
         K=lame+2.0*G/3.0;
+        E=9.0*K*G/(3.0*K+G);
+        nu=0.5*(3.0*K-2.0*G)/(3.0*K+G);
     }
     else if(JsonUtils::hasValue(params,"Lame")&&
             JsonUtils::hasValue(params,"G")){
         lame=JsonUtils::getValue(params,"Lame");
         G=JsonUtils::getValue(params,"G");
         K=lame+2.0*G/3.0;
+        E=G*(3.0*lame+2.0*G)/(lame+G);
+        nu=0.5*lame/(lame+G);
     }
     else{
         MessagePrinter::printErrorTxt("Invalid parameters, for linear elastic fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
         MessagePrinter::exitAsFem();
     }
 
-    m_projpos=strain.getPositiveProjectionTensor();
-    m_i4sym.setToIdentity4Symmetric();
-    m_projneg=m_i4sym-m_projpos;
-
-    // strain splitting
-    m_strain_pos=m_projpos.doubledot(strain);
-    m_strain_neg=strain-m_strain_pos;
-
     double trEps,signpos,signneg;
 
-    trEps=strain.trace();
-    m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
-    m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
-    m_psi=g(m_d)*m_psipos+m_psineg;
+    m_sig_zz=0.0;m_eps_zz=0.0;
 
-    // for different stresses
-    m_I.setToIdentity();// identity tensor
-    m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
-    m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
-    stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
-    m_dstress_dD=m_stress_pos*dg(m_d);
+    if(dim!=2){
+        m_projpos=strain.getPositiveProjectionTensor();
+        m_i4sym.setToIdentity4Symmetric();
+        m_projneg=m_i4sym-m_projpos;
 
-    signpos=0.0;
-    if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+        // strain splitting
+        m_strain_pos=m_projpos.doubledot(strain);
+        m_strain_neg=strain-m_strain_pos;
 
-    signneg=0.0;
-    if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+        trEps=strain.trace();
+        m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+        m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+        m_psi=g(m_d)*m_psipos+m_psineg;
 
-    jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
-             +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+        // for different stresses
+        m_I.setToIdentity();// identity tensor
+        m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+        m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+        stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+        m_dstress_dD=m_stress_pos*dg(m_d);
 
+        signpos=0.0;
+        if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+        signneg=0.0;
+        if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+
+        jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                 +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+    }
+    else{
+        // for 2d case
+        if(JsonUtils::hasValue(params,"plane-strain")){
+            if(JsonUtils::getBoolean(params,"plane-strain")){
+                // for plane strain case
+                m_sig_zz=(E/(1.0+nu))*(nu/(1.0-2.0*nu))*(strain(1,1)+strain(2,2));
+                m_eps_zz=0.0;
+                
+                E=E/(1.0-nu*nu);
+                nu=nu/(1.0-nu);
+
+                lame=E*nu/((1+nu)*(1-2*nu));
+                G=0.5*E/(1.0+nu);
+
+                m_projpos=strain.getPositiveProjectionTensor();
+                m_i4sym.setToIdentity4Symmetric();
+                m_projneg=m_i4sym-m_projpos;
+
+                // strain splitting
+                m_strain_pos=m_projpos.doubledot(strain);
+                m_strain_neg=strain-m_strain_pos;
+
+                trEps=strain.trace();
+                m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+                m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+                m_psi=g(m_d)*m_psipos+m_psineg;
+
+                // for different stresses
+                m_I.setToIdentity();// identity tensor
+                m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+                m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+                stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+                stress(3,3)=m_sig_zz;
+                m_dstress_dD=m_stress_pos*dg(m_d);
+
+                signpos=0.0;
+                if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+                signneg=0.0;
+                if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+                
+                jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                        +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+            }
+            else{
+                // for plane-stress case
+                m_projpos=strain.getPositiveProjectionTensor();
+                m_i4sym.setToIdentity4Symmetric();
+                m_projneg=m_i4sym-m_projpos;
+
+                // strain splitting
+                m_strain_pos=m_projpos.doubledot(strain);
+                m_strain_neg=strain-m_strain_pos;
+
+                trEps=strain.trace();
+                m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+                m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+                m_psi=g(m_d)*m_psipos+m_psineg;
+
+                // for different stresses
+                m_I.setToIdentity();// identity tensor
+                m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+                m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+                stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+                m_dstress_dD=m_stress_pos*dg(m_d);
+
+                signpos=0.0;
+                if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+                signneg=0.0;
+                if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+                
+                jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                        +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+
+                m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+            }
+        }
+        else{
+            // default option is plane-stress
+            m_projpos=strain.getPositiveProjectionTensor();
+            m_i4sym.setToIdentity4Symmetric();
+            m_projneg=m_i4sym-m_projpos;
+
+            // strain splitting
+            m_strain_pos=m_projpos.doubledot(strain);
+            m_strain_neg=strain-m_strain_pos;
+
+            trEps=strain.trace();
+            m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+            m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+            m_psi=g(m_d)*m_psipos+m_psineg;
+
+            // for different stresses
+            m_I.setToIdentity();// identity tensor
+            m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+            m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+            stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+            m_dstress_dD=m_stress_pos*dg(m_d);
+
+            signpos=0.0;
+            if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+            signneg=0.0;
+            if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+                
+            jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                    +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+
+            m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+        }
+    }
 }

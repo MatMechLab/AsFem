@@ -123,13 +123,15 @@ private:
     double m_psi,m_psipos,m_psineg;/**< the different free energies */
     double m_stabilizer=1.0e-5;/**< stabilizer to get rid of rigid body motion in fully damaged region */
 
+    double m_sig_zz;/**< stress of z-axis */
+    double m_eps_zz;/**< strain of z-axis */
     VectorXd m_args;/**< the variables */
     VectorXd m_F;/**< the system free energy*/
     VectorXd m_dFdargs;/**< the first order derivatives of F */
     MatrixXd m_d2Fdargs2;/**< the second order derivatives of F */
 
     Rank2Tensor m_GradU;/** the displacement's gradient */
-    Rank2Tensor m_mechstrain;/**< the mechanical strain */
+    Rank2Tensor m_strain;/**< the mechanical strain */
     Rank2Tensor m_strain_pos,m_strain_neg;/**< the positive and negative part of the mechanical strain */
 
     Rank2Tensor m_stress,m_dstress_dD;/**< the stress and its derivatives */

@@ -20,7 +20,8 @@
 					"K":121.15,
 					"G":80.77,
 					"stabilizer":1.0e-5,
-					"finite-strain":false
+					"finite-strain":false,
+					"plane-strain":true
 				}
 			}
 		}

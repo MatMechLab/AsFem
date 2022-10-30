@@ -45,6 +45,10 @@ void LinearElasticMaterial::computeMaterialProperties(const nlohmann::json &inpu
     computeStrain(elmtinfo.m_dim,m_gradU,m_strain);
     computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_strain,m_stress,m_jacobian);
 
+    if(elmtinfo.m_dim==2){
+        m_strain(3,3)=m_eps_zz;
+    }
+
     m_devStress=m_stress.dev();
     m_devStrain=m_strain.dev();
 
@@ -73,7 +77,6 @@ void LinearElasticMaterial::computeStressAndJacobian(const nlohmann::json &param
                                           const Rank2Tensor &strain,
                                           Rank2Tensor &stress,
                                           Rank4Tensor &jacobian){
-    if(dim){}
     double E,nu;
     double K,G;
     double lame;
@@ -82,25 +85,58 @@ void LinearElasticMaterial::computeStressAndJacobian(const nlohmann::json &param
        JsonUtils::hasValue(params,"nu")){
         E=JsonUtils::getValue(params,"E");
         nu=JsonUtils::getValue(params,"nu");
-        jacobian.setFromEAndNu(E,nu);
     }
     else if(JsonUtils::hasValue(params,"K")&&
             JsonUtils::hasValue(params,"G")){
         K=JsonUtils::getValue(params,"K");
         G=JsonUtils::getValue(params,"G");
-        jacobian.setFromKAndG(K,G);
+        E=9.0*K*G/(3.0*K+G);
+        nu=(3.0*K-2.0*G)/(2.0*(3.0*K+G));
     }
     else if(JsonUtils::hasValue(params,"Lame")&&
             JsonUtils::hasValue(params,"G")){
         lame=JsonUtils::getValue(params,"Lame");
         G=JsonUtils::getValue(params,"G");
-        jacobian.setFromLameAndG(lame,G);
+        E=G*(3.0*lame+2.0*G)/(lame+G);
+        nu=0.5*lame/(lame+G);
     }
     else{
         MessagePrinter::printErrorTxt("Invalid parameters, for linear elastic material, you should give either E,nu or K,G or Lame,G. Please check your input file");
         MessagePrinter::exitAsFem();
     }
 
-    stress=jacobian.doubledot(strain);
+    m_sig_zz=0.0;m_eps_zz=0.0;// for plane-stress/plane-strain convertion
+    if(JsonUtils::hasValue(params,"plane-strain")){
+        if(dim!=2){
+            MessagePrinter::printErrorTxt("plane-strain option works only for 2d case, please check your input file");
+            MessagePrinter::exitAsFem();
+        }
+        else{
+            if(JsonUtils::getBoolean(params,"plane-strain")){
+                // for plane strain case
+                m_sig_zz=(E/(1.0+nu))*(nu/(1.0-2.0*nu))*(strain(1,1)+strain(2,2));
+                m_eps_zz=0.0;
+                E=E/(1.0-nu*nu);
+                nu=nu/(1.0-nu);
+                jacobian.setFromEAndNu(E,nu);
+                stress=jacobian.doubledot(strain);
+                stress(3,3)=m_sig_zz;
+            }
+            else{
+                // for plane stress case, here the strain dosent contain eps_zz
+                jacobian.setFromEAndNu(E,nu);
+                stress=jacobian.doubledot(strain);
+                m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+            }
+        }
+    }
+    else{
+        // default option is plane-stress
+        if(dim==2){
+            jacobian.setFromEAndNu(E,nu);
+            stress=jacobian.doubledot(strain);
+            m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+        }
+    }
 
 }

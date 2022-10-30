@@ -123,5 +123,6 @@ void NeoHookeanMaterial::computeStressAndJacobian(const nlohmann::json &params,
             -m_Cinv.odot(m_Cinv)*lame*(J*J-1)
             +m_Cinv.odot(m_Cinv)*2.0*G;
     
+    //TODO: add plane-stress modification
 
 }
