@@ -113,6 +113,29 @@ void Rank2Tensor::setRotationTensorFromEulerAngle(const double &theta1,const dou
     (*this)(3,3)= x2;
 }
 //*******************************************************************
+//*** for advanced math operators
+//*******************************************************************
+Rank2Tensor exp(const Rank2Tensor &a){
+    Rank2Tensor I;
+    I.setToIdentity();
+    return I
+          +a
+          +a*a*(1.0/(1.0*2.0))
+          +a*a*a*(1.0/(1.0*2.0*3.0))
+          +a*a*a*a*(1.0/(1.0*2.0*3.0*4.0))
+          +a*a*a*a*a*(1.0/(1.0*2.0*3.0*4.0*5.0))
+          +a*a*a*a*a*a*(1.0/(1.0*2.0*3.0*4.0*5.0*6.0));
+}
+Rank2Tensor dexp(const double &a,const Rank2Tensor &b){
+    // return dexp(ab)/db
+    return b
+          +b*b*a*(1.0/1.0)
+          +b*b*b*a*a*(1.0/(1.0*2.0))
+          +b*b*b*b*a*a*a*(1.0/(1.0*2.0*3.0))
+          +b*b*b*b*b*a*a*a*a*(1.0/(1.0*2.0*3.0*4.0))
+          +b*b*b*b+b*b*a*a*a*a*a*(1.0/(1.0*2.0*3.0*4.0*5.0));
+}
+//*******************************************************************
 //*** some higher order tensor calculations
 //*******************************************************************
 Rank4Tensor Rank2Tensor::otimes(const Rank2Tensor &a) const{

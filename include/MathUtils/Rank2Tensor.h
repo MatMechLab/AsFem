@@ -367,6 +367,34 @@ public:
      */
     friend Vector3d operator*(const Vector3d &lhs,const Rank2Tensor &a);
     //*******************************************************************
+    //*** for advanced math operators
+    //*******************************************************************
+    /**
+     * get the exponetial formula of current rank-2 tensor
+    */
+    Rank2Tensor exp()const{
+        Rank2Tensor I;
+        I.setToIdentity();
+        return I
+              +(*this)
+              +(*this)*(*this)*(1.0/(1.0*2.0))
+              +(*this)*(*this)*(*this)*(1.0/(1.0*2.0*3.0))
+              +(*this)*(*this)*(*this)*(*this)*(1.0/(1.0*2.0*3.0*4.0))
+              +(*this)*(*this)*(*this)*(*this)*(*this)*(1.0/(1.0*2.0*3.0*4.0*5.0))
+              +(*this)*(*this)*(*this)*(*this)*(*this)*(*this)*(1.0/(1.0*2.0*3.0*4.0*5.0*6.0));
+    }
+    /**
+     * get the exponential of input rank-2 tensor
+     * @param a the given rank-2 tensor
+    */
+    friend Rank2Tensor exp(const Rank2Tensor &a);
+    /**
+     * get the input rank-2 tensor's (a*Rank-2) exponential's first order derivative w.r.t. scalar a
+     * @param a the scalar factor
+     * @param b the rank-2 tensor
+    */
+    friend Rank2Tensor dexp(const double &a,const Rank2Tensor &b);
+    //*******************************************************************
     //*** for higher order tensor calculation
     //*******************************************************************
     /**
