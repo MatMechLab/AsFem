@@ -434,7 +434,7 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
 
             }// end-of-contain-dim
             MeshGenerator meshGenerator;
-            if(meshGenerator.generateMesh(dim,meshtype,t_mesh.getBulkMeshMeshDataRef())){
+            if(meshGenerator.createMesh(dim,meshtype,t_mesh.getBulkMeshMeshDataRef())){
                 MessagePrinter::printNormalTxt("mesh generator is done, your mesh is generated");
                 if(IsSaveMesh){
                     t_mesh.saveBulkMesh2VTU(m_inputfile_name);

@@ -58,7 +58,7 @@ public:
     /**
      * generate qpoints, before calling this, you should setup the meshype, dimension, qpoint order, and qpoin type
      */
-    void generateQPoints();
+    void createQPoints();
 
     //**********************************************
     //*** general settings

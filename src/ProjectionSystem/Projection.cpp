@@ -53,7 +53,7 @@ void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_
     if(m_rank==m_size-1) eEnd=t_mesh.getBulkMeshBulkElmtsNum();
 
     int nDim,e,qpoints_num;
-    double xi,eta,zeta,w,J,JxW,elVolume;
+    double xi,eta,zeta,w,J,JxW;
     nDim=t_mesh.getBulkMeshMaxDim();
 
     int subelmtid;
@@ -92,7 +92,6 @@ void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_
             t_fe.m_bulk_shp.calc(xi,eta,zeta,m_nodes0,true);
             J=t_fe.m_bulk_shp.getJacDet();
             JxW=J*w;
-            elVolume+=1.0*JxW;// for the 'volume' of current element
 
             m_local_elmtinfo.m_gpCoords0=0.0;
             for(int i=1;i<=m_bulkelmt_nodesnum;i++){

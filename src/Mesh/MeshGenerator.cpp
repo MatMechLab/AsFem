@@ -18,7 +18,7 @@ MeshGenerator::MeshGenerator(){
     m_isMeshGenerated=false;
 }
 
-bool MeshGenerator::generateMesh(const int &dim,const MeshType &meshtype,MeshData &meshdata){
+bool MeshGenerator::createMesh(const int &dim,const MeshType &meshtype,MeshData &meshdata){
     if(dim==1){
         m_isMeshGenerated=Lagrange1DMeshGenerator::generateMesh(meshtype,meshdata);
     }

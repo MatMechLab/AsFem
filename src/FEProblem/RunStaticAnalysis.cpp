@@ -40,7 +40,7 @@ void FEProblem::runStaticAnalysis(){
         m_timer.endTimer();
         m_timer.printElapseTime("Static analysis is done");
         m_projsystem.executeProjection(m_mesh,m_dofhandler,m_elmtsystem,m_matesystem,m_fe,m_solutionsystem,m_fectrlinfo);
-        m_output.saveResults(-1,m_mesh,m_dofhandler,m_solutionsystem,m_projsystem);
+        m_output.saveResults2File(-1,m_mesh,m_dofhandler,m_solutionsystem,m_projsystem);
         MessagePrinter::printDashLine(MessageColor::BLUE);
         MessagePrinter::printNormalTxt("Save result to "+m_output.getOutputFileName(),MessageColor::BLUE);
         MessagePrinter::printDashLine(MessageColor::BLUE);

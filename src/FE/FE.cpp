@@ -34,7 +34,7 @@ void FE::initdefault(const Mesh &t_mesh){
         m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
         m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
-        m_bulk_qpoints.generateQPoints();
+        m_bulk_qpoints.createQPoints();
     }
     else if(t_mesh.getBulkMeshMaxDim()==2){
         // for 2d mesh
@@ -52,13 +52,13 @@ void FE::initdefault(const Mesh &t_mesh){
         m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
         m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
-        m_bulk_qpoints.generateQPoints();
+        m_bulk_qpoints.createQPoints();
         //
         m_line_qpoints.setDim(m_mindim);
         m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
         m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
-        m_line_qpoints.generateQPoints();
+        m_line_qpoints.createQPoints();
     }
     else if(t_mesh.getBulkMeshMaxDim()==3){
         // for 3d mesh
@@ -79,19 +79,19 @@ void FE::initdefault(const Mesh &t_mesh){
         m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
         m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
-        m_bulk_qpoints.generateQPoints();
+        m_bulk_qpoints.createQPoints();
         //
         m_surface_qpoints.setDim(2);
         m_surface_qpoints.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
         m_surface_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         m_surface_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
-        m_surface_qpoints.generateQPoints();
+        m_surface_qpoints.createQPoints();
         //
         m_line_qpoints.setDim(1);
         m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
         m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
-        m_line_qpoints.generateQPoints();
+        m_line_qpoints.createQPoints();
     }
     else{
         MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_mesh.getBulkMeshMaxDim())+") for FE initializing");
@@ -106,26 +106,26 @@ void FE::init(const Mesh &t_mesh){
     if(t_mesh.getBulkMeshMaxDim()==1){
         // for 1d case
         m_bulk_shp.init();
-        m_bulk_qpoints.generateQPoints();
+        m_bulk_qpoints.createQPoints();
     }
     else if(t_mesh.getBulkMeshMaxDim()==2){
         // for 2d case
         m_bulk_shp.init();
-        m_bulk_qpoints.generateQPoints();
+        m_bulk_qpoints.createQPoints();
 
         m_line_shp.init();
-        m_line_qpoints.generateQPoints();
+        m_line_qpoints.createQPoints();
     }
     else if(t_mesh.getBulkMeshMaxDim()==3){
         // for 3d case
         m_bulk_shp.init();
-        m_bulk_qpoints.generateQPoints();
+        m_bulk_qpoints.createQPoints();
 
         m_surface_shp.init();
-        m_surface_qpoints.generateQPoints();
+        m_surface_qpoints.createQPoints();
 
         m_line_shp.init();
-        m_line_qpoints.generateQPoints();
+        m_line_qpoints.createQPoints();
     }
     else{
         MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_mesh.getBulkMeshMaxDim())+") for FE initializing");

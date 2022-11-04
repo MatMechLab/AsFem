@@ -39,9 +39,4 @@ protected:
                                      const Vector3d &nodecoords,
                                      VectorXd &localU) override;
 
-private:
-    PetscRandom m_rnd;
-    double minval,maxval,value;
-    bool isinit=false;
-
 };

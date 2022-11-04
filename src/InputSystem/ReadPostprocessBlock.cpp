@@ -19,12 +19,10 @@ bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
                                        const DofHandler &t_dofhandler,
                                        Postprocessor &t_postprocessor){
     // the json already contains "postprocess" block
-    int blocks=0;
     bool HasType=false;
     PostprocessorBlock ppsblock;
     for(auto it=t_json.begin();it!=t_json.end();it++){
         ppsblock.init();
-        blocks+=1;
 
         HasType=false;
         

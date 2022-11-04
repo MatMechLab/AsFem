@@ -53,11 +53,11 @@ public:
      * @param t_solution the solution class
      * @param t_projection the projection class
      */
-    void saveResults(const int &t_step,
-                     const Mesh &t_mesh,
-                     const DofHandler &t_dofHandler,
-                     SolutionSystem &t_solution,
-                     ProjectionSystem &t_projection);
+    void saveResults2File(const int &t_step,
+                          const Mesh &t_mesh,
+                          const DofHandler &t_dofHandler,
+                          SolutionSystem &t_solution,
+                          ProjectionSystem &t_projection);
     
     /**
      * save result info to pvd file, this is used by vtu file

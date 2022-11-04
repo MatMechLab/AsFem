@@ -46,7 +46,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
 
     int nDim,e,qpoints_num;
     int ndofs_per_elmt;
-    double xi,eta,zeta,w,J,JxW,elVolume;
+    double xi,eta,zeta,w,J,JxW;
     nDim=t_mesh.getBulkMeshMaxDim();
 
     int subelmtid;
@@ -83,7 +83,6 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
         //***********************************************************
         //*** now we do the gauss point integration(qpoints loop)
         //***********************************************************
-        elVolume=0.0;
         qpoints_num=t_fe.m_bulk_qpoints.getQPointsNum();
         for(int qpInd=1;qpInd<=qpoints_num;qpInd++){
             w =t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,0);
@@ -102,7 +101,6 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
             t_fe.m_bulk_shp.calc(xi,eta,zeta,m_nodes0,true);
             J=t_fe.m_bulk_shp.getJacDet();
             JxW=J*w;
-            elVolume+=1.0*JxW;// for the 'volume' of current element
 
             m_local_elmtinfo.m_gpCoords0=0.0;
             for(int i=1;i<=m_bulkelmt_nodesnum;i++){

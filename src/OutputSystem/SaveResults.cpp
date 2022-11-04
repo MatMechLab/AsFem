@@ -14,11 +14,11 @@
 
 #include "OutputSystem/OutputSystem.h"
 
-void OutputSystem::saveResults(const int &t_step,
-                               const Mesh &t_mesh,
-                               const DofHandler &t_dofHandler,
-                               SolutionSystem &t_solution,
-                               ProjectionSystem &t_projection){
+void OutputSystem::saveResults2File(const int &t_step,
+                                    const Mesh &t_mesh,
+                                    const DofHandler &t_dofHandler,
+                                    SolutionSystem &t_solution,
+                                    ProjectionSystem &t_projection){
     if(t_step<0){
         // negative for static result output
         m_outputfile_name=m_inputfile_name.substr(0,m_inputfile_name.size()-5);// remove '.json'

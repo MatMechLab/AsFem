@@ -38,7 +38,7 @@ public:
      * @param meshtype the type of generated mesh
      * @param meshData the mesh data structure
      */
-    bool generateMesh(const int &dim,const MeshType &meshtype,MeshData &meshdata);
+    bool createMesh(const int &dim,const MeshType &meshtype,MeshData &meshdata);
 
     /**
      * get the mesh generation status, true for success, false for failed case.

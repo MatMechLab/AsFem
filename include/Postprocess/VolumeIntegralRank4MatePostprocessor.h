@@ -42,7 +42,6 @@ protected:
                                               ProjectionSystem &t_projsystem) override;
 
 private:
-    int m_nodeid=0;/**< the global node id */
     int m_i=1;/**< the i index of the specific rank4 tensor */
     int m_j=1;/**< the j index of the specific rank4 tensor */
     int m_k=1;/**< the k index of the specific rank4 tensor */

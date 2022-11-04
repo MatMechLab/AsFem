@@ -47,7 +47,6 @@ void ShapeFun1D::calc1DShapeFun(const MeshType &t_meshtype,const double &xi,
             MessagePrinter::printErrorTxt("singular element in 1d case, error detected in ShapeFun1D");
             MessagePrinter::exitAsFem();
         }
-        double val;
         for(int i=1;i<=m_nodes;i++){
             // here we use the decomposition for each direction, then you will have the derivatives in 3D!
             val=t_ders[i-1](1);

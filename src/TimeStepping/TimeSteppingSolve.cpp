@@ -51,7 +51,7 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
     
     output.savePVDHead();
     output.savePVDEnd();
-    output.saveResults(0,mesh,dofhandler,solutionsystem,projection);
+    output.saveResults2File(0,mesh,dofhandler,solutionsystem,projection);
     output.savePVDResults(0.0);
     MessagePrinter::printDashLine(MessageColor::BLUE);
     MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);
@@ -90,7 +90,7 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
 
             if(fectrlinfo.CurrentStep%output.getIntervalNum()==0){
                 projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
-                output.saveResults(fectrlinfo.CurrentStep,mesh,dofhandler,solutionsystem,projection);
+                output.saveResults2File(fectrlinfo.CurrentStep,mesh,dofhandler,solutionsystem,projection);
                 output.savePVDResults(fectrlinfo.t);
                 MessagePrinter::printDashLine(MessageColor::BLUE);
                 MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);
@@ -138,7 +138,7 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
     }
     if(fectrlinfo.CurrentStep%output.getIntervalNum()!=0){
         projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
-        output.saveResults(fectrlinfo.CurrentStep,mesh,dofhandler,solutionsystem,projection);
+        output.saveResults2File(fectrlinfo.CurrentStep,mesh,dofhandler,solutionsystem,projection);
         output.savePVDResults(fectrlinfo.t);
         MessagePrinter::printDashLine(MessageColor::BLUE);
         MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);

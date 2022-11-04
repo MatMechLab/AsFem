@@ -31,7 +31,7 @@ QPoint::QPoint(const QPoint &a){
     m_coords=a.m_coords;
 }
 
-void QPoint::generateQPoints(){
+void QPoint::createQPoints(){
     switch (m_qptype){
         case QPointType::GAUSSLEGENDRE:{
             if(m_dim==1){

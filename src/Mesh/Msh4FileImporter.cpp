@@ -129,7 +129,6 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
     int numElements=0;
     int minElementTag=0;
     int maxElementTag=0;
-    int nElmts=0;
     int numElementsInBlock=0;
 
     mshMaxDim=getMaxMeshDim(filename);
@@ -349,7 +348,6 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
             numElements=0;
             minElementTag=0;
             maxElementTag=0;
-            nElmts=0;
             numElementsInBlock=0;
 
             meshdata.m_pointelmt_connectivity.clear();
@@ -429,7 +427,6 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
                     MshFileUtils::reorderNodesIndex(elmttype,tempconn);
 
                     ElmtConn[elmtid-1]=tempconn;
-                    nElmts+=1;
                     if(entityDim<meshdata.m_mindim) meshdata.m_mindim=entityDim;
 
                     if(entityDim==0 && entityDim<mshMaxDim){
