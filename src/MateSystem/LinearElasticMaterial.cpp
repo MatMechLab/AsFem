@@ -137,6 +137,10 @@ void LinearElasticMaterial::computeStressAndJacobian(const nlohmann::json &param
             stress=jacobian.doubledot(strain);
             m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
         }
+        else{
+            jacobian.setFromEAndNu(E,nu);
+            stress=jacobian.doubledot(strain);
+        }
     }
 
 }
