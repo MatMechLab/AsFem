@@ -8,42 +8,20 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.10.06
-//+++ Purpose: define the abstract class for dirichlet type boundary
-//+++          condition
+//+++ Date   : 2022.11.05
+//+++ Purpose: implement the rotated dirichlet boundary condition
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <map>
-#include <vector>
-
-#include "Utils/MessagePrinter.h"
-#include "Utils/JsonUtils.h"
-
-#include "MathUtils/Vector3d.h"
-#include "MathUtils/VectorXd.h"
-#include "MathUtils/Vector.h"
-#include "MathUtils/MatrixXd.h"
-#include "MathUtils/SparseMatrix.h"
-
-#include "ElmtSystem/LocalElmtData.h"
-#include "FESystem/FECalcType.h"
-
-#include "nlohmann/json.hpp"
-
-using std::string;
-using std::vector;
-using std::map;
+#include "BCSystem/DirichletBCBase.h"
 
 /**
- * This class defines the abstract class for dirichlet type boundary condition
+ * This class implement the rotated dirichelt boundary condition calculation
  */
-class DirichletBCBase{
+class RotatedDirichletBC:public DirichletBCBase{
 public:
+    RotatedDirichletBC();
     /**
      * execute the boundary condition value for different (dirichlet type) boundary conditions.
      * \f$u=u_{g}\f$ is the final output
@@ -64,8 +42,9 @@ public:
                                 const vector<int> &dofids,
                                 Vector &U,
                                 SparseMatrix &K,
-                                Vector &RHS)=0;
+                                Vector &RHS) override;
 
+private:
     /**
      * calculate the 'displacement' value of current dofs
      * @param t_bcvalue the boundary value defined in the input file
@@ -78,10 +57,12 @@ public:
     virtual void computeU(const double &t_bcvalue,const nlohmann::json &t_json,const vector<int> &dofids,
                           const LocalElmtInfo &t_elmtinfo,
                           const LocalElmtSolution &t_elmtsoln,
-                          VectorXd &localU)=0; 
-
-protected:
-    VectorXd m_localU;/**< local solution vector */
-
+                          VectorXd &localU) override; 
+private:
+    double m_theta0;/**< angle of current nodal point*/
+    double m_theta;/**< the rotation angle*/
+    const double PI=3.14159265359;/**< the PI value */
+    double m_rotation_speed;/**< the rotation speed */
+    double m_x0,m_y0,m_z0;/**< the coordinate of rotation center */
+    double m_radius;/**< radius of center to current position */
 };
-

@@ -25,6 +25,7 @@ enum class BCType{
     USER4DIRICHLETBC,
     USER5DIRICHLETBC,
     POISSON2DBENCHMARKBC,
+    ROTATEDDIRICHLETBC,
     //**************************
     NEUMANNBC,
     PRESSUREBC,

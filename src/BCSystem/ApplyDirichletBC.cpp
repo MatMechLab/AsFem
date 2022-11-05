@@ -79,6 +79,11 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
                                                 m_local_elmtinfo,m_local_elmtsoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
+                case BCType::ROTATEDDIRICHLETBC:
+                    RotatedDirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
                 case BCType::USER1DIRICHLETBC:
                     User1DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
                                                 m_local_elmtinfo,m_local_elmtsoln,globaldofids,

@@ -49,6 +49,9 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
             if(bcBlock.m_bcTypeName=="dirichlet"){
                 bcBlock.m_bcType=BCType::DIRICHLETBC;
             }
+            else if(bcBlock.m_bcTypeName=="rotateddirichlet"){
+                bcBlock.m_bcType=BCType::ROTATEDDIRICHLETBC;
+            }
             else if(bcBlock.m_bcTypeName=="nodaldirichlet"){
                 bcBlock.m_bcType=BCType::NODALDIRICHLETBC;
             }

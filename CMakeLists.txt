@@ -286,6 +286,9 @@ set(inc ${inc} include/BCSystem/DirichletBCBase.h)
 set(inc ${inc} include/BCSystem/DirichletBC.h)
 set(src ${src} src/BCSystem/DirichletBC.cpp)
 ###
+set(inc ${inc} include/BCSystem/RotatedDirichletBC.h)
+set(src ${src} src/BCSystem/RotatedDirichletBC.cpp)
+###
 set(inc ${inc} include/BCSystem/User1DirichletBC.h)
 set(src ${src} src/BCSystem/User1DirichletBC.cpp)
 ###

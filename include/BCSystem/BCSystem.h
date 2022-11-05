@@ -49,6 +49,7 @@
 #include "BCSystem/User4DirichletBC.h"
 #include "BCSystem/User5DirichletBC.h"
 #include "BCSystem/Poisson2DBenchmarkBC.h"
+#include "BCSystem/RotatedDirichletBC.h"
 
 #include "BCSystem/NeumannBC.h"
 #include "BCSystem/PressureBC.h"
@@ -65,6 +66,7 @@ class BCSystem:public DirichletBC,
                public User4DirichletBC,
                public User5DirichletBC,
                public Poisson2DBenchmarkBC,
+               public RotatedDirichletBC,
                // for integrated bc
                public NeumannBC,
                public PressureBC,

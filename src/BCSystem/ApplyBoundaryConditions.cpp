@@ -28,8 +28,10 @@ void BCSystem::applyBoundaryConditions(const FECalcType &t_calctype,
     double bcvalue;
     for(const auto &it:m_bclock_list){
         bcvalue=it.m_bcValue;
+        m_local_elmtinfo.m_t=t;
         if(it.m_isTimeDependent) bcvalue=t*it.m_bcValue;
         if(it.m_bcType==BCType::DIRICHLETBC||
+           it.m_bcType==BCType::ROTATEDDIRICHLETBC||
            it.m_bcType==BCType::CYCLICDIRICHLETBC||
            it.m_bcType==BCType::USER1DIRICHLETBC||
            it.m_bcType==BCType::USER2DIRICHLETBC||
@@ -81,8 +83,10 @@ void BCSystem::applyPresetBoundaryConditions(const FECalcType &t_calctype,
     double bcvalue;
     for(const auto &it:m_bclock_list){
         bcvalue=it.m_bcValue;
+        m_local_elmtinfo.m_t=t;
         if(it.m_isTimeDependent) bcvalue=t*it.m_bcValue;
         if(it.m_bcType==BCType::DIRICHLETBC||
+           it.m_bcType==BCType::ROTATEDDIRICHLETBC||
            it.m_bcType==BCType::CYCLICDIRICHLETBC||
            it.m_bcType==BCType::USER1DIRICHLETBC||
            it.m_bcType==BCType::USER2DIRICHLETBC||

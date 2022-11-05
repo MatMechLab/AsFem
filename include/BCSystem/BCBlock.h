@@ -94,12 +94,7 @@ public:
             MessagePrinter::printNormalTxt("  parameters are:");
             for(auto it=m_json_params.begin();it!=m_json_params.end();it++){
                 string parname=it.key();
-                if(!m_json_params.at(parname).is_array()){
-                    snprintf(buff,69,"    %15s = %13.5e",it.key().c_str(),static_cast<double>(it.value()));
-                    str=buff;
-                    MessagePrinter::printNormalTxt(str);
-                }
-                else{
+                if(m_json_params.at(parname).is_array()){
                     if(m_json_params.at(parname).size()<3){
                         MessagePrinter::printErrorTxt("Invalid vector size in "+it.key()+" of "+m_bcBlockName+", please check your input file");
                         MessagePrinter::exitAsFem();
@@ -108,8 +103,28 @@ public:
                                                                                         static_cast<double>(m_json_params.at(parname).at(1)),
                                                                                         static_cast<double>(m_json_params.at(parname).at(2)));
                     str=buff;
-                    MessagePrinter::printNormalTxt(str);
                 }
+                else if(m_json_params.at(parname).is_boolean()){
+                    if(m_json_params.at(parname)){
+                        snprintf(buff,69,"    %15s =   true",it.key().c_str());
+                    }
+                    else{
+                        snprintf(buff,69,"    %15s =   false",it.key().c_str());
+                    }
+                    str=buff;
+                }
+                else if(m_json_params.at(parname).is_number()||
+                        m_json_params.at(parname).is_number_float()||
+                        m_json_params.at(parname).is_number_integer()||
+                        m_json_params.at(parname).is_number_unsigned()){
+                    snprintf(buff,69,"    %15s = %13.5e",it.key().c_str(),static_cast<double>(it.value()));
+                    str=buff;
+                }
+                else{
+                    MessagePrinter::printErrorTxt("Unknown or unsupported options in parameters of "+m_bcBlockName+", please check your input file");
+                    MessagePrinter::exitAsFem();
+                }
+                MessagePrinter::printNormalTxt(str);
             }
         }
     }
