@@ -153,18 +153,18 @@ void QPoint::printQPointsDetailsInfo()const{
     else if(m_qptype==QPointType::USER5){
         qtypename="gauss-user5";
     }
-    snprintf(buff,68,"    dim=%2d,order=%2d,npg=%2d,type=%16s",getDim(),getOrder(),getQPointsNum(),qtypename.c_str());
+    snprintf(buff,68,"   dim=%2d,order=%2d,npg=%2d,type=%16s",getDim(),getOrder(),getQPointsNum(),qtypename.c_str());
     str=buff;
     MessagePrinter::printNormalTxt(str);
     for(int i=1;i<=getQPointsNum();i++){
         if(getDim()==1){
-            snprintf(buff,68,"    xi=%14.5e, w=%14.5e",getIthPointJthCoord(i,1),getIthPointJthCoord(i,0));
+            snprintf(buff,68,"   xi=%12.4e,w=%11.3e",getIthPointJthCoord(i,1),getIthPointJthCoord(i,0));
         }
         else if(getDim()==2){
-            snprintf(buff,68,"    xi=%14.5e,eta=%14.5e, w=%14.5e",getIthPointJthCoord(i,1),getIthPointJthCoord(i,2),getIthPointJthCoord(i,0));
+            snprintf(buff,68,"   xi=%12.4e,eta=%12.4e,w=%11.3e",getIthPointJthCoord(i,1),getIthPointJthCoord(i,2),getIthPointJthCoord(i,0));
         }
-        else if(getDim()==1){
-            snprintf(buff,68,"    xi=%14.5e,eta=%14.5e, zeta=%14.5e, w=%14.5e",getIthPointJthCoord(i,1),getIthPointJthCoord(i,2),getIthPointJthCoord(i,3),getIthPointJthCoord(i,0));
+        else if(getDim()==3){
+            snprintf(buff,68,"   xi=%12.4e,eta=%12.4e,zeta=%12.4e,w=%11.3e",getIthPointJthCoord(i,1),getIthPointJthCoord(i,2),getIthPointJthCoord(i,3),getIthPointJthCoord(i,0));
         }
         str=buff;
         MessagePrinter::printNormalTxt(str);
