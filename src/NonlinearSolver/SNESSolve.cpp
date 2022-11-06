@@ -149,9 +149,9 @@ bool SNESSolver::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
                        SolutionSystem &solutionsystem,
                        EquationSystem &equationsystem,
                        FEControlInfo &fectrlinfo){
-
     
-   
+    solutionsystem.m_u_copy.copyFrom(solutionsystem.m_u_current);
+    
     m_appctx=AppCtx{&mesh,&dofhandler,
                    &bcsystem,
                    &elmtsystem,&matesystem,
@@ -165,7 +165,6 @@ bool SNESSolver::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
                 0,
                 fectrlinfo.IsDepDebug};
     
-    m_appctx._solutionSystem->m_u_copy.copyFrom(m_appctx._solutionSystem->m_u_current);
     m_appctx._bcSystem->applyPresetBoundaryConditions(FECalcType::UPDATEU,
                                              m_appctx._fectrlinfo->t+m_appctx._fectrlinfo->dt,
                                              *m_appctx._mesh,
@@ -177,7 +176,7 @@ bool SNESSolver::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
                                              m_appctx._solutionSystem->m_v,
                                              m_appctx._equationSystem->m_amatrix,
                                              m_appctx._equationSystem->m_rhs);
-                                     
+                               
     SNESSetFunction(m_snes,m_appctx._equationSystem->m_rhs.getVectorCopy(),computeResidual,&m_appctx);
     SNESSetJacobian(m_snes,m_appctx._equationSystem->m_amatrix.getCopy(),m_appctx._equationSystem->m_amatrix.getCopy(),computeJacobian,&m_appctx);
         

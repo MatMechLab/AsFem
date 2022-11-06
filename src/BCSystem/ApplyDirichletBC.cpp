@@ -55,7 +55,7 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
 
         for(e=eStart;e<eEnd;e++){
             m_local_elmtinfo.m_nodesnum=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
-
+            
             for(i=1;i<=m_local_elmtinfo.m_nodesnum;i++){
                 j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                 m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
