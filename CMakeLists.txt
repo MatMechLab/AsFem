@@ -783,5 +783,7 @@ target_link_libraries(asfem PUBLIC ${PETSC_LIB})
 ### for test
 ##################################################
 enable_testing (test)
-add_test (NAME asfem COMMAND /scripts/AutoTest.py "-n" "8")
-
+add_test (NAME step2-2d COMMAND asfem "-i" "${CMAKE_CURRENT_SOURCE_DIR}/examples/tutorial/step2-2d.json")
+add_test (NAME step2-3d COMMAND asfem "-i" "${CMAKE_CURRENT_SOURCE_DIR}/examples/tutorial/step2-2d.json")
+add_test (NAME step3-2d COMMAND asfem "-i" "${CMAKE_CURRENT_SOURCE_DIR}/examples/tutorial/step3-2d.json")
+add_test (NAME step3-3d COMMAND asfem "-i" "${CMAKE_CURRENT_SOURCE_DIR}/examples/tutorial/step3-3d.json")
