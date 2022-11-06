@@ -113,6 +113,11 @@ public:
                     }
                     str=buff;
                 }
+                else if(m_json_params.at(parname).is_string()){
+                    string txt=it.value();
+                    snprintf(buff,69,"    %15s =   %-20s",it.key().c_str(),txt.c_str());
+                    str=buff;
+                }
                 else if(m_json_params.at(parname).is_number()||
                         m_json_params.at(parname).is_number_float()||
                         m_json_params.at(parname).is_number_integer()||

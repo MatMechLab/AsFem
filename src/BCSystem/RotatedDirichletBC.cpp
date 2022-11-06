@@ -58,7 +58,7 @@ void RotatedDirichletBC::computeU(const double &bcvalue,const nlohmann::json &pa
     }
     m_rotation_speed=JsonUtils::getValue(parameters,"rotation-speed");
     m_theta=elmtinfo.m_t*m_rotation_speed*PI/180.0;
-    if(JsonUtils::getBoolean(parameters,"xy-plane")){
+    if(JsonUtils::getString(parameters,"plane")=="xy"){
         m_x0=JsonUtils::getValue(parameters,"x0");
         m_y0=JsonUtils::getValue(parameters,"y0");
         m_radius=sqrt((m_x0-elmtinfo.m_gpCoords0(1))*(m_x0-elmtinfo.m_gpCoords0(1))
@@ -110,7 +110,7 @@ void RotatedDirichletBC::computeU(const double &bcvalue,const nlohmann::json &pa
             localU(3)=0.0;
         }
     }
-    else if(JsonUtils::getBoolean(parameters,"yz-plane")){
+    else if(JsonUtils::getString(parameters,"plane")=="yz"){
         m_y0=JsonUtils::getValue(parameters,"y0");
         m_z0=JsonUtils::getValue(parameters,"z0");
         m_radius=sqrt((m_y0-elmtinfo.m_gpCoords0(2))*(m_y0-elmtinfo.m_gpCoords0(2))
@@ -161,7 +161,7 @@ void RotatedDirichletBC::computeU(const double &bcvalue,const nlohmann::json &pa
             localU(3)=m_z0+m_radius*std::sin(m_theta0+m_theta)-elmtinfo.m_gpCoords0(3);
         }
     }
-    else if(JsonUtils::getBoolean(parameters,"zx-plane")){
+    else if(JsonUtils::getString(parameters,"plane")=="zx"){
         m_z0=JsonUtils::getValue(parameters,"z0");
         m_x0=JsonUtils::getValue(parameters,"x0");
         m_radius=sqrt((m_z0-elmtinfo.m_gpCoords0(3))*(m_z0-elmtinfo.m_gpCoords0(3))

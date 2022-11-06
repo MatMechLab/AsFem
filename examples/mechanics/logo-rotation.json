@@ -1,15 +1,8 @@
 {
 	"mesh":{
-		"type":"asfem",
-		"dim":3,
-		"nx":10,
-		"ny":10,
-		"nz":100,
-		"xmax":1.0,
-		"ymax":1.0,
-		"zmax":5.0,
-		"meshtype":"hex8",
-		"savemesh":false
+		"type":"msh4",
+		"file":"logo.msh",
+		"savemesh":true
 	},
 	"dofs":{
 		"names":["ux","uy","uz"]
@@ -18,26 +11,38 @@
 		"elmt1":{
 			"type":"mechanics",
 			"dofs":["ux","uy","uz"],
+			"domain":["matrix"],
 			"material":{
-				"type":"neohookean",
+				"type":"linearelastic",
+				"parameters":{
+					"E":1.0e2,
+					"nu":0.2
+				}
+			}
+		},
+		"elmt2":{
+			"type":"mechanics",
+			"dofs":["ux","uy","uz"],
+			"domain":["inclusion"],
+			"material":{
+				"type":"linearelastic",
 				"parameters":{
 					"E":1.0e3,
-					"nu":0.3
+					"nu":0.35
 				}
 			}
 		}
 	},
 	"projection":{
 		"type":"default",
-		"scalarmate":["vonMises-stress","vonMises-strain"],
-		"rank2mate":["stress"]
+		"scalarmate":["vonMises-stress"]
 	},
 	"nlsolver":{
 		"type":"newton",
 		"solver":"gmres",
 		"maxiters":50,
-		"abs-tolerance":2.0e-7,
-		"rel-tolerance":5.0e-12,
+		"abs-tolerance":5.0e-7,
+		"rel-tolerance":5.0e-10,
 		"s-tolerance":0.0,
 		"preconditioner":"lu"
 	},
@@ -46,21 +51,21 @@
 		"interval":1
 	},
 	"bcs":{
-		"fixback":{
+		"fix":{
 			"type":"dirichlet",
 			"dofs":["ux","uy","uz"],
 			"bcvalue":0.0,
-			"side":["back"]
+			"side":["left"]
 		},
 		"load":{
 			"type":"rotateddirichlet",
 			"dofs":["ux","uy","uz"],
 			"bcvalue":0.05,
-			"side":["front"],
+			"side":["right"],
 			"parameters":{
-				"plane":"xy",
-				"x0":0.5,
-				"y0":0.5,
+				"plane":"yz",
+				"y0":32.2,
+				"z0":2.0,
 				"rotation-speed":1.0e2
 			}
 		}
@@ -73,11 +78,11 @@
 	},
 	"timestepping":{
 		"type":"be",
-		"dt0":1.0e-5,
-		"dtmax":2.0e-3,
+		"dt0":1.0e-6,
+		"dtmax":1.0e-1,
 		"dtmin":1.0e-12,
 		"optimize-iters":3,
-		"end-time":3.0e0,
+		"end-time":1.0,
 		"growth-factor":1.1,
 		"cutback-factor":0.85,
 		"adaptive":true
