@@ -214,8 +214,14 @@ public:
             MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
             MessagePrinter::exitAsFem();
         }
+        bool AllDofsAreZero;AllDofsAreZero=true;
         for(int j=0;j<static_cast<int>(m_elmt_dofids[i-1].size());j++){
             elmtdofs[j]=m_elmt_dofids[i-1][j];
+            if(elmtdofs[j]>0) AllDofsAreZero=false;
+        }
+        if(AllDofsAreZero){
+            MessagePrinter::printErrorTxt("element-"+to_string(i)+"'s dofs are all zeros, please check your code");
+            MessagePrinter::exitAsFem();
         }
     }
     /**
@@ -228,8 +234,14 @@ public:
             MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
             MessagePrinter::exitAsFem();
         }
+        bool AllDofsAreZero;AllDofsAreZero=true;
         for(int j=0;j<static_cast<int>(m_elmt_dofids[i-1].size());j++){
             elmtdofs[j]=m_elmt_dofids[i-1][j]-1;
+            if(elmtdofs[j]>0) AllDofsAreZero=false;
+        }
+        if(AllDofsAreZero){
+            MessagePrinter::printErrorTxt("element-"+to_string(i)+"'s dofs are all zeros, please check your code");
+            MessagePrinter::exitAsFem();
         }
     }
     /**

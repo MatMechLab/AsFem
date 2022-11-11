@@ -25,6 +25,7 @@ void BulkDofHandler::createBulkDofsMap(const Mesh &t_mesh,const ElmtSystem &t_el
     m_nodal_dofids.resize(m_nodes,vector<int>(m_maxdofs_pernode,0));
     m_elmt_dofids.resize(m_bulkelmts,vector<int>(m_maxdofs_perelmt,0));
 
+
     m_active_dofs=0;
     int dofid,elmtid,nodeid;
     for(const auto &block:t_elmtSystem.getBulkElmtBlockList()){
@@ -45,6 +46,21 @@ void BulkDofHandler::createBulkDofsMap(const Mesh &t_mesh,const ElmtSystem &t_el
                     }
                 }
             }
+        }
+    }
+
+    // check the dofs status for each node
+    bool HasDofID=false;
+    for(int i=0;i<m_nodes;i++){
+        HasDofID=false;
+        for(int j=0;j<m_maxdofs_pernode;j++){
+            if(m_nodal_dofids[i][j]){
+                HasDofID=true;break;
+            }
+        }
+        if(!HasDofID){
+            MessagePrinter::printErrorTxt("Node-"+to_string(i+1)+" hasen\'t been assigned by the dof, please check your code");
+            MessagePrinter::exitAsFem();
         }
     }
 

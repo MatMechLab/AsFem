@@ -155,7 +155,7 @@ public:
             if(m_meshdata.m_phygroup_phynamevec[i]==name && 
                m_meshdata.m_phygroup_dimvec[i]==m_meshdata.m_maxdim){
                 return m_meshdata.m_phygroup_elmtnumvec[i];
-               }
+            }
         }
         MessagePrinter::printErrorTxt("can\'t find elements number for phyname="+name+" in your Mesh class");
         MessagePrinter::exitAsFem();

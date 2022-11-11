@@ -1,6 +1,6 @@
 {
 	"mesh":{
-		"type":"msh2",
+		"type":"msh4",
 		"file":"logo.msh",
 		"savemesh":true
 	},

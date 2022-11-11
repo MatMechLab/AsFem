@@ -76,8 +76,12 @@ int Msh4FileImporter::getPhysicalIDViaEntityTag(const int &entityDim,const int &
     else if(entityDim==2){
         return m_SurfaceEntityPhyIDs[entityTag-1];
     }
-    else{
+    else if(entityDim==3){
         return m_VolumesEntityPhyIDs[entityTag-1];
+    }
+    else{
+        MessagePrinter::printErrorTxt("entityDim="+to_string(entityDim)+" is invalid for msh4 file, please check your mesh");
+        MessagePrinter::exitAsFem();
     }
     return -1;
 }
@@ -214,10 +218,10 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
             numVolumes=static_cast<int>(numbers[4-1]);
 
             // factor=20 to avoid the unordered entitie index(especially the nodal entities)
-            m_PointsEntityPhyIDs.resize(numPoints*20,0);
-            m_CurvesEntityPhyIDS.resize(numCurves*20,0);
-            m_SurfaceEntityPhyIDs.resize(numSurfaces*20,0);
-            m_VolumesEntityPhyIDs.resize(numVolumes*20,0);
+            m_PointsEntityPhyIDs.resize(numPoints*100,0);
+            m_CurvesEntityPhyIDS.resize(numCurves*100,0);
+            m_SurfaceEntityPhyIDs.resize(numSurfaces*100,0);
+            m_VolumesEntityPhyIDs.resize(numVolumes*100,0);
 
             int i,j;
             int nodeid,curveid,surfaceid,volumeid;
@@ -500,8 +504,8 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
     }
     NodeCoords.clear();
 
-    int nodeid=0,j;
-    count=0;
+    int nodeid=0,j,maxnodeid;
+    count=0;maxnodeid=-1;
     for(int e=0;e<maxElementTag;e++){
         if(ElmtIDFlag[e]>0){
             count+=1;
@@ -511,6 +515,7 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
                 if(NodeIDFlag[j-1]){
                     nodeid=NodeIDFlag[j-1];
                     ElmtConn[e][i-1]=nodeid;
+                    if(nodeid>maxnodeid) maxnodeid=nodeid;
                 }
                 else{
                     MessagePrinter::printErrorTxt("Invalid node id in "+to_string(e+1)+"-th element "+to_string(i)+"-th node, please check your msh4 file");
@@ -520,6 +525,15 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
             }
         }
     }
+    if(maxnodeid<numNodes){
+        meshdata.m_nodes=maxnodeid;
+    }
+    else if(maxnodeid>numNodes){
+        MessagePrinter::printErrorTxt("The maximum node id used by your msh4 element is larger than your total nodes number,"
+                                      " please check your msh4 file");
+        MessagePrinter::exitAsFem();
+    }
+    
     vector<int> ElmtDimVecCopy,ElmtPhyIDVecCopy;
     vector<vector<int>> ElmtConnCopy;
     ElmtDimVecCopy.resize(numElements,0);
@@ -536,7 +550,7 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
         }
     }
     ElmtDimVec=ElmtDimVecCopy;
-    ElmtPhyIDVecCopy=ElmtPhyIDVec;
+    ElmtPhyIDVec=ElmtPhyIDVecCopy;
     ElmtConn=ElmtConnCopy;
 
     ElmtDimVecCopy.clear();
