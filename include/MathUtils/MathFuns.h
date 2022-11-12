@@ -40,4 +40,9 @@ public:
     */
     static double bracketNeg(const double &x);
 
+    /**
+     * The sign function
+    */
+    static double sign(const double &x);
+
 };

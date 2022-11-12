@@ -374,6 +374,9 @@ set(src ${src} src/ElmtSystem/MechanicsElement.cpp)
 set(inc ${inc} include/ElmtSystem/CahnHilliardElement.h)
 set(src ${src} src/ElmtSystem/CahnHilliardElement.cpp)
 ###
+set(inc ${inc} include/ElmtSystem/KobayashiElement.h)
+set(src ${src} src/ElmtSystem/KobayashiElement.cpp)
+###
 set(inc ${inc} include/ElmtSystem/StressDiffusionElement.h)
 set(src ${src} src/ElmtSystem/StressDiffusionElement.cpp)
 ###
@@ -442,6 +445,9 @@ set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 ###
 set(inc ${inc} include/MateSystem/BinaryMixtureMaterial.h)
 set(src ${src} src/MateSystem/BinaryMixtureMaterial.cpp)
+### kobayasi dendrite material
+set(inc ${inc} include/MateSystem/KobayashiDendriteMaterial.h)
+set(src ${src} src/MateSystem/KobayashiDendriteMaterial.cpp)
 ### for coupled materials
 set(inc ${inc} include/MateSystem/SmallStrainDiffusionMaterial.h)
 set(src ${src} src/MateSystem/SmallStrainDiffusionMaterial.cpp)

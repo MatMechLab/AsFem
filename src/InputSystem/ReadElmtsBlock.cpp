@@ -62,8 +62,8 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_elmt_typename=="wave"){
                 elmtBlock.m_elmttype=ElmtType::WAVEELMT;
             }
-            else if(elmtBlock.m_elmt_typename=="dendrite"){
-                elmtBlock.m_elmttype=ElmtType::DENDRITEELMT;
+            else if(elmtBlock.m_elmt_typename=="kobayashi"){
+                elmtBlock.m_elmttype=ElmtType::KOBAYASHIELMT;
             }
             // for coupled cases
             else if(elmtBlock.m_elmt_typename=="stresscahnhilliard"){
@@ -261,6 +261,10 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             }
             else if(elmtBlock.m_mate_typename=="binarymixture"){
                 elmtBlock.m_matetype=MateType::BINARYMIXMATE;
+            }
+            // for kobayashi dendrite material
+            else if(elmtBlock.m_mate_typename=="kobayashimate"){
+                elmtBlock.m_matetype=MateType::KOBAYASHIMATE;
             }
             // for wave material
             else if(elmtBlock.m_mate_typename=="wave"){

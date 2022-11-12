@@ -39,6 +39,7 @@ enum class MateType{
     // for free energy material
     DOUBLEWELLMATE,
     BINARYMIXMATE,
+    KOBAYASHIMATE,
     // for wave material
     WAVEMATE,
     // For coupled material

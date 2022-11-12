@@ -34,6 +34,7 @@
 
 #include "MateSystem/DoubleWellPotentialMaterial.h"
 #include "MateSystem/BinaryMixtureMaterial.h"
+#include "MateSystem/KobayashiDendriteMaterial.h"
 
 #include "MateSystem/LinearElasticMaterial.h"
 #include "MateSystem/SaintVenantMaterial.h"
@@ -59,6 +60,7 @@ class BulkMateSystem:public ConstPoissonMaterial,
                      // for free energy materials
                      public DoubleWellPotentialMaterial,
                      public BinaryMixtureMaterial,
+                     public KobayashiDendriteMaterial,
                      // for mechanics materials
                      public LinearElasticMaterial,
                      public SaintVenantMaterial,

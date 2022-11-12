@@ -8,42 +8,32 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.04.04
-//+++ Purpose: Define the base material abstract class, all the
-//+++          materials should inherit this class!
+//+++ Date   : 2022.11.12
+//+++ Purpose: Calculate the free energy and its derivatives based
+//+++          Kobayashi's dendrite model
+//+++ Ref    : Modeling and numerical simulations of dendritic crystal growth
+//+++ DOI    : https://doi.org/10.1016/0167-2789(93)90120-P
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <vector>
-#include <map>
-
-// For AsFem's own header files
-#include "MateSystem/MaterialsContainer.h"
-#include "ElmtSystem/LocalElmtData.h"
-
-#include "MathUtils/Vector3d.h"
-#include "MathUtils/VectorXd.h"
-#include "MathUtils/MatrixXd.h"
-#include "MathUtils/MathFuns.h"
-
-#include "nlohmann/json.hpp"
-#include "Utils/JsonUtils.h"
-#include "Utils/MessagePrinter.h"
-
-using std::vector;
-using std::string;
-using std::map;
+#include "MateSystem/BulkMaterialBase.h"
+#include "MateSystem/FreeEnergyMaterialBase.h"
 
 /**
- * This abstract bulk material base class, which defines the common functions for 
- * material property calculation
+ * This class calculate the material properties for kobayashi's model
  */
-class BulkMaterialBase{
+class KobayashiDendriteMaterial:public BulkMaterialBase,
+                                public FreeEnergyMaterialBase{
+public:
+    /**
+     * Constructor
+    */
+    KobayashiDendriteMaterial();
+    /**
+     * Deconstructor
+    */
+    ~KobayashiDendriteMaterial();
 protected:
     /**
      * Initial the preset material properties, if you don't need the history information of some materials, then you can avoid calling this function
@@ -55,7 +45,7 @@ protected:
     virtual void initMaterialProperties(const nlohmann::json &t_inputparams,
                                         const LocalElmtInfo &t_elmtinfo,
                                         const LocalElmtSolution &t_elmtsoln,
-                                        MaterialsContainer &t_mate)=0;
+                                        MaterialsContainer &t_mate) override;
 
     /**
      * Compute the material property accroding to your model
@@ -69,7 +59,28 @@ protected:
                                            const LocalElmtInfo &t_elmtinfo,
                                            const LocalElmtSolution &t_elmtsoln,
                                            const MaterialsContainer &t_mateold,
-                                           MaterialsContainer &t_mate)=0;
+                                           MaterialsContainer &t_mate) override;
+
+private:
+    /**
+     * Calculate the free energy and its first/second order (partial) derivatives.
+     * @param parameters the json parameters read from input file
+     * @param args the variables for the free energy expression, it could be concentration or order parameters
+     * @param F the system free energy
+     * @param dFdargs the first order derivatives of F with respect to its own args
+     * @param d2Fdargs2 the second order (partial) derivatives of F with respect to different args, off-diagnoal part for partial derivatives
+    */
+    virtual void computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
+                                                 const VectorXd &args,
+                                                 VectorXd       &F,
+                                                 VectorXd       &dFdargs,
+                                                 MatrixXd       &d2Fdargs2) override;
+
+private:
+    VectorXd m_args;/**< the variables */
+    VectorXd m_F;/**< the system free energy*/
+    VectorXd m_dFdargs;/**< the first order derivatives of F */
+    MatrixXd m_d2Fdargs2;/**< the second order derivatives of F */
 
 
 };

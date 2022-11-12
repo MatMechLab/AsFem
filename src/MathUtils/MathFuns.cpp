@@ -23,3 +23,6 @@ double MathFuns::bracketNeg(const double &x){
     return 0.5*(x-abs(x));
 }
 //***************************************
+double MathFuns::sign(const double &x){
+    return x >= 0.0 ? 1.0 : -1.0;
+}

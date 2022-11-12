@@ -50,6 +50,9 @@ void BulkMateSystem::runBulkMateLibs(const MateType &t_matetype,const nlohmann::
     case MateType::BINARYMIXMATE:
         BinaryMixtureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
         break;
+    case MateType::KOBAYASHIMATE:
+        KobayashiDendriteMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        break;
     //******************************************
     //*** for mechanics materials
     //******************************************

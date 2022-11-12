@@ -50,6 +50,9 @@ void BulkMateSystem::initBulkMateLibs(const MateType &t_matetype,const nlohmann:
     case MateType::BINARYMIXMATE:
         BinaryMixtureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;
+    case MateType::KOBAYASHIMATE:
+        KobayashiDendriteMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
     //******************************************
     //*** for mechanics materials
     //******************************************

@@ -41,6 +41,9 @@ void BulkElmtSystem::runBulkElmtLibs(const FECalcType &t_calctype,const double (
     case ElmtType::CAHNHILLIARDELMT:
         CahnHilliardElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
         break;
+    case ElmtType::KOBAYASHIELMT:
+        KobayashiElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
     case ElmtType::STRESSDIFFUSIONELMT:
         StressDiffusionElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
         break;
