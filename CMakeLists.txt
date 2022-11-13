@@ -441,6 +441,9 @@ set(src ${src} src/MateSystem/SaintVenantMaterial.cpp)
 ### for saint venant hyperelastic material
 set(inc ${inc} include/MateSystem/NeoHookeanMaterial.h)
 set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
+### for elastoplastic material
+set(inc ${inc} include/MateSystem/SmallStrainJ2PlasticityMaterial.h)
+set(src ${src} src/MateSystem/SmallStrainJ2PlasticityMaterial.cpp)
 ### for free energy material
 set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 ###

@@ -39,6 +39,7 @@
 #include "MateSystem/LinearElasticMaterial.h"
 #include "MateSystem/SaintVenantMaterial.h"
 #include "MateSystem/NeoHookeanMaterial.h"
+#include "MateSystem/SmallStrainJ2PlasticityMaterial.h"
 
 #include "MateSystem/SmallStrainDiffusionMaterial.h"
 #include "MateSystem/LinearElasticFractureMaterial.h"
@@ -65,6 +66,7 @@ class BulkMateSystem:public ConstPoissonMaterial,
                      public LinearElasticMaterial,
                      public SaintVenantMaterial,
                      public NeoHookeanMaterial,
+                     public SmallStrainJ2PlasticityMaterial,
                      // for coupled materials
                      public SmallStrainDiffusionMaterial,
                      public LinearElasticFractureMaterial,

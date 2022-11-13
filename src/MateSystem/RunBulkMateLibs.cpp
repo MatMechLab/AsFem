@@ -65,6 +65,9 @@ void BulkMateSystem::runBulkMateLibs(const MateType &t_matetype,const nlohmann::
     case MateType::NEOHOOKEANMATE:
         NeoHookeanMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
         break;
+    case MateType::SMALLSTRAINJ2PLASTICITYMATE:
+        SmallStrainJ2PlasticityMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        break;
     //******************************************
     //*** for coupled materials
     //******************************************

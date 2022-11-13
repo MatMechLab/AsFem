@@ -31,25 +31,21 @@ protected:
     /**
      * Evaluate the value of the yield function
      * @param t_parameters the input json parameters read from input file
-     * @param t_args_vars the input variables, i.e., effective plastic strain, etc.
-     * @param t_args_stress the input stress, i.e. cauchy stress, Mandel stress, etc.
-     * @param t_args_strain the input strain, i.e. plastic strain, etc.
+     * @param t_args the input variables, i.e., effective plastic strain, etc.
+     * @param t_mate the input material, i.e. cauchy stress, Mandel stress, plastic strain, etc.
     */
     virtual double computeYieldFunction(const nlohmann::json &t_parameters,
-                                        const vector<double> &t_args_vars,
-                                        const vector<Rank2Tensor> &t_args_stress,
-                                        const vector<Rank2Tensor> &t_args_strain)=0;
+                                        const VectorXd &t_args,
+                                        const MaterialsContainer &t_mate)=0;
     /**
      * Evaluate the 1st order derivative value of the yield function
      * @param t_parameters the input json parameters read from input file
-     * @param t_args_vars the input variables, i.e., effective plastic strain, etc.
-     * @param t_args_stress the input stress, i.e. cauchy stress, Mandel stress, etc.
-     * @param t_args_strain the input strain, i.e. plastic strain, etc.
+     * @param t_args the input variables, i.e., effective plastic strain, etc.
+     * @param t_mate the input material, i.e. cauchy stress, Mandel stress, plastic strain, etc.
     */
     virtual double computeYieldFunctionDeriv(const nlohmann::json &t_parameters,
-                                             const vector<double> &t_args_vars,
-                                             const vector<Rank2Tensor> &t_args_stress,
-                                             const vector<Rank2Tensor> &t_args_strain)=0;
+                                             const VectorXd &t_args,
+                                             const MaterialsContainer &t_mate)=0;
     
     /**
      * Evalute the admissible stresses status during the elasto-plastic deformation, 
@@ -60,17 +56,11 @@ protected:
      * @param t_mateold the old material constain from previous step
      * @param t_total_strain the total strain or total deformation gradient tensor
      * @param t_mate the current material container
-     * @param t_args_stress the output stresses, i.e. cauchy stress, Mandel stress, etc.
-     * @param t_args_strain the output strain, i.e. plastic strain, cauchy strain, etc.
-     * @param t_args_jacobian the output jacobian and other rank-4 tensor
     */
     virtual void computeAdmissibleStressState(const nlohmann::json &t_parameters,
                                               const LocalElmtInfo &t_elmtinfo,
                                               const LocalElmtSolution &t_elmtsoln,
                                               const MaterialsContainer &t_mateold,
                                               const Rank2Tensor &t_total_strain,
-                                              MaterialsContainer &t_mate,
-                                              vector<Rank2Tensor> &t_args_stress,
-                                              vector<Rank2Tensor> &t_args_strain,
-                                              vector<Rank4Tensor> &t_args_jacobian)=0;
+                                              MaterialsContainer &t_mate)=0;
 };
