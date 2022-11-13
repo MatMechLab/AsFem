@@ -429,8 +429,9 @@ set(src ${src} src/MateSystem/NonlinearDiffusion2DMaterial.cpp)
 ###
 set(inc ${inc} include/MateSystem/DoubleWellPotentialMaterial.h)
 set(src ${src} src/MateSystem/DoubleWellPotentialMaterial.cpp)
-### for elastic material
+### for elastic/plastic material
 set(inc ${inc} include/MateSystem/ElasticMaterialBase.h)
+set(inc ${inc} include/MateSystem/PlasticMaterialBase.h)
 ### for linear elastic material
 set(inc ${inc} include/MateSystem/LinearElasticMaterial.h)
 set(src ${src} src/MateSystem/LinearElasticMaterial.cpp)
