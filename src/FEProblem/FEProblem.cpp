@@ -40,6 +40,8 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     m_timer.printElapseTime("Input file reading is done",false);
     m_mesh.printBulkMeshInfo();
 
+    if(m_inputSystem.isReadOnly()) return;
+
     //***************************************
     // for dofs init
     //***************************************
