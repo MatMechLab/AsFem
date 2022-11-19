@@ -170,7 +170,20 @@ jobs:
           echo "*** Start to run AsFem autotest"
           echo "*********************************************************************"
           ls
-          python3 scripts/AutoTest.py -n 1
+          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export PATH=$PATH:$MPI_DIR/bin
+          export CC=$MPI_DIR/bin/mpicc
+          export CXX=$MPI_DIR/bin/mpicxx
+          export F90=$MPI_DIR/bin/mpif90
+          export F77=$MPI_DIR/bin/mpif77
+          export OMP_NUM_THREADS=1
+          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
+          export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
+          export FPATH=$mpi/include:$FPATH
+          export MANPATH=$mpi/share/man:$MANPATH
+          export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
+          python3 scripts/AutoTest.py -n 2
       - name: run step2-2d in parallel
         run: |
           cd /home/runner/work/AsFem/AsFem/examples/tutorial
