@@ -277,6 +277,9 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_mate_typename=="smallstraindiffusion"){
                 elmtBlock.m_matetype=MateType::SMALLSTRAINDIFFUSIONMATE;
             }
+            else if(elmtBlock.m_mate_typename=="smallstraindiffusionj2plasticity"){
+                elmtBlock.m_matetype=MateType::SMALLSTRAINDIFFUSIONJ2MATE;
+            }
             else if(elmtBlock.m_mate_typename=="linearelasticfracture"){
                 elmtBlock.m_matetype=MateType::LINEARELASTICFRACMATE;
             }

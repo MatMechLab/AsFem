@@ -469,6 +469,9 @@ set(src ${src} src/MateSystem/NeoHookeanPFFractureMaterial.cpp)
 ###
 set(inc ${inc} include/MateSystem/SmallStrainCahnHilliardMaterial.h)
 set(src ${src} src/MateSystem/SmallStrainCahnHilliardMaterial.cpp)
+###
+set(inc ${inc} include/MateSystem/SmallStrainDiffusionJ2Material.h)
+set(src ${src} src/MateSystem/SmallStrainDiffusionJ2Material.cpp)
 ### for material system
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)
