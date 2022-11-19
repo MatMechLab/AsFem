@@ -1236,3 +1236,143 @@ void MshFileUtils::reorderNodesIndex(const int &elmttype,vector<int> &elmtconn){
     }
     
 }
+void MshFileUtils::reorderGmsh2NodesIndex(const int &elmttype,vector<int> &elmtconn){
+    switch(elmttype){
+        case 1:
+            // 2-node line
+            return;
+        case 2:
+            // 3-node triangle
+            return;
+        case 3:
+            // 4-node quadrangle
+            return;
+        case 4:{
+            // 4-node tetrahedron
+            int i=elmtconn[1];
+            elmtconn[1]=elmtconn[2];
+            elmtconn[2]=i;
+            }
+            return;
+        case 5:
+            // 8-node hexahedron
+            return;
+        case 6:
+            // 6-node prism
+            return;
+        case 7:
+            // 5-node pyramid
+            return;
+        case 8:{
+            //3-node second order line
+            // change 0--2--1 to 0--1--2
+            int i=elmtconn[1];
+            elmtconn[1]=elmtconn[2];
+            elmtconn[2]=i;
+            }
+            return;
+        case 9:
+            // 6-node second order triangle
+            return;
+        case 10:
+            // 9-node second order quadrangle
+            return;
+        case 11:{
+            // 10-node second order tetrahedron
+            int i2=elmtconn[4-1];
+            int i4=elmtconn[2-1];
+            int i5=elmtconn[8-1];
+            int i6=elmtconn[9-1];
+            int i8=elmtconn[5-1];
+            int i9=elmtconn[10-1];
+            int i10=elmtconn[6-1];
+            elmtconn[2-1]=i2;
+            elmtconn[4-1]=i4;
+            elmtconn[5-1]=i5;
+            elmtconn[6-1]=i6;
+            elmtconn[8-1]=i8;
+            elmtconn[9-1]=i9;
+            elmtconn[10-1]=i10;
+            }
+            return;
+        case 12:
+            // 27-node second order hexahedron
+            return;
+        case 13:
+            // 18-node second order prism
+            return;
+        case 14:
+            // 14-node second order pyramid
+            return;
+        case 15:
+            // 1-node point
+            return;
+        case 16:
+            // 8-node second order quadrangle
+            return;
+        case 17:
+            // 20-node second order hexahedron
+            return;
+        case 18:
+            // 15-node second order prism
+            return;
+        case 19:
+            // 13-node second order pyramid
+            return;
+        case 20:
+            // 9-node third order incomplete triangle
+            return;
+        case 21:
+            // 10-node third order triangle
+            return;
+        case 22:
+            // 12-node fourth order incomplete triangle
+            return;
+        case 23:
+            // 15-node fourth order triangle
+            return;
+        case 24:
+            // 15-node fifth order incomplete triangle
+            return;
+        case 25:
+            // 21-node fifth order complete triangle
+            return;
+        case 26:{
+            // 4-node third order edge
+            // 0---2---3---1 to 0---1---2---3
+            int i2=elmtconn[4-1];
+            int i3=elmtconn[2-1];
+            int i4=elmtconn[3-1];
+            elmtconn[2-1]=i2;
+            elmtconn[3-1]=i3;
+            elmtconn[4-1]=i4;
+            }
+            return;
+        case 27:
+            // 5-node fourth order edge
+            return;
+        case 28:
+            // 6-node fifth order edge
+            return;
+        case 29:
+            // 20-node third order tetrahedron
+            return;
+        case 30:
+            // 35-node fourth order tetrahedron
+            return;
+        case 31:
+            // 56-node fifth order tetrahedron
+            return;
+        case 92:
+            // 64-node third order hexahedron
+            return;
+        case 93:
+            // 125-node fourth order hexahedron
+            return;
+        default:
+            MessagePrinter::printErrorTxt("Unsupported gmsh2 element type in reorderNodesIndex, please check your code or your mesh-importer");
+            MessagePrinter::exitAsFem();
+            return;
+    }
+    
+}

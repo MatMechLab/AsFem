@@ -166,7 +166,7 @@ bool Gmsh2FileImporter::importMeshFile(const string &filename,MeshData &meshdata
                 tempconn.resize(nodes,0);
                 for(int j=0;j<nodes;j++) in>>tempconn[j];
 
-                MshFileUtils::reorderNodesIndex(elmttype,tempconn);
+                MshFileUtils::reorderGmsh2NodesIndex(elmttype,tempconn);
 
                 if(dim<mshMinDim) mshMinDim=dim;
 

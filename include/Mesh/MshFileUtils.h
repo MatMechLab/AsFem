@@ -90,5 +90,11 @@ public:
      * @param elmtconn the local element connectivity
      */
     static void reorderNodesIndex(const int &elmttype,vector<int> &elmtconn);
+    /**
+     * re-ordering gmsh nodes, make it consistent with AsFem
+     * @param elmttype the (gmsh) element type
+     * @param elmtconn the local element connectivity
+     */
+    static void reorderGmsh2NodesIndex(const int &elmttype,vector<int> &elmtconn);
 
 };
