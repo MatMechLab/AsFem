@@ -29,7 +29,7 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
 
     char buff[68];//77-12=65
     string str;
-
+    int lastiters=1000;
     fectrlinfo.dt=m_data.m_dt0;
     fectrlinfo.CurrentStep=0;
 
@@ -110,11 +110,15 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
             }
             MessagePrinter::printStars();
             if(isAdaptive()){
-                if(nlsolver.getIterationNum()<=getOptimizeIters()){
+                if(nlsolver.getIterationNum()<=getOptimizeIters() && lastiters<=getOptimizeIters()){
                     fectrlinfo.dt*=getGrowthFactor();
                     if(fectrlinfo.dt>getMaxDt()) fectrlinfo.dt=getMaxDt();
                 }
-                else{
+                else if(nlsolver.getIterationNum()<=getOptimizeIters() && lastiters>getOptimizeIters()){
+                    // do not change current dt
+                    fectrlinfo.dt*=1.0;
+                }
+                else if(nlsolver.getIterationNum()>getOptimizeIters()){
                     fectrlinfo.dt*=getCutbackFactor();
                     if(fectrlinfo.dt<getMinDt()) fectrlinfo.dt=getMinDt();
                 }
@@ -123,6 +127,8 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
             solutionsystem.m_u_older.copyFrom(solutionsystem.m_u_old);
             solutionsystem.m_u_old.copyFrom(solutionsystem.m_u_current);
             solutionsystem.m_v.setToZero();
+            // store the previous step's iteration numbers
+            lastiters=nlsolver.getIterationNum();
         }
         else{
             //  if the nonlinear solver failed we will try to reduce the dt
