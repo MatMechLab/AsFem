@@ -221,11 +221,13 @@ set(src ${src} src/Mesh/Msh2FileImporter.cpp)
 ### for msh2 file
 set(inc ${inc} include/Mesh/Msh4FileImporter.h)
 set(src ${src} src/Mesh/Msh4FileImporter.cpp)
+### for gmsh2 file
+set(inc ${inc} include/Mesh/Gmsh2FileImporter.h)
+set(src ${src} src/Mesh/Gmsh2FileImporter.cpp)
 ### for MeshIO
 set(inc ${inc} include/Mesh/MeshFileImporterBase.h)
 set(inc ${inc} include/Mesh/MeshFileImporter.h)
 set(src ${src} src/Mesh/MeshFileImporter.cpp)
-
 
 
 #############################################################

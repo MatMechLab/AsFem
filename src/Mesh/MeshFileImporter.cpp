@@ -27,7 +27,7 @@ bool MeshFileImporter::importMsh4Mesh(const string meshfile,MeshData &t_meshdata
     return Msh4FileImporter::importMeshFile(meshfile,t_meshdata);
 }
 
-    
-// bool MeshFileImporter::MeshFileImporterimportGmsh2Mesh(const string meshfile,MeshData &t_meshdata)const{
 
-// }
+bool MeshFileImporter::importGmsh2Mesh(const string meshfile,MeshData &t_meshdata){
+    return Gmsh2FileImporter::importMeshFile(meshfile,t_meshdata);
+}

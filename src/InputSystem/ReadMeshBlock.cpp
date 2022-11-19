@@ -521,7 +521,49 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
             }
         }
         else if(meshtypename=="gmsh2"){
-            // for msh file from netgen
+            // for gmsh2 file from netgen
+            if(!t_json.contains("file")){
+                MessagePrinter::printErrorTxt("No mesh file ('file') option is given, please check your input file");
+                return false;
+            }
+            if(!t_json.at("file").is_string()){
+                MessagePrinter::printErrorTxt("'file' option is not a valid string, please check your input file");
+                return false;
+            }
+            meshfile=t_json.at("file");
+            if(meshfile.size()<6+1){
+                MessagePrinter::printErrorTxt("file="+meshfile+" is not a valid gmsh2 file, please check your input file");
+                MessagePrinter::exitAsFem();
+            }
+            if(meshfile.substr(meshfile.size()-6)!=".gmsh2"){
+                MessagePrinter::printErrorTxt("'file' must be '*.gmsh2' for gmsh2 type, please check your input file");
+                return false;
+            }
+
+            if(t_json.contains("savemesh")){
+                if(!t_json.at("savemesh").is_boolean()){
+                    MessagePrinter::printErrorTxt("invalid boolean value for savemesh in your mesh block, it should be true/false");
+                    return false;
+                }
+                IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
+            }
+            MeshFileImporter importer;
+
+            if(importer.importGmsh2Mesh(meshfile,t_mesh.getBulkMeshMeshDataRef())){
+                if(IsSaveMesh){
+                    t_mesh.saveBulkMesh2VTU(m_inputfile_name);
+                    MessagePrinter::printNormalTxt("save mesh to "+m_inputfile_name.substr(0,m_inputfile_name.size()-5)+"-mesh.vtu");
+                }
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            MessagePrinter::printErrorTxt("Unsupported mesh import type, please check your input file");
+            MessagePrinter::exitAsFem();
+            return false;
         }
     }
     return true;

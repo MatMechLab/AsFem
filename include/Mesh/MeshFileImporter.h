@@ -16,12 +16,14 @@
 
 #include "Mesh/Msh2FileImporter.h"
 #include "Mesh/Msh4FileImporter.h"
+#include "Mesh/Gmsh2FileImporter.h"
 
 /**
  * This class offers the mesh file import function for the supported mesh file format
  */
 class MeshFileImporter:public Msh2FileImporter,
-                       public Msh4FileImporter{
+                       public Msh4FileImporter,
+                       public Gmsh2FileImporter{
 public:
     /**
      * constructor
