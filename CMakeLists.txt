@@ -396,6 +396,12 @@ set(src ${src} src/ElmtSystem/MieheFractureElement.cpp)
 ###
 set(inc ${inc} include/ElmtSystem/StressCahnHilliardElement.h)
 set(src ${src} src/ElmtSystem/StressCahnHilliardElement.cpp)
+### for scalar body source element
+set(inc ${inc} include/ElmtSystem/ScalarBodySourceElement.h)
+set(src ${src} src/ElmtSystem/ScalarBodySourceElement.cpp)
+### for laplacian element
+set(inc ${inc} include/ElmtSystem/LaplaceElement.h)
+set(src ${src} src/ElmtSystem/LaplaceElement.cpp)
 ### for element system
 set(inc ${inc} include/ElmtSystem/ElmtSystem.h)
 set(src ${src} src/ElmtSystem/ElmtSystem.cpp)

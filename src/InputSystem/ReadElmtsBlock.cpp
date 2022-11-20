@@ -65,6 +65,12 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_elmt_typename=="kobayashi"){
                 elmtBlock.m_elmttype=ElmtType::KOBAYASHIELMT;
             }
+            else if(elmtBlock.m_elmt_typename=="laplace"){
+                elmtBlock.m_elmttype=ElmtType::LAPLACEELMT;
+            }
+            else if(elmtBlock.m_elmt_typename=="scalarbodysource"){
+                elmtBlock.m_elmttype=ElmtType::SCALARBODYSOURCEELMT;
+            }
             // for coupled cases
             else if(elmtBlock.m_elmt_typename=="stresscahnhilliard"){
                 elmtBlock.m_elmttype=ElmtType::STRESSCAHNHILLIARDELMT;

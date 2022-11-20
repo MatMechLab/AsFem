@@ -26,6 +26,12 @@ void BulkElmtSystem::runBulkElmtLibs(const FECalcType &t_calctype,const double (
                                      VectorXd &R){
     switch (m_elmtblock_list[t_subelmtid-1].m_elmttype)
     {
+    case ElmtType::LAPLACEELMT:
+        LaplaceElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::SCALARBODYSOURCEELMT:
+        ScalarBodySourceElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
     case ElmtType::POISSONELMT:
         PoissonElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
         break;

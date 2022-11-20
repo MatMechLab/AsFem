@@ -20,6 +20,8 @@
 enum class ElmtType{
     NULLELMT,
     // For 'single'/'uncoupled' standard element
+    LAPLACEELMT,
+    SCALARBODYSOURCEELMT,
     POISSONELMT,
     DIFFUSIONELMT,
     THERMALELMT,
