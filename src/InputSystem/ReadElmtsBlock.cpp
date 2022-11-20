@@ -255,6 +255,9 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_mate_typename=="smallstrainj2plasticity"){
                 elmtBlock.m_matetype=MateType::SMALLSTRAINJ2PLASTICITYMATE;
             }
+            else if(elmtBlock.m_mate_typename=="smallstrainexplawj2plasticity"){
+                elmtBlock.m_matetype=MateType::SMALLSTRAINEXPLAWJ2PLASTICITYMATE;
+            }
             // for cahn-hilliard material
             else if(elmtBlock.m_mate_typename=="doublewell"){
                 elmtBlock.m_matetype=MateType::DOUBLEWELLMATE;

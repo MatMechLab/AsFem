@@ -452,6 +452,9 @@ set(src ${src} src/MateSystem/NeoHookeanMaterial.cpp)
 ### for elastoplastic material
 set(inc ${inc} include/MateSystem/SmallStrainJ2PlasticityMaterial.h)
 set(src ${src} src/MateSystem/SmallStrainJ2PlasticityMaterial.cpp)
+###
+set(inc ${inc} include/MateSystem/SmallStrainExpLawJ2PlasticityMaterial.h)
+set(src ${src} src/MateSystem/SmallStrainExpLawJ2PlasticityMaterial.cpp)
 ### for free energy material
 set(inc ${inc} include/MateSystem/FreeEnergyMaterialBase.h)
 ###

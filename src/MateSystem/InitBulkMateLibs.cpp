@@ -68,6 +68,9 @@ void BulkMateSystem::initBulkMateLibs(const MateType &t_matetype,const nlohmann:
     case MateType::SMALLSTRAINJ2PLASTICITYMATE:
         SmallStrainJ2PlasticityMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;
+    case MateType::SMALLSTRAINEXPLAWJ2PLASTICITYMATE:
+        SmallStrainExpLawJ2PlasticityMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
     //******************************************
     //*** for coupled materials
     //******************************************
