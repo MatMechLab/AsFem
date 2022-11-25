@@ -3,83 +3,101 @@ project(AsFem)
 
 set(CMAKE_CXX_STANDARD 17)
 
-if(UNIX)
-    message ("We are running on linux system ...")
-elseif(MSVC)
-    message("We are running on windows system (MSVC) ...")
-endif()
-
 ###############################################
 ### Set your PETSc/MPI path here or bashrc  ###
 ### The only things to modify is the        ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
-if(EXISTS $ENV{MPI_DIR})
-    set(MPI_DIR $ENV{MPI_DIR})
-    message("MPI dir is: ${MPI_DIR}")
-    include_directories("${MPI_DIR}/include")
-    find_library(MPI_LIB NAMES mpi mpicxx HINTS PATHS ${MPI_DIR}/lib ${MPI_DIR}/lib64)
-    if(NOT MPI_LIB)
-        message(ERROR " MPI lib dir can\'t be found!")
-    else()
-        message("  MPI include dir is: ${MPI_DIR}/include")
-        message("  MPI library dir is: ${MPI_LIB}")
-    endif()
-else()
-    find_path(MPI_INC NAMES mpi.h  
-              PATHS /usr/lib/x86_64-linux-gnu/openmpi/include 
-              /lib64/mpi/gcc/openmpi4/include 
-              /usr/lib64/petsc/*/linux-gnu-c-opt/include/petsc/mpiuni)
-    find_library(MPI_LIB NAMES mpi 
-                 PATHS /usr/lib 
-                 /usr/lib64 
-                 /usr/lib64/mpi/gcc/openmpi4/lib64 
-                 /opt/openmpi/lib)
-    message (WARNING "MPI location (MPI_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your mpi path is not correct, please modifiy MPI_INC and MPI_LIB in your CMakeList.txt")
-    if(NOT MPI_INC)
-        message(ERROR " MPI include dir can\'t be found!")
-    endif()
-    if(NOT MPI_LIB)
-        message(ERROR " MPI lib dir can\'t be found!")
-    endif()
-    message("  MPI include dir is: ${MPI_INC}")
-    message("  MPI library dir is: ${MPI_LIB}")
-    include_directories("${MPI_INC}")
-endif()
+SET(WINDOWS "False" CACHE STRING "WINDOWS")
 
-
-if(EXISTS $ENV{PETSC_DIR})
-    set(PETSC_DIR $ENV{PETSC_DIR})
-    message("PETSC dir is: ${PETSC_DIR}")
-    include_directories("${PETSC_DIR}/include")
-    find_library(PETSC_LIB NAMES petsc PATHS ${PETSC_DIR}/lib ${PETSC_DIR}/lib64)
-    if(NOT PETSC_LIB)
-        message(ERROR " PETSc lib dir can\'t be found!")
+if(WINDOWS)
+    message("We are running on windows system with cygwin/mingw ...")
+    message(WARNING "Please use Cygwin or Mingw for the compiling !")
+    if(EXISTS $ENV{PETSC_DIR})
+        set(PETSC_DIR $ENV{PETSC_DIR})
+        message("PETSc dir is: ${PETSC_DIR}")
+        set(PETSC_INC "${PETSC_DIR}/include")
+        set(PETSC_LIB "${PETSC_DIR}/lib/libpetsc.dll")
+        include_directories("${PETSC_DIR}/include")
+        link_libraries("${PETSC_LIB}")
+        message("    PETSc include dir is: ${PETSC_INC}")
+        message("    PETSc library dir is: ${PETSC_LIB}")
     else()
-        message("  PETSc include dir is: ${PETSC_DIR}/include")
-        message("  PETSc library dir is: ${PETSC_LIB}")
+        message(FATAL_ERROR "PETSC_DIR is not defined in your cygwin/mingw terminal, please set the path correctly !")
     endif()
-else()
-    message (WARNING "PETSC location (PETSC_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your PETSC_DIR path is not correct, please modifiy PETSC_INC and PETSC_LIB in your CMakeList.txt")
-    find_path(PETSC_INC NAMES include/petsc.h 
-              PATHS /usr/lib/petsc 
-              /usr/lib/petscdir/* 
-              /opt/petsc/linux-c-opt 
-              /opt/local/lib/petsc 
-              /usr/lib64/petsc/*/linux-gnu-c-opt 
-              /usr/lib64/mpi/gcc/openmpi4/lib64/ 
-              /usr/lib64/mpi/gcc/openmpi4/lib64/petsc/*/linux-gnu-c-opt/lib)
-    find_library(PETSC_LIB NAMES petsc PATHS /usr)
-    if(NOT PETSC_INC)
-        message(ERROR " PETSc include dir can\'t be found!")
+    if(EXISTS $ENV{MPI_DIR})
+        message(FATAL_ERROR "MPI_DIR is not supported in cygwin/mingw terminal, please remove it !")
     endif()
-    if(NOT PETSC_LIB)
-        message(ERROR " PETSc lib dir can\'t be found!")
+elseif(UNIX)
+    message ("We are running on linux system ...")
+    ########################################
+    ### for PETSc
+    ########################################
+    if(EXISTS $ENV{MPI_DIR})
+        set(MPI_DIR $ENV{MPI_DIR})
+        message("MPI dir is: ${MPI_DIR}")
+        include_directories("${MPI_DIR}/include")
+        find_library(MPI_LIB NAMES mpi mpicxx HINTS ${MPI_DIR}/lib ${MPI_DIR}/lib64)
+        if(NOT MPI_LIB)
+            message(FATAL_ERROR " MPI lib dir can\'t be found!")
+        endif()
+        message("    MPI include dir is: ${MPI_DIR}/include")
+    else()
+        find_path(MPI_INC NAMES mpi.h  
+                  PATHS /usr/lib/x86_64-linux-gnu/openmpi/include 
+                  /lib64/mpi/gcc/openmpi4/include 
+                  /usr/lib64/petsc/*/linux-gnu-c-opt/include/petsc/mpiuni)
+        find_library(MPI_LIB NAMES mpi 
+                     PATHS /usr/lib 
+                     /usr/lib64 
+                     /usr/lib64/mpi/gcc/openmpi4/lib64 
+                     /opt/openmpi/lib)
+        message (WARNING "MPI location (MPI_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your mpi path is not correct, please modifiy MPI_INC and MPI_LIB in your CMakeList.txt")
+        if(NOT MPI_INC)
+            message(FATAL_ERROR " MPI include dir can\'t be found!")
+        endif()
+        if(NOT MPI_LIB)
+            message(FATAL_ERROR " MPI lib dir can\'t be found!")
+        endif()
+        include_directories("${MPI_INC}")
+        message("    MPI include dir is: ${MPI_INC}")
     endif()
-    message(" PETSc include dir is: ${PETSC_INC}/include")
-    message(" PETSc library dir is: ${PETSC_LIB}")
+    link_directories("${MPI_LIB}")
+    message("    MPI library dir is: ${MPI_LIB}")
+    ########################################
+    ### for PETSc
+    ########################################
+    if(EXISTS $ENV{PETSC_DIR})
+        set(PETSC_DIR $ENV{PETSC_DIR})
+        message("PETSC dir is: ${PETSC_DIR}")
+        include_directories("${PETSC_DIR}/include")
+        find_library(PETSC_LIB NAMES petsc HINTS ${PETSC_DIR}/lib ${PETSC_DIR}/lib64)
+        if(NOT PETSC_LIB)
+            message(FATAL_ERROR " PETSc lib dir can\'t be found!")
+        endif()
+        message("    PETSc include dir is: ${PETSC_DIR}/include")
+    else()
+        message (WARNING "PETSc location (PETSC_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your PETSC_DIR path is not correct, please modifiy PETSC_INC and PETSC_LIB in your CMakeList.txt")
+        find_path(PETSC_INC NAMES petsc.h 
+                  PATHS /usr/lib/petsc 
+                  /usr/lib/petscdir/* 
+                  /opt/petsc/linux-c-opt 
+                  /opt/local/lib/petsc 
+                  /usr/lib64/petsc/*/linux-gnu-c-opt 
+                  /usr/lib64/mpi/gcc/openmpi4/lib64/ 
+                  /usr/lib64/mpi/gcc/openmpi4/lib64/petsc/*/linux-gnu-c-opt/lib)
+        find_library(PETSC_LIB NAMES petsc PATHS /usr)
+        if(NOT PETSC_INC)
+            message(FATAL_ERROR " PETSc include dir can\'t be found!")
+        endif()
+        if(NOT PETSC_LIB)
+            message(FATAL_ERROR " PETSc lib dir can\'t be found!")
+        endif()
+        message(" PETSc include dir is: ${PETSC_INC}")
+        include_directories("${PETSC_INC}")
+    endif()
+    message("    PETSc library dir is: ${PETSC_LIB}")
     link_directories("${PETSC_LIB}")
-    include_directories("${PETSC_INC}/include")
 endif()
 
 
