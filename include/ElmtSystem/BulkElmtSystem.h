@@ -44,6 +44,7 @@
 #include "ElmtSystem/StressCahnHilliardElement.h"
 #include "ElmtSystem/LaplaceElement.h"
 #include "ElmtSystem/ScalarBodySourceElement.h"
+#include "ElmtSystem/DiffusionACFractureElement.h"
 
 /**
  * This class implement the elemental calculation for residual, jacobian, projection, etc.
@@ -59,7 +60,8 @@ class BulkElmtSystem:public PoissonElement,
                      public AllenCahnFractureElement,
                      public StressCahnHilliardElement,
                      public LaplaceElement,
-                     public ScalarBodySourceElement{
+                     public ScalarBodySourceElement,
+                     public DiffusionACFractureElement{
 public:
     /**
      * constructor

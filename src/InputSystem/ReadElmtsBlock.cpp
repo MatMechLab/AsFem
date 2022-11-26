@@ -84,6 +84,9 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_elmt_typename=="miehefracture"){
                 elmtBlock.m_elmttype=ElmtType::MIEHEFRACTUREELMT;
             }
+            else if(elmtBlock.m_elmt_typename=="diffusionacfracture"){
+                elmtBlock.m_elmttype=ElmtType::DIFFUSIONACFRACTUREELMT;
+            }
             // for user-defined-element
             else if(elmtBlock.m_elmt_typename=="user1"){
                 elmtBlock.m_elmttype=ElmtType::USER1ELMT;
@@ -297,6 +300,9 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             }
             else if(elmtBlock.m_mate_typename=="miehefracture"){
                 elmtBlock.m_matetype=MateType::MIEHEFRACTUREMATE;
+            }
+            else if(elmtBlock.m_mate_typename=="diffusionacfracture"){
+                elmtBlock.m_matetype=MateType::DIFFUSIONACFRACTUREMATE;
             }
             // for user-defined-materials(UMAT)
             else if(elmtBlock.m_mate_typename=="user1"){

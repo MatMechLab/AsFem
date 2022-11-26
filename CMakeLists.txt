@@ -420,6 +420,9 @@ set(src ${src} src/ElmtSystem/ScalarBodySourceElement.cpp)
 ### for laplacian element
 set(inc ${inc} include/ElmtSystem/LaplaceElement.h)
 set(src ${src} src/ElmtSystem/LaplaceElement.cpp)
+### for diffusion allencahn fracture
+set(inc ${inc} include/ElmtSystem/DiffusionACFractureElement.h)
+set(src ${src} src/ElmtSystem/DiffusionACFractureElement.cpp)
 ### for element system
 set(inc ${inc} include/ElmtSystem/ElmtSystem.h)
 set(src ${src} src/ElmtSystem/ElmtSystem.cpp)
@@ -505,6 +508,9 @@ set(src ${src} src/MateSystem/SmallStrainCahnHilliardMaterial.cpp)
 ###
 set(inc ${inc} include/MateSystem/SmallStrainDiffusionJ2Material.h)
 set(src ${src} src/MateSystem/SmallStrainDiffusionJ2Material.cpp)
+###
+set(inc ${inc} include/MateSystem/DiffusionACFractureMaterial.h)
+set(src ${src} src/MateSystem/DiffusionACFractureMaterial.cpp)
 ### for material system
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)

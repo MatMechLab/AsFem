@@ -92,6 +92,9 @@ void BulkMateSystem::runBulkMateLibs(const MateType &t_matetype,const nlohmann::
     case MateType::SMALLSTRAINDIFFUSIONJ2MATE:
         SmallStrainDiffusionJ2Material::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
         break;
+    case MateType::DIFFUSIONACFRACTUREMATE:
+        DiffusionACFractureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        break;
     default:
         MessagePrinter::printErrorTxt("Unsupported material type in runBulkMateLibs, please check your code");
         MessagePrinter::exitAsFem();
