@@ -10,6 +10,8 @@
 #ifndef EIGEN_TYPE_CASTING_SSE_H
 #define EIGEN_TYPE_CASTING_SSE_H
 
+#include "../../InternalHeaderCheck.h"
+
 namespace Eigen {
 
 namespace internal {
@@ -67,6 +69,14 @@ template<> EIGEN_STRONG_INLINE Packet4f pcast<Packet2d, Packet4f>(const Packet2d
 template<> EIGEN_STRONG_INLINE Packet2d pcast<Packet4f, Packet2d>(const Packet4f& a) {
   // Simply discard the second half of the input
   return _mm_cvtps_pd(a);
+}
+
+template<> EIGEN_STRONG_INLINE Packet2d preinterpret<Packet2d, Packet4f>(const Packet4f& a) {
+  return _mm_castps_pd(a);
+}
+
+template<> EIGEN_STRONG_INLINE Packet4f preinterpret<Packet4f, Packet2d>(const Packet2d& a) {
+  return _mm_castpd_ps(a);
 }
 
 template<> EIGEN_STRONG_INLINE Packet4i preinterpret<Packet4i,Packet4f>(const Packet4f& a) {

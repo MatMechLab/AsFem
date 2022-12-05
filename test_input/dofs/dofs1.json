@@ -1,0 +1,26 @@
+{
+	"mesh":{
+		"type":"asfem",
+		"dim":3,
+		"nx":10,
+		"ny":10,
+		"nz":10,
+		"xmax":1.0,
+		"ymax":1.0,
+		"meshtype":"hex8",
+		"savemesh":true
+	},
+	"dofs":{
+		"names":["ux","uy"]
+	},
+	"elements":{
+		"elmt1":{
+			"type":"mechanics",
+			"dofs":["ux"]
+		},
+		"elmt2":{
+			"type":"mechanics",
+			"dofs":["uy"]
+		}
+	}
+}

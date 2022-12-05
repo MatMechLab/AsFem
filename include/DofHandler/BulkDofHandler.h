@@ -1,348 +1,341 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.01
-//+++ Update : 2021.11.13 @ Yang Bai
-//+++ Purpose: Implement general dofhandler for our bulk mesh
-//+++          This class should be capable to manage DoFs, DoF maps...
+//+++ Date   : 2022.05.09
+//+++ Purpose: the bulkdof manager in AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
+
 #include <iostream>
 #include <iomanip>
-#include <vector>
-#include <map>
 #include <string>
-#include <algorithm>
-
-#include "Utils/MessagePrinter.h"
-#include "Mesh/Mesh.h"
-#include "BCSystem/BCSystem.h"
-#include "ElmtSystem/ElmtSystem.h"
-
-using namespace std;
-
-class Mesh;
-class ElmtSystem;
-class BCSystem;
+#include <vector>
 
 /**
- * this class implement dof management for the bulk element of AsFem.
+ * for AsFem's header files
+ */
+#include "Utils/MessagePrinter.h"
+#include "Mesh/Mesh.h"
+#include "ElmtSystem/ElmtSystem.h"
+
+using std::vector;
+using std::string;
+
+
+/**
+ * This class implements the manager for the degree of freedoms (DoFs) of volume mesh
  */
 class BulkDofHandler{
 public:
     /**
-     * Constructor
+     * constructor
      */
     BulkDofHandler();
+    /**
+     * deconstructor
+     */
+    ~BulkDofHandler();
 
+    //***************************************************
+    //*** general settings
+    //***************************************************
     /**
-     * add the dofs name from string vector
-     * @param namelist the string vector for the name of dofs
+     * initialize the dofhandler class, resize all the vectors
      */
-    void AddDofNameFromStrVec(vector<string> &namelist);
+    void init();
+    /**
+     * create the bulk elements' dofs map
+     * @param t_mesh the mesh class
+     * @param t_elmtSystem the element class
+     */
+    void createBulkDofsMap(const Mesh &t_mesh,const ElmtSystem &t_elmtSystem);
+    /**
+     * add dof name to the namelist, it must be unique and non-duplicated name
+     * @param dofname string for the name of one single dof
+     */
+    void addDofName2List(const string &dofname);
 
+    //***************************************************
+    //*** general gettings
+    //***************************************************
     /**
-     * create the dofs map for bulk elements
-     * @param mesh the mesh class
-     * @param bcSystem the boundary condition system
-     * @param elmtSystem the element system
+     * get max dofs per node
      */
-    void CreateBulkMeshDofsMap(const Mesh &mesh,BCSystem &bcSystem,ElmtSystem &elmtSystem);
-
+    inline int getMaxDofsPerNode()const{
+        return m_maxdofs_pernode;
+    }
     /**
-     * get the i-th dof's name(here the dofs means the one defined in [dofs] block)
-     * @param i the index of dofs in [dofs] block
+     * get max dofs per element
      */
-    inline string GetIthDofName(const int &i)const{return _DofNameList[i-1];}
+    inline int getMaxDofsPerElmt()const{
+        return m_maxdofs_perelmt;
+    }
+    /**
+     * get total dofs
+     */
+    inline int getTotalDofs()const{
+        return m_total_dofs;
+    }
+    /**
+     * get active dofs
+     */
+    inline int getActiveDofs()const{
+        return m_active_dofs;
+    }
+    /**
+     * get nodes
+     */
+    inline int getNodesNum()const{
+        return m_nodes;
+    }
+    /**
+     * get bulk elements
+     */
+    inline int getBulkElmtsNum()const{
+        return m_bulkelmts;
+    }
+    /**
+     * get the i-th dof id
+     * @param i integer for the i-th dof
+     */
+    inline int getIthDofID(const int &i)const{
+        if(i<1||i>m_maxdofs_pernode){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range for your dofs id list");
+            MessagePrinter::exitAsFem();
+        }
+        return m_dof_idlist[i-1];
+    }
+    /**
+     * get the i-th dof name
+     * @param i integer for the i-th dof
+     */
+    inline string getIthDofName(const int &i)const{
+        if(i<1||i>m_maxdofs_pernode){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range for your dofs name list");
+            MessagePrinter::exitAsFem();
+        }
+        return m_dof_namelist[i-1];
+    }
+    /**
+     * get dof's id via its name
+     * @param dofname string for the name of the input dof
+     */
+    inline int getDofIDViaName(const string &dofname)const{
+        for(int i=0;i<m_maxdofs_pernode;i++){
+            if(dofname==m_dof_namelist[i]){
+                return m_dof_idlist[i];
+            }
+        }
+        MessagePrinter::printErrorTxt("can\'t find dof name="+dofname+", please check your dof name");
+        MessagePrinter::exitAsFem();
+        return 0;
+    }
     
     /**
-     * get the i-t dof's ID(the id of dofs in [dofs] block)
-     * @param i the dof index
+     * get i-th node's j-th dof id
+     * @param i integer for i-th node
+     * @param j integer for j-th dof id
      */
-    inline int GetIthDofID(const int &i)const{return _DofIDList[i-1];}
-   
+    inline int getIthNodeJthDofID(const int &i,const int &j)const{
+        if(i<1||i>m_nodes){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of nodes' range(="+to_string(m_nodes)+")");
+            MessagePrinter::exitAsFem();
+        }
+        if(j<1||j>m_maxdofs_pernode){
+            MessagePrinter::printErrorTxt("j="+to_string(j)+" is out of nodes' max dof num(="+to_string(m_maxdofs_pernode)+")");
+            MessagePrinter::exitAsFem();
+        }
+        return m_nodal_dofids[i-1][j-1];
+    }
     /**
-     * get the nodes number of single bulk element
+     * get i-th node's j-th dof id, start from 0
+     * @param i integer for i-th node
+     * @param j integer for j-th dof id
      */
-    inline int GetNodesNumPerBulkElmt()const{return _nNodesPerBulkElmt;} 
-    
+    inline int getIthNodeJthDofID0(const int &i,const int &j)const{
+        if(i<1||i>m_nodes){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of nodes' range(="+to_string(m_nodes)+")");
+            MessagePrinter::exitAsFem();
+        }
+        if(j<1||j>m_maxdofs_pernode){
+            MessagePrinter::printErrorTxt("j="+to_string(j)+" is out of nodes' max dof num(="+to_string(m_maxdofs_pernode)+")");
+            MessagePrinter::exitAsFem();
+        }
+        return m_nodal_dofids[i-1][j-1]-1;
+    }
     /**
-     * get the maximum dofs number of each node
+     * get i-th elmt's j-th dof id
+     * @param i integer for i-th elmt
+     * @param j integer for j-th dof id
      */
-    inline int GetMaxDofsNumPerNode()const{return _nDofsPerNode;}
-
+    inline int getIthBulkElmtJthDofID(const int &i,const int &j)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
+        }
+        if(j<1||j>static_cast<int>(m_elmt_dofids[i-1].size())){
+            MessagePrinter::printErrorTxt("j="+to_string(j)+" is out of elmts' dof num(="+to_string(m_elmt_dofids[i-1].size())+")");
+            MessagePrinter::exitAsFem();
+        }
+        return m_elmt_dofids[i-1][j-1];
+    }
     /**
-     * get the maximum dofs number of each node
+     * get i-th elmt's j-th dof id
+     * @param i integer for i-th elmt
+     * @param j integer for j-th dof id
      */
-    inline int GetDofsNumPerNode()const{return _nDofsPerNode;}
-    
+    inline int getIthBulkElmtJthDofID0(const int &i,const int &j)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
+        }
+        if(j<1||j>static_cast<int>(m_elmt_dofids[i-1].size())){
+            MessagePrinter::printErrorTxt("j="+to_string(j)+" is out of elmts' dof num(="+to_string(m_elmt_dofids[i-1].size())+")");
+            MessagePrinter::exitAsFem();
+        }
+        return m_elmt_dofids[i-1][j-1]-1;
+    }
     /**
-     * get the total dofs number of the system
+     * get i-th elmt's dofs
+     * @param i integer for i-th elmt
+     * @param elmtdofs vector for current element's dof ids
      */
-    inline int GetTotalDofsNum()const{return _nDofs;}
-    
-    /**
-     * get the active dofs number of the system
-     */
-    inline int GetActiveDofsNum()const{return _nActiveDofs;}
-    
-    /**
-     * get the maximum dofs number of single bulk element
-     */
-    inline int GetMaxDofsNumPerBulkElmt()const{return _nMaxDofsPerElmt;}
-    
-    /**
-     * get te bulk elements number
-     */
-    inline int GetBulkMeshBulkElmtsNum()const{return _nBulkElmts;}
-    
-    /**
-     * get the total elements number
-     */
-    inline int GetBulkMeshElmtsNum()const{return _nElmts;}
-
-    /**
-     * et the max non-zero entities of the row
-     */
-    inline int GetMaxRowNNZ()const{return _RowMaxNNZ;}
-    
-    /**
-     * get the dof id by its name
-     * @param dofname the string name of the inquery dof
-     */
-    int GetDofIDviaDofName(string dofname)const;
-
-    /**
-     * get the id index's vector from input dofs' name
-     * @param namelist the input name string vector
-     */
-    vector<int> GetDofsIndexFromNameVec(vector<string> namelist)const;
-
-    /**
-     * get the i-th bulk element's dof index
-     * @param e the bulk-element's ID
-     * @param elDofs the int vector which stores the elemental dofs' ID
-     * @param elDofsActiveFlag the active flags of the elemental dofs' ID, 1-> for active status,0-> for deactive status
-     */
-    inline void GetBulkMeshIthBulkElmtDofIndex(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
-        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_BulkElmtDofsMap[e-1][i];
-            elDofsActiveFlag[i]=_BulkElmtDofFlag[e-1][i];
+    inline void getIthBulkElmtDofIDs(const int &i,vector<int> &elmtdofs)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
+        }
+        bool AllDofsAreZero;AllDofsAreZero=true;
+        for(int j=0;j<static_cast<int>(m_elmt_dofids[i-1].size());j++){
+            elmtdofs[j]=m_elmt_dofids[i-1][j];
+            if(elmtdofs[j]>0) AllDofsAreZero=false;
+        }
+        if(AllDofsAreZero){
+            MessagePrinter::printErrorTxt("element-"+to_string(i)+"'s dofs are all zeros, please check your code");
+            MessagePrinter::exitAsFem();
         }
     }
-
     /**
-     * get the i-th bulk element's dof index
-     * @param e the bulk-element's ID
-     * @param elDofs the int vector which stores the elemental dofs' ID
+     * get i-th elmt's dofs, start from 0
+     * @param i integer for i-th elmt
+     * @param elmtdofs vector for current element's dof ids
      */
-    inline void GetBulkMeshIthBulkElmtDofIndex(const int &e,vector<int> &elDofs)const{
-        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_BulkElmtDofsMap[e-1][i];
+    inline void getIthBulkElmtDofIDs0(const int &i,vector<int> &elmtdofs)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
+        }
+        bool AllDofsAreZero;AllDofsAreZero=true;
+        for(int j=0;j<static_cast<int>(m_elmt_dofids[i-1].size());j++){
+            elmtdofs[j]=m_elmt_dofids[i-1][j]-1;
+            if(elmtdofs[j]>0) AllDofsAreZero=false;
+        }
+        if(AllDofsAreZero){
+            MessagePrinter::printErrorTxt("element-"+to_string(i)+"'s dofs are all zeros, please check your code");
+            MessagePrinter::exitAsFem();
         }
     }
-
     /**
-     * get the i-th bulk element's dof index and active flags, where the id index starts from 0!
-     * @param e the bulk element's id
-     * @param elDofs the elemental dofs' id list, start from 0
-     * @param elDofsActiveFlag the elemental dofs' flag list
+     * get i-th elmt's dofs
+     * @param i integer for i-th elmt
+     * @param elmtdofs integer pointer for current element's dof ids
      */
-    inline void GetBulkMeshIthBulkElmtDofIndex0(const int &e,vector<int> &elDofs,vector<double> &elDofsActiveFlag)const{
-        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_BulkElmtDofsMap[e-1][i]-1;
-            elDofsActiveFlag[i]=_BulkElmtDofFlag[e-1][i];
+    inline void getIthBulkElmtDofIDs(const int &i,int *elmtdofs)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
+        }
+        for(int j=0;j<static_cast<int>(m_elmt_dofids[i-1].size());j++){
+            elmtdofs[j]=m_elmt_dofids[i-1][j];
         }
     }
-
     /**
-     * get the i-th bulk element's dof index and active flags, where the id index starts from 0!
-     * @param e the bulk element's id
-     * @param elDofs the elemental dofs' id list, start from 0
+     * get i-th elmt's dofs, start from 0
+     * @param i integer for i-th elmt
+     * @param elmtdofs integer pointer for current element's dof ids
      */
-    inline void GetBulkMeshIthBulkElmtDofIndex0(const int &e,vector<int> &elDofs)const{
-        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_BulkElmtDofsMap[e-1][i]-1;
+    inline void getIthBulkElmtDofIDs0(const int &i,int *elmtdofs)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
+        }
+        for(int j=0;j<static_cast<int>(m_elmt_dofids[i-1].size());j++){
+            elmtdofs[j]=m_elmt_dofids[i-1][j]-1;
         }
     }
-
     /**
-     * get the i-th bulk element's dofs id, which starts from 0!!!
-     * @param e the bulk element's id
-     * @param elDofs integer array's pointer
+     * get i-th elemental dofs number
+     * @param i integer for i-th elmt
      */
-    inline void GetBulkMeshIthBulkElmtDofIndex0(const int &e,int *elDofs)const{
-        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_BulkElmtDofsMap[e-1][i]-1;
+    inline int getIthBulkElmtDofsNum(const int &i)const{
+        if(i<1||i>m_bulkelmts){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of elmts' range(="+to_string(m_bulkelmts)+")");
+            MessagePrinter::exitAsFem();
         }
+        return static_cast<int>(m_elmt_dofids[i-1].size());
     }
-    
     /**
-     * get the i-th bulk element's dofs id, which starts from 1!!!
-     * @param e the bulk element's id
-     * @param elDofs integer array's pointer
+     * check if the input dof name is a valid name
+     * @param dofname the input string of dof
      */
-    inline void GetBulkMeshIthBulkElmtDofIndex(const int &e,int *elDofs)const{
-        for(int i=0;i<static_cast<int>(_BulkElmtDofsMap[e-1].size());i++){
-            elDofs[i]=_BulkElmtDofsMap[e-1][i];
+    bool isValidDofName(const string &dofname)const{
+        for(const auto &it:m_dof_namelist){
+            if(dofname==it){
+                return true;
+            }
         }
+        return false;
+    }
+    /**
+     * get the max nonzeros of each row
+     */
+    inline int getMaxNNZ()const{
+        return m_maxnnz;
     }
 
-    /**
-     * get i-th bulk element dofs number
-     * @param e the element index, start from 1
-     */
-    inline int GetBulkMeshIthBulkElmtDofsNum(const int &e)const{
-        return static_cast<int>(_BulkElmtDofsMap[e-1].size());
-    }
 
     /**
-     * get the i-th bulk element's j-th sub-element's dofs ID, start from 1 !!!
-     * @param i bulk element id
-     * @param j sub-element id
+     * release the memory
      */
-    inline vector<int> GetBulkMeshIthBulkElmtJthSubElmtDofIndex(const int &i,const int &j)const{
-        return _BulkElmtLocalDofIndex[i-1][j-1];
-    }
+    void releaseMemory();
 
-    /**
-     * get the i-th bulk element's j-th sub-element's material index
-     * @param i bulk element id
-     * @param j sub element id
-     */
-    inline int GetBulkMeshIthBulkElmtJthSubElmtMateIndex(const int &i,const int &j)const{
-        return _BulkElmtElmtMateIndexList[i-1][j-1];
-    }
 
+    //***************************************************
+    //*** printing
+    //***************************************************
     /**
-     * get bulk mesh's i-th node's j-th coordinate
-     * @param i node id, start from 1
-     * @param j coordinate component, start from 1
+     * print out the basic info of bulk dofs
      */
-    inline int GetBulkMeshIthNodeJthDofIndex(const int &i,const int &j)const{
-        return _NodeDofsMap[i-1][j-1];
-    }
+    void printBulkDofsInfo()const;
+    /**
+     * print out the elemental dofs map, be careful, you'll get lots of message
+     * @param flag true for file writing, otherwise show message in the terminal
+     */
+    void printBulkElementalDofsInfo(const bool &flag=false)const;
 
-    /**
-     * get bulk mesh's i-th node's j-th coordinate, start from 0
-     * @param i node id, start from 0
-     * @param j coordinate component, start from 0
-     */
-    inline int GetBulkMeshIthNodeJthDofIndex0(const int &i,const int &j)const{
-        return _NodeDofsMap[i-1][j-1]-1;
-    }
-
-    //*********************************************
-    //*** for some basic check functions
-    //*********************************************
-    /**
-     * check wether the input string is a valid name for one of the [dofs] list
-     * @param dofname input string for the name of inquery dof
-     */
-    bool IsValidDofName(string dofname)const;
-    /**
-     * check wether the namelist is a valid string vector for the [dofs] list
-     * @param namelist the string vector for the inquery dofs
-     */
-    bool IsValidDofNameVec(vector<string> namelist)const;
-
-    //*********************************************
-    //*** for some basic getting functions
-    //*********************************************
-    /**
-     * get the element type-material type pair of i-th bulk element
-     * @param e the element id
-     */
-    inline vector<pair<ElmtType,MateType>> GetBulkMeshIthBulkElmtElmtMateTypePair(const int &e)const{
-        return _BulkElmtElmtMateTypePairList[e-1];
-    }
-
-    /**
-     * get the elmt type of i-th bulk element's j-th sub-element
-     * @param i i-th bulk element
-     * @param j j-th sub element
-     */
-    inline ElmtType GetBulkMeshIthBulkElmtJthSubElmtElmtType(const int &i,const int &j)const{
-        return _BulkElmtElmtMateTypePairList[i-1][j-1].first;
-    }
-
-    /**
-     * get the element type vector of i-th bulk element
-     * @param e the element id
-     */
-    inline vector<ElmtType> GetBulkMeshIthBulkElmtElmtTypeVec(const int &e)const{
-        vector<ElmtType> temp;temp.clear();
-        for(auto it:_BulkElmtElmtMateTypePairList[e-1]){
-            temp.push_back(it.first);
-        }
-        return temp;
-    }
-
-    /**
-     * get the material type of i-th bulk element's j-th sub-element
-     * @param i bulk element id
-     * @param j sub element id
-     */
-    inline MateType GetBulkMeshIthBulkElmtJthSubElmtMateType(const int &i,const int &j)const{
-        return _BulkElmtElmtMateTypePairList[i-1][j-1].second;
-    }
-    
-    /**
-     * get the material type vector of i-th bulk element
-     * @param e bulk element id
-     */
-    inline vector<MateType> GetBulkMeshIthBulkElmtMateTypeVec(const int &e)const{
-        vector<MateType> temp;temp.clear();
-        for(auto it:_BulkElmtElmtMateTypePairList[e-1]){
-            temp.push_back(it.second);
-        }
-        return temp;
-    }
-
-    /**
-     * print out the information of the bulk dofs system
-     */
-    void PrintBulkDofInfo()const;
-    /**
-     * print out the details of the bulk dofs system 
-     */
-    void PrintBulkDofDetailInfo()const;
 
 protected:
-    //*************************************************
-    //*** for basic dof information
-    //*************************************************
-    int _nElmts,_nBulkElmts;
-    int _nDofsPerNode,_nMaxDofsPerNode;
-    int _nDofs,_nActiveDofs;
-    int _nNodesPerBulkElmt,_nNodes;
-    int _nMaxDim,_nMinDim;
-    int _nMaxDofsPerElmt;
-    bool _HasDofMap,_HasSetDofName;
-    vector<int>              _DofIDList;
-    vector<string>           _DofNameList;
-    vector<pair<int,string>> _DofID2NameList;
-    vector<pair<string,int>> _DofName2IDList;
+    vector<string> m_dof_namelist;/**< vector for the name of dofs of each node */
+    vector<int> m_dof_idlist;/**< vecotr for the related dof id of each dof(name) */
 
-    vector<vector<int>> _NodeDofsMap;
-    vector<vector<double>> _NodalDofFlag,_BulkElmtDofFlag;
-    vector<vector<int>> _BulkElmtDofsMap;
+    int m_bulkelmts;/**< for the number of bulk elements */
+    int m_nodes;/**< for the number of nodes */
+    int m_maxdofs_pernode;/**< for the maximum dofs of one single node */
+    int m_maxdofs_perelmt;/**< for the maximum dofs of one single element */
+    int m_total_dofs;/**< for the total dofs */
+    int m_active_dofs;/**< for the active dofs */
+    vector<vector<int>> m_elmt_dofids;/**< this vector stores the dofs id of each element */
+    vector<vector<int>> m_nodal_dofids;/**< this vector stores the dof ids of each node */
 
-    vector<vector<pair<ElmtType,MateType>>> _BulkElmtElmtMateTypePairList;
-    vector<vector<int>> _BulkElmtElmtMateIndexList; 
-    vector<vector<vector<int>>> _BulkElmtLocalDofIndex;
-
-    // for the length of non-zero element per row
-    vector<int> _RowNNZ;
-    int _RowMaxNNZ; // the max non-zero elements of all the rows
+    int m_maxnnz;/**< for the maximum nonzeros */
 
 };

@@ -1,80 +1,147 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.11.07
-//+++ Purpose: Calculate the material properties required by Miehe's
-//+++          phase field fracture model by using neohookean material
-//+++           1) viscosity
-//+++           2) Gc
-//+++           3) L
-//+++           4) H
-//+++           5) dHdstrain
+//+++ Date   : 2022.10.28
+//+++ Purpose: Calculate the material properties defined in neohookean
+//+++          type finite strain phase-field fracture model
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include "MateSystem/PhaseFieldFractureMaterialBase.h"
+#include "MateSystem/BulkMaterialBase.h"
+#include "MateSystem/FreeEnergyMaterialBase.h"
+#include "MateSystem/ElasticMaterialBase.h"
 
 /**
- * This class implement the calculation for the constitutive laws based Miehe's phase field fracture model, where the constitutive laws are calculated for neohookean material.
+ * This class calculate the material properties for the allen-cahn fracture element
  */
-class NeoHookeanPFFractureMaterial:public PhaseFieldFractureMaterialBase{
+class NeoHookeanPFFractureMaterial:public BulkMaterialBase,
+                                   public FreeEnergyMaterialBase,
+                                   public ElasticMaterialBase{
 public:
+    NeoHookeanPFFractureMaterial();
+    ~NeoHookeanPFFractureMaterial();
+protected:
     /**
-     * Initialize material properties in Miehe's phase field fracture model
+     * Initial the preset material properties, if you don't need the history information of some materials, 
+     * then you can avoid calling this function
+     * @param t_inputparams the input material parameters read from the json file
+     * @param t_elmtinfo the data structure for the local element information
+     * @param t_elmtsoln the solutions, i.e., U and V of the local element
+     * @param Mate the materials (container) to be initialized
      */
-    virtual void InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate) override;
-   
+    virtual void initMaterialProperties(const nlohmann::json &t_inputparams,
+                                        const LocalElmtInfo &t_elmtinfo,
+                                        const LocalElmtSolution &t_elmtsoln,
+                                        MaterialsContainer &t_mate) override;
+
     /**
-     * Compute the stress and jacobian in Miehe's phase field fracture model
-     */ 
-    virtual void ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) override;
+     * Compute the material property accroding to your model
+     * @param t_inputparams the input material parameters read from the input file
+     * @param t_elmtinfo the data structure for the local element information
+     * @param t_elmtsoln the solutions, i.e., U and V of the local element
+     * @param t_mateold the materials from previous step
+     * @param t_mate the materials to be calculated
+     */
+    virtual void computeMaterialProperties(const nlohmann::json &t_inputparams,
+                                           const LocalElmtInfo &t_elmtinfo,
+                                           const LocalElmtSolution &t_elmtsoln,
+                                           const MaterialsContainer &t_mateold,
+                                           MaterialsContainer &t_mate) override;
 
 private:
-
     /**
-     * Compute the strain, it could be small strain \f$\mathbf{\varepsilon}\f$, Green-Lagrange tensor \f$\mathbf{E}=\frac{1}{2}(\mathbf{F}^{T}\mathbf{F}-\mathbf{I})\f$.
-     * @param elmtinfo the current element information data
-     * @param elmtsoln the curent element's solution, include the displacement and its gradient
-     * @param Strain the rank-2 strain tensor
-     */ 
-    virtual void ComputeStrain(const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,RankTwoTensor &Strain) override;
-
-    /**
-     * Compute the stress \f$\mathbf{\sigma}\f$ and jacobian matrix \f$\mathbb{C}\f$ .
-     * @param InputParams the input material parameters from your input file.
-     * @param damage the order parameter for damage field.
-     * @param Strain the input strain tensor, it is calculated from ComputeStrain function.
-     * @param Stress the calculated stress tensor \f$\mathbf{\sigma}\f$ for MechanicsElmt.
-     * @param Jacobian the calculated 'elasticity' tensor \f$\mathbb{C}\f$, it is the rank-4 tensor for the general constitutive law.
+     * compute the elastic strain tensor
+     * @param dim the dimension of current analysis
+     * @param gradU the gradient of displacement
+     * @param strain the output elastic strain tensor
      */
-    virtual void ComputeConstitutiveLaws(const vector<double> &InputParams,const double &damage,const RankTwoTensor &strain,RankTwoTensor &Stress,RankFourTensor &Jacobian,const Materials &MateOld, Materials &Mate) override;
-    
+    virtual void computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain) override;
     /**
-     * The degradation function
-     * @param x the damage variable value
-     */ 
-    virtual double DegradationFun(const double &x) override;
-    
-    /**
-     * The degradation function
-     * @param x the damage variable value
+     * compute the stress and jacobian tensor
+     * @param t_params the json parameters defined in the input file
+     * @param dim the dimension of current analysis
+     * @param strain the strain tensor
+     * @param stress the output stress tensor
+     * @param jacobian the output jacobian tensor
      */
-    virtual double DegradationFunDeriv(const double &x) override;
+    virtual void computeStressAndJacobian(const nlohmann::json &t_params,
+                                          const int &dim,
+                                          const Rank2Tensor &strain,
+                                          Rank2Tensor &stress,
+                                          Rank4Tensor &jacobian) override;
+private:
+    /**
+     * Calculate the free energy and its first/second order (partial) derivatives.
+     * @param parameters the json parameters read from input file
+     * @param args the variables for the free energy expression, it could be concentration or order parameters
+     * @param F the system free energy
+     * @param dFdargs the first order derivatives of F with respect to its own args
+     * @param d2Fdargs2 the second order (partial) derivatives of F with respect to different args, off-diagnoal part for partial derivatives
+    */
+    virtual void computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
+                                                 const VectorXd &args,
+                                                 VectorXd       &F,
+                                                 VectorXd       &dFdargs,
+                                                 MatrixXd       &d2Fdargs2) override;
 
 private:
-    RankTwoTensor _I,_Stress,_PK2,_CauchyStress,_DevStress,_GradU;
-    RankTwoTensor _Strain,_F,_C,_Cinv,_E;
-    RankFourTensor _Jacobian;
-    RankTwoTensor _StressPos,_StressNeg;
-    RankFourTensor _JacPos,_JacNeg,I4;
-    double _J,_J23,_I1,_I1bar;
+    /**
+     * The degradation function
+     * @param x the damage variable, 0-> undamage,1->full damage
+    */
+    double g(const double &x){
+        return (1.0-x)*(1.0-x);
+    }
+
+    /**
+     * The 1st order derivative of the degradation function
+     * @param x the damage variable, 0-> undamage,1->full damage
+    */
+    double dg(const double &x){
+        return 2.0*(x-1.0);
+    }
+
+    /**
+     * The 2nd order derivative of the degradation function
+     * @param x the damage variable, 0-> undamage,1->full damage
+    */
+    double d2g(const double &x){
+        if(x){}
+        return 2.0;
+    }
+
+private:
+    double m_d;/**< the damage variable */
+    double m_psi,m_psipos,m_psineg;/**< the different free energies */
+    double m_stabilizer=1.0e-5;/**< stabilizer to get rid of rigid body motion in fully damaged region */
+
+    VectorXd m_args;/**< the variables */
+    VectorXd m_F;/**< the system free energy*/
+    VectorXd m_dFdargs;/**< the first order derivatives of F */
+    MatrixXd m_d2Fdargs2;/**< the second order derivatives of F */
+
+    double m_Je,m_Je23;/**< determinte of deformation tensor */
+    double m_I1,m_I1bar;/**< first invariant*/
+    Rank2Tensor m_GradU;/** the displacement's gradient */
+    Rank2Tensor m_Estrain;/**< the Lagrange-Green strain tensor */
+    Rank2Tensor m_Fe;/**< the mechanical deformation tensor */
+    Rank2Tensor m_Ce,m_CeInv;/**< the right Cauchy-Green tensor and its inverse */
+    Rank2Tensor m_PK2stress,m_PK2stress_pos,m_PK2stress_neg;/**< the pk2 stress and its positive and negative part */
+    Rank2Tensor m_dPK2stress_dD;/**< the derivative of pk2 stress w.r.t. damage */
+
+    Rank2Tensor m_PK1stress,m_dPK1stress_dD;/**< the PK1 stress and its derivatives */
+    Rank2Tensor m_devstress;/**< the deviatoric part of the pk1 stress */
+
+    Rank2Tensor m_I;/**< the identity tensor */
+
+    Rank4Tensor m_jacobian,m_jacobian_pos,m_jacobian_neg;/**< the jacobian tensor and its positive and negative part */
 
 };

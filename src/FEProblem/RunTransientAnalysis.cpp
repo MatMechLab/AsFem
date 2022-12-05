@@ -1,45 +1,37 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.30
-//+++ Purpose: Implement the transient analysis in AsFem
+//+++ Date   : 2022.05.09
+//+++ Purpose: run the transient analysis
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FEProblem/FEProblem.h"
 
-void FEProblem::RunTransientAnalysis(){
-    MessagePrinter::PrintNormalTxt("Start to do the transient FEM analysis ...");
-    if(_rank==0){
-        _TimerStart=chrono::high_resolution_clock::now();
-    }
-    if(_timestepping.Solve(_mesh,_dofHandler,_elmtSystem,_mateSystem,
-        _bcSystem,_icSystem,
-        _solutionSystem,_equationSystem,
-        _fe,_feSystem,
-        _outputSystem,
-        _postprocessSystem,
-        _feCtrlInfo,
-        _nonlinearSolver)){
-        if(_rank==0){
-            _TimerEnd=chrono::high_resolution_clock::now();
-            _Duration=Duration(_TimerStart,_TimerEnd);
-        }
-        MessagePrinter::PrintDashLine(MessageColor::CYAN);
-        char buff[70];string str;
-        snprintf(buff,70,"Transient analysis finished! [elapse time=%14.6e s]",_Duration);
-        str=string(buff);
-        MessagePrinter::PrintNormalTxt(str,MessageColor::CYAN);
-        MessagePrinter::PrintDashLine(MessageColor::CYAN);
+void FEProblem::runTransientAnalysis(){
+
+    MessagePrinter::printStars();
+    MessagePrinter::printNormalTxt("Start the transient analysis ...");
+    MessagePrinter::printStars();
+    m_timer.startTimer();
+    if(m_timestepping.solve(m_mesh,m_dofhandler,m_fe,
+                            m_elmtsystem,m_matesystem,m_fesystem,
+                            m_bcsystem,m_icsystem,
+                            m_solutionsystem,m_equationsystem,m_projsystem,
+                            m_fectrlinfo,m_nlsolver,m_output,m_postprocessor)){
+        m_timer.endTimer();
+        MessagePrinter::printStars();
+        m_timer.printElapseTime("Transient analysis is done");
+        MessagePrinter::printStars();
     }
     else{
-        MessagePrinter::PrintNormalTxt("Transient analysis failed, please check either your code or your input file");
-        MessagePrinter::AsFem_Exit();
+        MessagePrinter::printErrorTxt("Transient analysis fails, please check either your code or your input file and boundary conditions");
+        MessagePrinter::exitAsFem();
     }
 }

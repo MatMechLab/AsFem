@@ -68,10 +68,12 @@
 
 #ifndef EIGEN_LU_STRUCTS
 #define EIGEN_LU_STRUCTS
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen {
 namespace internal {
-  
-typedef enum {LUSUP, UCOL, LSUB, USUB, LLVL, ULVL} MemType; 
+
+enum MemType {LUSUP, UCOL, LSUB, USUB, LLVL, ULVL};
 
 template <typename IndexVector, typename ScalarVector>
 struct LU_GlobalLU_t {

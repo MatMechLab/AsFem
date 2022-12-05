@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -16,59 +16,73 @@
 #include "TimeStepping/TimeStepping.h"
 
 TimeStepping::TimeStepping(){
-    _Dt=1.0e-5;
-    _FinalT=1.0e-3;
-    _Adaptive=false;
-    _TotalSteps=-1;
-    _TimeSteppingType=TimeSteppingType::BACKWARDEULER;
-    _TimeSteppingTypeName="backward-euler";
-    _GrowthFactor=1.1;
-    _CutBackFactor=0.85;
-    _OptIters=3;
-    _DtMax=1.0e2;
-    _DtMin=1.0e-12;
-    _IterHist[0]=0;
-    _IterHist[1]=1;
+    m_data.m_totalstep=1;/**< the total time step */
+    m_data.m_dt0=1.0e-6;/**< the initial delta t */
+    m_data.m_dtmax=1.0e-3;/**< the maximum time increment */
+    m_data.m_dtmin=1.0e-13;/**< the minimum time increment */
+    m_data.m_finaltime=1.0e-2;/**< the final simulation time */
+    m_data.m_cutfactor=0.85;/**< the cut back factor time time adaptive */
+    m_data.m_growthfactor=1.1;/**< the growth factor for time adaptive */
+    m_data.m_isadaptive=false;/**< boolean flag for adaptive */
+    m_data.m_optimize_iters=4;/**< optimize nonlinear iterations for time adaptive */
+
+    m_data.m_stepping_type=TimeSteppingType::BACKWARDEULER;/**< the time stepping type */
 }
 
-//****************************************************
-void TimeStepping::SetOpitonsFromTimeSteppingBlock(TimeSteppingBlock &timeSteppingBlock){
-    _Dt=timeSteppingBlock._Dt;
-    _DtMin=timeSteppingBlock._DtMin;
-    _DtMax=timeSteppingBlock._DtMax;
-    _FinalT=timeSteppingBlock._FinalT;
-    _TotalSteps=static_cast<long int>(_FinalT/_Dt);
-    _TimeSteppingType=timeSteppingBlock._TimeSteppingType;
-    _TimeSteppingTypeName=timeSteppingBlock._TimeSteppingTypeName;
-    _Adaptive=timeSteppingBlock._Adaptive;
-    _GrowthFactor=timeSteppingBlock._GrowthFactor;
-    _CutBackFactor=timeSteppingBlock._CutBackFactor;
-    _OptIters=timeSteppingBlock._OptIters;
+void TimeStepping::applyDefaultSettings(){
+    m_data.m_totalstep=1;/**< the total time step */
+    m_data.m_dt0=1.0e-6;/**< the initial delta t */
+    m_data.m_dtmax=1.0e-3;/**< the maximum time increment */
+    m_data.m_dtmin=1.0e-13;/**< the minimum time increment */
+    m_data.m_finaltime=1.0e-2;/**< the final simulation time */
+    m_data.m_cutfactor=0.85;/**< the cut back factor time time adaptive */
+    m_data.m_growthfactor=1.1;/**< the growth factor for time adaptive */
+    m_data.m_isadaptive=false;/**< boolean flag for adaptive */
+    m_data.m_optimize_iters=4;/**< optimize nonlinear iterations for time adaptive */
+
+    m_data.m_stepping_type=TimeSteppingType::BACKWARDEULER;/**< the time stepping type */
 }
-//*******************************************************
-void TimeStepping::PrintTimeSteppingInfo()const{
-    MessagePrinter::PrintNormalTxt("Time stepping system information summary:");
-    MessagePrinter::PrintNormalTxt("  stepping method ="+_TimeSteppingTypeName);
-    if(_Adaptive){
-        MessagePrinter::PrintNormalTxt("  adaptive is enabled, optimal iters ="+to_string(_OptIters));
-        MessagePrinter::PrintNormalTxt("  adaptive growth factor="+to_string(_GrowthFactor)+", cut factor="+to_string(_CutBackFactor));
+
+void TimeStepping::printInfo()const{
+    string str;
+    char buff[69];
+    
+    MessagePrinter::printNormalTxt("Time stepping system information summary");
+
+    snprintf(buff,69,"  final t=%13.5e, optimal iters=%2d",
+                     getFinalTime(),getOptimizeIters());
+    str=buff;
+    MessagePrinter::printNormalTxt(str);
+
+    snprintf(buff,69,"  delta t=%13.5e, max dt=%13.5e, min dt=%13.5e",
+                     getDt0(),getMaxDt(),getMinDt());
+    str=buff;
+    MessagePrinter::printNormalTxt(str);
+
+    snprintf(buff,69,"  growth factor=%13.5e, cut back factor=%13.5e",
+                     getGrowthFactor(),getCutbackFactor());
+    str=buff;
+    MessagePrinter::printNormalTxt(str);
+    
+    if(isAdaptive()){
+        MessagePrinter::printNormalTxt("  adaptive = true");
     }
     else{
-        MessagePrinter::PrintNormalTxt("  adaptive is disabled");
+        MessagePrinter::printNormalTxt("  adaptive = false");
     }
-    char buff[20];
-    snprintf(buff,20,"%14.5e",_Dt);
-    string str;
-    str="  init delta T="+string(buff);
-    snprintf(buff,20,"%14.5e",_FinalT);
-    str+=", final T="+string(buff);
-    MessagePrinter::PrintNormalTxt(str);
 
-    snprintf(buff,20,"%14.5e",_DtMax);
-    str="  max delta T="+string(buff);
-    snprintf(buff,20,"%14.5e",_DtMin);
-    str+=", min delta T="+string(buff);
-    MessagePrinter::PrintNormalTxt(str);
-    MessagePrinter::PrintDashLine();
+    if(getTimeSteppingType()==TimeSteppingType::BACKWARDEULER){
+        MessagePrinter::printNormalTxt("  stepping method = backward euler(BE)");
+    }
+    else if(getTimeSteppingType()==TimeSteppingType::CRANCKNICOLSON){
+        MessagePrinter::printNormalTxt("  stepping method = cranck nicolson (CN)");
+    }
+    else if(getTimeSteppingType()==TimeSteppingType::STATIC){
+        MessagePrinter::printNormalTxt("  stepping method = static");
+    }
+    else if(getTimeSteppingType()==TimeSteppingType::BDF2){
+        MessagePrinter::printNormalTxt("  stepping method = BDF2");
+    }
+
+    MessagePrinter::printStars();
 }
-//****************************************

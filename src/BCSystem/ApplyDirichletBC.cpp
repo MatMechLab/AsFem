@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -13,81 +13,124 @@
 //+++          penalty method
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-
 #include "BCSystem/BCSystem.h"
-#include "DofHandler/DofHandler.h"
 
-void BCSystem::ApplyDirichletBC(const FECalcType &calctype,const BCType &bctype,const vector<string> bcnamelist,const vector<int> &dofindex,const double &bcvalue,const vector<double> &params,const Mesh &mesh,const DofHandler &dofHandler,Vec &U,Mat &K,Vec &RHS){
-    PetscInt i,j,k,e,ee;
-    PetscInt iInd;
+void BCSystem::applyDirichletBC(const FECalcType &calctype,
+                                const double &bcvalue,
+                                const BCType &bctype,
+                                const nlohmann::json &json,
+                                const vector<int> &dofids,
+                                const vector<string> &bcnamelist,
+                                const Mesh &mesh,const DofHandler &dofhandler,
+                                Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
+                                Vector &V,
+                                SparseMatrix &AMATRIX,
+                                Vector &RHS){
+    //************************************
+    //*** get rid of unused warnings 
+    //************************************
+    int i,j,k,e,iInd,nElmts;
     int rankne,eStart,eEnd;
-    vector<int> dofids;
+    vector<int> globaldofids;
+    globaldofids.resize(dofids.size(),0);
 
-    dofids.resize(dofindex.size(),0);
-    _elmtinfo.nDofs=static_cast<int>(dofindex.size());
+    m_local_elmtinfo.m_dofsnum=static_cast<int>(dofids.size());
+    if(Uold.getSize()||Uolder.getSize()||V.getSize()) {}
 
-    MPI_Comm_size(PETSC_COMM_WORLD,&_size);
-    MPI_Comm_rank(PETSC_COMM_WORLD,&_rank);
+    Ucopy.makeGhostCopy();
+    Uold.makeGhostCopy();
+    Uolder.makeGhostCopy();
+    V.makeGhostCopy();
 
-    for(auto bcname:bcnamelist){
-        rankne=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname)/_size;
-        eStart=_rank*rankne;
-        eEnd=(_rank+1)*rankne;
-        if(_rank==_size-1) eEnd=mesh.GetBulkMeshElmtsNumViaPhysicalName(bcname);
+    MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
+    MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
 
-        _elmtinfo.nDim=mesh.GetBulkMeshDimViaPhyName(bcname);
-        for(e=eStart;e<eEnd;++e){
-            ee=mesh.GetBulkMeshIthElmtIDViaPhyName(bcname,e+1);//global id
-            _elmtinfo.nNodes=mesh.GetBulkMeshIthElmtNodesNum(ee);
-            for(i=1;i<=mesh.GetBulkMeshIthElmtNodesNum(ee);++i){
-                j=mesh.GetBulkMeshIthElmtJthNodeID(ee,i);
-                _elmtinfo.gpCoords(1)=mesh.GetBulkMeshIthNodeJthCoord(j,1);
-                _elmtinfo.gpCoords(2)=mesh.GetBulkMeshIthNodeJthCoord(j,2);
-                _elmtinfo.gpCoords(3)=mesh.GetBulkMeshIthNodeJthCoord(j,3);
-                for(k=1;k<=static_cast<int>(dofindex.size());k++){
-                    iInd=dofHandler.GetBulkMeshIthNodeJthDofIndex(j,dofindex[k-1])-1;
-                    dofids[k-1]=iInd;
+    for(const auto &name:bcnamelist){
+        nElmts=mesh.getBulkMeshElmtsNumViaPhyName(name);
+        rankne=nElmts/m_size;
+        eStart=m_rank*rankne;
+        eEnd=(m_rank+1)*rankne;
+        if(m_rank==m_size-1) eEnd=nElmts;
+        m_local_elmtinfo.m_dim=mesh.getBulkMeshElmtDimViaPhyName(name);
+
+        for(e=eStart;e<eEnd;e++){
+            m_local_elmtinfo.m_nodesnum=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
+            
+            for(i=1;i<=m_local_elmtinfo.m_nodesnum;i++){
+                j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
+                m_local_elmtinfo.m_gpCoords0(2)=mesh.getBulkMeshIthNodeJthCoord0(j,2);
+                m_local_elmtinfo.m_gpCoords0(3)=mesh.getBulkMeshIthNodeJthCoord0(j,3);
+
+                for(k=1;k<=m_local_elmtinfo.m_dofsnum;k++){
+                    iInd=dofhandler.getIthNodeJthDofID(j,dofids[k-1]);
+                    globaldofids[k-1]=iInd;
+
+                    m_local_elmtsoln.m_gpU[k]=Ucopy.getIthValueFromGhost(iInd);
+                    m_local_elmtsoln.m_gpUold[k]=Uold.getIthValueFromGhost(iInd);
+                    m_local_elmtsoln.m_gpUolder[k]=Uolder.getIthValueFromGhost(iInd);
+                    m_local_elmtsoln.m_gpV[k]=V.getIthValueFromGhost(iInd);
                 }
 
-                switch (bctype) {
-                    case BCType::DIRICHLETBC:
-                        DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break;
-                    case BCType::CYCLICDIRICHLETBC:
-                        CyclicDirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break;
-                    case BCType::USER1DIRICHLETBC:
-                        User1DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break;
-                    case BCType::USER2DIRICHLETBC:
-                        User2DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break; 
-                    case BCType::USER3DIRICHLETBC:
-                        User3DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break; 
-                    case BCType::USER4DIRICHLETBC:
-                        User4DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break; 
-                    case BCType::USER5DIRICHLETBC:
-                        User5DirichletBC::ComputeBCValue(calctype,bcvalue,params,_elmtinfo,dofids,_elmtinfo.gpCoords,K,RHS,U);
-                        break; 
-                    default:
-                        MessagePrinter::PrintErrorTxt("unsupported boundary condition type in ApplyDirichletBC, please check your code");
-                        MessagePrinter::AsFem_Exit();
-                        break;
+                switch (bctype)
+                {
+                case BCType::DIRICHLETBC:
+                    DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::ROTATEDDIRICHLETBC:
+                    RotatedDirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::USER1DIRICHLETBC:
+                    User1DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::USER2DIRICHLETBC:
+                    User2DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::USER3DIRICHLETBC:
+                    User3DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::USER4DIRICHLETBC:
+                    User4DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::USER5DIRICHLETBC:
+                    User5DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                case BCType::POISSON2DBENCHMARKBC:
+                    Poisson2DBenchmarkBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
+                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                                                U,AMATRIX,RHS);
+                    break;
+                default:
+                    MessagePrinter::printErrorTxt("unsupported dirichlet type boundary condition in ApplyDirichletBC.cpp, plese check your input file or your code");
+                    MessagePrinter::exitAsFem();
+                    break;
                 }
             }
         }
     }
 
-    // INSERT_VALUES canot mix with ADD_VALUES, so you should assemble them first,
-    // then apply other BCs
-    VecAssemblyBegin(U);
-    VecAssemblyEnd(U);
-    VecAssemblyBegin(RHS);
-    VecAssemblyEnd(RHS);
+    Ucopy.destroyGhostCopy();
+    Uold.destroyGhostCopy();
+    Uolder.destroyGhostCopy();
+    V.destroyGhostCopy();
 
-    MatAssemblyBegin(K,MAT_FINAL_ASSEMBLY);
-    MatAssemblyEnd(K,MAT_FINAL_ASSEMBLY);
+    // do the assemble
+    U.assemble();
+    if(calctype==FECalcType::COMPUTERESIDUAL) RHS.assemble();
+    if(calctype==FECalcType::COMPUTEJACOBIAN) AMATRIX.assemble();
 
 }

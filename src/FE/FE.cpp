@@ -1,145 +1,171 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.12
-//+++ Purpose: implement the general FE space for FEM calculation
-//+++          in AsFem, here one can use:
-//+++            1) gauss integration 
-//+++            2) shape functions for different mesh
+//+++ Date   : 2022.06.12
+//+++ Purpose: this class offers the functions and management of
+//+++          shape function class and qpoint class for FEM calc
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FE/FE.h"
 
 FE::FE(){
-    _nDim=1;_nMinDim=0;
-    _HasDimSet=false;
-    _IsInit=false;
-    _BulkQPoint.SetQPointType(QPointType::GAUSSLEGENDRE);
-    _SurfaceQPoint.SetQPointType(QPointType::GAUSSLEGENDRE);
-    _LineQPoint.SetQPointType(QPointType::GAUSSLEGENDRE);
-    _nBulkQpOrder=1;_nBCQpOrder=1;
+    m_maxdim=0;
+    m_mindim=0;
 }
-//**********************************************
-void FE::SetQPointType(QPointType qptype){
-    _LineQPoint.SetQPointType(qptype);
-    _SurfaceQPoint.SetQPointType(qptype);
-    _BulkQPoint.SetQPointType(qptype);
-}
-void FE::SetBulkQpOrder(int order){
-    _nBulkQpOrder=order;
-    _LineQPoint.SetQPointOrder(order);
-    _SurfaceQPoint.SetQPointOrder(order);
-    _BulkQPoint.SetQPointOrder(order);
-}
-void FE::SetBCQpOrder(int order){
-    _nBCQpOrder=order;
-    _LineQPoint.SetQPointOrder(order);
-    _SurfaceQPoint.SetQPointOrder(order);
-}
-//******************************************************
-void FE::CreateQPoints(Mesh &mesh){
-    if(_HasDimSet){
-        if(GetDim()==1){
-            _BulkQPoint.SetDim(1);
-            _BulkQPoint.CreateQpoints(mesh.GetBulkMeshBulkElmtType());
-        }
-        else if(GetDim()==2){
-            _BulkQPoint.SetDim(2);
-            _BulkQPoint.CreateQpoints(mesh.GetBulkMeshBulkElmtType());
 
-            _LineQPoint.SetDim(1);
-            _LineQPoint.CreateQpoints(mesh.GetBulkMeshLineElmtType());
-        }
-        else if(GetDim()==3){
-            _BulkQPoint.SetDim(3);
-            _BulkQPoint.CreateQpoints(mesh.GetBulkMeshBulkElmtType());
+void FE::initdefault(const Mesh &t_mesh){
+    if(t_mesh.getBulkMeshMaxDim()==1){
+        // for 1d mesh
+        m_maxdim=1;
+        m_mindim=0;
+        // for shape functions
+        m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_shp.init();
 
-            _SurfaceQPoint.SetDim(2);
-            _SurfaceQPoint.CreateQpoints(mesh.GetBulkMeshSurfaceElmtType());
+        // for gauss points
+        m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
+        m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_bulk_qpoints.createQPoints();
+    }
+    else if(t_mesh.getBulkMeshMaxDim()==2){
+        // for 2d mesh
+        m_maxdim=2;
+        m_mindim=1;
+        // for shape functions
+        m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_shp.init();
 
-            _LineQPoint.SetDim(1);
-            _LineQPoint.CreateQpoints(mesh.GetBulkMeshLineElmtType());
-        }
+        m_line_shp.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_shp.init();
+
+        // for gauss points
+        m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
+        m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_bulk_qpoints.createQPoints();
+        //
+        m_line_qpoints.setDim(m_mindim);
+        m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_line_qpoints.createQPoints();
+    }
+    else if(t_mesh.getBulkMeshMaxDim()==3){
+        // for 3d mesh
+        m_maxdim=3;
+        m_mindim=t_mesh.getBulkMeshMinDim();
+        // for shape functions
+        m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_shp.init();
+
+        m_surface_shp.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
+        m_surface_shp.init();
+
+        m_line_shp.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_shp.init();
+
+        // for gauss points
+        m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
+        m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_bulk_qpoints.createQPoints();
+        //
+        m_surface_qpoints.setDim(2);
+        m_surface_qpoints.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
+        m_surface_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        m_surface_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_surface_qpoints.createQPoints();
+        //
+        m_line_qpoints.setDim(1);
+        m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_line_qpoints.createQPoints();
     }
     else{
-        MessagePrinter::PrintErrorTxt("can\'t create qpoints for FE space, the dim has not been given yet");
-        MessagePrinter::AsFem_Exit();
+        MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_mesh.getBulkMeshMaxDim())+") for FE initializing");
+        MessagePrinter::exitAsFem();
     }
 }
-//**************************************************************************
-//*** for shape function related functions
-//**************************************************************************
-void FE::CreateShapeFuns(Mesh &mesh){
-    SetDim(mesh.GetBulkMeshDim());
-    SetMinDim(mesh.GetBulkMeshMinDim());
-
-    _BulkShp=ShapeFun(mesh.GetBulkMeshDim(),mesh.GetBulkMeshBulkElmtType());
-    _BulkShp.PreCalc();
-
-    _BulkNodes=Nodes(mesh.GetBulkMeshNodesNumPerBulkElmt());
-    if(GetDim()==3){
-        _SurfaceShp=ShapeFun(2,mesh.GetBulkMeshSurfaceElmtType());
-        _SurfaceShp.PreCalc();
-
-        _LineShp=ShapeFun(1,mesh.GetBulkMeshLineElmtType());
-        _LineShp.PreCalc();
-
-        _SurfaceNodes=Nodes(mesh.GetBulkMeshNodesNumPerSurfaceElmt());
-        _LineNodes=Nodes(mesh.GetBulkMeshNodesNumPerLineElmt());
+void FE::init(const Mesh &t_mesh){
+    // this should only be used on user defines shp and qp block in their input file
+    // here the different shp and qpoint have already been defined/given in your input file !!!
+    m_maxdim=t_mesh.getBulkMeshMaxDim();
+    m_mindim=t_mesh.getBulkMeshMinDim();
+    if(t_mesh.getBulkMeshMaxDim()==1){
+        // for 1d case
+        m_bulk_shp.init();
+        m_bulk_qpoints.createQPoints();
     }
-    else if(GetDim()==2){
-        _LineShp=ShapeFun(1,mesh.GetBulkMeshLineElmtType());
-        _LineShp.PreCalc();
+    else if(t_mesh.getBulkMeshMaxDim()==2){
+        // for 2d case
+        m_bulk_shp.init();
+        m_bulk_qpoints.createQPoints();
 
-        _LineNodes=Nodes(mesh.GetBulkMeshNodesNumPerLineElmt());
+        m_line_shp.init();
+        m_line_qpoints.createQPoints();
+    }
+    else if(t_mesh.getBulkMeshMaxDim()==3){
+        // for 3d case
+        m_bulk_shp.init();
+        m_bulk_qpoints.createQPoints();
+
+        m_surface_shp.init();
+        m_surface_qpoints.createQPoints();
+
+        m_line_shp.init();
+        m_line_qpoints.createQPoints();
+    }
+    else{
+        MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_mesh.getBulkMeshMaxDim())+") for FE initializing");
+        MessagePrinter::exitAsFem();
     }
 }
-//**************************************************************************
-void FE::InitFE(Mesh &mesh){
-    CreateQPoints(mesh);
-    CreateShapeFuns(mesh);
+
+void FE::printFEInfo()const{
+    if(getMaxDim()==1){
+        MessagePrinter::printNormalTxt("Qpoint info for bulk elmts");
+        m_bulk_qpoints.printQPointsInfo();
+    }
+    else if(getMaxDim()==2){
+        MessagePrinter::printNormalTxt("Qpoint info for bulk elmts");
+        m_bulk_qpoints.printQPointsInfo();
+
+        MessagePrinter::printNormalTxt("Qpoint info for line elmts");
+        m_line_qpoints.printQPointsInfo();
+    }
+    else if(getMaxDim()==3){
+        MessagePrinter::printNormalTxt("Qpoint info for bulk elmts");
+        m_bulk_qpoints.printQPointsInfo();
+
+        MessagePrinter::printNormalTxt("Qpoint info for surface elmts");
+        m_surface_qpoints.printQPointsInfo();
+
+        if(getMinDim()==1){
+            MessagePrinter::printNormalTxt("Qpoint info for line elmts");
+            m_line_qpoints.printQPointsInfo();
+        }
+    }
+    MessagePrinter::printStars();
 }
-//*******************************************
-void FE::PrintFEInfo()const{
-    string msg;
-    MessagePrinter::PrintNormalTxt("QPoint information summary:");
-    if(_BulkQPoint.GetQpPointType()==QPointType::GAUSSLEGENDRE){
-        msg="  qpoint type= Gauss-Legendre, dim="+to_string(GetDim());
-    }
-    else if(_BulkQPoint.GetQpPointType()==QPointType::GAUSSLOBATTO){
-        msg="  qpoint type= Gauss-Lobatto, dim="+to_string(GetDim());
-    }
-    MessagePrinter::PrintNormalTxt(msg);
 
-    if(GetDim()==1){
-        msg="  for bulk: order="+to_string(_BulkQPoint.GetQpOrder())
-           +", num of qpoints="+to_string(_BulkQPoint.GetQpPointsNum());
-        MessagePrinter::PrintNormalTxt(msg);
-    }
-    else if(GetDim()==2){
-        msg="  for bulk: order="+to_string(_BulkQPoint.GetQpOrder())
-           +", num of qpoints="+to_string(_BulkQPoint.GetQpPointsNum());
-        MessagePrinter::PrintNormalTxt(msg);
+void FE::releaseMemory(){
+    m_bulk_shp.releaseMemory();
+    m_line_shp.releaseMemory();
+    m_surface_shp.releaseMemory();
 
-        msg="  for boun: order="+to_string(_LineQPoint.GetQpOrder())
-           +", num of qpoints="+to_string(_LineQPoint.GetQpPointsNum());
-        MessagePrinter::PrintNormalTxt(msg);
-    }
-    else if(GetDim()==3){
-        msg="  for bulk: order="+to_string(_BulkQPoint.GetQpOrder())
-           +", num of qpoints="+to_string(_BulkQPoint.GetQpPointsNum());
-        MessagePrinter::PrintNormalTxt(msg);
-
-        msg="  for boun: order="+to_string(_SurfaceQPoint.GetQpOrder())
-           +", num of qpoints="+to_string(_SurfaceQPoint.GetQpPointsNum());
-        MessagePrinter::PrintNormalTxt(msg);
-    }
-    MessagePrinter::PrintDashLine();
+    m_bulk_qpoints.releaseMemory();
+    m_line_qpoints.releaseMemory();
+    m_surface_qpoints.releaseMemory();
 }

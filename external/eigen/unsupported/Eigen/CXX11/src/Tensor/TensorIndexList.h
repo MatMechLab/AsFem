@@ -10,10 +10,7 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_INDEX_LIST_H
 #define EIGEN_CXX11_TENSOR_TENSOR_INDEX_LIST_H
 
-
-#if EIGEN_HAS_CONSTEXPR && EIGEN_HAS_VARIADIC_TEMPLATES
-
-#define EIGEN_HAS_INDEX_LIST
+#include "./InternalHeaderCheck.h"
 
 namespace Eigen {
 
@@ -246,7 +243,7 @@ struct tuple_coeff {
 
   template <typename... T>
   EIGEN_DEVICE_FUNC static constexpr bool value_known_statically(const Index i, const IndexTuple<T...>& t) {
-    return ((i == Idx) & is_compile_time_constant<typename IndexTupleExtractor<Idx, T...>::ValType>::value) ||
+    return ((i == Idx) && is_compile_time_constant<typename IndexTupleExtractor<Idx, T...>::ValType>::value) ||
         tuple_coeff<Idx-1, ValueT>::value_known_statically(i, t);
   }
 
@@ -307,6 +304,11 @@ struct IndexList : internal::IndexTuple<FirstType, OtherTypes...> {
   EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC void set(const Index i, const Index value) {
     return internal::tuple_coeff<internal::array_size<internal::IndexTuple<FirstType, OtherTypes...> >::value-1, Index>::set(i, *this, value);
   }
+
+  EIGEN_STRONG_INLINE EIGEN_DEVICE_FUNC constexpr std::size_t size() const {
+    return 1 + sizeof...(OtherTypes);
+  };
+
 
   EIGEN_DEVICE_FUNC constexpr IndexList(const internal::IndexTuple<FirstType, OtherTypes...>& other) : internal::IndexTuple<FirstType, OtherTypes...>(other) { }
   EIGEN_DEVICE_FUNC constexpr IndexList(FirstType& first, OtherTypes... other) : internal::IndexTuple<FirstType, OtherTypes...>(first, other...) { }
@@ -379,10 +381,10 @@ template<typename FirstType, typename... OtherTypes> struct array_size<const Ind
 };
 
 template<typename FirstType, typename... OtherTypes> struct array_size<IndexPairList<FirstType, OtherTypes...> > {
-  static const size_t value = std::tuple_size<std::tuple<FirstType, OtherTypes...> >::value;
+  static const size_t value = 1 + sizeof...(OtherTypes);
 };
 template<typename FirstType, typename... OtherTypes> struct array_size<const IndexPairList<FirstType, OtherTypes...> > {
-  static const size_t value = std::tuple_size<std::tuple<FirstType, OtherTypes...> >::value;
+  static const size_t value = 1 + sizeof...(OtherTypes);
 };
 
 template<Index N, typename FirstType, typename... OtherTypes> EIGEN_DEVICE_FUNC constexpr Index array_get(IndexList<FirstType, OtherTypes...>& a) {
@@ -468,7 +470,7 @@ struct index_statically_eq_impl {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_eq_impl<IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) == value);
   }
 };
@@ -476,7 +478,7 @@ struct index_statically_eq_impl<IndexList<FirstType, OtherTypes...> > {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_eq_impl<const IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) == value);
   }
 };
@@ -492,7 +494,7 @@ struct index_statically_ne_impl {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_ne_impl<IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) != value);
   }
 };
@@ -500,7 +502,7 @@ struct index_statically_ne_impl<IndexList<FirstType, OtherTypes...> > {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_ne_impl<const IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) != value);
   }
 };
@@ -516,7 +518,7 @@ struct index_statically_gt_impl {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_gt_impl<IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) > value);
   }
 };
@@ -524,7 +526,7 @@ struct index_statically_gt_impl<IndexList<FirstType, OtherTypes...> > {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_gt_impl<const IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) > value);
   }
 };
@@ -541,7 +543,7 @@ struct index_statically_lt_impl {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_lt_impl<IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) < value);
   }
 };
@@ -549,7 +551,7 @@ struct index_statically_lt_impl<IndexList<FirstType, OtherTypes...> > {
 template <typename FirstType, typename... OtherTypes>
 struct index_statically_lt_impl<const IndexList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexList<FirstType, OtherTypes...>().get(i) < value);
   }
 };
@@ -566,7 +568,7 @@ struct index_pair_first_statically_eq_impl {
 template <typename FirstType, typename... OtherTypes>
 struct index_pair_first_statically_eq_impl<IndexPairList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexPairList<FirstType, OtherTypes...>().operator[](i).first == value);
   }
 };
@@ -574,7 +576,7 @@ struct index_pair_first_statically_eq_impl<IndexPairList<FirstType, OtherTypes..
 template <typename FirstType, typename... OtherTypes>
 struct index_pair_first_statically_eq_impl<const IndexPairList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexPairList<FirstType, OtherTypes...>().operator[](i).first == value);
   }
 };
@@ -591,7 +593,7 @@ struct index_pair_second_statically_eq_impl {
 template <typename FirstType, typename... OtherTypes>
 struct index_pair_second_statically_eq_impl<IndexPairList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexPairList<FirstType, OtherTypes...>().operator[](i).second == value);
   }
 };
@@ -599,7 +601,7 @@ struct index_pair_second_statically_eq_impl<IndexPairList<FirstType, OtherTypes.
 template <typename FirstType, typename... OtherTypes>
 struct index_pair_second_statically_eq_impl<const IndexPairList<FirstType, OtherTypes...> > {
   EIGEN_DEVICE_FUNC static constexpr bool run(const Index i, const Index value) {
-    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &
+    return IndexPairList<FirstType, OtherTypes...>().value_known_statically(i) &&
         (IndexPairList<FirstType, OtherTypes...>().operator[](i).second == value);
   }
 };
@@ -607,81 +609,6 @@ struct index_pair_second_statically_eq_impl<const IndexPairList<FirstType, Other
 
 }  // end namespace internal
 }  // end namespace Eigen
-
-#else
-
-namespace Eigen {
-namespace internal {
-
-template <typename T>
-struct index_known_statically_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(const Index) {
-    return false;
-  }
-};
-
-template <typename T>
-struct all_indices_known_statically_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run() {
-    return false;
-  }
-};
-
-template <typename T>
-struct indices_statically_known_to_increase_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run() {
-    return false;
-  }
-};
-
-template <typename T>
-struct index_statically_eq_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(Index, Index) {
-    return false;
-  }
-};
-
-template <typename T>
-struct index_statically_ne_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(Index, Index) {
-    return false;
-  }
-};
-
-template <typename T>
-struct index_statically_gt_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(Index, Index) {
-    return false;
-  }
-};
-
-template <typename T>
-struct index_statically_lt_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(Index, Index) {
-    return false;
-  }
-};
-
-template <typename Tx>
-struct index_pair_first_statically_eq_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(Index, Index) {
-    return false;
-  }
-};
-
-template <typename Tx>
-struct index_pair_second_statically_eq_impl {
-  static EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE bool run(Index, Index) {
-    return false;
-  }
-};
-
-
-
-}  // end namespace internal
-}  // end namespace Eigen
-
-#endif
 
 
 namespace Eigen {

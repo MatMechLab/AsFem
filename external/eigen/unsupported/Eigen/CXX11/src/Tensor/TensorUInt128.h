@@ -10,6 +10,8 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_UINT128_H
 #define EIGEN_CXX11_TENSOR_TENSOR_UINT128_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen {
 namespace internal {
 
@@ -55,7 +57,7 @@ struct TensorUInt128
   template<typename T>
   EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE
   explicit TensorUInt128(const T& x) : high(0), low(x) {
-    eigen_assert((static_cast<typename conditional<sizeof(T) == 8, uint64_t, uint32_t>::type>(x) <= NumTraits<uint64_t>::highest()));
+    eigen_assert((static_cast<std::conditional_t<sizeof(T) == 8, uint64_t, uint32_t>>(x) <= NumTraits<uint64_t>::highest()));
     eigen_assert(x >= 0);
   }
 
@@ -78,14 +80,14 @@ template <typename HL, typename LL, typename HR, typename LR>
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE
 bool operator == (const TensorUInt128<HL, LL>& lhs, const TensorUInt128<HR, LR>& rhs)
 {
-  return (lhs.high == rhs.high) & (lhs.low == rhs.low);
+  return (lhs.high == rhs.high) && (lhs.low == rhs.low);
 }
 
 template <typename HL, typename LL, typename HR, typename LR>
 EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE
 bool operator != (const TensorUInt128<HL, LL>& lhs, const TensorUInt128<HR, LR>& rhs)
 {
-  return (lhs.high != rhs.high) | (lhs.low != rhs.low);
+  return (lhs.high != rhs.high) || (lhs.low != rhs.low);
 }
 
 template <typename HL, typename LL, typename HR, typename LR>

@@ -10,9 +10,11 @@
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-#ifndef EIGEN_MINRES_H_
-#define EIGEN_MINRES_H_
+#ifndef EIGEN_MINRES_H
+#define EIGEN_MINRES_H
 
+
+#include "./InternalHeaderCheck.h"
 
 namespace Eigen {
     
@@ -138,17 +140,17 @@ namespace Eigen {
         
     }
     
-    template< typename _MatrixType, int _UpLo=Lower,
-    typename _Preconditioner = IdentityPreconditioner>
+    template< typename MatrixType_, int UpLo_=Lower,
+    typename Preconditioner_ = IdentityPreconditioner>
     class MINRES;
     
     namespace internal {
         
-        template< typename _MatrixType, int _UpLo, typename _Preconditioner>
-        struct traits<MINRES<_MatrixType,_UpLo,_Preconditioner> >
+        template< typename MatrixType_, int UpLo_, typename Preconditioner_>
+        struct traits<MINRES<MatrixType_,UpLo_,Preconditioner_> >
         {
-            typedef _MatrixType MatrixType;
-            typedef _Preconditioner Preconditioner;
+            typedef MatrixType_ MatrixType;
+            typedef Preconditioner_ Preconditioner;
         };
         
     }
@@ -160,10 +162,10 @@ namespace Eigen {
      * of Paige and Saunders (1975). The sparse matrix A must be symmetric (possibly indefinite).
      * The vectors x and b can be either dense or sparse.
      *
-     * \tparam _MatrixType the type of the sparse matrix A, can be a dense or a sparse matrix.
-     * \tparam _UpLo the triangular part that will be used for the computations. It can be Lower,
+     * \tparam MatrixType_ the type of the sparse matrix A, can be a dense or a sparse matrix.
+     * \tparam UpLo_ the triangular part that will be used for the computations. It can be Lower,
      *               Upper, or Lower|Upper in which the full matrix entries will be considered. Default is Lower.
-     * \tparam _Preconditioner the type of the preconditioner. Default is DiagonalPreconditioner
+     * \tparam Preconditioner_ the type of the preconditioner. Default is DiagonalPreconditioner
      *
      * The maximal number of iterations and tolerance value can be controlled via the setMaxIterations()
      * and setTolerance() methods. The defaults are the size of the problem for the maximal number of iterations
@@ -191,8 +193,8 @@ namespace Eigen {
      *
      * \sa class ConjugateGradient, BiCGSTAB, SimplicialCholesky, DiagonalPreconditioner, IdentityPreconditioner
      */
-    template< typename _MatrixType, int _UpLo, typename _Preconditioner>
-    class MINRES : public IterativeSolverBase<MINRES<_MatrixType,_UpLo,_Preconditioner> >
+    template< typename MatrixType_, int UpLo_, typename Preconditioner_>
+    class MINRES : public IterativeSolverBase<MINRES<MatrixType_,UpLo_,Preconditioner_> >
     {
         
         typedef IterativeSolverBase<MINRES> Base;
@@ -203,12 +205,12 @@ namespace Eigen {
         using Base::m_isInitialized;
     public:
         using Base::_solve_impl;
-        typedef _MatrixType MatrixType;
+        typedef MatrixType_ MatrixType;
         typedef typename MatrixType::Scalar Scalar;
         typedef typename MatrixType::RealScalar RealScalar;
-        typedef _Preconditioner Preconditioner;
+        typedef Preconditioner_ Preconditioner;
         
-        enum {UpLo = _UpLo};
+        enum {UpLo = UpLo_};
         
     public:
         
@@ -243,12 +245,12 @@ namespace Eigen {
                               &&  (!MatrixType::IsRowMajor)
                               &&  (!NumTraits<Scalar>::IsComplex)
             };
-            typedef typename internal::conditional<TransposeInput,Transpose<const ActualMatrixType>, ActualMatrixType const&>::type RowMajorWrapper;
-            EIGEN_STATIC_ASSERT(EIGEN_IMPLIES(MatrixWrapper::MatrixFree,UpLo==(Lower|Upper)),MATRIX_FREE_CONJUGATE_GRADIENT_IS_COMPATIBLE_WITH_UPPER_UNION_LOWER_MODE_ONLY);
-            typedef typename internal::conditional<UpLo==(Lower|Upper),
+            typedef std::conditional_t<TransposeInput,Transpose<const ActualMatrixType>, ActualMatrixType const&> RowMajorWrapper;
+            EIGEN_STATIC_ASSERT(internal::check_implication(MatrixWrapper::MatrixFree, UpLo==(Lower|Upper)),MATRIX_FREE_CONJUGATE_GRADIENT_IS_COMPATIBLE_WITH_UPPER_UNION_LOWER_MODE_ONLY);
+            typedef std::conditional_t<UpLo==(Lower|Upper),
                                                   RowMajorWrapper,
                                                   typename MatrixWrapper::template ConstSelfAdjointViewReturnType<UpLo>::Type
-                                            >::type SelfAdjointWrapper;
+                                            > SelfAdjointWrapper;
 
             m_iterations = Base::maxIterations();
             m_error = Base::m_tolerance;

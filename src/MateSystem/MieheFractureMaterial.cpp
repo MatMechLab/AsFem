@@ -1,185 +1,340 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2021.04.09
-//+++ Purpose: Calculate the material properties required by Miehe's
-//+++          phase field fracture model
-//+++           1) viscosity
-//+++           2) Gc
-//+++           3) L
-//+++           4) H
-//+++           5) dHdstrain
+//+++ Date   : 2022.10.25
+//+++ Purpose: implement the material properties calculation for phase-field fracture 
+//             model based on Prof. Miehe's CMAME paper
+//+++ Ref    : A phase field model for rate-independent crack propagation: 
+//             Robust algorithmic implementation based on operator splits
+//+++ DOI    : https://doi.org/10.1016/j.cma.2010.04.011
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "MateSystem/MieheFractureMaterial.h"
+#include "MathUtils/MathFuns.h"
 
-void MieheFractureMaterial::InitMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, Materials &Mate){
+MieheFractureMaterial::MieheFractureMaterial(){
+    m_args.resize(11);
+    m_F.resize(11);
+    m_dFdargs.resize(11);
+    m_d2Fdargs2.resize(11,11);
+}
+MieheFractureMaterial::~MieheFractureMaterial(){
+    m_args.resize(11);
+    m_F.resize(11);
+    m_dFdargs.resize(11);
+    m_d2Fdargs2.resize(11,11);
+}
+//******************************************************
+void MieheFractureMaterial::initMaterialProperties(const nlohmann::json &inputparams,
+                                        const LocalElmtInfo &elmtinfo,
+                                        const LocalElmtSolution &elmtsoln,
+                                        MaterialsContainer &mate){
     //***************************************************
-    // get rid of unused warnings
-    // **************************************************
-    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||Mate.GetScalarMate().size()){}
-
-    Mate.ScalarMaterials("Hist")=0.0;
-    Mate.Rank2Materials("stress").SetToZeros();
+    //*** get rid of unused warning
+    //***************************************************
+    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]){}
+    mate.ScalarMaterial("H")=0.0;
 }
-//***********************************************************
-double MieheFractureMaterial::DegradationFun(const double &x) {
-    return (1-x)*(1-x);
-}
-double MieheFractureMaterial::DegradationFunDeriv(const double &x) {
-    return 2*(x-1);
-}
-//************************************************************
-void MieheFractureMaterial::ComputeStrain(const LocalElmtInfo &elmtinfo,const LocalElmtSolution &elmtsoln,RankTwoTensor &Strain){
+//********************************************************************
+void MieheFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
+                                           const LocalElmtInfo &elmtinfo,
+                                           const LocalElmtSolution &elmtsoln,
+                                           const MaterialsContainer &mateold,
+                                           MaterialsContainer &mate){
+    //**************************************************************
+    //*** get rid of unused warning
+    //**************************************************************
+    if(mateold.getScalarMaterialsNum()){}
 
-    // here we assume the first dof is d, then the following dofs are ux, uy and uz
-    if(elmtinfo.nDim==1){
-        MessagePrinter::PrintErrorTxt("Miehe's phase field fracture model only works for 2D and 3D case");
-        MessagePrinter::AsFem_Exit();
-    }
-    else if(elmtinfo.nDim==2){
-        // DoFs: d ux uy
-        GradU.SetFromGradU(elmtsoln.gpGradU[2],elmtsoln.gpGradU[3]);
-    }
-    else if(elmtinfo.nDim==3){
-        // DoFs: d ux uy uz
-        GradU.SetFromGradU(elmtsoln.gpGradU[2],elmtsoln.gpGradU[3],elmtsoln.gpGradU[4]);
-    }
-    Strain=(GradU+GradU.Transpose())*0.5;
-}
-//************************************************************
-void MieheFractureMaterial::ComputeConstitutiveLaws(const vector<double> &InputParams,const double &damage,const RankTwoTensor &strain,RankTwoTensor &Stress,RankFourTensor &Jacobian,const Materials &MateOld, Materials &Mate){
-    
-    double d;
-    double g,dg;// for the degradation function
-    const double k=5.0e-5; // for stabilizer
-
-    const double lambda=InputParams[0];
-    const double mu=InputParams[1];
-    const double Gc=InputParams[2];
-    const double L=InputParams[3];
-    const double viscosity=InputParams[4];
-
-    Mate.ScalarMaterials("viscosity")=viscosity;
-    Mate.ScalarMaterials("Gc")=Gc;
-    Mate.ScalarMaterials("L")=L;
-
-    int UseHist=0;
-    if(InputParams.size()>=6){
-        UseHist=static_cast<int>(InputParams[6-1]);
-        if(UseHist<0) UseHist=0;
-    }
-
-    d=damage;
-    g= DegradationFun(d);
-    dg= DegradationFunDeriv(d);   // derivative of g
-
-    I4Sym.SetToIdentitySymmetric4();
-
-
-    ProjPos=Strain.GetPositiveProjTensor();
-    I4Sym.SetToIdentitySymmetric4();
-    ProjNeg=I4Sym-ProjPos;
-
-    // for the positive and negative strain
-    EpsPos=ProjPos.DoubleDot(strain);
-    EpsNeg=Strain-EpsPos;
-
-    double trEps,signpos,signneg;
-    double psi,psipos,psineg;
-
-    trEps=Strain.Trace();
-    psipos=0.5*lambda*BracketPos(trEps)*BracketPos(trEps)+mu*(EpsPos*EpsPos).Trace();
-    psineg=0.5*lambda*BracketNeg(trEps)*BracketNeg(trEps)+mu*(EpsNeg*EpsNeg).Trace();
-    psi=(g+k)*psipos+psineg;
-
-    Mate.ScalarMaterials("Psi")=psi;
-    Mate.ScalarMaterials("PsiPos")=psipos;
-    Mate.ScalarMaterials("PsiNeg")=psineg;
-
-
-    I.SetToIdentity();
-    StressPos=I*lambda*BracketPos(trEps)+EpsPos*2*mu;
-    StressNeg=I*lambda*BracketNeg(trEps)+EpsNeg*2*mu;
-
-    Stress=StressPos*(g+k)+StressNeg;
-    Mate.Rank2Materials("dstressdD")=StressPos*dg;
-
-    Mate.ScalarMaterials("H")=0.0;// we use H instead of Hist for our element
-                                  // in such a way, users can use the stagger solution!
-    if(psipos>MateOld.ScalarMaterials("Hist")){
-        Mate.ScalarMaterials("Hist")=psipos;
-        Mate.Rank2Materials("dHdstrain")=StressPos;
+    if(JsonUtils::hasValue(inputparams,"finite-strain")){
+        mate.BooleanMaterial("finite-strain")=JsonUtils::getBoolean(inputparams,"finite-strain");
+        if(mate.BooleanMaterial("finite-strain")){
+            MessagePrinter::printErrorTxt("Miehe fracture material works only in small strain case. Please check your input file and set 'finite-strain'=false");
+            MessagePrinter::exitAsFem();
+        }
     }
     else{
-        Mate.ScalarMaterials("Hist")=MateOld.ScalarMaterials("Hist");
-        Mate.Rank2Materials("dHdstrain").SetToZeros();
+        mate.BooleanMaterial("finite-strain")=false;// use small strain deformation as the default option
     }
 
-    Mate.ScalarMaterials("H")=Mate.ScalarMaterials("Hist");
+    mate.ScalarMaterial("viscosity")=JsonUtils::getValue(inputparams,"viscosity");
+    mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
+    mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
 
-    if(UseHist){
-        Mate.ScalarMaterials("H")=MateOld.ScalarMaterials("Hist");
-        Mate.Rank2Materials("dHdstrain").SetToZeros();
+    if(elmtinfo.m_dim==2){
+        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);// grad(ux), grad(uy)
+    }
+    else if(elmtinfo.m_dim==3){
+        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
+    }
+    else{
+        MessagePrinter::printErrorTxt("MieheFractureMaterial works only for 2d and 3d case, please check your input file");
+        MessagePrinter::exitAsFem();
     }
 
-    signpos=0.0;
-    if(BracketPos(trEps)>0) signpos=1.0;
+    m_I.setToIdentity();
+    computeStrain(elmtinfo.m_dim,m_GradU,m_strain);
+    
+    m_d=elmtsoln.m_gpU[1];
 
-    signneg=0.0;
-    if(BracketNeg(trEps)<0) signneg=1.0;
+    m_args(1)=m_d;
+    computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
+    
+    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_strain,m_stress,m_jacobian);
 
-    Jacobian.SetToZeros();
-    Jacobian=(I.OTimes(I)*lambda*signpos+ProjPos*2*mu)*(g+k)
-        +I.OTimes(I)*lambda*signneg+ProjNeg*2*mu;
+    if(elmtinfo.m_dim==2){
+        m_strain(3,3)=m_eps_zz;
+    }
+
+    m_devstress=m_stress.dev();
+
+    mate.ScalarMaterial("F")=m_F(1);
+    mate.ScalarMaterial("dFdD")=m_dFdargs(1);
+    mate.ScalarMaterial("d2FdD2")=m_d2Fdargs2(1,1);
+
+    mate.ScalarMaterial("vonMises-stress")=sqrt(1.5*m_devstress.doubledot(m_devstress));
+    mate.ScalarMaterial("hydrostatic-stress")=m_stress.trace()/3.0;
+
+    mate.Rank2Material("strain")=m_strain;
+    mate.Rank2Material("stress")=m_stress;
+    mate.Rank2Material("dstressdD")=m_dstress_dD;
+
+    mate.Rank4Material("jacobian")=m_jacobian;
+
+    // for history variables
+    if(m_psipos>mateold.ScalarMaterial("H")){
+        mate.ScalarMaterial("H")=m_psipos;
+        mate.Rank2Material("dHdstrain")=m_stress_pos;
+    }
+    else{
+        mate.ScalarMaterial("H")=mateold.ScalarMaterial("H");
+        mate.Rank2Material("dHdstrain").setToZeros();
+    }
 
 }
-//************************************************************
-void MieheFractureMaterial::ComputeMaterialProperties(const vector<double> &InputParams, const LocalElmtInfo &elmtinfo, const LocalElmtSolution &elmtsoln, const Materials &MateOld, Materials &Mate) {
+//**************************************************************************
+void MieheFractureMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
+                                                 const VectorXd &args,
+                                                 VectorXd       &F,
+                                                 VectorXd       &dFdargs,
+                                                 MatrixXd       &d2Fdargs2){
+    double d,Gc,eps;
+    d=args(1);
+    Gc=JsonUtils::getValue(parameters,"Gc");
+    eps=JsonUtils::getValue(parameters,"eps");
+    F(1)=0.5*d*d*Gc/eps;
+    dFdargs(1)=d*Gc/eps;
+    d2Fdargs2(1,1)=Gc/eps;
 
-    //***************************************************************
-    // get rid of unused warnings 
-    // **************************************************************
-    if(InputParams.size()||elmtinfo.dt||elmtsoln.gpU.size()||MateOld.GetScalarMate().size()||Mate.GetScalarMate().size()){}
+}
+//**************************************************************************
+void MieheFractureMaterial::computeStrain(const int &dim,const Rank2Tensor &gradU,Rank2Tensor &strain){
+    if(dim){}
+    m_I.setToIdentity();
+    strain=(gradU+gradU.transpose())*0.5;// here the strain is small strain
+}
+//**************************************************************************
+void MieheFractureMaterial::computeStressAndJacobian(const nlohmann::json &params,
+                                          const int &dim,
+                                          const Rank2Tensor &strain,
+                                          Rank2Tensor &stress,
+                                          Rank4Tensor &jacobian){
+    m_stabilizer=JsonUtils::getValue(params,"stabilizer");
+    double E=0.0,nu=0.0;
+    double K=0.0,G=0.0;
+    double lame=0.0;
 
-    if(InputParams.size()<5){
-        MessagePrinter::PrintErrorTxt("for Miehe's phase field fracture materials, at least 5 parameters are required, you need to give: lambda, mu, Gc, L, viscosity");
-        MessagePrinter::AsFem_Exit();
+    jacobian.setToZeros();
+
+    if(JsonUtils::hasValue(params,"E")&&
+       JsonUtils::hasValue(params,"nu")){
+        E=JsonUtils::getValue(params,"E");
+        nu=JsonUtils::getValue(params,"nu");
+        lame=E*nu/((1+nu)*(1-2*nu));
+        K=E/(3.0*(1.0-2.0*nu));
+        G=0.5*E/(1.0+nu);
+    }
+    else if(JsonUtils::hasValue(params,"K")&&
+            JsonUtils::hasValue(params,"G")){
+        K=JsonUtils::getValue(params,"K");
+        G=JsonUtils::getValue(params,"G");
+        lame=K-G*2.0/3.0;
+        E=9.0*K*G/(3.0*K+G);
+        nu=(3.0*K-2.0*G)/(2.0*(3.0*K+G));
+    }
+    else if(JsonUtils::hasValue(params,"Lame")&&
+            JsonUtils::hasValue(params,"mu")){
+        lame=JsonUtils::getValue(params,"Lame");
+        G=JsonUtils::getValue(params,"mu");
+        K=lame+2.0*G/3.0;
+        E=9.0*K*G/(3.0*K+G);
+        nu=0.5*(3.0*K-2.0*G)/(3.0*K+G);
+    }
+    else if(JsonUtils::hasValue(params,"Lame")&&
+            JsonUtils::hasValue(params,"G")){
+        lame=JsonUtils::getValue(params,"Lame");
+        G=JsonUtils::getValue(params,"G");
+        K=lame+2.0*G/3.0;
+        E=G*(3.0*lame+2.0*G)/(lame+G);
+        nu=0.5*lame/(lame+G);
+    }
+    else{
+        MessagePrinter::printErrorTxt("Invalid parameters, for linear elastic fracture material, you should give either E,nu or K,G or Lame,G. Please check your input file");
+        MessagePrinter::exitAsFem();
     }
 
-    // 1st dof: damage
-    // 2nd dof: ux
-    // 3rd dof: uy
-    // 4th dof: uz
+    double trEps,signpos,signneg;
 
-    ComputeStrain(elmtinfo,elmtsoln,Strain);
+    m_sig_zz=0.0;m_eps_zz=0.0;
 
+    if(dim!=2){
+        m_projpos=strain.getPositiveProjectionTensor();
+        m_i4sym.setToIdentity4Symmetric();
+        m_projneg=m_i4sym-m_projpos;
 
-    ComputeConstitutiveLaws(InputParams,elmtsoln.gpU[1],Strain,Stress,Jacobian,MateOld,Mate);
-    // for vonMises stress
-    double trace;
-    I.SetToIdentity();
-    trace=Stress.Trace();
-    DevStress=Stress-I*(trace/3.0);
-    // vonMises stress, taken from:
-    // https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
-    // vonMises=sqrt(1.5*sij*sij)
-    Mate.ScalarMaterials("vonMises")=sqrt(1.5*DevStress.DoubleDot(DevStress));
+        // strain splitting
+        m_strain_pos=m_projpos.doubledot(strain);
+        m_strain_neg=strain-m_strain_pos;
 
-    Mate.Rank2Materials("strain")=Strain;
-    Mate.Rank2Materials("stress")=Stress;
-    Mate.Rank4Materials("jacobian")=Jacobian;
+        trEps=strain.trace();
+        m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+        m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+        m_psi=g(m_d)*m_psipos+m_psineg;
 
-    // used in AllenCahn fracture element
-    Mate.ScalarMaterials("dFdD")=elmtsoln.gpU[1];
-    Mate.ScalarMaterials("d2FdD2")=1.0;
-    Mate.ScalarMaterials("M")=1.0/InputParams[5-1];// M=1.0/viscosity
+        // for different stresses
+        m_I.setToIdentity();// identity tensor
+        m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+        m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+        stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+        m_dstress_dD=m_stress_pos*dg(m_d);
+
+        signpos=0.0;
+        if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+        signneg=0.0;
+        if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+
+        jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                 +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+    }
+    else{
+        // for 2d case
+        if(JsonUtils::hasValue(params,"plane-strain")){
+            if(JsonUtils::getBoolean(params,"plane-strain")){
+                // for plane strain case
+                m_sig_zz=(E/(1.0+nu))*(nu/(1.0-2.0*nu))*(strain(1,1)+strain(2,2));
+                m_eps_zz=0.0;
+                
+                E=E/(1.0-nu*nu);
+                nu=nu/(1.0-nu);
+
+                lame=E*nu/((1+nu)*(1-2*nu));
+                G=0.5*E/(1.0+nu);
+
+                m_projpos=strain.getPositiveProjectionTensor();
+                m_i4sym.setToIdentity4Symmetric();
+                m_projneg=m_i4sym-m_projpos;
+
+                // strain splitting
+                m_strain_pos=m_projpos.doubledot(strain);
+                m_strain_neg=strain-m_strain_pos;
+
+                trEps=strain.trace();
+                m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+                m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+                m_psi=g(m_d)*m_psipos+m_psineg;
+
+                // for different stresses
+                m_I.setToIdentity();// identity tensor
+                m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+                m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+                stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+                stress(3,3)=m_sig_zz;
+                m_dstress_dD=m_stress_pos*dg(m_d);
+
+                signpos=0.0;
+                if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+                signneg=0.0;
+                if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+                
+                jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                        +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+            }
+            else{
+                // for plane-stress case
+                m_projpos=strain.getPositiveProjectionTensor();
+                m_i4sym.setToIdentity4Symmetric();
+                m_projneg=m_i4sym-m_projpos;
+
+                // strain splitting
+                m_strain_pos=m_projpos.doubledot(strain);
+                m_strain_neg=strain-m_strain_pos;
+
+                trEps=strain.trace();
+                m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+                m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+                m_psi=g(m_d)*m_psipos+m_psineg;
+
+                // for different stresses
+                m_I.setToIdentity();// identity tensor
+                m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+                m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+                stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+                m_dstress_dD=m_stress_pos*dg(m_d);
+
+                signpos=0.0;
+                if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+                signneg=0.0;
+                if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+                
+                jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                        +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+
+                m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+            }
+        }
+        else{
+            // default option is plane-stress
+            m_projpos=strain.getPositiveProjectionTensor();
+            m_i4sym.setToIdentity4Symmetric();
+            m_projneg=m_i4sym-m_projpos;
+
+            // strain splitting
+            m_strain_pos=m_projpos.doubledot(strain);
+            m_strain_neg=strain-m_strain_pos;
+
+            trEps=strain.trace();
+            m_psipos=0.5*lame*MathFuns::bracketPos(trEps)*MathFuns::bracketPos(trEps)+G*(m_strain_pos*m_strain_pos).trace();
+            m_psineg=0.5*lame*MathFuns::bracketNeg(trEps)*MathFuns::bracketNeg(trEps)+G*(m_strain_neg*m_strain_neg).trace();
+            m_psi=g(m_d)*m_psipos+m_psineg;
+
+            // for different stresses
+            m_I.setToIdentity();// identity tensor
+            m_stress_pos=m_I*lame*MathFuns::bracketPos(trEps)+m_strain_pos*2.0*G;
+            m_stress_neg=m_I*lame*MathFuns::bracketNeg(trEps)+m_strain_neg*2.0*G;
+            stress=m_stress_pos*(g(m_d)+m_stabilizer)+m_stress_neg;
+            m_dstress_dD=m_stress_pos*dg(m_d);
+
+            signpos=0.0;
+            if(MathFuns::bracketPos(trEps)>0.0) signpos=1.0;
+
+            signneg=0.0;
+            if(MathFuns::bracketNeg(trEps)<0.0) signneg=1.0;
+                
+            jacobian=(m_I.otimes(m_I)*lame*signpos+m_projpos*2.0*G)*(g(m_d)+m_stabilizer)
+                    +m_I.otimes(m_I)*lame*signneg+m_projneg*2.0*G;
+
+            m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+        }
+    }
 
 }

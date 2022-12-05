@@ -10,6 +10,8 @@
 #ifndef EIGEN_CXX11_TENSOR_TENSOR_CONVERSION_H
 #define EIGEN_CXX11_TENSOR_TENSOR_CONVERSION_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen {
 
 /** \class TensorConversionOp
@@ -28,9 +30,9 @@ struct traits<TensorConversionOp<TargetType, XprType> >
   typedef typename traits<XprType>::StorageKind StorageKind;
   typedef typename traits<XprType>::Index Index;
   typedef typename XprType::Nested Nested;
-  typedef typename remove_reference<Nested>::type _Nested;
-  static const int NumDimensions = traits<XprType>::NumDimensions;
-  static const int Layout = traits<XprType>::Layout;
+  typedef std::remove_reference_t<Nested> Nested_;
+  static constexpr int NumDimensions = traits<XprType>::NumDimensions;
+  static constexpr int Layout = traits<XprType>::Layout;
   enum { Flags = 0 };
   typedef typename TypeConversion<Scalar, typename traits<XprType>::PointerType>::type PointerType;
 };
@@ -187,7 +189,7 @@ class TensorConversionOp : public TensorBase<TensorConversionOp<TargetType, XprT
         : m_xpr(xpr) {}
 
     EIGEN_DEVICE_FUNC
-    const typename internal::remove_all<typename XprType::Nested>::type&
+    const internal::remove_all_t<typename XprType::Nested>&
     expression() const { return m_xpr; }
 
   protected:
@@ -195,14 +197,14 @@ class TensorConversionOp : public TensorBase<TensorConversionOp<TargetType, XprT
 };
 
 template <bool SameType, typename Eval, typename EvalPointerType> struct ConversionSubExprEval {
-  static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE bool run(Eval& impl, EvalPointerType) {
+  static EIGEN_STRONG_INLINE bool run(Eval& impl, EvalPointerType) {
     impl.evalSubExprsIfNeeded(NULL);
     return true;
   }
 };
 
 template <typename Eval, typename EvalPointerType> struct ConversionSubExprEval<true, Eval, EvalPointerType> {
-  static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE bool run(Eval& impl, EvalPointerType data) {
+  static EIGEN_STRONG_INLINE bool run(Eval& impl, EvalPointerType data) {
     return impl.evalSubExprsIfNeeded(data);
   }
 };
@@ -211,8 +213,7 @@ template <typename Eval, typename EvalPointerType> struct ConversionSubExprEval<
 template <bool SameType, typename Eval, typename EvalPointerType,
           typename EvalSubExprsCallback>
 struct ConversionSubExprEvalAsync {
-  static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void run(
-      Eval& impl, EvalPointerType, EvalSubExprsCallback done) {
+  static EIGEN_STRONG_INLINE void run(Eval& impl, EvalPointerType, EvalSubExprsCallback done) {
     impl.evalSubExprsIfNeededAsync(nullptr, std::move(done));
   }
 };
@@ -221,8 +222,7 @@ template <typename Eval, typename EvalPointerType,
           typename EvalSubExprsCallback>
 struct ConversionSubExprEvalAsync<true, Eval, EvalPointerType,
                                   EvalSubExprsCallback> {
-  static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void run(
-      Eval& impl, EvalPointerType data, EvalSubExprsCallback done) {
+  static EIGEN_STRONG_INLINE void run(Eval& impl, EvalPointerType data, EvalSubExprsCallback done) {
     impl.evalSubExprsIfNeededAsync(data, std::move(done));
   }
 };
@@ -252,12 +252,12 @@ struct PacketConv {
   typedef typename internal::unpacket_traits<SrcPacket>::type SrcType;
   typedef typename internal::unpacket_traits<TargetPacket>::type TargetType;
 
-  static const int PacketSize = internal::unpacket_traits<TargetPacket>::size;
+  static constexpr int PacketSize = internal::unpacket_traits<TargetPacket>::size;
 
   template <typename ArgType, typename Device>
   static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TargetPacket run(const TensorEvaluator<ArgType, Device>& impl, Index index) {
     internal::scalar_cast_op<SrcType, TargetType> converter;
-    EIGEN_ALIGN_MAX typename internal::remove_const<TargetType>::type values[PacketSize];
+    EIGEN_ALIGN_MAX std::remove_const_t<TargetType> values[PacketSize];
     EIGEN_UNROLL_LOOP
     for (int i = 0; i < PacketSize; ++i) {
       values[i] = converter(impl.coeff(index+i));
@@ -285,11 +285,11 @@ struct PacketConv<SrcPacket, TargetPacket, LoadMode, true, IsSameT> {
 template <typename SrcPacket, typename TargetPacket, int LoadMode>
 struct PacketConv<SrcPacket, TargetPacket, LoadMode, /*ActuallyVectorize=*/false, /*IsSameT=*/true> {
   typedef typename internal::unpacket_traits<TargetPacket>::type TargetType;
-  static const int PacketSize = internal::unpacket_traits<TargetPacket>::size;
+  static constexpr int PacketSize = internal::unpacket_traits<TargetPacket>::size;
 
   template <typename ArgType, typename Device>
   static EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TargetPacket run(const TensorEvaluator<ArgType, Device>& impl, Index index) {
-    EIGEN_ALIGN_MAX typename internal::remove_const<TargetType>::type values[PacketSize];
+    EIGEN_ALIGN_MAX std::remove_const_t<TargetType> values[PacketSize];
     for (int i = 0; i < PacketSize; ++i) values[i] = impl.coeff(index+i);
     return internal::pload<TargetPacket>(values);
   }
@@ -314,11 +314,11 @@ struct TensorEvaluator<const TensorConversionOp<TargetType, ArgType>, Device>
   typedef typename TensorEvaluator<ArgType, Device>::Dimensions Dimensions;
   typedef TargetType Scalar;
   typedef TargetType CoeffReturnType;
-  typedef typename internal::remove_all<typename internal::traits<ArgType>::Scalar>::type SrcType;
+  typedef internal::remove_all_t<typename internal::traits<ArgType>::Scalar> SrcType;
   typedef typename PacketType<CoeffReturnType, Device>::type PacketReturnType;
   typedef typename PacketType<SrcType, Device>::type PacketSourceType;
-  static const int PacketSize = PacketType<CoeffReturnType, Device>::size;
-  static const bool IsSameType = internal::is_same<TargetType, SrcType>::value;
+  static constexpr int PacketSize = PacketType<CoeffReturnType, Device>::size;
+  static constexpr bool IsSameType = internal::is_same<TargetType, SrcType>::value;
   typedef StorageMemory<CoeffReturnType, Device> Storage;
   typedef typename Storage::Type EvaluatorPointerType;
 
@@ -333,11 +333,11 @@ struct TensorEvaluator<const TensorConversionOp<TargetType, ArgType>, Device>
     #endif
     BlockAccess       = TensorEvaluator<ArgType, Device>::BlockAccess,
     PreferBlockAccess = TensorEvaluator<ArgType, Device>::PreferBlockAccess,
-    Layout            = TensorEvaluator<ArgType, Device>::Layout,
     RawAccess         = false
   };
 
-  static const int NumDims = internal::array_size<Dimensions>::value;
+  static constexpr int Layout = TensorEvaluator<ArgType, Device>::Layout;
+  static constexpr int NumDims = internal::array_size<Dimensions>::value;
 
   //===- Tensor block evaluation strategy (see TensorBlock.h) -------------===//
   typedef internal::TensorBlockDescriptor<NumDims, Index> TensorBlockDesc;
@@ -363,21 +363,21 @@ struct TensorEvaluator<const TensorConversionOp<TargetType, ArgType>, Device>
       TensorBlock;
   //===--------------------------------------------------------------------===//
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
+  EIGEN_STRONG_INLINE TensorEvaluator(const XprType& op, const Device& device)
     : m_impl(op.expression(), device)
   {
   }
 
   EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE const Dimensions& dimensions() const { return m_impl.dimensions(); }
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE bool evalSubExprsIfNeeded(EvaluatorPointerType data)
+  EIGEN_STRONG_INLINE bool evalSubExprsIfNeeded(EvaluatorPointerType data)
   {
     return ConversionSubExprEval<IsSameType, TensorEvaluator<ArgType, Device>, EvaluatorPointerType>::run(m_impl, data);
   }
 
 #ifdef EIGEN_USE_THREADS
   template <typename EvalSubExprsCallback>
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void evalSubExprsIfNeededAsync(
+  EIGEN_STRONG_INLINE void evalSubExprsIfNeededAsync(
       EvaluatorPointerType data, EvalSubExprsCallback done) {
     ConversionSubExprEvalAsync<IsSameType, TensorEvaluator<ArgType, Device>,
                                EvaluatorPointerType,
@@ -385,7 +385,7 @@ struct TensorEvaluator<const TensorConversionOp<TargetType, ArgType>, Device>
   }
 #endif
 
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE void cleanup()
+  EIGEN_STRONG_INLINE void cleanup()
   {
     m_impl.cleanup();
   }
@@ -404,8 +404,8 @@ struct TensorEvaluator<const TensorConversionOp<TargetType, ArgType>, Device>
     const bool Vectorizable =
         IsSameType
         ? TensorEvaluator<ArgType, Device>::PacketAccess
-        : TensorEvaluator<ArgType, Device>::PacketAccess &
-          internal::type_casting_traits<SrcType, TargetType>::VectorizedCast;
+        : int(TensorEvaluator<ArgType, Device>::PacketAccess) &
+          int(internal::type_casting_traits<SrcType, TargetType>::VectorizedCast);
 
     return internal::PacketConv<PacketSourceType, PacketReturnType, LoadMode,
                                 Vectorizable, IsSameType>::run(m_impl, index);

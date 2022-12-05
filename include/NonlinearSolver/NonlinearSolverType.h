@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -31,5 +31,11 @@ enum class NonlinearSolverType{
     FAS,
     BFGS,
     BROYDEN,
-    BADBROYDEN
+    BADBROYDEN,
+    // for user-defined nonlinear solver
+    USER1,
+    USER2,
+    USER3,
+    USER4,
+    USER5
 };

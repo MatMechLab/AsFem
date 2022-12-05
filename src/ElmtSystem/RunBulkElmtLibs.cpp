@@ -1,134 +1,73 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.11.29
-//+++ Purpose: we list all of our elements here for different models
+//+++ Date   : 2022.05.12
+//+++ Purpose: run the bulk element libs for the residual and jacobian
+//+++          calculation
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "ElmtSystem/BulkElmtSystem.h"
 
-void BulkElmtSystem::RunBulkElmtLibs(const FECalcType &calctype,const ElmtType &elmtytype,
-                         const double (&ctan)[3],
-                         const LocalElmtInfo &elmtinfo,
-                         const LocalElmtSolution &soln,
-                         const LocalShapeFun &shp,
-                         const Materials &Mate,const Materials &MateOld,
-                         ScalarMateType &gpProj,
-                         MatrixXd &localK,VectorXd &localR){
-    switch (elmtytype){
-        case ElmtType::LAPLACEELMT:
-            break;
-        case ElmtType::POISSONELMT:
-            PoissonElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::TIMEDERIVELMT:
-            break;
-        case ElmtType::DIFFUSIONELMT:
-            DiffusionElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::STRESSDIFFUSIONELMT:
-            StressDiffusionElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::CAHNHILLIARDELMT:
-            CahnHilliardElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::MECHANICSELMT:
-            MechanicsElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::MIEHEFRACELMT:
-            MieheFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::ALLENCAHNFRACELMT:
-            AllenCahnFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::KOBAYASHIELMT:
-            KobayashiElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::DIFFUSIONFRACTUREELMT:
-            DiffusionFractureElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::MECHCAHNHILLIARDELMT:
-            MechanicsCahnHilliardElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::WAVEELMT:
-            WaveElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::THERMALCONDUCTELMT:
-            ThermalElmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        //********************************************************
-        //*** for user-defined-element(UEL)
-        //********************************************************
-        case ElmtType::USER1ELMT:
-            User1Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER2ELMT:
-            User2Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER3ELMT:
-            User3Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER4ELMT:
-            User4Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER5ELMT:
-            User5Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER6ELMT:
-            User6Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER7ELMT:
-            User7Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER8ELMT:
-            User8Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER9ELMT:
-            User9Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER10ELMT:
-            User10Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER11ELMT:
-            User11Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER12ELMT:
-            User12Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER13ELMT:
-            User13Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER14ELMT:
-            User14Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER15ELMT:
-            User15Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER16ELMT:
-            User16Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER17ELMT:
-            User17Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER18ELMT:
-            User18Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER19ELMT:
-            User19Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        case ElmtType::USER20ELMT:
-            User20Elmt::ComputeAll(calctype,elmtinfo,ctan,soln,shp,Mate,MateOld,gpProj,localK,localR);
-            break;
-        default:
-            MessagePrinter::PrintErrorTxt("unsupported element type in ElmtSystem, please check your code or your input file");
-            MessagePrinter::AsFem_Exit();
-            break;
+void BulkElmtSystem::runBulkElmtLibs(const FECalcType &t_calctype,const double (&ctan)[3],
+                                     const int &t_subelmtid,
+                                     const MaterialsContainer &t_materialscontainer_old,
+                                     const MaterialsContainer &t_materialscontainer,
+                                     const LocalElmtInfo &t_elmtinfo,
+                                     const LocalElmtSolution &t_elmtsoln,
+                                     const LocalShapeFun &t_shp,
+                                     MatrixXd &K,
+                                     VectorXd &R){
+    switch (m_elmtblock_list[t_subelmtid-1].m_elmttype)
+    {
+    case ElmtType::LAPLACEELMT:
+        LaplaceElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::SCALARBODYSOURCEELMT:
+        ScalarBodySourceElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::POISSONELMT:
+        PoissonElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::DIFFUSIONELMT:
+        DiffusionElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::ALLENCAHNELMT:
+        AllenCahnElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::MECHANICSELMT:
+        MechanicsElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::CAHNHILLIARDELMT:
+        CahnHilliardElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::KOBAYASHIELMT:
+        KobayashiElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::STRESSDIFFUSIONELMT:
+        StressDiffusionElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::MIEHEFRACTUREELMT:
+        MieheFractureElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::ALLENCAHNFRACTUREELMT:
+        AllenCahnFractureElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::STRESSCAHNHILLIARDELMT:
+        StressCahnHilliardElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    case ElmtType::DIFFUSIONACFRACTUREELMT:
+        DiffusionACFractureElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);
+        break;
+    default:
+        MessagePrinter::printErrorTxt("unsupported bulk element type in runElmtLibs, please check your code");
+        MessagePrinter::exitAsFem();
+        break;
     }
 }

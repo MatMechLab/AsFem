@@ -10,10 +10,12 @@
 #ifndef EIGEN_EULERSYSTEM_H
 #define EIGEN_EULERSYSTEM_H
 
+#include "./InternalHeaderCheck.h"
+
 namespace Eigen
 {
   // Forward declarations
-  template <typename _Scalar, class _System>
+  template <typename Scalar_, class _System>
   class EulerAngles;
   
   namespace internal
@@ -130,13 +132,13 @@ namespace Eigen
     //  that enum is not guerantee to support negative numbers
     
     /** The first rotation axis */
-    static const int AlphaAxis = _AlphaAxis;
+    static constexpr int AlphaAxis = _AlphaAxis;
     
     /** The second rotation axis */
-    static const int BetaAxis = _BetaAxis;
+    static constexpr int BetaAxis = _BetaAxis;
     
     /** The third rotation axis */
-    static const int GammaAxis = _GammaAxis;
+    static constexpr int GammaAxis = _GammaAxis;
 
     enum
     {
@@ -260,7 +262,7 @@ namespace Eigen
     {
       CalcEulerAngles_imp(
         res.angles(), mat,
-        typename internal::conditional<IsTaitBryan, internal::true_type, internal::false_type>::type());
+        std::conditional_t<IsTaitBryan, internal::true_type, internal::false_type>());
 
       if (IsAlphaOpposite)
         res.alpha() = -res.alpha();
@@ -272,7 +274,7 @@ namespace Eigen
         res.gamma() = -res.gamma();
     }
     
-    template <typename _Scalar, class _System>
+    template <typename Scalar_, class _System>
     friend class Eigen::EulerAngles;
     
     template<typename System,

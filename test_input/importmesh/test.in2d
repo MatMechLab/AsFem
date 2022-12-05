@@ -1,0 +1,31 @@
+splinecurves2dv2
+5
+
+points
+1 0.0 0.0
+2 1.0 0.0
+3 1.0 1.0
+4 0.0 1.0
+5 0.0 0.5
+6 0.5 0.0
+
+
+segments
+10 0 2 1 6 -bc=1 # bottom
+10 0 2 5 1 -bc=2 # left
+10 20 bsplinepoints 	6	4
+        0.5 0.0
+        0.4 0.1
+        0.3 0.4
+        0.2 0.6
+        0.1 0.85
+        0.0 0.5
+        -maxh=0.02 -bc=3
+20 0 2 4 5 -bc=4 # left
+20 0 2 3 4 -bc=5 # top
+20 0 2 6 2 -bc=6 # bottom
+20 0 2 2 3 -bc=7 # right
+
+materials
+10      domain1   -maxh=0.04
+20      domain2   -maxh=0.04

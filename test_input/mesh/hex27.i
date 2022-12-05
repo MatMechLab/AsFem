@@ -1,9 +1,0 @@
-[mesh]
-  type=asfem
-  dim=3
-  nx=10
-  ny=10
-  nz=10
-  savemesh=true
-  meshtype=hex27
-[end]

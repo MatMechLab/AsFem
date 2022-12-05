@@ -1,0 +1,10 @@
+{
+	"mesh":{
+		"type":"asfem",
+		"dim":1,
+		"nx":20,
+		"xmax":1.5,
+		"meshtype":"edge2",
+		"savemesh":true
+	}
+}

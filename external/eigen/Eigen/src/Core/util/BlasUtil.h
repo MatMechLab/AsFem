@@ -13,6 +13,8 @@
 // This file contains many lightweight helper classes used to
 // implement and control fast level 2 and level 3 BLAS-like routines.
 
+#include "../InternalHeaderCheck.h"
+
 namespace Eigen {
 
 namespace internal {
@@ -38,90 +40,6 @@ template<typename Index,
          typename LhsScalar, typename LhsMapper, int LhsStorageOrder, bool ConjugateLhs,
          typename RhsScalar, typename RhsMapper, bool ConjugateRhs, int Version=Specialized>
 struct general_matrix_vector_product;
-
-
-template<bool Conjugate> struct conj_if;
-
-template<> struct conj_if<true> {
-  template<typename T>
-  inline T operator()(const T& x) const { return numext::conj(x); }
-  template<typename T>
-  inline T pconj(const T& x) const { return internal::pconj(x); }
-};
-
-template<> struct conj_if<false> {
-  template<typename T>
-  inline const T& operator()(const T& x) const { return x; }
-  template<typename T>
-  inline const T& pconj(const T& x) const { return x; }
-};
-
-// Generic implementation for custom complex types.
-template<typename LhsScalar, typename RhsScalar, bool ConjLhs, bool ConjRhs>
-struct conj_helper
-{
-  typedef typename ScalarBinaryOpTraits<LhsScalar,RhsScalar>::ReturnType Scalar;
-
-  EIGEN_STRONG_INLINE Scalar pmadd(const LhsScalar& x, const RhsScalar& y, const Scalar& c) const
-  { return padd(c, pmul(x,y)); }
-
-  EIGEN_STRONG_INLINE Scalar pmul(const LhsScalar& x, const RhsScalar& y) const
-  { return conj_if<ConjLhs>()(x) *  conj_if<ConjRhs>()(y); }
-};
-
-template<typename Scalar> struct conj_helper<Scalar,Scalar,false,false>
-{
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Scalar pmadd(const Scalar& x, const Scalar& y, const Scalar& c) const { return internal::pmadd(x,y,c); }
-  EIGEN_DEVICE_FUNC EIGEN_STRONG_INLINE Scalar pmul(const Scalar& x, const Scalar& y) const { return internal::pmul(x,y); }
-};
-
-template<typename RealScalar> struct conj_helper<std::complex<RealScalar>, std::complex<RealScalar>, false,true>
-{
-  typedef std::complex<RealScalar> Scalar;
-  EIGEN_STRONG_INLINE Scalar pmadd(const Scalar& x, const Scalar& y, const Scalar& c) const
-  { return c + pmul(x,y); }
-
-  EIGEN_STRONG_INLINE Scalar pmul(const Scalar& x, const Scalar& y) const
-  { return Scalar(numext::real(x)*numext::real(y) + numext::imag(x)*numext::imag(y), numext::imag(x)*numext::real(y) - numext::real(x)*numext::imag(y)); }
-};
-
-template<typename RealScalar> struct conj_helper<std::complex<RealScalar>, std::complex<RealScalar>, true,false>
-{
-  typedef std::complex<RealScalar> Scalar;
-  EIGEN_STRONG_INLINE Scalar pmadd(const Scalar& x, const Scalar& y, const Scalar& c) const
-  { return c + pmul(x,y); }
-
-  EIGEN_STRONG_INLINE Scalar pmul(const Scalar& x, const Scalar& y) const
-  { return Scalar(numext::real(x)*numext::real(y) + numext::imag(x)*numext::imag(y), numext::real(x)*numext::imag(y) - numext::imag(x)*numext::real(y)); }
-};
-
-template<typename RealScalar> struct conj_helper<std::complex<RealScalar>, std::complex<RealScalar>, true,true>
-{
-  typedef std::complex<RealScalar> Scalar;
-  EIGEN_STRONG_INLINE Scalar pmadd(const Scalar& x, const Scalar& y, const Scalar& c) const
-  { return c + pmul(x,y); }
-
-  EIGEN_STRONG_INLINE Scalar pmul(const Scalar& x, const Scalar& y) const
-  { return Scalar(numext::real(x)*numext::real(y) - numext::imag(x)*numext::imag(y), - numext::real(x)*numext::imag(y) - numext::imag(x)*numext::real(y)); }
-};
-
-template<typename RealScalar,bool Conj> struct conj_helper<std::complex<RealScalar>, RealScalar, Conj,false>
-{
-  typedef std::complex<RealScalar> Scalar;
-  EIGEN_STRONG_INLINE Scalar pmadd(const Scalar& x, const RealScalar& y, const Scalar& c) const
-  { return padd(c, pmul(x,y)); }
-  EIGEN_STRONG_INLINE Scalar pmul(const Scalar& x, const RealScalar& y) const
-  { return conj_if<Conj>()(x)*y; }
-};
-
-template<typename RealScalar,bool Conj> struct conj_helper<RealScalar, std::complex<RealScalar>, false,Conj>
-{
-  typedef std::complex<RealScalar> Scalar;
-  EIGEN_STRONG_INLINE Scalar pmadd(const RealScalar& x, const Scalar& y, const Scalar& c) const
-  { return padd(c, pmul(x,y)); }
-  EIGEN_STRONG_INLINE Scalar pmul(const RealScalar& x, const Scalar& y) const
-  { return x*conj_if<Conj>()(y); }
-};
 
 template<typename From,typename To> struct get_factor {
   EIGEN_DEVICE_FUNC static EIGEN_STRONG_INLINE To run(const From& x) { return To(x); }
@@ -169,7 +87,7 @@ public:
     eigen_assert(incr==1);
   }
 
-  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void prefetch(int i) const {
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void prefetch(Index i) const {
     internal::prefetch(&operator()(i));
   }
 
@@ -183,8 +101,23 @@ public:
   }
 
   template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketType loadPacketPartial(Index i, Index n, Index offset = 0) const {
+    return ploadt_partial<PacketType, AlignmentType>(m_data + i, n, offset);
+  }
+
+  template<typename PacketType, int AlignmentT>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketType load(Index i) const {
+    return ploadt<PacketType, AlignmentT>(m_data + i);
+  }
+
+  template<typename PacketType>
   EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacket(Index i, const PacketType &p) const {
     pstoret<Scalar, PacketType, AlignmentType>(m_data + i, p);
+  }
+
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacketPartial(Index i, const PacketType &p, Index n, Index offset = 0) const {
+    pstoret_partial<Scalar, PacketType, AlignmentType>(m_data + i, p, n, offset);
   }
 
 protected:
@@ -271,6 +204,9 @@ public:
     return VectorMapper(&operator()(i, j));
   }
 
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void prefetch(Index i, Index j) const {
+    internal::prefetch(&operator()(i, j));
+  }
 
   EIGEN_DEVICE_FUNC
   EIGEN_ALWAYS_INLINE Scalar& operator()(Index i, Index j) const {
@@ -282,9 +218,24 @@ public:
     return ploadt<PacketType, AlignmentType>(&operator()(i, j));
   }
 
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketType loadPacketPartial(Index i, Index j, Index n, Index offset = 0) const {
+    return ploadt_partial<PacketType, AlignmentType>(&operator()(i, j), n, offset);
+  }
+
   template <typename PacketT, int AlignmentT>
   EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketT load(Index i, Index j) const {
     return ploadt<PacketT, AlignmentT>(&operator()(i, j));
+  }
+
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacket(Index i, Index j, const PacketType &p) const {
+    pstoret<Scalar, PacketType, AlignmentType>(&operator()(i, j), p);
+  }
+
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacketPartial(Index i, Index j, const PacketType &p, Index n, Index offset = 0) const {
+    pstoret_partial<Scalar, PacketType, AlignmentType>(&operator()(i, j), p, n, offset);
   }
 
   template<typename SubPacket>
@@ -298,6 +249,7 @@ public:
   }
 
   EIGEN_DEVICE_FUNC const Index stride() const { return m_stride; }
+  EIGEN_DEVICE_FUNC const Index incr() const { return 1; }
   EIGEN_DEVICE_FUNC const Scalar* data() const { return m_data; }
 
   EIGEN_DEVICE_FUNC Index firstAligned(Index size) const {
@@ -340,8 +292,18 @@ public:
   }
 
   template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketType loadPacketPartial(Index i, Index n, Index /*offset*/ = 0) const {
+    return pgather_partial<Scalar,PacketType>(m_data + i*m_incr.value(), m_incr.value(), n);
+  }
+
+  template<typename PacketType>
   EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacket(Index i, const PacketType &p) const {
     pscatter<Scalar, PacketType>(m_data + i*m_incr.value(), p, m_incr.value());
+  }
+
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacketPartial(Index i, const PacketType &p, Index n, Index /*offset*/ = 0) const {
+    pscatter_partial<Scalar, PacketType>(m_data + i*m_incr.value(), p, m_incr.value(), n);
   }
 
 protected:
@@ -366,6 +328,10 @@ public:
     return LinearMapper(&operator()(i, j), m_incr.value());
   }
 
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void prefetch(Index i, Index j) const {
+    internal::prefetch(&operator()(i, j));
+  }
+
   EIGEN_DEVICE_FUNC
   EIGEN_ALWAYS_INLINE Scalar& operator()(Index i, Index j) const {
     return m_data[StorageOrder==RowMajor ? j*m_incr.value() + i*m_stride : i*m_incr.value() + j*m_stride];
@@ -376,9 +342,24 @@ public:
     return pgather<Scalar,PacketType>(&operator()(i, j),m_incr.value());
   }
 
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketType loadPacketPartial(Index i, Index j, Index n, Index /*offset*/ = 0) const {
+    return pgather_partial<Scalar,PacketType>(&operator()(i, j),m_incr.value(),n);
+  }
+
   template <typename PacketT, int AlignmentT>
   EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE PacketT load(Index i, Index j) const {
     return pgather<Scalar,PacketT>(&operator()(i, j),m_incr.value());
+  }
+
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacket(Index i, Index j, const PacketType &p) const {
+    pscatter<Scalar, PacketType>(&operator()(i, j), p, m_incr.value());
+  }
+
+  template<typename PacketType>
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void storePacketPartial(Index i, Index j, const PacketType &p, Index n, Index /*offset*/ = 0) const {
+    pscatter_partial<Scalar, PacketType>(&operator()(i, j), p, m_incr.value(), n);
   }
 
   template<typename SubPacket>
@@ -392,15 +373,15 @@ public:
   }
 
   // storePacketBlock_helper defines a way to access values inside the PacketBlock, this is essentially required by the Complex types.
-  template<typename SubPacket, typename ScalarT, int n, int idx>
+  template<typename SubPacket, typename Scalar_, int n, int idx>
   struct storePacketBlock_helper
   {
-    storePacketBlock_helper<SubPacket, ScalarT, n, idx-1> spbh;
+    storePacketBlock_helper<SubPacket, Scalar_, n, idx-1> spbh;
     EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void store(const blas_data_mapper<Scalar, Index, StorageOrder, AlignmentType, Incr>* sup, Index i, Index j, const PacketBlock<SubPacket, n>& block) const {
       spbh.store(sup, i,j,block);
       for(int l = 0; l < unpacket_traits<SubPacket>::size; l++)
       {
-        ScalarT *v = &sup->operator()(i+l, j+idx);
+        Scalar_ *v = &sup->operator()(i+l, j+idx);
         *v = block.packet[idx][l];
       }
     }
@@ -436,8 +417,8 @@ public:
     }
   };
 
-  template<typename SubPacket, typename ScalarT, int n>
-  struct storePacketBlock_helper<SubPacket, ScalarT, n, -1>
+  template<typename SubPacket, typename Scalar_, int n>
+  struct storePacketBlock_helper<SubPacket, Scalar_, n, -1>
   {
     EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE void store(const blas_data_mapper<Scalar, Index, StorageOrder, AlignmentType, Incr>*, Index, Index, const PacketBlock<SubPacket, n>& ) const {
     }
@@ -462,6 +443,10 @@ public:
     storePacketBlock_helper<SubPacket, Scalar, n, n-1> spb;
     spb.store(this, i,j,block);
   }
+
+  EIGEN_DEVICE_FUNC const Index stride() const { return m_stride; }
+  EIGEN_DEVICE_FUNC const Index incr() const { return m_incr.value(); }
+  EIGEN_DEVICE_FUNC Scalar* data() const { return m_data; }
 protected:
   Scalar* EIGEN_RESTRICT m_data;
   const Index m_stride;
@@ -487,7 +472,7 @@ template<typename XprType> struct blas_traits
 {
   typedef typename traits<XprType>::Scalar Scalar;
   typedef const XprType& ExtractType;
-  typedef XprType _ExtractType;
+  typedef XprType ExtractType_;
   enum {
     IsComplex = NumTraits<Scalar>::IsComplex,
     IsTransposed = false,
@@ -498,10 +483,10 @@ template<typename XprType> struct blas_traits
                              ) ?  1 : 0,
     HasScalarFactor = false
   };
-  typedef typename conditional<bool(HasUsableDirectAccess),
+  typedef std::conditional_t<bool(HasUsableDirectAccess),
     ExtractType,
-    typename _ExtractType::PlainObject
-    >::type DirectLinearAccessType;
+    typename ExtractType_::PlainObject
+    > DirectLinearAccessType;
   static inline EIGEN_DEVICE_FUNC ExtractType extract(const XprType& x) { return x; }
   static inline EIGEN_DEVICE_FUNC const Scalar extractScalarFactor(const XprType&) { return Scalar(1); }
 };
@@ -582,12 +567,12 @@ struct blas_traits<Transpose<NestedXpr> >
   typedef typename NestedXpr::Scalar Scalar;
   typedef blas_traits<NestedXpr> Base;
   typedef Transpose<NestedXpr> XprType;
-  typedef Transpose<const typename Base::_ExtractType>  ExtractType; // const to get rid of a compile error; anyway blas traits are only used on the RHS
-  typedef Transpose<const typename Base::_ExtractType> _ExtractType;
-  typedef typename conditional<bool(Base::HasUsableDirectAccess),
+  typedef Transpose<const typename Base::ExtractType_>  ExtractType; // const to get rid of a compile error; anyway blas traits are only used on the RHS
+  typedef Transpose<const typename Base::ExtractType_> ExtractType_;
+  typedef std::conditional_t<bool(Base::HasUsableDirectAccess),
     ExtractType,
     typename ExtractType::PlainObject
-    >::type DirectLinearAccessType;
+    > DirectLinearAccessType;
   enum {
     IsTransposed = Base::IsTransposed ? 0 : 1
   };
@@ -602,7 +587,7 @@ struct blas_traits<const T>
 
 template<typename T, bool HasUsableDirectAccess=blas_traits<T>::HasUsableDirectAccess>
 struct extract_data_selector {
-  static const typename T::Scalar* run(const T& m)
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE static const typename T::Scalar* run(const T& m)
   {
     return blas_traits<T>::extract(m).data();
   }
@@ -613,10 +598,52 @@ struct extract_data_selector<T,false> {
   static typename T::Scalar* run(const T&) { return 0; }
 };
 
-template<typename T> const typename T::Scalar* extract_data(const T& m)
+template<typename T>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE const typename T::Scalar* extract_data(const T& m)
 {
   return extract_data_selector<T>::run(m);
 }
+
+/**
+ * \c combine_scalar_factors extracts and multiplies factors from GEMM and GEMV products.
+ * There is a specialization for booleans
+ */
+template<typename ResScalar, typename Lhs, typename Rhs>
+struct combine_scalar_factors_impl
+{
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE static ResScalar run(const Lhs& lhs, const Rhs& rhs)
+  {
+    return blas_traits<Lhs>::extractScalarFactor(lhs) * blas_traits<Rhs>::extractScalarFactor(rhs);
+  }
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE static ResScalar run(const ResScalar& alpha, const Lhs& lhs, const Rhs& rhs)
+  {
+    return alpha * blas_traits<Lhs>::extractScalarFactor(lhs) * blas_traits<Rhs>::extractScalarFactor(rhs);
+  }
+};
+template<typename Lhs, typename Rhs>
+struct combine_scalar_factors_impl<bool, Lhs, Rhs>
+{
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE static bool run(const Lhs& lhs, const Rhs& rhs)
+  {
+    return blas_traits<Lhs>::extractScalarFactor(lhs) && blas_traits<Rhs>::extractScalarFactor(rhs);
+  }
+  EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE static bool run(const bool& alpha, const Lhs& lhs, const Rhs& rhs)
+  {
+    return alpha && blas_traits<Lhs>::extractScalarFactor(lhs) && blas_traits<Rhs>::extractScalarFactor(rhs);
+  }
+};
+
+template<typename ResScalar, typename Lhs, typename Rhs>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE ResScalar combine_scalar_factors(const ResScalar& alpha, const Lhs& lhs, const Rhs& rhs)
+{
+  return combine_scalar_factors_impl<ResScalar,Lhs,Rhs>::run(alpha, lhs, rhs);
+}
+template<typename ResScalar, typename Lhs, typename Rhs>
+EIGEN_DEVICE_FUNC EIGEN_ALWAYS_INLINE ResScalar combine_scalar_factors(const Lhs& lhs, const Rhs& rhs)
+{
+  return combine_scalar_factors_impl<ResScalar,Lhs,Rhs>::run(lhs, rhs);
+}
+
 
 } // end namespace internal
 

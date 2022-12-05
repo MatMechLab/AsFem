@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -17,38 +17,46 @@
 #include "BCSystem/DirichletBCBase.h"
 
 /**
- * This class implement the user-defined dirichelt boundary condition calculation
+ * This class implement the user-4 dirichelt boundary condition calculation
  */
 class User4DirichletBC:public DirichletBCBase{
 public:
     User4DirichletBC();
-
     /**
-     * This funciton apply the dirichlet boundary condition.
-     * and reset the K and RHS with the penalty method
-     * @param calctype the FEM calculation type, it could be jacobian and residual
-     * @param bcvalue the boundary condition value to be applied
-     * @param params the parameters taken from the input file
-     * @param elmtinfo the local element information
-     * @param dofids the ids of each dof(start from 0, the global one)
-     * @param nodecoords the coordinates of current node, its node , not the gauss point !!!
-     * @param K the K matrix of the system
-     * @param RHS the residual of the system
-     * @param U the solution vector of the system
-     */ 
-    void ComputeBCValue(const FECalcType &calctype, const double &bcvalue, const vector<double> &params, const LocalElmtInfo &elmtinfo, const vector<int> &dofids, const Vector3d &nodecoords, Mat &K, Vec &RHS, Vec &U) override;
+     * execute the boundary condition value for different (dirichlet type) boundary conditions.
+     * \f$u=u_{g}\f$ is the final output
+     * @param t_calctype the calculation type for either residual or jacbobian
+     * @param t_penalty the penalty for dirichlet boundary conditions
+     * @param t_bcvalue the boundary value defined in the input file
+     * @param t_json the boundary condition related parameters(json file content)
+     * @param t_elmtinfo the basic information for current element
+     * @param t_elmtsoln the element solution of current element
+     * @param dofids the global id of the applied dof(start from 1, the global one)
+     * @param U the system solution
+     * @param K the system sparse matrix
+     * @param RHS the system residual vector
+     */
+    virtual void computeBCValue(const FECalcType &t_calctype,const double &t_penalty,const double &t_bcvalue,const nlohmann::json &t_json,
+                                const LocalElmtInfo &t_elmtinfo,
+                                const LocalElmtSolution &t_elmtsoln,
+                                const vector<int> &dofids,
+                                Vector &U,
+                                SparseMatrix &K,
+                                Vector &RHS) override;
 
 private:
     /**
-     * This function calculate the 'displacement' value for dirichlet boundary condition.
-     * @param dofids the id of dofs
-     * @param bcvalue the boundary condition value to be applied
-     * @param params the parameters taken from the input file
-     * @param elmtinfo the local element information
-     * @param nodecoords the coordinates of current node, its node , not the gauss point !!!
-     * @param localU the local solution vector
-     */ 
-    void ComputeU(const vector<int> &dofids,const double &bcvalue, const vector<double> &params, const LocalElmtInfo &elmtinfo, const Vector3d &nodecoords, VectorXd &localU) override;
+     * calculate the 'displacement' value of current dofs
+     * @param t_bcvalue the boundary value defined in the input file
+     * @param t_json the boundary condition related parameters(json file content)
+     * @param dofids the global id of the applied dof(start from 1, the global one)
+     * @param t_elmtinfo the basic information for current element
+     * @param t_elmtsoln the solution of current element
+     * @param localU the solution vector of current node
+     */
+    virtual void computeU(const double &t_bcvalue,const nlohmann::json &t_json,const vector<int> &dofids,
+                          const LocalElmtInfo &t_elmtinfo,
+                          const LocalElmtSolution &t_elmtsoln,
+                          VectorXd &localU) override; 
 
 };
-

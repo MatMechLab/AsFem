@@ -7,8 +7,8 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#ifndef EIGEN_CXX11_THREADPOOL_MODULE
-#define EIGEN_CXX11_THREADPOOL_MODULE
+#ifndef EIGEN_CXX11_THREADPOOL_MODULE_H
+#define EIGEN_CXX11_THREADPOOL_MODULE_H
 
 #include "../../../Eigen/Core"
 
@@ -30,10 +30,8 @@
 
 // The code depends on CXX11, so only include the module if the
 // compiler supports it.
-#if __cplusplus > 199711L || EIGEN_COMP_MSVC >= 1900
 #include <cstddef>
 #include <cstring>
-#include <stdint.h>
 #include <time.h>
 
 #include <vector>
@@ -68,8 +66,6 @@
 #include "src/ThreadPool/Barrier.h"
 #include "src/ThreadPool/NonBlockingThreadPool.h"
 
-#endif
-
 #include "../../../Eigen/src/Core/util/ReenableStupidWarnings.h"
 
-#endif // EIGEN_CXX11_THREADPOOL_MODULE
+#endif // EIGEN_CXX11_THREADPOOL_MODULE_H

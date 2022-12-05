@@ -1,7 +1,7 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
@@ -15,12 +15,9 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "TimeStepping/TimeSteppingType.h"
 #include "petsc.h"
 
-using namespace std;
 
 /**
  * This class defines the basic information to control to FE calculation
@@ -37,10 +34,10 @@ public:
         IsDepDebug=false;
         IsProjection=false;
 
-        _timesteppingtype=TimeSteppingType::BACKWARDEULER;
+        m_timesteppingtype=TimeSteppingType::BACKWARDEULER;
     }
 
-    void Init(){
+    void init(){
         ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
         dt=1.0e-6;
         t=1.0;
@@ -50,7 +47,7 @@ public:
         IsDepDebug=false;
         IsProjection=false;
 
-        _timesteppingtype=TimeSteppingType::BACKWARDEULER;
+        m_timesteppingtype=TimeSteppingType::BACKWARDEULER;
     }
 
     double ctan[3];
@@ -63,6 +60,6 @@ public:
     bool IsProjection=false;
 
     // for time stepping
-    TimeSteppingType _timesteppingtype=TimeSteppingType::BACKWARDEULER;
+    TimeSteppingType m_timesteppingtype=TimeSteppingType::BACKWARDEULER;
 
 };

@@ -1,101 +1,118 @@
 //****************************************************************
 //* This file is part of the AsFem framework
 //* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group @ CopyRight 2022
+//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
 //* https://github.com/M3Group/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.07.01
-//+++ Purpose: Implement general dofhandler for our bulk mesh
-//+++          This class should be capable to manage DoFs, DoF maps...
+//+++ Date   : 2022.05.09
+//+++ Purpose: the bulkdof manager in AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "DofHandler/BulkDofHandler.h"
 
-
 BulkDofHandler::BulkDofHandler(){
-    _nElmts=0.0;_nNodes=0.0;_nBulkElmts=0;
-    _nDofsPerNode=0;_nNodesPerBulkElmt=0;
-    _nDofs=0;_nActiveDofs=0;
-    _nNodesPerBulkElmt=0;
-    _nMaxDim=0;_nMinDim=0;
-    _nMaxDofsPerElmt=0;
-    _HasDofMap=false;_HasSetDofName=false;
+    m_dof_namelist.clear();
+    m_dof_idlist.clear();
 
-    _DofIDList.clear();
-    _DofNameList.clear();
-    _DofID2NameList.clear();
-    _DofName2IDList.clear();
-
-    _DofIDList.clear();
-    _DofNameList.clear();
-    _DofID2NameList.clear();
-    _DofName2IDList.clear();
-
-    _NodeDofsMap.clear();
-    _BulkElmtDofsMap.clear();
-
-    _BulkElmtElmtMateTypePairList.clear();
+    m_bulkelmts=0;
+    m_nodes=0;
+    m_maxdofs_pernode=0;
+    m_maxdofs_perelmt=0;
+    m_total_dofs=0;
+    m_active_dofs=0;
+    m_elmt_dofids.clear();
+    m_nodal_dofids.clear();
 }
 
-void BulkDofHandler::AddDofNameFromStrVec(vector<string> &namelist){
-    vector<string> namelistcopy=namelist;
-    sort(namelistcopy.begin(),namelistcopy.end());
-    namelistcopy.erase(unique(namelistcopy.begin(),namelistcopy.end()),namelistcopy.end());
+void BulkDofHandler::releaseMemory(){
+    m_dof_namelist.clear();
+    m_dof_idlist.clear();
 
-    if(namelistcopy.size()!=namelistcopy.size()){
-        MessagePrinter::PrintErrorTxt("the input dof namelist is not unique! you have duplicate dofs name");
-        MessagePrinter::AsFem_Exit();
-    }
-    _DofIDList.clear();
-    _DofNameList.clear();
-    _DofID2NameList.clear();
-    _DofName2IDList.clear();
-
-    int i=0;
-    for(auto it:namelist){
-        i+=1;
-        _DofIDList.push_back(i);
-        _DofNameList.push_back(it);
-        _DofID2NameList.push_back(make_pair(i,it));
-        _DofName2IDList.push_back(make_pair(it,i));
-    }
-    _nDofsPerNode=i;
+    m_bulkelmts=0;
+    m_nodes=0;
+    m_maxdofs_pernode=0;
+    m_maxdofs_perelmt=0;
+    m_total_dofs=0;
+    m_active_dofs=0;
+    m_elmt_dofids.clear();
+    m_nodal_dofids.clear();
 }
-//**************************************************
-void BulkDofHandler::PrintBulkDofInfo()const{
-    char buff[70];
-    MessagePrinter::PrintNormalTxt("Degrees of freedom (DoFs) information summary");
-    snprintf(buff,70,"  each node has %2d dofs (max), total dofs=%6d",GetDofsNumPerNode(),GetActiveDofsNum());
-    MessagePrinter::PrintNormalTxt(string(buff));
+BulkDofHandler::~BulkDofHandler(){
+    m_dof_namelist.clear();
+    m_dof_idlist.clear();
 
-    MessagePrinter::PrintNormalTxt("  DoFs id                                 DoFs name");
-    char longbuff[67];
-    for(auto &it:_DofID2NameList){
-        snprintf(longbuff,67,"  %2d                       %20s",it.first,it.second.c_str());
-        MessagePrinter::PrintNormalTxt(string(longbuff));
-    }
-    MessagePrinter::PrintDashLine();
+    m_bulkelmts=0;
+    m_nodes=0;
+    m_maxdofs_pernode=0;
+    m_maxdofs_perelmt=0;
+    m_total_dofs=0;
+    m_active_dofs=0;
+    m_elmt_dofids.clear();
+    m_nodal_dofids.clear();
 }
 
-//**************************************************
-void BulkDofHandler::PrintBulkDofDetailInfo()const{
-    PrintBulkDofInfo();
+void BulkDofHandler::printBulkDofsInfo()const{
+    char buff[69];
     string str;
-    char buff[14];
-    MessagePrinter::PrintNormalTxt("Degrees of freedom (DoFs) information summary in details");
-    for(int e=0;e<_nBulkElmts;e++){
-        str.clear();
-        sprintf(buff,"e=%8d:",e+1);
-        str+=string(buff);
-        for(auto it:_BulkElmtDofsMap[e]){
-            sprintf(buff,"%8d ",it);
-            str+=string(buff);
-        }
-        MessagePrinter::PrintLongTxt(str);
+    MessagePrinter::printStars();
+    MessagePrinter::printNormalTxt("bulk dofs information summary");
+    snprintf(buff,69,"  total dofs=%9d, active dofs=%9d, max dofs per node=%2d",getTotalDofs(),
+                                                                                getActiveDofs(),
+                                                                                getMaxDofsPerNode());
+    str=string(buff);
+    MessagePrinter::printNormalTxt(str);
+    MessagePrinter::printNormalTxt("  dofs id                                     dofs name");
+    for(int i=1;i<=getMaxDofsPerNode();i++){
+        snprintf(buff,69,"   %3d                              %18s",getIthDofID(i),getIthDofName(i).c_str());
+        str=string(buff);
+        MessagePrinter::printNormalTxt(str);
     }
-    MessagePrinter::PrintDashLine();
+    MessagePrinter::printStars();
+}
+//*****************************************
+void BulkDofHandler::printBulkElementalDofsInfo(const bool &flag)const{
+    if(flag){
+        // if flag=true, we print out the dofs map into a txt file
+        PetscMPIInt rank;
+        MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
+        if(rank==0){
+            string str;
+            std::ofstream out;
+            out.open("dofs.map",std::ios::out);
+            if (!out.is_open()){
+                MessagePrinter::printErrorTxt("can\'t create dofs.map file, please ensure you have the write permission");
+                MessagePrinter::exitAsFem();
+            }
+            out<<"*** total number of bulk elements="<<m_bulkelmts
+               <<", total nodes="<<m_nodes<<endl;
+            out<<"*** total dofs="<<m_total_dofs
+               <<", active dofs="<<m_active_dofs
+               <<", max dofs per node="<<m_maxdofs_pernode
+               <<", max dofs per elmt="<<m_maxdofs_perelmt<<endl;
+            for(int e=1;e<=m_bulkelmts;e++){
+                str="*** "+to_string(e)+"-th element: ";
+                for(const auto &dofid:m_elmt_dofids[e-1]) str+=to_string(dofid)+" ";
+                out<<str<<endl;
+            }
+            out.close();
+        }
+    }
+    else{
+        cout<<"*** total number of bulk elements="<<m_bulkelmts
+            <<", total nodes="<<m_nodes<<endl;
+        cout<<"*** total dofs="<<m_total_dofs
+            <<", active dofs="<<m_active_dofs
+            <<", max dofs per node="<<m_maxdofs_pernode
+            <<", max dofs per elmt="<<m_maxdofs_perelmt<<endl;
+        string str;
+        for(int e=1;e<=m_bulkelmts;e++){
+            str="*** "+to_string(e)+"-th element: ";
+            for(const auto &dofid:m_elmt_dofids[e-1]) str+=to_string(dofid)+" ";
+            cout<<str<<endl;
+        }
+    }
 }
