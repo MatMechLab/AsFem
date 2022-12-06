@@ -4,7 +4,6 @@
 
 A **simple** finite element method program, which is short for **AsFem**. AsFem is written in C++ and designed for phase-field modeling and multiphysics coupling. The [PETSc](https://www.mcs.anl.gov/petsc/) library is involved in AsFem for the efficient computing.
 
-For '**simple**', we try to make the finite element programming and modeling, as simple as possible.
 
 # Download
 
