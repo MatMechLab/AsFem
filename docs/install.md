@@ -1,7 +1,7 @@
 # System requirement
 
 * Linux
-* Windows (only works for Cygwin+VisualStudio 2020 or newer)
+* Windows (only works in Cygwin/Mingw, <span style="color:red">**without**</span> **VisualStudio**)
 * MacOX (it should work, but we haven't tested it yet!)
 
 
@@ -151,14 +151,14 @@ For the configuration, one can use:
 --with-fortran-bindings=1 \
 --with-sowing=0 \
 --download-fblaslapack=1 \
-COPTFLAGS='-fPIC -O3 -march=native ' \
-CXXOPTFLAGS='-fPIC -O3 -march=native ' \
-FOPTFLAGS='-fPIC -O3 -march=native ' \
+COPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
+CXXOPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
+FOPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
 PETSC_DIR=`pwd`
 ```
 once again, `***your-PETSc-install-path***` should be your PETSc installation path, and `***your-MPI-install-path***` is the path of your MPI. Then, by running the `make xxxx -j8` and `make xxxx install` command, one can finish the installation. Here `xxx` represents the command line which is shown by PETSc in your terminal!
 
-If `-march=native` flag doesn't work on your system, then please remove it.
+If `-march=native` and `-mtune=native ` flag doesn't work on your system, then please remove it.
 
 Afterwards, put the related settings into your `~/.asfem-profile` (now, you need to uncomment `export CC=xxx`) as follows:
 ```

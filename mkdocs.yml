@@ -1,13 +1,23 @@
 site_name: AsFem
+site_url: https://m3group.github.io/AsFem/
+site_author: Yang Bai
+site_description: >-
+  An open source finite element code for phase-field modeling and multiphysics simulation.
 
-extra_javascript:
-  - javascripts/config.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+# Copyright
+copyright: Copyright &copy; 2020 - 2022 Yang Bai/M3-Group
+
+# Repository
+repo_name: M3Group/AsFem
+repo_url: https://github.com/M3Group/AsFem
 
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
+
+plugins:
+  - search
+
 
 theme:
   name: material
