@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.21.0)
 project(AsFem)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -117,6 +117,15 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
     set (CMAKE_BUILD_TYPE "Debug")
 endif ()
 
+###############################################
+### set LTO for asfem                       ###
+###############################################
+
+# LTO is Link-Time Optimization.
+# This block check current compiler supports whether the IPO/LTO technology.
+# added by wwj(bbsy789@126.com) on 2022.12.10.
+include(CheckIPOSupported)
+check_ipo_supported(RESULT currentCompilerLTOsupported OUTPUT error)
 ###############################################
 ### For linux platform                      ###
 ###############################################
@@ -832,6 +841,20 @@ add_executable(asfem ${inc} ${src})
 
 target_link_libraries(asfem PUBLIC ${MPI_LIB})
 target_link_libraries(asfem PUBLIC ${PETSC_LIB})
+
+###############################################
+### set LTO for asfem                       ###
+###############################################
+
+# LTO is Link-Time Optimization.
+# This block check current compiler supports whether the IPO/LTO technology.
+# added by wwj(bbsy789@126.com) on 2022.12.10
+if(currentCompilerLTOsupported)
+    message(STATUS "IPO/LTO enabled")
+    set_property(TARGET asfem PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+    message(STATUS "IPO/LTO not supported: <${error}>")
+endif()
 
 ##################################################
 ### for test
