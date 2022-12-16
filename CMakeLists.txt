@@ -124,8 +124,12 @@ endif ()
 # LTO is Link-Time Optimization.
 # This block check current compiler supports whether the IPO/LTO technology.
 # added by wwj(bbsy789@126.com) on 2022.12.10.
-include(CheckIPOSupported)
-check_ipo_supported(RESULT currentCompilerLTOsupported OUTPUT error)
+
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT currentCompilerLTOsupported OUTPUT error)
+endif ()
+
 ###############################################
 ### For linux platform                      ###
 ###############################################
@@ -849,11 +853,14 @@ target_link_libraries(asfem PUBLIC ${PETSC_LIB})
 # LTO is Link-Time Optimization.
 # This block check current compiler supports whether the IPO/LTO technology.
 # added by wwj(bbsy789@126.com) on 2022.12.10
-if(currentCompilerLTOsupported)
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    if(currentCompilerLTOsupported)
     message(STATUS "IPO/LTO enabled")
     set_property(TARGET asfem PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-else()
+    else()
     message(STATUS "IPO/LTO not supported: <${error}>")
+    endif()
 endif()
 
 ##################################################
