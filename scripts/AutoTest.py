@@ -64,6 +64,12 @@ for subdir,dirs,files in os.walk(TestDir):
                 sys.stdout.write("\033[1;34m") # set to blue color
                 print('***     %s is done (success) !'%(file))
                 sys.stdout.write("\033[0;0m")  # reset
+            elif (len(result.stdout.decode("utf-8"))<2):
+                # from cases with null message output
+                nSucess+=1
+                sys.stdout.write("\033[1;34m") # set to blue color
+                print('***     %s is done (success) !'%(file))
+                sys.stdout.write("\033[0;0m")  # reset
             else:
                 sys.stdout.write("\033[1;31m") # set to red color
                 print('***     %s fails (maybe no executable file?)!'%(file))
