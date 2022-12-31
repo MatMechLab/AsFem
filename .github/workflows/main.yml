@@ -29,6 +29,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
       # Runs a single command using the runners shell
+      - name: show repository information
+        run: echo ${{github.event.repository.name}}
       - name: show CPU information
         run: cat /proc/cpuinfo
       - name: show file structure
@@ -83,7 +85,7 @@ jobs:
           cd temp
           tar -xf openmpi-4.1.4.tar.gz
           cd openmpi-4.1.4
-          ./configure --prefix=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          ./configure --prefix=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
           make -j8
           echo "******************************************************"
           echo "*** Make -j8 is done for openmpi-4.1.4"
@@ -94,7 +96,7 @@ jobs:
           echo "******************************************************"
       - name: check openmpi version
         run: |
-          cd /home/runner/work/AsFem/AsFem/AsFemLibs/openmpi/bin
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi/bin
           echo "******************************************************"
           echo "*** Now we check the version of mpicc and mpicxx"
           ./mpicc --version
@@ -106,22 +108,22 @@ jobs:
           echo "******************************************************"
           echo "*** download petsc"
           echo "******************************************************"
-          cd /home/runner/work/AsFem/AsFem/temp
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp
           curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.18.3.tar.gz
           tar -xf petsc-lite-3.18.3.tar.gz
       - name: compile and install PETSc
         run: |
-          cd /home/runner/work/AsFem/AsFem/temp/petsc-3.18.3
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.18.3
           echo "******************************************************"
           echo "*** Config petsc ..."
           echo "******************************************************"
           ./configure \
-          --prefix=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc \
+          --prefix=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/petsc \
           --with-debugging=0 \
           --with-ssl=0 \
           --with-pic=1 \
           --with-openmp=0 \
-          --with-mpi-dir=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi \
+          --with-mpi-dir=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi \
           --with-shared-libraries=1 \
           --with-fortran-bindings=0 \
           --with-sowing=0 \
@@ -135,25 +137,25 @@ jobs:
           echo "******************************************************"
           echo "*** Make petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.3 PETSC_ARCH=arch-linux-c-opt all
+          make PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.18.3 PETSC_ARCH=arch-linux-c-opt all
           echo "******************************************************"
           echo "*** Install petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.3 PETSC_ARCH=arch-linux-c-opt install
+          make PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.18.3 PETSC_ARCH=arch-linux-c-opt install
       - name: compile AsFem
         run: |
-          cd /home/runner/work/AsFem/AsFem
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}
           echo "*********************************************************************"
           echo "*** Setup mpi and petsc bash profile"
           echo "*********************************************************************"
-          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export MPI_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
           export CC=$MPI_DIR/bin/mpicc
           export CXX=$MPI_DIR/bin/mpicxx
           export F90=$MPI_DIR/bin/mpif90
           export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
-          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
           export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
           export FPATH=$mpi/include:$FPATH
@@ -170,19 +172,19 @@ jobs:
           ls
       - name: run AsFem test script
         run: |
-          cd /home/runner/work/AsFem/AsFem
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}
           echo "*********************************************************************"
           echo "*** Start to run AsFem autotest"
           echo "*********************************************************************"
           ls
-          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export MPI_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
           export CC=$MPI_DIR/bin/mpicc
           export CXX=$MPI_DIR/bin/mpicxx
           export F90=$MPI_DIR/bin/mpif90
           export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
-          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
           export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
           export FPATH=$mpi/include:$FPATH
@@ -191,53 +193,53 @@ jobs:
           python3 scripts/AutoTest.py -n 2
       - name: run step2-2d in parallel
         run: |
-          cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/examples/tutorial
           ls
-          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export MPI_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
           export CC=$MPI_DIR/bin/mpicc
           export CXX=$MPI_DIR/bin/mpicxx
           export F90=$MPI_DIR/bin/mpif90
           export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
-          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
           export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          mpirun -np 2 /home/runner/work/AsFem/AsFem/bin/asfem -i step2-2d.json
+          mpirun -np 2 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step2-2d.json
       - name: run step2-3d in parallel
         run: |
-          cd /home/runner/work/AsFem/AsFem/examples/tutorial
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/examples/tutorial
           ls
-          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          export MPI_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
           export CC=$MPI_DIR/bin/mpicc
           export CXX=$MPI_DIR/bin/mpicxx
           export F90=$MPI_DIR/bin/mpif90
           export F77=$MPI_DIR/bin/mpif77
           export OMP_NUM_THREADS=1
-          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
           export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          mpirun -np 2 /home/runner/work/AsFem/AsFem/bin/asfem -i step2-3d.json
+          mpirun -np 2 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step2-3d.json
       - name: run step3-2d in parallel
         run: |
-          cd /home/runner/work/AsFem/AsFem/examples/tutorial
-          export MPI_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/openmpi
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/examples/tutorial
+          export MPI_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
           export PATH=$PATH:$MPI_DIR/bin
           export OMP_NUM_THREADS=1
-          export PETSC_DIR=/home/runner/work/AsFem/AsFem/AsFemLibs/petsc
+          export PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/petsc
           export C_INCLUDE_PATH=$mpi/include:$C_INCLUDE_PATH
           export CPLUS_INCLUDE_PATH=$mpi/include:$CPLUS_INCLUDE_PATH
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          mpirun -np 2 /home/runner/work/AsFem/AsFem/bin/asfem -i step3-2d.json
+          mpirun -np 2 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step3-2d.json
       - name: clean all folders and files
         run: |
           rm -rf temp
