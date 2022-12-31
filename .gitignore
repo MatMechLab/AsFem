@@ -11,6 +11,13 @@ __pycache__/
 
 # for vscode config
 .vscode/
+build/
+
+# for asfem
+bin/
+*.vtu
+*.pvd
+*.csv
 
 # for vim
 
