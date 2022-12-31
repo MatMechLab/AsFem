@@ -6,9 +6,14 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master,devel ]
+    branches:
+      - 'main'
+      - 'devel'
   pull_request:
-    branches: [ master ]
+    types:
+      - opened
+    branches: 
+      - 'main'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -102,11 +107,11 @@ jobs:
           echo "*** download petsc"
           echo "******************************************************"
           cd /home/runner/work/AsFem/AsFem/temp
-          curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.18.1.tar.gz
-          tar -xf petsc-lite-3.18.1.tar.gz
+          curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.18.3.tar.gz
+          tar -xf petsc-lite-3.18.3.tar.gz
       - name: compile and install PETSc
         run: |
-          cd /home/runner/work/AsFem/AsFem/temp/petsc-3.18.1
+          cd /home/runner/work/AsFem/AsFem/temp/petsc-3.18.3
           echo "******************************************************"
           echo "*** Config petsc ..."
           echo "******************************************************"
@@ -130,11 +135,11 @@ jobs:
           echo "******************************************************"
           echo "*** Make petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.1 PETSC_ARCH=arch-linux-c-opt all
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.3 PETSC_ARCH=arch-linux-c-opt all
           echo "******************************************************"
           echo "*** Install petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.1 PETSC_ARCH=arch-linux-c-opt install
+          make PETSC_DIR=/home/runner/work/AsFem/AsFem/temp/petsc-3.18.3 PETSC_ARCH=arch-linux-c-opt install
       - name: compile AsFem
         run: |
           cd /home/runner/work/AsFem/AsFem
