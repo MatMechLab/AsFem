@@ -303,7 +303,18 @@ bool Msh4FileImporter::importMeshFile(const string &filename,MeshData &meshdata)
                 numNodesInBlock=static_cast<int>(numbers[4-1]);
                 for(i=0;i<numNodesInBlock;i++){
                     getline(in,str); // read the node id
+                    if(str.size()>1){
+                        if(str.at(str.size()-1)<'0' || str.at(str.size()-1)>'9'){
+                            // Remove the last invalid char, this may come from the msh file generated in different platform.
+                            // In some cases, the last char in this line is not '\n' or ' ', but other unrecognized character.
+                            str.pop_back();
+                        }
+                    }
                     numbers=StringUtils::splitStrNum(str);
+                    if(numbers.size()<1){
+                        MessagePrinter::printErrorTxt("Can't find a valid node Tag in your msh4 file inside the $Nodes");
+                        MessagePrinter::exitAsFem();
+                    }
                     if(static_cast<int>(numbers[0])<minNodeTag||static_cast<int>(numbers[0])>maxNodeTag){
                         MessagePrinter::printErrorTxt("Invalid node Tag in your msh4 file inside the $Nodes");
                         MessagePrinter::exitAsFem();
