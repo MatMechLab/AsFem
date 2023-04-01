@@ -25,6 +25,27 @@ void ShapeFun3DHex27::calc3DShapeValsAndDerivatives(const double &xi,const doubl
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 27, error detected in ShapeFun3DHex27.cpp");
         MessagePrinter::exitAsFem();
     }
+    /**
+     * VTK cell type: vtkTriQuadraticHexahedron
+     * bottom layer:
+     *  4--10---3
+     *  |   |   |
+     * 12--25--10
+     *  |   |   |
+     *  1---9---2
+     * middle layer:
+     *  20---24---19
+     *   |    |   |
+     *  21---27---22
+     *   |    |   |
+     *  17---23---18
+     * top layer:
+     *   8--15--7
+     *   |   |  |
+     *  16--26--14
+     *   |   |  |
+     *   5--13--6
+    */
 
     t_shpvals[1-1] = xi * (xi - 1) * eta * (eta - 1) * zeta * (zeta - 1) / 8.0;
     t_shpders[1-1](1) = (2 * xi - 1) * eta * (eta - 1) * zeta * (zeta - 1) / 8.0;

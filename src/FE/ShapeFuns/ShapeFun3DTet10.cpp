@@ -36,6 +36,31 @@ void ShapeFun3DTet10::calc3DShapeValsAndDerivatives(const double &xi,const doubl
     //                                   ids 9  is the midedge node between (2,4),
     //                                   ids 10 is the midedge node between (3,4).
     // please do the reording for node-9 and node-10 in msh file reading!!!
+    /**
+     * VTK Cell type: vtkTetra
+     * bottom layer:
+     * 3
+     * |\
+     * | \
+     * 7  6
+     * |   \
+     * |    \
+     * 1--5--2
+     * 
+     * middle layer
+     * (3)10(4)
+     *     |\
+     *     | \
+     *     |  \
+     *     |   \
+     *     |    \
+     *     |     \
+     *     +------+
+     * (1)8(4)  (2)9(4)  
+     * 
+     * top layer:
+     * 4*
+    */
 
     t_shpvals[1-1]=(1.0-xi-eta-zeta)*(1.0-2.0*xi-2*eta-2.0*zeta);
     t_shpders[1-1](1)= 4.0*xi+4.0*eta+4.0*zeta-3.0;
