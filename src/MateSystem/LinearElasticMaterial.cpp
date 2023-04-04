@@ -7,10 +7,11 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2022.08.20
-//+++ Purpose: Implement the constitutive law for linear elastic
-//+++          materials
+//+++ Author  : Yang Bai
+//+++ Reviewer: hf @ 2023.04.04
+//+++ Date    : 2022.08.20
+//+++ Purpose : Implement the constitutive law for linear elastic
+//+++           materials
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "MateSystem/LinearElasticMaterial.h"
@@ -77,14 +78,18 @@ void LinearElasticMaterial::computeStressAndJacobian(const nlohmann::json &param
                                           const Rank2Tensor &strain,
                                           Rank2Tensor &stress,
                                           Rank4Tensor &jacobian){
-    double E,nu;
-    double K,G;
-    double lame;
+    double E,nu;// Youngs modulus and poisso ratio
+    double K,G; // bulk moduli and shear moduli
+    double lame;// lame constant
+
+    E=nu=K=G=lame=0.0;
 
     if(JsonUtils::hasValue(params,"E")&&
        JsonUtils::hasValue(params,"nu")){
         E=JsonUtils::getValue(params,"E");
         nu=JsonUtils::getValue(params,"nu");
+        lame=E*nu/((1.0+nu)*(1.0-2.0*nu));
+        G=0.5*E/(1+nu);
     }
     else if(JsonUtils::hasValue(params,"K")&&
             JsonUtils::hasValue(params,"G")){
@@ -92,6 +97,7 @@ void LinearElasticMaterial::computeStressAndJacobian(const nlohmann::json &param
         G=JsonUtils::getValue(params,"G");
         E=9.0*K*G/(3.0*K+G);
         nu=(3.0*K-2.0*G)/(2.0*(3.0*K+G));
+        lame=K-2.0*G/3.0;
     }
     else if(JsonUtils::hasValue(params,"Lame")&&
             JsonUtils::hasValue(params,"G")){
@@ -114,30 +120,38 @@ void LinearElasticMaterial::computeStressAndJacobian(const nlohmann::json &param
         else{
             if(JsonUtils::getBoolean(params,"plane-strain")){
                 // for plane strain case
-                m_sig_zz=(E/(1.0+nu))*(nu/(1.0-2.0*nu))*(strain(1,1)+strain(2,2));
-                m_eps_zz=0.0;
-                E=E/(1.0-nu*nu);
-                nu=nu/(1.0-nu);
+                // Within the context of tensor formulation, 
+                // the condition of plane strain is inherently and automatically fulfilled.
+                // Thanks hf for identifying the inconsistency present in the previous implementation..
                 jacobian.setFromEAndNu(E,nu);
                 stress=jacobian.doubledot(strain);
-                stress(3,3)=m_sig_zz;
+                m_eps_zz=0.0;
             }
             else{
-                // for plane stress case, here the strain dosent contain eps_zz
-                jacobian.setFromEAndNu(E,nu);
-                stress=jacobian.doubledot(strain);
-                m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+                // for plane stress case
+                // Firstly, we use the condition stress_zz=0=lame*(strain_kk)+2*mu*strain_zz to
+                // obtain the correct strain_zz
+                m_eps_zz=-lame*(strain(1,1)+strain(2,2))/(lame+2.0*G);
+                // Next, we can get the 'correct' strain tensor from strain_zz
+                m_strain_new=strain;// still 2x2 tensor
+                m_strain_new(3,3)=m_eps_zz;// the correct strain tensor (3x3) for plane-stress condition
+                // stress_ij=lame*delta_ij*trace(eps_ij)+2mu*eps_ij
+                m_I.setToIdentity();
+                m_I4Sym.setToIdentity4Symmetric();
+                stress=lame*m_I*m_strain_new.trace()+2.0*G*m_strain_new;
+                jacobian=m_I.otimes(m_I)*lame+m_I4Sym*2.0*G;
             }
         }
     }
     else{
-        // default option is plane-stress
+        // default option is plane-strain
         if(dim==2){
             jacobian.setFromEAndNu(E,nu);
             stress=jacobian.doubledot(strain);
-            m_eps_zz=(-nu/E)*(stress(1,1)+stress(2,2));
+            m_eps_zz=0.0;
         }
         else{
+            // for 3D case, just use the standard tensor formula
             jacobian.setFromEAndNu(E,nu);
             stress=jacobian.doubledot(strain);
         }
