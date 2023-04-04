@@ -25,7 +25,19 @@ void ShapeFun3DHex8::calc3DShapeValsAndDerivatives(const double &xi,const double
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 8, error detected in ShapeFun3DHex8.cpp");
         MessagePrinter::exitAsFem();
     }
-
+    /**
+     * The nodes should look like:
+     * bottom layer:
+     * 4----3
+     * |    |
+     * |    |
+     * 1----2
+     * top layer:
+     * 8----7
+     * |    |
+     * |    |
+     * 5----6
+    */
     t_shpvals[0] = (1 - xi) * (1 - eta) * (1 - zeta) / 8.0;
     t_shpders[0](1) = -(1 - eta) * (1 - zeta) / 8.0;
     t_shpders[0](2) = -(1 - xi) * (1 - zeta) / 8.0;

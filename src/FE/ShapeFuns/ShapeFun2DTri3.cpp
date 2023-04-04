@@ -21,6 +21,15 @@ void ShapeFun2DTri3::calc2DShapeValsAndDerivatives(const double &xi,const double
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 3, error detected in Shape2DTri3.cpp");
         MessagePrinter::exitAsFem();
     }
+    /**
+     * VTK Cell type: vtkTriangle
+     * The nodes should look like:
+     * 3
+     * |\
+     * | \
+     * |  \
+     * 1---2
+    */
     t_shpvals[1-1]=1.0-xi-eta;
     t_shpders[1-1](1)=-1.0;
     t_shpders[1-1](2)=-1.0;

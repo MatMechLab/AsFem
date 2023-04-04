@@ -74,6 +74,9 @@ private:
 private:
     double m_eps_zz;/**< strain of z-axis */
     double m_sig_zz;/**< stress of z-axis */
+    Rank2Tensor m_I;/**< identity tensor*/
+    Rank2Tensor m_strain_new;/**< new strain tensor */
+    Rank4Tensor m_I4Sym;/**< identity and symmetric rank-4 tensor */
     Rank2Tensor m_devStress,m_devStrain;/**< for the deviatoric part of stress and strain */
     Rank2Tensor m_gradU;/**< the displacement gradient */
     Rank2Tensor m_strain,m_stress;/**< local stress and strain tensor */

@@ -22,6 +22,10 @@ void ShapeFun1DEdge3::calc1DShapeValsAndDerivatives(const double &xi,vector<doub
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 3, error detected in Shape1DEdge3.cpp");
         MessagePrinter::exitAsFem();
     }
+    /**
+     * The nodes should look like:
+     * 1---2---3
+    */
     t_shpvals[1-1]=0.5*xi*(xi-1.0);
     t_shpders[1-1](1)= 0.5*(2.0*xi-1.0);
     t_shpders[1-1](2)= 0.0;

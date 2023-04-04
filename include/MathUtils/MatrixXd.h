@@ -437,6 +437,18 @@ public:
         (*this)=temp;
     }
 
+    /**
+     * This function solve the system equation Ax=b
+     * @param x input vector which stores the solution
+     * @param b input vector which serves as the right hand side term
+    */
+    void solve(const VectorXd &b,VectorXd &x) const;
+    /**
+     * This function solve the system equation Ax=b, with a given b vector and return the solution x
+     * @param b input vector which serves as the right hand side term
+    */
+    VectorXd solve(const VectorXd &b) const;
+
 private:
     vector<double> m_vals;/**< double type vector to store the matrix element*/
     int m_m; /**< the integer variable for the 1st dimension of the matrix*/

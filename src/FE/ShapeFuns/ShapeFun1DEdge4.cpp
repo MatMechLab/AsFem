@@ -22,6 +22,10 @@ void ShapeFun1DEdge4::calc1DShapeValsAndDerivatives(const double &xi,vector<doub
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 4, error detected in Shape1DEdge4.cpp");
         MessagePrinter::exitAsFem();
     }
+    /**
+     * The nodes should look like:
+     * 1---2---3---4
+    */
     // the details can be found here: http://www.sd.ruhr-uni-bochum.de/downloads/Shape_funct.pdf
     t_shpvals[1-1]=-(3.0*xi+1.0)*(3.0*xi-1.0)*(    xi-1.0)/16.0;
     t_shpders[1-1](1)=-27.0*xi*xi/16.0+9.0*xi/8.0+ 1.0/16.0;

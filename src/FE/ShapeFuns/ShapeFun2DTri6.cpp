@@ -22,7 +22,17 @@ void ShapeFun2DTri6::calc2DShapeValsAndDerivatives(const double &xi,const double
         MessagePrinter::exitAsFem();
     }
     // taken from: http://www.sd.ruhr-uni-bochum.de/downloads/Shape_funct.pdf
-
+    /**
+     * VTK Cell type: vtkQuadraticTriangle
+     * The nodes should look like:
+     * 3
+     * |\
+     * | \
+     * 6  5
+     * |   \
+     * |    \
+     * 1--4--2
+    */
     t_shpvals[1-1]=(1.0-xi-eta)*(1.0-2*xi-2*eta);
     t_shpders[1-1](1)=-3.0+4.0*eta+4.0*xi;
     t_shpders[1-1](2)=-3.0+4.0*eta+4.0*xi;

@@ -26,6 +26,19 @@ void ShapeFun3DTet4::calc3DShapeValsAndDerivatives(const double &xi,const double
 
     // It should be mentioned that, tet4 mesh has different node ordering, here we use the one defined in Gmsh
     // https://gmsh.info/doc/texinfo/gmsh.html#Node-ordering
+    /**
+     * VTK Cell type: vtkTetra
+     * bottom layer:
+     * 3
+     * |\
+     * | \
+     * |  \
+     * |   \
+     * 1----2
+     * 
+     * top layer:
+     * 4*
+    */
 
     t_shpvals[0]=1.0-xi-eta-zeta;
     t_shpders[0](1)=-1.0;

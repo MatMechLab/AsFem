@@ -21,6 +21,15 @@ void ShapeFun2DQuad9::calc2DShapeValsAndDerivatives(const double &xi,const doubl
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 9, error detected in ShapeFun2DQuad9.cpp");
         MessagePrinter::exitAsFem();
     }
+    /**
+     * VTK Cell type: vtkQuadraticQuad
+     * The nodes should look like:
+     * 4---7---3
+     * |   |   |
+     * 8---9---6
+     * |   |   |
+     * 1---5---2
+    */
     t_shpvals[1-1]=(xi*xi-xi )*(eta*eta-eta)/4.0;
     t_shpders[1-1](1)= (2.0*xi-1.0)*(eta*eta-eta)/4.0;
     t_shpders[1-1](2)= (xi*xi-xi  )*(2.0*eta-1.0)/4.0;

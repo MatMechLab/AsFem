@@ -37,3 +37,46 @@ MatrixXd::MatrixXd(const int &m,const int &n,const double &val){
     m_mn=m*n;
     m_vals.resize(m_mn,val);
 }
+
+void MatrixXd::solve(const VectorXd &b,VectorXd &x) const{
+    if(b.getM()!=getM()){
+        MessagePrinter::printErrorTxt("size of rhs vector b is not equal to the row number of your matrix, can\'t execute the solve function");
+        MessagePrinter::exitAsFem();
+    }
+    if(x.getM()!=getN()){
+        MessagePrinter::printErrorTxt("size of solution vector x is not equal to the column number of your matrix, can\'t execute the solve function");
+        MessagePrinter::exitAsFem();
+    }
+    Eigen::MatrixXd A(getM(),getN());
+    Eigen::VectorXd B(getM()),X(getN());
+    for(int i=1;i<=getM();i++){
+        for(int j=1;j<=getN();j++){
+            A.coeffRef(i-1,j-1)=(*this)(i,j);
+        }
+        B.coeffRef(i-1)=b(i);
+    }
+    X=A.fullPivLu().solve(B);
+    for(int i=1;i<=getM();i++){
+        x(i)=X.coeff(i-1);
+    }
+}
+VectorXd MatrixXd::solve(const VectorXd &b) const{
+    if(b.getM()!=getM()){
+        MessagePrinter::printErrorTxt("size of rhs vector b is not equal to the row number of your matrix, can\'t execute the solve function");
+        MessagePrinter::exitAsFem();
+    }
+    VectorXd x(getM(),0.0);
+    Eigen::MatrixXd A(getM(),getN());
+    Eigen::VectorXd B(getM()),X(getN());
+    for(int i=1;i<=getM();i++){
+        for(int j=1;j<=getN();j++){
+            A.coeffRef(i-1,j-1)=(*this)(i,j);
+        }
+        B.coeffRef(i-1)=b(i);
+    }
+    X=A.fullPivLu().solve(B);
+    for(int i=1;i<=getM();i++){
+        x(i)=X.coeff(i-1);
+    }
+    return x;
+}

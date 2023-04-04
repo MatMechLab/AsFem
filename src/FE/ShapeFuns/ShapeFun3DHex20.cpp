@@ -25,63 +25,125 @@ void ShapeFun3DHex20::calc3DShapeValsAndDerivatives(const double &xi,const doubl
         MessagePrinter::printErrorTxt("your shape val or derivs vector size is smaller than 20, error detected in ShapeFun3DHex20.cpp");
         MessagePrinter::exitAsFem();
     }
+    /**
+     * VTK cell type: vtkQuadraticHexahedron
+     * bottom layer:
+     *  4---11---3
+     *  |        |
+     * 12        10
+     *  |        |
+     *  1---9----2
+     * middle layer:
+     *  20------19
+     *   |       |
+     *   |       |
+     *  17------18
+     * top layer:
+     *   8---15---7
+     *   |        |
+     *  16       14
+     *   |        |
+     *   5---13---6
+    */
 
-    const double XI[]={0.0,
-                      -1.0,1.0,1.0,-1.0,//1-4
-                      -1.0,1.0,1.0,-1.0,//5-8
-                       0.0,1.0,0.0,-1.0,//9-12
-                       0.0,1.0,0.0,-1.0,//13-16
-                      -1.0,1.0,1.0,-1.0//17-20
-                       };
-    const double ETA[]={0.0,
-                        -1.0,-1.0,1.0,1.0,//1-4
-                        -1.0,-1.0,1.0,1.0,//5-8
-                        -1.0, 0.0,1.0,0.0,//9-12
-                        -1.0, 0.0,1.0,0.0,//13-16
-                        -1.0,-1.0,1.0,1.0//17-20
-                        };
-    const double ZETA[]={0.0,
-                        -1.0,-1.0,-1.0,-1.0,//1-4
-                         1.0, 1.0, 1.0, 1.0,//5-8
-                        -1.0,-1.0,-1.0,-1.0,//9-12
-                         1.0, 1.0, 1.0, 1.0,//13-16
-                         0.0, 0.0, 0.0, 0.0//17-20
-                        };
+    t_shpvals[1-1]=(1.0-xi)*(1.0-eta)*(1.0-zeta)*(-2.0-xi-eta-zeta)/8.0;
+    t_shpders[1-1](1)= (1.0-eta)*(1.0-zeta)*(2*xi+eta+zeta+1.0)/8.0;
+    t_shpders[1-1](2)= (1.0-xi)*(1.0-zeta)*(xi+2.0*eta+zeta+1.0)/8.0;
+    t_shpders[1-1](3)= (1.0-xi)*(1.0-eta)*(xi+eta+2.0*zeta+1.0)/8.0;
 
-    int i;
-    // for corner nodes
-    for(i=1;i<=8;++i){
-        t_shpvals[i-1]=(1.0+XI[i]*xi)*(1.0+ETA[i]*eta)*(1.0+ZETA[i]*zeta)*(XI[i]*xi+ETA[i]*eta+ZETA[i]*zeta-2.0)/8.0;
+    t_shpvals[2-1]=(1.0+xi)*(1.0-eta)*(1.0-zeta)*(-2.0+xi-eta-zeta)/8.0;
+    t_shpders[2-1](1)=-(1.0-eta)*(1.0-zeta)*(-2.0*xi+eta+zeta+1.0)/8.0;
+    t_shpders[2-1](2)=-(1.0+xi)*(1.0-zeta)*(xi-2.0*eta-zeta-1.0)/8.0;
+    t_shpders[2-1](3)= (1.0+xi)*(1.0-eta)*(-xi+eta+2.0*zeta+1.0)/8.0;
 
-        t_shpders[i-1](1)=(XI[i])*(1.0+ETA[i]*eta)*(1.0+ZETA[i]*zeta)*(XI[i]*xi+ETA[i]*eta+ZETA[i]*zeta-2.0)/8.0
-                        +(1.0+XI[i]*xi)*(1.0+ETA[i]*eta)*(1.0+ZETA[i]*zeta)*(XI[i])/8.0;
+    t_shpvals[3-1]=(1.0+xi)*(1.0+eta)*(1.0-zeta)*(-2.0+xi+eta-zeta)/8.0;
+    t_shpders[3-1](1)= (1.0+eta)*(1.0-zeta)*(2.0*xi+eta-zeta-1.0)/8.0;
+    t_shpders[3-1](2)= (1.0+xi)*(1.0-zeta)*(xi+2.0*eta-zeta-1.0)/8.0;
+    t_shpders[3-1](3)=-(1.0+xi)*(1.0+eta)*(xi+eta-2.0*zeta-1.0)/8.0;
 
-        t_shpders[i-1](2)=(1.0+XI[i]*xi)*(ETA[i])*(1.0+ZETA[i]*zeta)*(XI[i]*xi+ETA[i]*eta+ZETA[i]*zeta-2.0)/8.0
-                        +(1.0+XI[i]*xi)*(1.0+ETA[i]*eta)*(1.0+ZETA[i]*zeta)*(ETA[i])/8.0;
+    t_shpvals[4-1]=(1.0-xi)*(1.0+eta)*(1.0-zeta)*(-2.0-xi+eta-zeta)/8.0;
+    t_shpders[4-1](1)=-(1.0+eta)*(1.0-zeta)*(-2.0*xi+eta-zeta-1.0)/8.0;
+    t_shpders[4-1](2)=-(1.0-xi)*(1.0-zeta)*(xi-2.0*eta+zeta+1.0)/8.0;
+    t_shpders[4-1](3)=-(1.0-xi)*(1.0+eta)*(-xi+eta-2.0*zeta-1.0)/8.0;
 
-        t_shpders[i-1](3)=(1.0+XI[i]*xi)*(1.0+ETA[i]*eta)*(ZETA[i])*(XI[i]*xi+ETA[i]*eta+ZETA[i]*zeta-2.0)/8.0
-                        +(1.0+XI[i]*xi)*(1.0+ETA[i]*eta)*(1.0+ZETA[i]*zeta)*(ZETA[i])/8.0;
-    }
+    t_shpvals[5-1]=(1.0-xi)*(1.0-eta)*(1.0+zeta)*(-2.0-xi-eta+zeta)/8.0;
+    t_shpders[5-1](1)= (1.0-eta)*(1.0+zeta)*(2.0*xi+eta-zeta+1.0)/8.0;
+    t_shpders[5-1](2)= (1.0-xi)*(1.0+zeta)*(xi+2.0*eta-zeta+1.0)/8.0;
+    t_shpders[5-1](3)=-(1.0-xi)*(1.0-eta)*(xi+eta-2.0*zeta+1.0)/8.0;
 
-    // for midside nodes
-    for(i=1;i<=4;++i){
-        // for 9,11,13,15
-        t_shpvals[8+2*i-1-1]=(1.0-xi*xi)*(1.0+ETA[8+2*i-1]*eta)*(1.0+ZETA[8+2*i-1]*zeta)/4.0;
-        t_shpders[8+2*i-1-1](1)=(-2.0*xi)*(1.0+ETA[8+2*i-1]*eta)*(1.0+ZETA[8+2*i-1]*zeta)/4.0;
-        t_shpders[8+2*i-1-1](2)=(1.0-xi*xi)*(ETA[8+2*i-1])*(1.0+ZETA[8+2*i-1]*zeta)/4.0;
-        t_shpders[8+2*i-1-1](3)=(1.0-xi*xi)*(1.0+ETA[8+2*i-1]*eta)*(ZETA[8+2*i-1])/4.0;
- 
-        // for 10,12,14,16
-        t_shpvals[8+2*i-1]=(1.0-eta*eta)*(1.0+XI[8+2*i]*xi)*(1.0+ZETA[8+2*i]*zeta)/4.0;
-        t_shpders[8+2*i-1](1)=(1.0-eta*eta)*(XI[8+2*i])*(1.0+ZETA[8+2*i]*zeta)/4.0;
-        t_shpders[8+2*i-1](2)=(-2.0*eta)*(1.0+XI[8+2*i]*xi)*(1.0+ZETA[8+2*i]*zeta)/4.0;
-        t_shpders[8+2*i-1](3)=(1.0-eta*eta)*(1.0+XI[8+2*i]*xi)*(ZETA[8+2*i])/4.0;
+    t_shpvals[6-1]=(1.0+xi)*(1.0-eta)*(1.0+zeta)*(-2.0+xi-eta+zeta)/8.0;
+    t_shpders[6-1](1)=-(1.0-eta)*(1.0+zeta)*(-2.0*xi+eta-zeta+1.0)/8.0;
+    t_shpders[6-1](2)=-(1.0+xi)*(1.0+zeta)*(xi-2.0*eta+zeta-1.0)/8.0;
+    t_shpders[6-1](3)=-(1.0+xi)*(1.0-eta)*(-xi+eta-2.0*zeta+1.0)/8.0;
 
-        // for 17,18,19,20
-        t_shpvals[16+i-1]=(1.0-zeta*zeta)*(1.0+XI[16+i]*xi)*(1.0+ETA[16+i]*eta)/4.0;
-        t_shpders[16+i-1](1)=(1.0-zeta*zeta)*(XI[16+i])*(1.0+ETA[16+i]*eta)/4.0;
-        t_shpders[16+i-1](2)=(1.0-zeta*zeta)*(1.0+XI[16+i]*xi)*(ETA[16+i])/4.0;
-        t_shpders[16+i-1](3)=(-2.0*zeta)*(1.0+XI[16+i]*xi)*(1.0+ETA[16+i]*eta)/4.0;
-    }
+    t_shpvals[7-1]=(1.0+xi)*(1.0+eta)*(1.0+zeta)*(-2.0+xi+eta+zeta)/8.0;
+    t_shpders[7-1](1)= (1.0+eta)*(1.0+zeta)*(2*xi+eta+zeta-1.0)/8.0;
+    t_shpders[7-1](2)= (1.0+xi)*(1.0+zeta)*(xi+2.0*eta+zeta-1.0)/8.0;
+    t_shpders[7-1](3)= (1.0+xi)*(1.0+eta)*(xi+eta+2.0*zeta-1.0)/8.0;
+
+    t_shpvals[8-1]=(1.0-xi)*(1.0+eta)*(1.0+zeta)*(-2.0-xi+eta+zeta)/8.0;
+    t_shpders[8-1](1)=-(1.0+eta)*(1.0+zeta)*(-2.0*xi+eta+zeta-1.0)/8.0;
+    t_shpders[8-1](2)=-(1.0-xi)*(1.0+zeta)*(xi-2.0*eta-zeta+1.0)/8.0;
+    t_shpders[8-1](3)= (1.0-xi)*(1.0+eta)*(-xi+eta+2.0*zeta-1.0)/8.0;
+
+    t_shpvals[9-1]=(1.0-xi*xi)*(1.0-eta)*(1.0-zeta)/4.0;
+    t_shpders[9-1](1)=-xi*(1.0-eta)*(1.0-zeta)/2.0;
+    t_shpders[9-1](2)=-(1.0-xi*xi)*(1.0-zeta)/4.0;
+    t_shpders[9-1](3)=-(1.0-xi*xi)*(1.0-eta)/4.0;
+
+    t_shpvals[10-1]=(1.0+xi)*(1.0-eta*eta)*(1.0-zeta)/4.0;
+    t_shpders[10-1](1)= (1.0-eta*eta)*(1.0-zeta)/4.0;
+    t_shpders[10-1](2)=-(1.0+xi)*eta*(1.0-zeta)/2.0;
+    t_shpders[10-1](3)=-(1.0+xi)*(1.0-eta*eta)/4.0;
+
+    t_shpvals[11-1]=(1.0-xi*xi)*(1.0+eta)*(1.0-zeta)/4.0;
+    t_shpders[11-1](1)=-xi*(1.0+eta)*(1.0-zeta)/2.0;
+    t_shpders[11-1](2)= (1.0-xi*xi)*(1.0-zeta)/4.0;
+    t_shpders[11-1](3)=-(1.0-xi*xi)*(1.0+eta)/4.0;
+
+    t_shpvals[12-1]=(1.0-xi)*(1.0-eta*eta)*(1.0-zeta)/4.0;
+    t_shpders[12-1](1)=-(1.0-eta*eta)*(1.0-zeta)/4.0;
+    t_shpders[12-1](2)=-(1.0-xi)*eta*(1.0-zeta)/2.0;
+    t_shpders[12-1](3)=-(1.0-xi)*(1.0-eta*eta)/4.0;
+
+    t_shpvals[13-1]=(1.0-xi*xi)*(1.0-eta)*(1.0+zeta)/4.0;
+    t_shpders[13-1](1)=-xi*(1.0-eta)*(1.0+zeta)/2.0;
+    t_shpders[13-1](2)=-(1.0-xi*xi)*(1.0+zeta)/4.0;
+    t_shpders[13-1](3)= (1.0-xi*xi)*(1.0-eta)/4.0;
+
+    t_shpvals[14-1]=(1.0+xi)*(1.0-eta*eta)*(1.0+zeta)/4.0;
+    t_shpders[14-1](1)= (1.0-eta*eta)*(1.0+zeta)/4.0;
+    t_shpders[14-1](2)=-(1.0+xi)*eta*(1.0+zeta)/2.0;
+    t_shpders[14-1](3)= (1.0+xi)*(1.0-eta*eta)/4.0;
+
+    t_shpvals[15-1]=(1.0-xi*xi)*(1.0+eta)*(1.0+zeta)/4.0;
+    t_shpders[15-1](1)=-xi*(1.0+eta)*(1.0+zeta)/2.0;
+    t_shpders[15-1](2)= (1.0-xi*xi)*(1.0+zeta)/4.0;
+    t_shpders[15-1](3)= (1.0-xi*xi)*(1.0+eta)/4.0;
+
+    t_shpvals[16-1]=(1.0-xi)*(1.0-eta*eta)*(1.0+zeta)/4.0;
+    t_shpders[16-1](1)=-(1.0-eta*eta)*(1.0+zeta)/4.0;
+    t_shpders[16-1](2)=-(1.0-xi)*eta*(1.0+zeta)/2.0;
+    t_shpders[16-1](3)= (1.0-xi)*(1.0-eta*eta)/4.0;
+
+    t_shpvals[17-1]=(1.0-xi)*(1.0-eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[17-1](1)=-(1.0-eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[17-1](2)=-(1.0-xi)*(1.0-zeta*zeta)/4.0;
+    t_shpders[17-1](3)=-(1.0-xi)*(1.0-eta)*zeta/2.0;
+
+    t_shpvals[18-1]=(1.0+xi)*(1.0-eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[18-1](1)= (1.0-eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[18-1](2)=-(1.0+xi)*(1.0-zeta*zeta)/4.0;
+    t_shpders[18-1](3)=-(1.0+xi)*(1.0-eta)*zeta/2.0;
+
+    t_shpvals[19-1]=(1.0+xi)*(1.0+eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[19-1](1)= (1.0+eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[19-1](2)= (1.0+xi)*(1.0-zeta*zeta)/4.0;
+    t_shpders[19-1](3)=-(1.0+xi)*(1.0+eta)*zeta/2.0;
+
+    t_shpvals[20-1]=(1.0-xi)*(1.0+eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[20-1](1)=-(1.0+eta)*(1.0-zeta*zeta)/4.0;
+    t_shpders[20-1](2)= (1.0-xi)*(1.0-zeta*zeta)/4.0;
+    t_shpders[20-1](3)=-(1.0-xi)*(1.0+eta)*zeta/2.0;
 
 }
