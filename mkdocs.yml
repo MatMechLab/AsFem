@@ -5,7 +5,7 @@ site_description: >-
   An open source finite element code for phase-field modeling and multiphysics simulation.
 
 # Copyright
-copyright: Copyright &copy; 2020 - 2022 Yang Bai/M3-Group
+copyright: Copyright &copy; 2020 - 2023 Yang Bai/M3-Group
 
 # Repository
 repo_name: M3Group/AsFem

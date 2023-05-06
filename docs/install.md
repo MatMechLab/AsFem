@@ -19,25 +19,26 @@ Before we start the installation, some components are required, for example:
 **It is highly recommended to install the openmpi and PETSc packages from the source code!**
 
 ## Install gcc
-One can follow the steps list below to install a modern GCC compiler if one don't already have one. **Otherwise, please go straight to the MPI setup**.
 
-<span style="color:red">**Before you start, you'll need a GCC (the old one) compiler to compile another GCC, therefore if your system doesn't have one, please run(for Ubuntu)**</span>:
+If you don't already have a modern GCC compiler, you can use the steps listed below to install one. **Otherwise, please proceed directly to the MPI setup.**
+
+<span style="color:red">**To compile a new GCC compiler, you will first need an old GCC compiler. If your system does not have one, please execute the following command (for Ubuntu) before proceeding.**</span>:
 ```
 sudo apt install gcc g++ gfortran cmake git python3 build-essential
 ```
-For ubuntu 22.04, `apt install` will bring you the `GCC11.2.0` package which is **new** and **good** enough for our installation, so you can skip the GCC installation part list below. Anyway, you can also install a newer version, i.e., GCC12.1.0 or even newer.
+If you're using Ubuntu 22.04, the apt install command will provide you with the `GCC11.3.0` package, which is a suitable and up-to-date choice for our installation. As a result, you can skip the list of steps for installing GCC below. However, if you prefer, you can also install a more recent version of GCC, such as `GCC12.2.0` or even later.
 
-<span style="color:red">**The installation itself is not limited to Ubuntu system, for other linux distributions, one need to change the command to the consistent one. For instance, `sudo zypper`, `sudo yum`, `sudo dnf`...**</span>:
+<span style="color:red">**The installation process is not exclusive to Ubuntu systems. For other Linux distributions, you may need to adjust the command to match the appropriate package manager. For example, you may need to use `sudo zypper`, `sudo yum`, `sudo dnf`, and so on.**</span>:
 
-To begin, one should download and unzip the gcc source code:
+To get started, you will need to download and extract the source code for GCC:
 ```
 curl -L -O http://mirrors.concertpass.com/gcc/releases/gcc-11.3.0/gcc-11.3.0.tar.gz
 
 tar -xf gcc-11.3.0.tar.gz
 ```
-or directly go to the official website [gcc](https://gcc.gnu.org/).
+Alternatively, you can also directly visit the official [GCC](https://gcc.gnu.org/) website to obtain the source code.
 
-Next, we'll need to download the GCC pre-request as follows:
+Next, you will need to download the GCC prerequisites by following these steps:
 ```
 cd gcc-11.3.0
 ./contrib/download_prerequisites
@@ -51,7 +52,7 @@ we can then configure, build and install GCC:
 --enable-host-shared \
 --with-pic
 ```
-where `**your-gcc-install-path**` represents the installation path on **your own computer**.
+where <span style="color:red">`**your-gcc-install-path**`</span> represents the installation path on **your own computer**.
 
 Then one can execute:
 ```
@@ -62,33 +63,36 @@ and
 make install
 ```
 
-In the following installation, we must configure our bash environment for using our modern GCC(if you have installed your gcc via `sudo apt` or `sudo yum` or `sudo zypper` or whatever `sudo x`, please skip this step, because your GCC is ready!):
+During the installation process, it is necessary to configure your bash environment to use the modern GCC compiler. However, if you have installed GCC using `sudo apt`, `sudo yum`, `sudo zypper`, or any similar command, you can skip this step since your GCC is already set up and ready to use.
 ```
 export gcc=your-gcc-instal-path
 export PATH=$gcc/bin:$PATH
 export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/11.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/11.3.0:$LD_LIBRARY_PATH
 ```
-you can either paste the above settings to your `~/.bashrc` file or put it into a new file, i.e., `~/.asfem-profile`.
+You can add the aforementioned settings to your `~/.bashrc` file, or create a new file named `~/.asfem-profile` and add them there.
 
 
 ## Install mpi
-The MPI compiler is required to use the PETSc package for parallelization. **Please skip this stage if your machine already has the MPI compiler installed**.
+
+**If your machine already has an MPI compiler installed, you can skip this step**. Otherwise, you will need to install it in order to use the PETSc package for parallelization.
+
+You can download the OpenMPI source code using the following command:
 ```
-curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.gz
+curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.5.tar.gz
 ```
 Alternatively, you can get the source code from [openmpi](https://www.open-mpi.org/).
 
-Then you can config, build and install your openmpi (<span style="color:red">if you installed the GCC by compiling the source code rather than using `sudo apt install`, then please do `source ~/.asfem-profile` to set up your environment before running the following step</span>):
+Next, you can configure, build, and install OpenMPI. <span style="color:red">If you installed GCC by compiling the source code rather than using `sudo apt install`, please execute `source ~/.asfem-profile` to set up your environment before proceeding with the following step</span>.
 ```
-tar -xf openmpi-4.1.4.tar.gz
-cd openmpi-4.1.4
+tar -xf openmpi-4.1.5.tar.gz
+cd openmpi-4.1.5
 ./configure --prefix=*your-path-to-opemmpi*
 make -j8
 make install
 ```
-again, `*your-path-to-opemmpi*` should be your own installation path.
+once again, `*your-path-to-opemmpi*` should be <span style="color:red">your own installation path</span>.
 
-After that, you should put the related settings into your bash environment as follows:
+Once you have installed OpenMPI, you will need to add the necessary settings to your bash environment as follows:
 ```
 export MPI_DIR=your-path-to-openmpi
 
@@ -116,24 +120,24 @@ mpirun -np 4 echo "Hi"
 you should see 4x"Hi" in your terminal.
 
 # Install PETSc
-**Before we begin, make sure your GCC and MPI compilers are up to date (by doing `source ~/.asfem-profile`)**, (<span style="color:red">if both of your GCC and MPI are installed from `sudo`, then the newly opened terminal will find the gcc/mpicc compiler, which means you **do not** need to execute `source ~/.bashrc` or `source ~/.asfem-profile` !</span>):
+**Before proceeding, ensure that your GCC and MPI compilers are up to date by executing `source ~/.asfem-profile`**, (<span style="color:red">If you have installed both GCC and MPI using sudo commands, then the newly opened terminal will automatically recognize the gcc and mpicc compilers, and you will not need to execute `source ~/.bashrc` or `source ~/.asfem-profile` !</span>):
 ```
 source ~/.asfem-profile
 gcc --version
 mpicxx --version
 ```
-Plase keep in mind, these four lines must be **uncommented** in your `~/.asfem-profile`
+Plase keep in mind, these four lines should be **commented** in your `~/.asfem-profile` (<span style="color:red">You can also **uncomment** these lines, but please make sure that the `MPI_DIR` is set correctly to match the selected mpicxx compiler.</span>)
 ```
 #export CC=mpicc
 #export CXX=mpicxx
 #export FC=mpif90
 #export F90=mpif90
 ```
-We will tell PETSc the path to the openmpi, then it will find the correct compiler.
+By specifying the path to OpenMPI (mpicxx,mpicc, etc.), PETSc will be able to locate the appropriate compiler.
 
-The PETSc package can be downloaded via (you can change the version number to whatever you like, for example, `petsc-3.17.2.tar.gz`, `petsc-3.16.3.tar.gz`):
+You can download the PETSc package using the following command (you can change the version number to any desired version, such as `petsc-3.18.2.tar.gz` or `petsc-3.19.1.tar.gz`):
 ```
-curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.17.2.tar.gz
+curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.18.6.tar.gz
 ```
 or you can download it from the [PETSc website](https://www.mcs.anl.gov/petsc/download/index.html).
 
@@ -156,11 +160,19 @@ CXXOPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
 FOPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
 PETSC_DIR=`pwd`
 ```
-once again, `***your-PETSc-install-path***` should be your PETSc installation path, and `***your-MPI-install-path***` is the path of your MPI. Then, by running the `make xxxx -j8` and `make xxxx install` command, one can finish the installation. Here `xxx` represents the command line which is shown by PETSc in your terminal!
+Once again, please note that `***your-PETSc-install-path***` should be replaced with the actual path ***where you want to install PETSc***, and `***your-MPI-install-path***` should be replaced with the path to your MPI installation. <span style="color:red">Please ensure that the `--with-mpi-dir` option is set up correctly</span>.
 
-If `-march=native` and `-mtune=native ` flag doesn't work on your system, then please remove it.
+Finally, to complete the installation, run the command shown by PETSc in your terminal using the `make xxxx -j8` and `make xxxx install` commands. Replace ***`xxx`*** with the appropriate command line shown in your terminal(<span style="color:red">Note that the commands for your particular installation **may be different**, so please **do not copy and modify the commands shown here**. Instead, copy the commands specific to your own installation **from your terminal**!</span>)
 
-Afterwards, put the related settings into your `~/.asfem-profile` (now, you need to uncomment `export CC=xxx`) as follows:
+If the `-march=native` and `-mtune=native` flags do not work on your system, you should remove them from the compiler flags.
+
+It is important to note that if you wish to use the **`lu`** preconditioner or the **direct solver**, you will need to add one of the following lines for the lu solver:
+```
+--download-superlu_dist=1
+--download-mumps=1
+```
+
+Afterwards, add the necessary settings to your `~/.asfem-profile`. Please note that you will need to uncomment `export CC=xxx` options. Here is an example of a complete `~/.asfem-profile` file that includes the necessary settings for using PETSc.
 ```
 export gcc=***your-path-to-gcc-install-path***
 export PETSC_DIR=***your-path-to-petsc-install-dir***
@@ -171,10 +183,10 @@ export PATH=$MPI_DIR/bin:$PATH
 
 export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/11.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/11.3.0:$LD_LIBRARY_PATH
 
-export CC=mpicc
-export CXX=mpicxx
-export FC=mpif90
-export F90=mpif90
+export CC=$MPI_DIR/bin/mpicc
+export CXX=$MPI_DIR/bin/mpicxx
+export FC=$MPI_DIR/bin/mpif90
+export F90=$MPI_DIR/bin/mpif90
 
 export C_INCLUDE_PATH=$MPI_DIR/include:$C_INCLUDE_PATH
 export CPLUS_INCLUDE_PATH=$MPI_DIR/include:$CPLUS_INCLUDE_PATH
@@ -185,15 +197,15 @@ export LD_LIBRARY_PATH=$MPI_DIR/lib:$LD_LIBRARY_PATH
 export OMP_NUM_THREADS=1
 ```
 
-Once again, if you installed your GCC and openmpi from `sudo`, then you only need:
+Once again, if you have installed GCC and OpenMPI using `sudo` commands, you only need to add the PETSc settings to your `~/.asfem-profile`. Here are some sample commands for configuring your profile:
 ```
 export PETSC_DIR=***your-path-to-petsc-install-dir***
 export MPI_DIR=***your-path-to-openmpi***
 
-export CC=mpicc
-export CXX=mpicxx
-export FC=mpif90
-export F90=mpif90
+export CC=$MPI_DIR/bin/mpicc
+export CXX=$MPI_DIR/bin/mpicxx
+export FC=$MPI_DIR/bin/mpif90
+export F90=$MPI_DIR/bin/mpif90
 
 export OMP_NUM_THREADS=1
 ```
@@ -204,29 +216,30 @@ Download AsFem:
 ```
 git clone https://github.com/M3Group/AsFem.git
 ```
-if one wants to have a try for the `devel` version (**unstable**), one can use:
+if you wish to try the devel version (which is considered to be **unstable**), you can use the following command:
 ```
 git clone -b devel https://github.com/M3Group/AsFem.git
 ```
-then execute `source ~/.asfem-profile`, and then we can get the makefile via:
+
+After executing source ~/.asfem-profile, you can obtain the `Makefile` using the following command:
 ```
 cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release
 ```
-afterwards, we can make the `asfem` by executing:
+After obtaining the `Makefile`, you can build `asfem` by executing the following command:
 ```
 make -j4
 ```
-the executable file `asfem` can be found in the `AsFem/bin` folder.
+Once you have built `asfem`, you can find the executable file in the `AsFem/bin` folder.
 
-It is also highly recommended to put `asfem` into your `PATH` as follows:
+It is highly recommended to add the `AsFem/bin` directory to your `PATH` environment variable as follows:
 ```
 export asfem=**your-path-to-asfem**
 export PATH=$PATH:$asfem/bin
 ```
-then one can easily run the AsFem job from the terminal as follows:
+After adding the `AsFem/bin` directory to your PATH environment variable, you can easily run an AsFem job from the terminal using the following command:
 ```
-asfem -i yourjob.i
-mpirun -np 16 asfem -i yourjob.i
+asfem -i yourjob.json
+mpirun -np 16 asfem -i yourjob.json
 ```
 
 That's all, enjoy!
