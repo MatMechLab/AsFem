@@ -12,155 +12,198 @@ tags:
 
 # Introduction
 
-Before we begin the actual FEM simulation, we must define our computation domain and discretize it into multiple subdomains. For this purpose, the `[mesh]` block is introduced.
+Before performing a FEM simulation, you must define the computation domain and discretize it into multiple **finite element mesh**. To accomplish this, AsFem provides the `mesh` block.
 
 # 1D example
 
-Let's take the 1D solid line as an example, this line can be discretized into several 1D Lagrange mesh as follows:
+As an example, let's consider a 1D solid line that needs to be discretized into several 1D Lagrange meshes. This can be achieved using the following input file:
 ```
-[mesh]
-  type=asfem
-  dim=1
-  xmin=0.0
-  xmax=1.0
-  nx=10
-  meshtype=edge2
-[end]
+"mesh":{
+	"type":"asfem",
+	"dim":1,
+	"nx":20,
+	"xmax":1.5,
+	"meshtype":"edge2",
+	"savemesh":true
+}
 ```
 ## Options
-The `type= `  option specifies the type of mesh generation we plan to use. We are offering two kinds of mesh generation in AsFem. The first one is the built-in mesh generation for a regular domain, i.e. the straight line (1d), the rectangle domain (2d), and the cubic domain (3d). For the second one, users can import their favorite mesh from other packages, like gmsh ( `type=gmsh` ) or netgen ( `type=gmsh2` ).
+The `type` option in the `mesh` block determines the type of mesh generation to be used. AsFem provides two types of mesh generation: built-in mesh generation for regular domains (such as 1D lines, 2D rectangles, and 3D cubes), and external mesh generation using pre-generated mesh files in standard formats such as Gmsh, Netgen, or Abaqus. For the second option, users can import their own mesh from other packages, such as Gmsh (using `"type": "gmsh"`) or Netgen (using `"type":"gmsh2"`).
 
-`dim=`  determines the domain's dimension, which should be 1, 2, or 3.
+The `dim` option specifies the dimension of the computational domain, which can be either 1, 2, or 3.
 
 `xmin=` and `xmax=` denote the size of the domain, you will need `ymin=` and `ymax=` for the 2D case, and `zmin=` and `zmax=` in the 3D case. One can also **ignore** these options, by default, the size of the domain will be unit, namely `[1]` in 1D, `[1,1]` in 2D, `[1,1,1]` in 3D.
 
-Simultaneously, `nx`, `ny`, and `nz` represent the number of mesh along these three axes, respectively.
 
-`meshtype=` option offers the choices of different kinds of mesh, for instance, the second order Lagrange mesh in 1D case can be obtained via `meshtype=edge3`. Currently, AsFem offers:
+The `xmin` and `xmax` options in the "mesh" block specify the size of the computational domain in the x-direction. For 2D cases, `ymin` and `ymax` are also needed, while for 3D cases, `zmin` and `zmax` are required. Users can also omit these options, in which case the domain size defaults to one unit, represented as `[1]` for 1D cases, `[1, 1]` for 2D cases, and `[1, 1, 1]` for 3D cases.
+
+
+The `nx`, `ny`, and `nz` options represent the number of meshes along the x, y, and z axes, respectively.
+
+The `meshtype` option within the `mesh` block provides different choices of mesh types. For example, second-order Lagrange mesh can be obtained in 1D by setting `"meshtype":"edge3"`. AsFem currently offers the following mesh types:
 ```
 edge2,edge3,edge4 // in 1D case
 quad4,quad8,quad9 // in 2D case
 hex8, hex20,hex27 // in 3D case
 ```
 
-If one want to save the created mesh, one will need the `savemesh=true` option. The mesh will be saved as a *.vtu* file, which should be named as 'your_input_file_name'+'_mesh.vtu' (*.i* is removed from your input file name). For example, if your input file is: *test.i*, then the mesh file name is: *test_mesh.vtu*.
+If users want to save the mesh created by AsFem, they need to set the "savemesh" option within the "mesh" block to **true**. The mesh will be saved as a *.vtu* file named as 'your_input_file_name' + _mesh.vtu (the *.i* extension in the input file name is removed). For example, if the input file name is *test.json*, the mesh file name will be *test_mesh.vtu*.
 
-## Complete mesh block
-Then the complete `[mesh]` block should look like:
-```
-[mesh]
-  type=asfem
-  dim=1
-  xmin=0.0
-  xmax=1.0
-  nx=10
-  meshtype=edge2
-  savemesh=true
-[end]
-```
 
-# 2D and 3D examples
+# 2D and 3D mesh
 
 Similarly, for 2D and 3D cases, one can use:
 ```
-[mesh]
-  type=asfem
-  dim=2
-  xmin=0.0
-  xmax=1.0
-  ymin=0.0
-  ymax=1.0
-  nx=10
-  ny=10
-  meshtype=quad4
-[end]
+"mesh":{
+		"type":"asfem",
+		"dim":2,
+		"nx":5,
+		"ny":15,
+		"xmax":0.5,
+		"ymax":1.5,
+		"meshtype":"quad4",
+		"savemesh":true
+	}
 ```
 and
 ```
-[mesh]
-  type=asfem
-  dim=3
-  xmin=0.0
-  xmax=1.0
-  ymin=0.0
-  ymax=1.0
-  zmin=0.0
-  zmax=1.0
-  nx=10
-  ny=10
-  nz=10
-  meshtype=hex8
-[end]
+"mesh":{
+		"type":"asfem",
+		"dim":3,
+		"nx":5,
+		"ny":20,
+		"nz":20,
+		"xmax":0.5,
+		"ymax":0.5,
+		"zmax":2.0,
+		"meshtype":"hex8",
+		"savemesh":true
+	}
 ```
 Or, one can also use:
 ```
-[mesh]
-  type=asfem
-  dim=3
-  nx=10
-  ny=10
-  nz=10
-  meshtype=hex8
-[end]
+"mesh":{
+		"type":"asfem",
+		"dim":3,
+		"nx":5,
+		"ny":20,
+		"nz":20,
+		"meshtype":"hex8",
+		"savemesh":true
+	}
 ```
-then the unit `[0,1]x[0,1]x[0,1]` 3D domain will be used by default.
+them a unit domain `[0,1]x[0,1]x[0,1]` will be used by default in 3D cases.
 
-# First try in your AsFem
+# First try in AsFem
 
-Now, lets try your first example in AsFem. You can create a new text file or simply run the following commands(you can use whatever your like, here we use nano and vim):
+To try the first example in AsFem, users can either create a new text file or use their preferred text editor. Here are some examples using `nano` or `vim`:
 ```
-nano firstrun.i
+nano firstrun.json
 ```
 or
 ```
-vim firstrun.i
+vim firstrun.json
 ```
-then copy and paste the following `[mesh]` block into your `firstrun.i`:
+then copy and paste the following `mesh` block into your `firstrun.json`:
 ```
-[mesh]
-  type=asfem
-  dim=3
-  nx=10
-  ny=10
-  nz=10
-  meshtype=hex8
-  savemesh=true
-[end]
+"mesh":{
+		"type":"asfem",
+		"dim":1,
+		"nx":20,
+		"xmax":1.5,
+		"meshtype":"edge2",
+		"savemesh":true
+	}
 ```
 save it and then execute your `AsFem` as follows:
 ```
-asfem -i firstrun.i --read-only
+asfem -i firstrun.json --read-only
 ```
 or in parallel:
 ```
-mpirun -np 4 asfem -i firstrun.i --read-only
+mpirun -np 4 asfem -i firstrun.json --read-only
 ```
-Here one need the `--read-only` option, since we do not have a complete input file but only the `[mesh]` block. If everthing works fine, you should see the following output:
+Here one need the `--read-only` option, since we do not have a complete input file but only the `mesh` block. If everthing works fine, you should see the following output:
 ```
-*****************************************************************************
-*** Welcome to use AsFem                                                  ***
-*** A Simple Finite Element Method Program                                ***
-*** Version: 0.40        Release @ 2021-01-01                             ***
-*** PETSc version:  3.14.3                                                ***
-*** License: GPL-3.0                                                      ***
-*** Author: Yang Bai                                                      ***
-*** Contact: walkandthinker@gmail.com                                     ***
-*** QQ Group: 879908352                                                   ***
-*** Website: https://github.com/yangbai90/AsFem                           ***
-*** Feel free to use and discuss  .:.                                     ***
-*****************************************************************************
-*** Start to create mesh ...                                              ***
-*** Mesh generation finished !                                            ***
-*** Save mesh to [                         step1_mesh.vtu]                ***
-***-----------------------------------------------------------------------***
-***-----------------------------------------------------------------------***
-*** Read-only mode analysis is finished !                                 ***
-*****************************************************************************
+******************************************************************************
+*** Welcome to use AsFem                                      AAA          ***
+*** A Simple Finite Element Method Program                   // \\         ***
+*** Version: 0.80        Release @ 2022-10-19               //   \\        ***
+*** PETSc version:  3.18.5                                 //     \\       ***
+*** License: GPL-3.0                                      //       \\      ***
+*** Author: Yang Bai @ M3-Group                          //_________\\     ***
+*** Contact: yangbai90@outlook.com                      //-----------\\    ***
+*** QQ Group: 879908352                                //             \\   ***
+*** Website: https://github.com/M3Group/AsFem         //               \\  ***
+*** Feel free to use and discuss  .:.                **                 ** ***
+******************************************************************************
+******************************************************************************
+*** Start to read the input file                                           ***
+*** mesh generator is done, your mesh is generated                         ***
+*** save mesh to step1-3d-mesh.vtu                                         ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [bcs] block found in your input file, then the 'zero' n !!! ***
+***         eumann bc is assumed                                       !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [ics] block found in your input file, then no any initi !!! ***
+***         al conditions will be applied                              !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [projection] block found in your input file, then no qu !!! ***
+***         antities will be projected                                 !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [postprocess] block found in your input file, then no p !!! ***
+***         ostprocess will be executed                                !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [nlsolver] block found in your input file, then the def !!! ***
+***         ault options will be used                                  !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [output] block found in your input file, then the defau !!! ***
+***         lt options will be used                                    !!! ***
+******************************************************************************
+*** Input file reading is done, elapsed time=   7.00000e-03 [s]            ***
+******************************************************************************
+******************************************************************************
+*** Mesh information summary                                               ***
+***   nodes=    2646, nodes per bulk elmt=  8, max dim= 3, min dim= 2      ***
+***   elmts=    3200, bulk=    2000, surf=    1200, line=       0          ***
+***   bulk mesh type is hex8, mesh order= 1                                ***
+***   total physical group=    7, nodeset physical group=    6             ***
+***------------------------------------------------------------------------***
+***   phy id              phy name       dim       nodes/elmt       elmts  ***
+***      1                   left         2             4            400   ***
+***      2                  right         2             4            400   ***
+***      3                 bottom         2             4            100   ***
+***      4                    top         2             4            100   ***
+***      5                   back         2             4            100   ***
+***      6                  front         2             4            100   ***
+***      7              alldomain         3             8           2000   ***
+***------------------------------------------------------------------------***
+***   nodal phy id             phy name             nodes number           ***
+***      1000                     left                      441            ***
+***      2000                    right                      441            ***
+***      3000                   bottom                      126            ***
+***      4000                      top                      126            ***
+***      5000                     back                      126            ***
+***      6000                    front                      126            ***
+******************************************************************************
+***------------------------------------------------------------------------***
+*** 1 CPU is used for the simulation                                       ***
+***------------------------------------------------------------------------***
+*** AsFem has been executed in 'read-only' mode                            ***
+******************************************************************************
+*** 'Simulation' is done, elapsed time=   9.00000e-03 [s]                  ***
+******************************************************************************
 ```
-Then, one can use the [Paraview](https://www.paraview.org/download/) to check our 3D mesh, which looks like below:
+Afterwards, you can visualize the generated 3D mesh using [Paraview](https://www.paraview.org/download/). The resulting visualization should resemble the following image:
 ![](step1.jpeg)
 
-As an exercise for the'[mesh]' block, it is highly recommended to try various options to generate the mesh you need before moving to the next step.
+As a practice for the `mesh` block, we recommend trying different options to generate the desired mesh before proceeding to the next step.
 
 
-The complete input files can be fund in `examples/tutorial`.
+The complete input files can be found in the `examples/tutorial` directory.

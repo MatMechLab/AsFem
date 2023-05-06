@@ -1,21 +1,21 @@
 
 
 # Introduction
-In [step-1](https://yangbai90.github.io/AsFem/2021/01/02/step-1/), our mesh was defined. Some necessary information, however, is still missing for a simple FEM analysis. Therefore, we will try to define our degrees of freedom (DoFs) in this step and also the element of our model. In the end, to obtain the final solution, we will apply the related boundary conditions.
+In the first step of our analysis, which is detailed in [step-1](https://m3group.github.io/AsFem/Tutorial/step-1/), we defined the mesh. However, additional information is required to conduct a basic finite element analysis. As such, we will proceed by defining the degrees of freedom (DoFs) and the model in this step. Finally, we will apply the relevant boundary conditions to obtain the desired solution.
 
 # The poisson equation
-The issue we want to solve is the Poisson linear equation that reads as follows:
+The issue we want to solve is the linear Poisson equation that reads as follows:
 $$
 \begin{equation}
-k\nabla^{2}\phi=F
+\sigma\nabla^{2}\phi=f
 \label{eq:poisson}
 \tag{1}
 \end{equation}
 $$
-where $k$ and $F$ denote the model's coefficients. Below are the related boundary conditions:
+where $\sigma$ and $f$ denote the model's coefficients. Below are the related boundary conditions:
 $$
 \begin{equation}
-k\nabla\phi\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}
+\sigma\nabla\phi\cdot\vec{n}=0\qquad\mathrm{on}\quad\partial\Omega_{N}
 \label{eq:neumann}
 \tag{2}
 \end{equation}
@@ -28,146 +28,177 @@ $$
 \tag{3}
 \end{equation}
 $$
-where the *Dirichlet* boundary condition and *Neumann* boundary condition are defined by the subscripts $D$ and $N$.
+where the *Dirichlet* boundary condition and *Neumann* boundary condition are represented by the subscripts $D$ and $N$.
 
 
 # Define the degree of freedom (DoF)
 
 The degree of freedom (DoF) or the degrees of freedom (DoFs) can be used to define the name of each DoF and also to apply the necessary boundary conditions (`[bcs]`), elements (`[elmts]`), and so on. The `[dofs]` block looks like below:
+
+The degrees of freedom (DoF), or DoFs, are used to assign names to each DoF and to apply the required boundary conditions (`bcs`) and elements (`elements`). The block of code defining the DoFs is presented below as `dofs`:
 ```
-[dofs]
-name=dof1 dof2 dof3 ...
-[end]
+"dofs":{
+		"names":["dof-a","dof-b","dof-c",...,"dof-x"]
+	}
 ```
 ## Options
-The `name=`  option specifies the name of each DoF. One should keep in mind that, the order of the name indicates the index of each DoFs. For instance, we need two displacements, namely `disp_x` and `disp_y`, if we want to do a 2D elastic analysis. The block of `[dofs]` should therefore be specified as:
+The `dofs` block includes an option called names, which is used to specify the name of each degree of freedom. It is important to note that the order in which the names are listed corresponds to the index of each degree of freedom. For example, in a 2D elastic analysis, two displacement degrees of freedom are required, namely `disp_x` and `disp_y`. The `dofs` block should thus be defined as follows:
 ```
-[dofs]
-name=disp_x disp_y
-[end]
+"dofs":{
+		"names":["disp_x","disp_y"]
+	}
 ```
-where `disp_x` is the first DoF(index=1), `disp_y` is the second DoF(index=2). That's all, `name=` is the only option in `[dofs]` block, nothing else.
+In this specific case, `disp_x` is assigned as the first degree of freedom with an index of 1, while `disp_y` is assigned as the second degree of freedom with an index of 2. Note that the only option available in the `dofs` block is `names`, with no additional options
 
-For the Poisson equation, because there is only one DoF involved, the final expression of `[dofs]` should be:
+Since the Poisson equation involves only a single degree of freedom, the final expression for the `dofs` block is as follows
 ```
-[dofs]
-name=phi
-[end]
+"dofs":{
+		"names":["phi"]
+	}
 ```
 
 # Element for Poisson equation
-The DoF is ready now, but the model in Eq.$\eqref{eq:poisson}$ is still missing. Thereby, we introduce the `[elmts]` block for this purpose. This block looks like below:
+With the degree of freedom established, we now need to define the model in Eq.$\eqref{eq:poisson}$. To accomplish this, we use the `elements` block, which is defined as follows:
 ```
-[elmts]
-  [elmt1]
-    type=poisson
-    dofs=phi
-    mate=mymate
-  [end]
-[end]
+"elements":{
+		"elmt1":{
+			"type":"poisson",
+			"dofs":["phi"],
+			"material":{
+				"type":"constpoisson",
+				"parameters":{
+					"sigma":1.0,
+					"f":1.0e1
+				}
+			}
+		}
+	}
 ```
-where `type=` option specifies the element we want to use, it could be either the built-in elements of AsFem or the user-defined-element (`UEL`). The DoFs that will be used in this element are defined by `dofs=`. `mate=` gives the name of the material block that we want to use. Once the `[elmts]` block is given, the model we defined in Eq.$\eqref{eq:poisson}$ is ready.
+The `type` option specifies the element or model to be used, which may be one of the built-in elements in AsFem or a user-defined element (`UEL`). The degrees of freedom to be used in the element are defined by the `dofs` option, while the material option specifies the name of the material sub-block to be used. Once the `elements` block is defined, the model described in Eq.$\eqref{eq:poisson}$ is complete.
 
 ## Material properties
-For the coefficients $k$ and $F$, namely the material properties, they can be calculated or defined via the `[mates]` block as follows:
+The coefficients $k$ and $F$, which correspond to the material properties in Eq.$\eqref{eq:poisson}$, can be calculated or defined using the `material` sub-block, as shown below:
 ```
-[mates]
-  [mymate]
-    type=constpoisson
-    params=1.0 1.0e1
-  [end]
-[end]
+"material":{
+				"type":"constpoisson",
+				"parameters":{
+					"sigma":1.0,
+					"f":1.0e1
+				}
+			}
 ```
-where `type=` specifies the material type name defined in AsFem. `params=` defines the parameters we want to use in our model, in this case, $k=1.0$ and $F=10.0$ will be used.
+The `material` sub-block includes the `type` option, which specifies the name of the material type defined in AsFem. The parameters option is used to define the parameters that will be used in our model. In this case, we will use $\sigma=1.0$ and $f=10.0$
 
 # Boundary conditions
-The boundary conditions, as mentioned in Eq. $\eqref{eq:dirichlet}$ and $\eqref{eq:neumann}$, can be applied via the `[bcs]` block. In our case, the *Neumann* boundary condition in Eq.$\eqref{eq:neumann}$ is zero, therefore, only the *Dirichlet* boundary condition need to be considered:
+The boundary conditions described in Eq.$\eqref{eq:dirichlet}$ and $\eqref{eq:neumann}$ can be applied using the `bcs` block. In our case, the Neumann boundary condition in Eq.$\eqref{eq:neumann}$ is zero, and thus, only the Dirichlet boundary condition needs to be taken into account:
 ```
-[bcs]
-  [fixleft]
-    type=dirichlet
-    dof=phi
-    value=0.1
-    boundary=left
-  [end]
-  [fixright]
-    type=dirichlet
-    dof=phi
-    value=0.5
-    boundary=right
-  [end]
-[end]
+"bcs":{
+		"left":{
+			"type":"dirichlet",
+			"dofs":["phi"],
+			"bcvalue":0.1,
+			"side":["left"]
+		},
+		"right":{
+			"type":"dirichlet",
+			"dofs":["phi"],
+			"bcvalue":0.5,
+			"side":["right"]
+		}
+	}
 ```
-where `type=` specifies the different types of boundary conditions supported by AsFem. `dof=` denotes the *name* of DoF we want to apply the given boundary conditions. In our case, we constrain the value of $\phi$ on the *left* and *right* side of a rectangle domain to be 0.1 and 0.5, respectively.
+The `left` and `right` sub-block is used to specify different boundary conditions for the left and right boundaries. The `type` option within each sub-block is used to specify the type of boundary condition, which is supported by AsFem. The `dof` option denotes the name of the DoF to which the given boundary conditions will be applied. In our case, we constrain the value of $\phi$ on the left and right sides of a rectangular domain to be 0.1 and 0.5, respectively.
 
 
 # Static analysis
-Until now, all the model and boundary conditions are ready. To start the FEM calculation, we need a `[job]` block to tell AsFem which kind of analysis we want. For the static analysis in this case, it can be given as follows:
+Now that the model and boundary conditions have been defined, we are ready to begin the FEM calculation. To specify the type of analysis we want to perform, we use the `job` block. In this case, since we are conducting a static analysis, the block can be defined as follows:
 ```
-[job]
-  type=static
-[end]
+"job":{
+		"type":"static",
+		"print":"on",
+	}
 ```
-if one wants to see how the iteration information changes, one can use:
+If you want to observe how the iteration information changes during the analysis, you can use the following:
 ```
-[job]
-  type=static
-  debug=dep
-[end]
+"job":{
+		"type":"static",
+		"print":"dep",
+		"restart":true
+	}
 ```
-where `debug=` option enables some basic information output in your terminal. If you don't want to see too many outputs, then you can use `debug=false`.
-
-
+The `print` option is used to enable basic information output in the terminal. If you prefer to see fewer outputs, you can use `"print":"off"`.
 
 # Run it in AsFem
-Now, let's try your second example in AsFem. You can create a new text file and name it as step2.i or whatever you like. Then copy the following lines into your input file:
+To proceed with the second example in AsFem, create a new text file and name it `step2.json`, or a name of your choosing. Next, copy the following lines into your input file:
 ```
-[mesh]
-  type=asfem
-  dim=2
-  nx=50
-  ny=50
-  meshtype=quad4
-[end]
-
-[dofs]
-name=phi
-[end]
-
-[elmts]
-  [elmt1]
-    type=poisson
-    dofs=phi
-    mate=mymate
-  [end]
-[end]
-
-[mates]
-  [mymate]
-    type=constpoisson
-    params=1.0 1.0e1
-  [end]
-[end]
-
-[bcs]
-  [fixleft]
-    type=dirichlet
-    dof=phi
-    value=0.1
-    boundary=left
-  [end]
-  [fixright]
-    type=dirichlet
-    dof=phi
-    value=0.5
-    boundary=right
-  [end]
-[end]
-
-
-[job]
-  type=static
-[end]
+{
+	"mesh":{
+		"type":"asfem",
+		"dim":2,
+		"nx":50,
+		"ny":50,
+		"meshtype":"quad4",
+		"savemesh":true
+	},
+	"dofs":{
+		"names":["phi"]
+	},
+	"elements":{
+		"elmt1":{
+			"type":"poisson",
+			"dofs":["phi"],
+			"material":{
+				"type":"constpoisson",
+				"parameters":{
+					"sigma":1.0,
+					"f":1.0e1
+				}
+			}
+		}
+	},
+	"projection":{
+		"type":"default",
+		"vectormate":["gradu"]
+	},
+	"bcs":{
+		"left":{
+			"type":"dirichlet",
+			"dofs":["phi"],
+			"bcvalue":0.1,
+			"side":["left"]
+		},
+		"right":{
+			"type":"dirichlet",
+			"dofs":["phi"],
+			"bcvalue":0.5,
+			"side":["right"]
+		}
+	},
+	"nlsolver":{
+		"type":"newton",
+		"solver":"gmres",
+		"maxiters":50,
+		"abs-tolerance":5.0e-7,
+		"rel-tolerance":5.0e-10,
+		"s-tolerance":0.0,
+		"preconditioner":"jacobi"
+	},
+	"output":{
+		"type":"vtu",
+		"interval":1
+	},
+	"qpoints":{
+		"bulk":{
+			"type":"gauss-legendre",
+			"order":2
+		}
+	},
+	"job":{
+		"type":"static",
+		"print":"dep",
+		"restart":true
+	}
+}
 ```
 You can also find the complete input file in `examples/tutorial`.
 
@@ -177,18 +208,20 @@ If everything goes well, you can see the following image in your [Paraview](http
 
 
 
-Wait a minute, what should I do if I want to solve a Poisson equation in 3D?
+Wait a second, what should I do if I want to solve a Poisson equation in 3D?
 
 
-The answer is ...... quite simple, just change your mesh to 3D like this(the complete input file is `step2-3d.i`):
+The solution is straightforward - you just need to modify your mesh to be 3D. Here is an example of how you can do this using the input file `step2-3d.json`:
 ```
-[mesh]
-  type=asfem
-  dim=3
-  nx=50
-  ny=50
-  nz=50
-[end]
+"mesh":{
+		"type":"asfem",
+		"dim":3,
+		"nx":50,
+		"ny":50,
+		"nz":50,
+		"meshtype":"hex8",
+		"savemesh":true
+	}
 ```
 then you will see:
 ![](step2-3d.jpeg)
