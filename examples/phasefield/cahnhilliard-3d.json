@@ -4,11 +4,11 @@
 		"dim":3,
 		"nx":40,
 		"ny":40,
-		"nz":4,
-		"xmax":2.0,
-		"ymax":2.0,
-		"zmax":0.2,
-		"meshtype":"hex27",
+		"nz":20,
+		"xmax":1.0,
+		"ymax":1.0,
+		"zmax":0.5,
+		"meshtype":"hex8",
 		"savemesh":true
 	},
 	"dofs":{
@@ -23,7 +23,7 @@
 				"parameters":{
 					"D":1.0e1,
 					"chi":2.5,
-					"kappa":0.012
+					"kappa":0.001
 				}
 			}
 		}
@@ -57,7 +57,7 @@
 	"timestepping":{
 		"type":"be",
 		"dt0":1.0e-6,
-		"dtmax":1.0e-1,
+		"dtmax":1.0e-2,
 		"dtmin":1.0e-12,
 		"optimize-iters":3,
 		"end-time":1.0e1,
@@ -72,7 +72,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":4
+			"order":3
 		}
 	},
 	"job":{
