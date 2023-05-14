@@ -206,7 +206,7 @@ bool InputSystem::readInputFile(Mesh &t_mesh,DofHandler &t_dofhandler,
         }
 
         if(readICsBlock(m_json.at("ics"),t_mesh,t_dofhandler,t_icsystem)){
-            HasBCBlock=true;
+            HasICBlock=true;
         }
         else{
             HasICBlock=false;
@@ -399,45 +399,45 @@ bool InputSystem::readInputFile(Mesh &t_mesh,DofHandler &t_dofhandler,
     }
 
     if(!HasBCBlock){
-        MessagePrinter::printWarningTxt("no [bcs] block found in your input file, then the 'zero' neumann bc is assumed");
+        MessagePrinter::printWarningTxt("no 'bcs' block found in your input file, then the 'zero' neumann bc is assumed");
     }
 
     if(!HasICBlock){
-        MessagePrinter::printWarningTxt("no [ics] block found in your input file, then no any initial conditions will be applied");
+        MessagePrinter::printWarningTxt("no 'ics' block found in your input file, then no any initial conditions will be applied");
     }
 
     if(!HasProjectionBlock){
-        MessagePrinter::printWarningTxt("no [projection] block found in your input file, then no quantities will be projected");
+        MessagePrinter::printWarningTxt("no 'projection' block found in your input file, then no quantities will be projected");
     }
 
     if(!HasPPSBlock){
-        MessagePrinter::printWarningTxt("no [postprocess] block found in your input file, then no postprocess will be executed");
+        MessagePrinter::printWarningTxt("no 'postprocess' block found in your input file, then no postprocess will be executed");
     }
 
     if(!HasNLSolverBlock){
-        MessagePrinter::printWarningTxt("no [nlsolver] block found in your input file, then the default options will be used");
+        MessagePrinter::printWarningTxt("no 'nlsolver' block found in your input file, then the default options will be used");
         t_nlsolver.m_nlsolverblock.init();
     }
 
     if(!HasOutputBlock){
-        MessagePrinter::printWarningTxt("no [output] block found in your input file, then the default options will be used");
+        MessagePrinter::printWarningTxt("no 'output' block found in your input file, then the default options will be used");
         t_output.setFileFormat(ResultFileFormat::VTU);
         t_output.setIntervalNum(1);
     }
     t_output.setInputFileName(m_inputfile_name);
 
     if(t_jobblock.m_jobtype==FEJobType::TRANSIENT&&!HasTimeSteppingBlock){
-        MessagePrinter::printErrorTxt("no [timestepping] block found in your input file, one can\'t do transient analysis without a timestepping block");
+        MessagePrinter::printErrorTxt("no 'timestepping' block found in your input file, one can\'t do transient analysis without a timestepping block");
         MessagePrinter::exitAsFem();
     }
 
     if(t_jobblock.m_jobtype==FEJobType::STATIC&&HasTimeSteppingBlock){
-        MessagePrinter::printErrorTxt("[timestepping] block is found in your input file for a static job, this dosen\'t make sense");
+        MessagePrinter::printErrorTxt("'timestepping' block is found in your input file for a static job, this dosen\'t make sense");
         MessagePrinter::exitAsFem();
     }
 
     if(!HasJobBlock && !m_readonly){
-        MessagePrinter::printErrorTxt("no [job] block found in your input file, one can\'t do FEM analysis without a job");
+        MessagePrinter::printErrorTxt("no 'job' block found in your input file, one can\'t do FEM analysis without a job");
         MessagePrinter::exitAsFem();
     }
 
