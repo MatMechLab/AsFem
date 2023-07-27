@@ -50,6 +50,10 @@
 #include "MateSystem/SmallStrainDiffusionJ2Material.h"
 #include "MateSystem/DiffusionACFractureMaterial.h"
 
+/**
+ * For User-Defined-Material (UMAT)
+*/
+#include "MateSystem/User1Material.h"
 
 /**
  * This class implement the materials calculation for the bulk element in AsFem.
@@ -78,7 +82,9 @@ class BulkMateSystem:public ConstPoissonMaterial,
                      public MieheFractureMaterial,
                      public SmallStrainCahnHilliardMaterial,
                      public SmallStrainDiffusionJ2Material,
-                     public DiffusionACFractureMaterial{
+                     public DiffusionACFractureMaterial,
+                     // for umat
+                     public User1Material{
 public:
     /**
      * constructor

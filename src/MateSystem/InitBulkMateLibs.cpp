@@ -95,6 +95,12 @@ void BulkMateSystem::initBulkMateLibs(const MateType &t_matetype,const nlohmann:
     case MateType::DIFFUSIONACFRACTUREMATE:
         DiffusionACFractureMaterial::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
         break;
+    //******************************************
+    //*** for UMAT
+    //******************************************
+    case MateType::USER1MATE:
+        User1Material::initMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer);
+        break;
     default:
         MessagePrinter::printErrorTxt("Unsupported material type in initBulkMateLibs, please check your code");
         MessagePrinter::exitAsFem();
