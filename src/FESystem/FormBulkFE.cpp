@@ -58,7 +58,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
     m_local_elmtinfo.m_t=t;
     m_local_elmtinfo.m_dt=dt;
     
-
+    m_local_elmtinfo.m_elmtsnum=t_mesh.getBulkMeshBulkElmtsNum();
     for(int ee=eStart;ee<eEnd;ee++){
         e=ee+1;
         m_local_elmtinfo.m_elmtid=e;
@@ -85,6 +85,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
         //*** now we do the gauss point integration(qpoints loop)
         //***********************************************************
         qpoints_num=t_fe.m_bulk_qpoints.getQPointsNum();
+        m_local_elmtinfo.m_qpointsnum=qpoints_num;
         for(int qpInd=1;qpInd<=qpoints_num;qpInd++){
             w =t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,0);
             xi=t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,1);
