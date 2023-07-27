@@ -524,6 +524,9 @@ set(src ${src} src/MateSystem/SmallStrainDiffusionJ2Material.cpp)
 ###
 set(inc ${inc} include/MateSystem/DiffusionACFractureMaterial.h)
 set(src ${src} src/MateSystem/DiffusionACFractureMaterial.cpp)
+### User-1 material
+set(inc ${inc} include/MateSystem/User1Material.h)
+set(src ${src} src/MateSystem/User1Material.cpp)
 ### for material system
 set(inc ${inc} include/MateSystem/MateSystem.h)
 set(src ${src} src/MateSystem/MateSystem.cpp)

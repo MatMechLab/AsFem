@@ -58,9 +58,10 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
     m_local_elmtinfo.m_t=t;
     m_local_elmtinfo.m_dt=dt;
     
-
+    m_local_elmtinfo.m_elmtsnum=t_mesh.getBulkMeshBulkElmtsNum();
     for(int ee=eStart;ee<eEnd;ee++){
         e=ee+1;
+        m_local_elmtinfo.m_elmtid=e;
 
         t_mesh.getBulkMeshIthBulkElmtNodeCoords0(e,m_nodes0);// for nodal coordinates in reference configuration
         t_mesh.getBulkMeshIthBulkElmtNodeCoords(e,m_nodes);// for nodal coordinates in current configuration
@@ -84,6 +85,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
         //*** now we do the gauss point integration(qpoints loop)
         //***********************************************************
         qpoints_num=t_fe.m_bulk_qpoints.getQPointsNum();
+        m_local_elmtinfo.m_qpointsnum=qpoints_num;
         for(int qpInd=1;qpInd<=qpoints_num;qpInd++){
             w =t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,0);
             xi=t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,1);
@@ -102,6 +104,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
             J=t_fe.m_bulk_shp.getJacDet();
             JxW=J*w;
 
+            m_local_elmtinfo.m_qpointid=qpInd;
             m_local_elmtinfo.m_gpCoords0=0.0;
             for(int i=1;i<=m_bulkelmt_nodesnum;i++){
                 m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_bulk_shp.shape_value(i)*m_nodes0(i,1);
