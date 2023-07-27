@@ -8,12 +8,8 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.08.26
-//+++ Purpose: Calculate the material properties required by diffusion
-//+++          element. In this code, we can define:
-//+++           1) D
-//+++           2) dD/dc
-//+++          Standard benchmark test for 2d nonlinear diffusion equation
+//+++ Date   : 2023.07.27
+//+++ Purpose: Calculate User-1 defined materials
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "MateSystem/User1Material.h"
