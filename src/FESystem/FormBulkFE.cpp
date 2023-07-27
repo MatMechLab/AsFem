@@ -61,6 +61,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
 
     for(int ee=eStart;ee<eEnd;ee++){
         e=ee+1;
+        m_local_elmtinfo.m_elmtid=e;
 
         t_mesh.getBulkMeshIthBulkElmtNodeCoords0(e,m_nodes0);// for nodal coordinates in reference configuration
         t_mesh.getBulkMeshIthBulkElmtNodeCoords(e,m_nodes);// for nodal coordinates in current configuration
@@ -102,6 +103,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_calctype,const double &t,const
             J=t_fe.m_bulk_shp.getJacDet();
             JxW=J*w;
 
+            m_local_elmtinfo.m_qpointid=qpInd;
             m_local_elmtinfo.m_gpCoords0=0.0;
             for(int i=1;i<=m_bulkelmt_nodesnum;i++){
                 m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_bulk_shp.shape_value(i)*m_nodes0(i,1);

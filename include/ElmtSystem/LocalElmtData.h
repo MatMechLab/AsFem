@@ -37,6 +37,9 @@ struct LocalElmtInfo{
     double m_dt;/**< the current delta t */
     Vector3d m_gpCoords0;/**< initial/reference coordinates of current gauss point */
     Vector3d m_gpCoords;/**< current coordinates of current gauss point */
+    int m_elmtid;/**< current element id (global one) */
+    int m_qpointid;/**< current qpoint id (local one) */
+    double m_tempval;/**< temp variables to store whatever required by users */
 };
 
 /**
