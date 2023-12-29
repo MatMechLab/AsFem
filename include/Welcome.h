@@ -39,7 +39,7 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     
     MessagePrinter::printStars(MessageColor::BLUE);
     MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                      AAA");
-    MessagePrinter::printWelcomeTxt("A Simple Finite Element Method Program                   // \\\\");
+    MessagePrinter::printWelcomeTxt("Advanced Simulation kit based on Finite Element Method   // \\\\");
 
     snprintf(buff,50,"Version: %-10.2f  Release @ %4d-%02d-%02d",version,year,month,day);
     str=buff;
@@ -50,11 +50,11 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     MessagePrinter::printWelcomeTxt(str+"                                //     \\\\");
     
     MessagePrinter::printWelcomeTxt("License: GPL-3.0                                      //       \\\\");
-    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ M3-Group                          //_________\\\\");
+    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ MM-Lab                            //_________\\\\");
     MessagePrinter::printWelcomeTxt("Contact: yangbai90@outlook.com                      //-----------\\\\");
 
     MessagePrinter::printWelcomeTxt("QQ Group: 879908352                                //             \\\\");
-    MessagePrinter::printWelcomeTxt("Website: https://github.com/M3Group/AsFem         //               \\\\");
+    MessagePrinter::printWelcomeTxt("Website: https://github.com/MatMechLab/AsFem      //               \\\\");
     MessagePrinter::printWelcomeTxt("Feel free to use and discuss  .:.                **                 **");
     MessagePrinter::printStars(MessageColor::BLUE);
 
