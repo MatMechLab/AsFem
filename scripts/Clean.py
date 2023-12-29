@@ -20,7 +20,9 @@ for subdir,dirs,files in os.walk(currentdir):
         continue
     #>>> clean files
     for file in files:
-        if ('.csv' in file):
+        if ('source.cmake' in file) or ('Test.cmake' in file):
+            continue
+        elif ('.csv' in file):
             try:
                 csvfile+=1
                 removepath=subdir+'/'+file
