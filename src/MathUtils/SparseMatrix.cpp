@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -225,7 +225,7 @@ SparseMatrix SparseMatrix::operator*(const double &a)const{
     anew.m_m=m_m;
     anew.m_n=m_n;
     MatDuplicate(m_matrix,MAT_SHARE_NONZERO_PATTERN,&anew.m_matrix);
-    MatAXPY(anew.m_matrix,a,m_matrix,SAME_NONZERO_PATTERN);//Y = Y + a â X
+    MatAXPY(anew.m_matrix,a,m_matrix,SAME_NONZERO_PATTERN);//Y = Y + a ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ X
     anew.m_allocated=true;
     return anew;
 }
@@ -245,7 +245,7 @@ SparseMatrix SparseMatrix::operator/(const double &a)const{
     anew.m_m=m_m;
     anew.m_n=m_n;
     MatDuplicate(m_matrix,MAT_SHARE_NONZERO_PATTERN,&anew.m_matrix);
-    MatAXPY(anew.m_matrix,1.0/a,m_matrix,SAME_NONZERO_PATTERN);//Y = Y + a â X
+    MatAXPY(anew.m_matrix,1.0/a,m_matrix,SAME_NONZERO_PATTERN);//Y = Y + a ÃÂÃÂÃÂÃÂ¢ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ X
     anew.m_allocated=true;
     return anew;
 }
