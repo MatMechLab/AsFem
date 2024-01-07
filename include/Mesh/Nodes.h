@@ -15,9 +15,11 @@
 
 #pragma once
 
+#include <vector>
 
 #include "Utils/MessagePrinter.h"
 
+using std::vector;
 
 /**
  * the nodes class, which stores the coordinates for multiple nodes, i.e., the nodes of one single element
@@ -42,7 +44,9 @@ public:
      * @param nodes another nodes class
      */
     Nodes(const Nodes &nodes){
-        m_size=nodes.m_size;m_coordinates=nodes.m_coordinates;
+        m_size=nodes.m_size;
+        m_coordinates.clear();
+        for(const auto &it:nodes.m_coordinates) m_coordinates.push_back(it);
     }
     /**
      * deconstructor
@@ -113,18 +117,41 @@ public:
         return m_coordinates[(i-1)*3+j-1];
     }
     /**
+     * [] operator for the I-th elements
+     * @param i i-th elements
+     */
+    double operator[](const int &i)const{
+        if(i<1||i>m_size*3){
+            MessagePrinter::printErrorTxt("your i index is out of your nodes elements' range");
+            MessagePrinter::exitAsFem();
+        }
+        return m_coordinates[i-1];
+    }
+    /**
+     * [] operator for the I-th elements
+     * @param i i-th elements
+     */
+    double& operator[](const int &i){
+        if(i<1||i>m_size*3){
+            MessagePrinter::printErrorTxt("your i index is out of your nodes elements' range");
+            MessagePrinter::exitAsFem();
+        }
+        return m_coordinates[i-1];
+    }
+    /**
      * = operator for the assignment with a scalar value
      */
-    Nodes& operator()(const double &val){
+    Nodes& operator=(const double &val){
         fill(m_coordinates.begin(),m_coordinates.end(),val);
         return *this;
     }
     /**
      * = operator for the assignment with another nodes class
      */
-    Nodes& operator()(const Nodes &a){
+    Nodes& operator=(const Nodes &a){
         m_size=a.m_size;
-        m_coordinates=a.m_coordinates;
+        m_coordinates.resize(m_size*3,0.0);
+        for(int i=1;i<=a.m_size*3;i++) m_coordinates[i]=a[i];
         return *this;
     }
     //************************************************
