@@ -107,6 +107,17 @@ set(inc ${inc} include/Mesh/MeshFileImporterBase.h)
 set(inc ${inc} include/Mesh/MeshFileImporter.h)
 set(src ${src} src/Mesh/MeshFileImporter.cpp)
 
+#############################################################
+### For FE cell class                                     ###
+#############################################################
+### for single FE mesh cell
+set(inc ${inc} include/FECell/SingleMeshCell.h)
+set(inc ${inc} include/FECell/FECellData.h)
+set(inc ${inc} include/FECell/FECell.h)
+set(inc ${inc} include/FECell/FECellGeneratorBase.h)
+### for 3d lagrange mesh cell
+set(inc ${inc} include/FECell/Lagrange3DMeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange3DMeshCellGenerator.cpp)
 
 #############################################################
 ### For inputystem                                        ###

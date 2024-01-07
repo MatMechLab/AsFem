@@ -96,3 +96,10 @@ struct MeshData{
     string m_bulkelmt_typename;/**< name of the bulk element type */
 
 };
+
+/**
+ * This structure defines the basic data set for both the bulk mesh cell and boundary mesh cell
+*/
+struct NewMeshData{
+    
+};
