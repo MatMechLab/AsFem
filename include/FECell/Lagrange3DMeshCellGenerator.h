@@ -39,10 +39,5 @@ public:
     virtual bool generateFECell(const MeshType &t_meshtype,FECellData &t_celldata) override;
 private:
     bool m_mesh_generated=false;
-    vector<vector<int>> leftconn,rightconn;
-    vector<vector<int>> bottomconn,topconn;
-    vector<vector<int>> backconn,frontconn;
-    vector<int> leftnodes,rightnodes;
-    vector<int> bottomnodes,topnodes;
-    vector<int> backnodes,frontnodes;
+
 };

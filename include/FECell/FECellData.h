@@ -81,19 +81,14 @@ struct FECellData{
     map<string,int> PhyName2IDMap_Global;/**< physical name to id map among all ranks */
 
     vector<SingleMeshCell> MeshCell_Total;/**< this vector stores the whole mesh info (only active on master rank) */
-    vector<SingleMeshCell> MeshCell_Global;/**< the global mesh cell vector*/
     vector<SingleMeshCell> MeshCell_Local;/**< local mesh cell vector of each rank */
 
     map<string,vector<SingleMeshCell>> PhyName2MeshCellVectorMap_Global;/**< the global phy name to cell vector map */
-    map<string,vector<int>>            PhyName2ElmtIDVectorMap_Global;/**< the global phy name to element id vector map */
     map<int,vector<SingleMeshCell>>    PhyID2MeshCellVectorMap_Global;/**< the global phy id to cell vector map */
-    map<int,vector<int>>               PhyID2ElmtIDVectorMap_Global;/**< the global phy id to element id vector map */
 
     map<string,vector<SingleMeshCell>> PhyName2MeshCellVectorMap_Local;/**< the local phy name to cell vector map */
-    map<string,vector<int>>            PhyName2ElmtIDVectorMap_Local;/**< the local phy name to element id vector map */
     map<int,vector<SingleMeshCell>>    PhyID2MeshCellVectorMap_Local;/**< the local phy id to cell vector map */
-    map<int,vector<int>>               PhyID2ElmtIDVectorMap_Local;/**< the local phy id to element id vector map */
-
+    
     //*** for nodal physical group information
     int NodalPhyGroupNum_Global;/**< nodal physical group numbers among all ranks */
     vector<int> NodalPhyIDVector_Global;/**< nodal physical group id vector among all ranks */

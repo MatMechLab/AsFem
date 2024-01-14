@@ -13,38 +13,13 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FECell/Lagrange3DMeshCellGenerator.h"
+#include "FECell/SingleMeshCell.h"
 
 Lagrange3DMeshCellGenerator::Lagrange3DMeshCellGenerator(){
     m_mesh_generated=false;
-    leftconn.clear();
-    rightconn.clear();
-    bottomconn.clear();
-    topconn.clear();
-    backconn.clear();
-    frontconn.clear();
-    //
-    leftnodes.clear();
-    rightnodes.clear();
-    bottomnodes.clear();
-    topnodes.clear();
-    backnodes.clear();
-    frontnodes.clear();
 }
 Lagrange3DMeshCellGenerator::~Lagrange3DMeshCellGenerator(){
     m_mesh_generated=false;
-    leftconn.clear();
-    rightconn.clear();
-    bottomconn.clear();
-    topconn.clear();
-    backconn.clear();
-    frontconn.clear();
-    //
-    leftnodes.clear();
-    rightnodes.clear();
-    bottomnodes.clear();
-    topnodes.clear();
-    backnodes.clear();
-    frontnodes.clear();
 }
 //*********************************************************
 bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECellData &t_celldata){
@@ -58,14 +33,18 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     MPI_Comm_size(MPI_COMM_WORLD,&size);
     if(rank==0){
+        vector<SingleMeshCell> leftconn,rightconn;
+        vector<SingleMeshCell> bottomconn,topconn;
+        vector<SingleMeshCell> backconn,frontconn;
+        vector<int> leftnodes,rightnodes;
+        vector<int> bottomnodes,topnodes;
+        vector<int> backnodes,frontnodes;
         // only create mesh on the master rank, then distributed them into different ranks !
         double dx,dy,dz;
         int i,j,k,kk,e;
         int i1,i2,i3,i4,i5,i6,i7,i8,i9;
         int i10,i11,i12,i13,i14,i15,i16,i17,i18,i19;
         int i20,i21,i22,i23,i24,i25,i26,i27;
-        vector<int> tempconn;
-        vector<SingleMeshCell> TotalMeshCell;
         if(t_meshtype==MeshType::HEX8){
             // generate the mesh cell for hex8 mesh
             t_celldata.MeshOrder=1;
@@ -86,7 +65,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             t_celldata.NodesNum=(t_celldata.Nx+1)*(t_celldata.Ny+1)*(t_celldata.Nz+1);
             t_celldata.NodesNumPerBulkElmt=8;
             t_celldata.NodesNumPerSurfElmt=4;
-            t_celldata.NodesNumPerLineElmt=0;
+            t_celldata.NodesNumPerLineElmt=2;
             
             t_celldata.BulkElmtVTKCellType=12;
             t_celldata.BulkElmtMeshType=MeshType::HEX8;
@@ -140,7 +119,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             }// end-of-node-generation
 
             // for the connectivity information of bulk elements
-            t_celldata.MeshCell_Global.resize(t_celldata.BulkElmtsNum);
+            t_celldata.MeshCell_Total.resize(t_celldata.BulkElmtsNum);
             leftconn.resize(t_celldata.Ny*t_celldata.Nz);
             rightconn.resize(t_celldata.Ny*t_celldata.Nz);
             //
@@ -154,8 +133,6 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             bottomnodes.clear();rightnodes.clear();
             backnodes.clear();frontnodes.clear();
             
-            tempconn.clear();
-            
             for(k=1;k<=t_celldata.Nz;k++){
                 for(j=1;j<=t_celldata.Ny;j++){
                     for(i=1;i<=t_celldata.Nx;i++){
@@ -168,8 +145,6 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         i6=i2+(t_celldata.Nx+1)*(t_celldata.Ny+1);
                         i7=i3+(t_celldata.Nx+1)*(t_celldata.Ny+1);
                         i8=i4+(t_celldata.Nx+1)*(t_celldata.Ny+1);
-                        
-                        tempconn.push_back(e);
 
                         t_celldata.MeshCell_Total[e-1].Dim=3;
                         t_celldata.MeshCell_Total[e-1].NodesNumPerElmt=8;
@@ -223,10 +198,38 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         
                         if(i==1){
                             // for left bc elements
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i1);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i5);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i8);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i4);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=4;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=9;
+
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(1);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("left");
+
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i1);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i5);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i8);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i4);
+
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(4);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i5-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i5-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i5-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i8-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i8-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i8-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i4-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i4-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i4-1)*3+3-1];
 
                             leftnodes.push_back(i1);
                             leftnodes.push_back(i5);
@@ -235,10 +238,38 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(i==t_celldata.Nx){
                             // for right bc elements
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i2);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i3);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i7);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i6);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=4;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=9;
+                            
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(2);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("right");
+
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i2);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i3);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i7);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i6);
+
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(4);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i2-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i2-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i2-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i3-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i3-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i3-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i6-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i6-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i6-1)*3+3-1];
 
                             rightnodes.push_back(i2);
                             rightnodes.push_back(i3);
@@ -247,10 +278,38 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(j==1){
                             // for bottom bc elements
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i1);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i2);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i6);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i5);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].Dim=2;
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].NodesNumPerElmt=4;
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].VTKCellType=9;
+                            
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(3);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("bottom");
+
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i1);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i2);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i6);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i5);
+
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(4);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i2-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i2-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i2-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i6-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i6-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i6-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i5-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i5-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i5-1)*3+3-1];
 
                             bottomnodes.push_back(i1);
                             bottomnodes.push_back(i2);
@@ -258,11 +317,39 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                             bottomnodes.push_back(i5);
                         }
                         if(j==t_celldata.Ny){
-                            // for bottom bc elements
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i4);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i8);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i7);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i3);
+                            // for top bc elements
+                            topconn[(k-1)*t_celldata.Nx+i-1].Dim=2;
+                            topconn[(k-1)*t_celldata.Nx+i-1].NodesNumPerElmt=4;
+                            topconn[(k-1)*t_celldata.Nx+i-1].VTKCellType=9;
+                            
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("top");
+
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i8);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i7);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i3);
+
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i4-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i4-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i4-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i8-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i8-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i8-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i3-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i3-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i3-1)*3+3-1];
 
                             topnodes.push_back(i4);
                             topnodes.push_back(i8);
@@ -271,10 +358,38 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(k==1){
                             // for back bc elements
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i1);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i4);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i3);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i2);
+                            backconn[(j-1)*t_celldata.Nx+i-1].Dim=2;
+                            backconn[(j-1)*t_celldata.Nx+i-1].NodesNumPerElmt=4;
+                            backconn[(j-1)*t_celldata.Nx+i-1].VTKCellType=9;
+                            
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(5);
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("back");
+
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i1);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i4);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i3);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i2);
+
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(4);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i4-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i4-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i4-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i3-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i3-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i3-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i2-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i2-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i2-1)*3+3-1];
 
                             backnodes.push_back(i1);
                             backnodes.push_back(i4);
@@ -283,10 +398,38 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(k==t_celldata.Nz){
                             // for front bc elements
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i5);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i6);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i7);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i8);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].Dim=2;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].NodesNumPerElmt=4;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].VTKCellType=9;
+                            
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(6);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("front");
+
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i5);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i6);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i7);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i8);
+
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(4);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i5-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i5-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i5-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i6-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i6-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i6-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i8-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i8-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i8-1)*3+3-1];
 
                             frontnodes.push_back(i5);
                             frontnodes.push_back(i6);
@@ -320,6 +463,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             t_celldata.NodesNum=nLayer1Nodes*(t_celldata.Nz+1)+nLayer2Nodes*t_celldata.Nz;
             t_celldata.NodesNumPerBulkElmt=20;
             t_celldata.NodesNumPerSurfElmt=8;
+            t_celldata.NodesNumPerLineElmt=3;
 
             t_celldata.BulkElmtVTKCellType=25;
 
@@ -327,7 +471,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             t_celldata.LineElmtMeshType=MeshType::EDGE3;
 
             t_celldata.SurfElmtVTKCellType=23;
-            t_celldata.SurfElmtMeshType=MeshType::QUAD9;
+            t_celldata.SurfElmtMeshType=MeshType::QUAD8;
             
             // for the coordinates of each node
             vector<double> nodecoords;
@@ -410,8 +554,6 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             backconn.resize(t_celldata.Nx*t_celldata.Ny);
             frontconn.resize(t_celldata.Nx*t_celldata.Ny);
             
-            tempconn.clear();
-            
             for(k=1;k<=_Nz;++k){
                 for(j=1;j<=_Ny;++j){
                     for(i=1;i<=_Nx;++i){
@@ -440,8 +582,6 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         i18=i17+1;
                         i19=i18+_Nx+1;
                         i20=i19-1;
-                        
-                        tempconn.push_back(e);
 
                         t_celldata.MeshCell_Total[e-1].Dim=3;
                         t_celldata.MeshCell_Total[e-1].NodesNumPerElmt=20;
@@ -557,15 +697,59 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         
                         if(i==1){
                             // for left bc elements
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i1);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i5);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i8);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i4);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=8;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=23;
+                            
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(1);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("left");
 
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i17);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i16);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i20);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i12);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i1);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i5);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i8);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i4);
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i17);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i16);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i20);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i12);
+
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(8);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i5-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i5-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i5-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i8-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i8-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i8-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i4-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i4-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i4-1)*3+3-1];
+                            ////
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i17-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i17-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i17-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i16-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i16-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i16-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i20-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i20-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i20-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i12-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i12-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i12-1)*3+3-1];
 
                             leftnodes.push_back(i1);
                             leftnodes.push_back(i5);
@@ -578,15 +762,59 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(i==t_celldata.Nx){
                             // for right bc elements
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i2);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i3);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i7);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i6);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=8;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=23;
+                            
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(2);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("right");
 
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i10);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i19);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i14);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i18);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i2);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i3);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i7);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i6);
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i10);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i19);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i14);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i18);
+
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(8);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i2-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i2-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i2-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i3-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i3-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i3-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i6-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i6-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i6-1)*3+3-1];
+                            ////
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i10-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i10-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i10-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i19-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i19-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i19-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i14-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i14-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i14-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i18-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i18-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i18-1)*3+3-1];
 
                             rightnodes.push_back(i2);
                             rightnodes.push_back(i3);
@@ -599,15 +827,59 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(j==1){
                             // for bottom bc elements
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i1);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i2);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i6);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i5);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=8;
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=23;
+                            
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(3);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("bottom");
 
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i9 );
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i18);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i13);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i17);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i1);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i2);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i6);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i5);
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i9);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i18);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i13);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i17);
+
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(8);
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i2-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i2-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i2-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i6-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i6-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i6-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i5-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i5-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i5-1)*3+3-1];
+                            ////
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i9-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i9-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i9-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i18-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i18-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i18-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i13-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i13-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i13-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i17-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i17-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i17-1)*3+3-1];
 
                             bottomnodes.push_back(i1);
                             bottomnodes.push_back(i2);
@@ -620,15 +892,59 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(j==t_celldata.Ny){
                             // for top bc elements
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i4);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i8);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i7);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i3);
+                            topconn[(k-1)*t_celldata.Nx+i-1].Dim=2;
+                            topconn[(k-1)*t_celldata.Nx+i-1].NodesNumPerElmt=8;
+                            topconn[(k-1)*t_celldata.Nx+i-1].VTKCellType=23;
+                            
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("top");
 
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i20);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i15);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i19);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i11);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i8);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i7);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i3);
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i20);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i15);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i19);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i11);
+
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(8);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i4-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i4-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i4-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i8-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i8-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i8-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i3-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i3-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i3-1)*3+3-1];
+                            ////
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i20-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i20-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i20-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i15-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i15-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i15-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i19-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i19-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i19-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i11-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i11-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i11-1)*3+3-1];
 
                             topnodes.push_back(i4);
                             topnodes.push_back(i8);
@@ -641,15 +957,59 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(k==1){
                             // for back bc elements
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i1);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i4);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i3);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i2);
+                            backconn[(j-1)*t_celldata.Nx+i-1].Dim=2;
+                            backconn[(j-1)*t_celldata.Nx+i-1].NodesNumPerElmt=8;
+                            backconn[(j-1)*t_celldata.Nx+i-1].VTKCellType=23;
+                            
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(5);
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("back");
 
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i12);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i11);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i10);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i9 );
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i1);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i4);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i3);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i2);
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i12);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i11);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i10);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i9);
+
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(8);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i4-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i4-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i4-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i3-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i3-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i3-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i2-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i2-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i2-1)*3+3-1];
+                            ////
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i12-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i12-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i12-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i11-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i11-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i11-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i10-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i10-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i10-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i9-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i9-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i9-1)*3+3-1];
 
                             backnodes.push_back(i1);
                             backnodes.push_back(i4);
@@ -662,15 +1022,59 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(k==t_celldata.Nz){
                             // for front bc elements
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i5);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i6);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i7);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i8);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].Dim=2;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].NodesNumPerElmt=8;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].VTKCellType=23;
+                            
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(6);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("front");
 
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i13);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i14);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i15);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i16);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i5);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i6);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i7);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i8);
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i13);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i14);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i15);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i16);
+
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(8);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i5-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i5-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i5-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i6-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i6-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i6-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i8-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i8-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i8-1)*3+3-1];
+                            ////
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i13-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i13-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i13-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i14-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i14-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i14-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i15-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i15-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i15-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i6-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i6-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i6-1)*3+3-1];
 
                             frontnodes.push_back(i5);
                             frontnodes.push_back(i6);
@@ -710,7 +1114,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             t_celldata.BulkElmtVTKCellType=29;
             
             t_celldata.NodesNumPerSurfElmt=9;
-            t_celldata.SurfElmtVTKCellType=23;
+            t_celldata.SurfElmtVTKCellType=28;
             t_celldata.SurfElmtMeshType=MeshType::QUAD9;
             
             t_celldata.LineElmtVTKCellType=4;
@@ -767,9 +1171,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             //
             backconn.resize(t_celldata.Nx*t_celldata.Ny);
             frontconn.resize(t_celldata.Nx*t_celldata.Ny);
-            
-            tempconn.clear();
-            
+          
             for(k=1;k<=_Nz;++k){
                 for(j=1;j<=_Ny;++j){
                     for(i=1;i<=_Nx;++i){
@@ -812,8 +1214,6 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         i26=i16+1;
 
                         i27=i21+1;
-
-                        tempconn.push_back(e);
 
                         t_celldata.MeshCell_Total[e-1].Dim=3;
                         t_celldata.MeshCell_Total[e-1].VTKCellType=t_celldata.BulkElmtVTKCellType;
@@ -963,17 +1363,65 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         
                         if(i==1){
                             // for left bc elements
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i1);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i5);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i8);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i4);
-
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i17);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i16);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i20);
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i12);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=9;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=28;
                             
-                            leftconn[(k-1)*t_celldata.Ny+j-1].push_back(i21);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(1);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("left");
+
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i1);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i5);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i8);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i4);
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i17);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i16);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i20);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i12);
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i21);
+
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(9);
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i5-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i5-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i5-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i8-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i8-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i8-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i4-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i4-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i4-1)*3+3-1];
+                            ////
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i17-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i17-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i17-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i16-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i16-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i16-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i20-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i20-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i20-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i12-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i12-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i12-1)*3+3-1];
+                            //
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,1)=nodecoords[(i21-1)*3+1-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,2)=nodecoords[(i21-1)*3+2-1];
+                            leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,3)=nodecoords[(i21-1)*3+3-1];
 
                             leftnodes.push_back(i1);
                             leftnodes.push_back(i5);
@@ -987,17 +1435,65 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(i==t_celldata.Nx){
                             // for right bc elements
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i2);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i3);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i7);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i6);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].Dim=2;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].NodesNumPerElmt=9;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].VTKCellType=28;
+                            
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalGroupNums=1;
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalIDList.push_back(2);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].PhysicalNameList.push_back("right");
 
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i10);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i19);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i14);
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i18);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.clear();
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i2);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i3);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i7);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i6);
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i10);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i19);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i14);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i18);
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i22);
 
-                            rightconn[(k-1)*t_celldata.Ny+j-1].push_back(i22);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(9);
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i2-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i2-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i2-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i3-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i3-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i3-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i6-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i6-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i6-1)*3+3-1];
+                            ////
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i10-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i10-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i10-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i19-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i19-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i19-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i14-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i14-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i14-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i18-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i18-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i18-1)*3+3-1];
+                            //
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,1)=nodecoords[(i22-1)*3+1-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,2)=nodecoords[(i22-1)*3+2-1];
+                            rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,3)=nodecoords[(i22-1)*3+3-1];
 
                             rightnodes.push_back(i2);
                             rightnodes.push_back(i3);
@@ -1011,17 +1507,65 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(j==1){
                             // for bottom bc elements
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i1);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i2);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i6);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i5);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].Dim=2;
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].NodesNumPerElmt=9;
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].VTKCellType=28;
+                            
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(3);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("bottom");
 
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i9 );
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i18);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i13);
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i17);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i1);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i2);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i6);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i5);
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i9);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i18);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i13);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i17);
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i23);
 
-                            bottomconn[(k-1)*t_celldata.Nx+i-1].push_back(i23);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i2-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i2-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i2-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i6-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i6-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i6-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i5-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i5-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i5-1)*3+3-1];
+                            ////
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i9-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i9-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i9-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i18-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i18-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i18-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i13-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i13-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i13-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i17-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i17-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i17-1)*3+3-1];
+                            //
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i23-1)*3+1-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i23-1)*3+2-1];
+                            bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i23-1)*3+3-1];
 
                             bottomnodes.push_back(i1);
                             bottomnodes.push_back(i2);
@@ -1035,17 +1579,65 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(j==t_celldata.Ny){
                             // for top bc elements
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i4);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i8);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i7);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i3);
+                            topconn[(k-1)*t_celldata.Nx+i-1].Dim=2;
+                            topconn[(k-1)*t_celldata.Nx+i-1].NodesNumPerElmt=9;
+                            topconn[(k-1)*t_celldata.Nx+i-1].VTKCellType=28;
+                            
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("top");
 
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i20);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i15);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i19);
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i11);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i4);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i8);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i7);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i3);
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i20);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i15);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i19);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i11);
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i24);
 
-                            topconn[(k-1)*t_celldata.Nx+i-1].push_back(i24);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i4-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i4-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i4-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i8-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i8-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i8-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i3-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i3-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i3-1)*3+3-1];
+                            ////
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i20-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i20-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i20-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i15-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i15-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i15-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i19-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i19-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i19-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i11-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i11-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i11-1)*3+3-1];
+                            //
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i24-1)*3+1-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i24-1)*3+2-1];
+                            topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i24-1)*3+3-1];
 
                             topnodes.push_back(i4);
                             topnodes.push_back(i8);
@@ -1059,17 +1651,65 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(k==1){
                             // for back bc elements
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i1);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i4);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i3);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i2);
+                            backconn[(j-1)*t_celldata.Nx+i-1].Dim=2;
+                            backconn[(j-1)*t_celldata.Nx+i-1].NodesNumPerElmt=9;
+                            backconn[(j-1)*t_celldata.Nx+i-1].VTKCellType=28;
+                            
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(5);
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("back");
 
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i12);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i11);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i10);
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i9 );
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i1);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i4);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i3);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i2);
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i12);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i11);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i10);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i9);
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i25);
 
-                            backconn[(j-1)*t_celldata.Nx+i-1].push_back(i25);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i4-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i4-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i4-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i3-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i3-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i3-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i2-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i2-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i2-1)*3+3-1];
+                            ////
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i12-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i12-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i12-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i11-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i11-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i11-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i10-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i10-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i10-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i9-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i9-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i9-1)*3+3-1];
+                            //
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i25-1)*3+1-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i25-1)*3+2-1];
+                            backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i25-1)*3+3-1];
 
                             backnodes.push_back(i1);
                             backnodes.push_back(i4);
@@ -1083,17 +1723,65 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                         }
                         if(k==t_celldata.Nz){
                             // for front bc elements
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i5);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i6);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i7);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i8);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].Dim=2;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].NodesNumPerElmt=9;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].VTKCellType=28;
+                            
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalGroupNums=1;
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalIDList.push_back(6);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].PhysicalNameList.push_back("front");
 
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i13);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i14);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i15);
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i16);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.clear();
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i5);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i6);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i7);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i8);
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i13);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i14);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i15);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i16);
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i26);
 
-                            frontconn[(j-1)*t_celldata.Nx+i-1].push_back(i26);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i5-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i5-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i5-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i6-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i6-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i6-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i8-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i8-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i8-1)*3+3-1];
+                            ////
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i13-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i13-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i13-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i14-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i14-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i14-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i15-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i15-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i15-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i16-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i16-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i16-1)*3+3-1];
+                            //
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i26-1)*3+1-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i26-1)*3+2-1];
+                            frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i26-1)*3+3-1];
 
                             frontnodes.push_back(i5);
                             frontnodes.push_back(i6);
@@ -1111,5 +1799,212 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
 
         }//end-of-hex27-mesh
 
+        // remove the duplicate node id, for nodal type set, you don't need these duplicate node ids!
+        sort(leftnodes.begin(),leftnodes.end());
+        leftnodes.erase(unique(leftnodes.begin(),leftnodes.end()),leftnodes.end());
+        // for rightnodes
+        sort(rightnodes.begin(),rightnodes.end());
+        rightnodes.erase(unique(rightnodes.begin(),rightnodes.end()),rightnodes.end());
+        // for bottomnodes
+        sort(bottomnodes.begin(),bottomnodes.end());
+        bottomnodes.erase(unique(bottomnodes.begin(),bottomnodes.end()),bottomnodes.end());
+        // for topnodes
+        sort(topnodes.begin(),topnodes.end());
+        topnodes.erase(unique(topnodes.begin(),topnodes.end()),topnodes.end());
+        // for backnodes
+        sort(backnodes.begin(),backnodes.end());
+        backnodes.erase(unique(backnodes.begin(),backnodes.end()),backnodes.end());
+        // for frontnodes
+        sort(frontnodes.begin(),frontnodes.end());
+        frontnodes.erase(unique(frontnodes.begin(),frontnodes.end()),frontnodes.end());
+
+        // setup the physical group information
+        t_celldata.PhyGroupNum_Global=1+6;
+        t_celldata.PhyDimVector_Global.resize(1+6,0);
+        t_celldata.PhyIDVector_Global.resize(1+6,0);
+        t_celldata.PhyNameVector_Global.resize(1+6);
+        t_celldata.PhyGroupElmtsNumVector_Global.resize(1+6,0);
+
+        // for physical dim vector
+        t_celldata.PhyDimVector_Global[0]=3;
+        t_celldata.PhyDimVector_Global[1]=2;
+        t_celldata.PhyDimVector_Global[2]=2;
+        t_celldata.PhyDimVector_Global[3]=2;
+        t_celldata.PhyDimVector_Global[4]=2;
+        t_celldata.PhyDimVector_Global[5]=2;
+        t_celldata.PhyDimVector_Global[6]=2;
+
+        // for physical id vector
+        t_celldata.PhyIDVector_Global[0]=0;
+        t_celldata.PhyIDVector_Global[1]=1;
+        t_celldata.PhyIDVector_Global[2]=2;
+        t_celldata.PhyIDVector_Global[3]=3;
+        t_celldata.PhyIDVector_Global[4]=4;
+        t_celldata.PhyIDVector_Global[5]=5;
+        t_celldata.PhyIDVector_Global[6]=6;
+
+        // for physical name vector
+        t_celldata.PhyNameVector_Global[0]="alldomain";
+        t_celldata.PhyNameVector_Global[1]="left";
+        t_celldata.PhyNameVector_Global[2]="right";
+        t_celldata.PhyNameVector_Global[3]="bottom";
+        t_celldata.PhyNameVector_Global[4]="top";
+        t_celldata.PhyNameVector_Global[5]="back";
+        t_celldata.PhyNameVector_Global[6]="front";
+
+        // for phy group elmts num vector
+        t_celldata.PhyGroupElmtsNumVector_Global[0]=static_cast<int>(t_celldata.BulkElmtsNum);
+        t_celldata.PhyGroupElmtsNumVector_Global[1]=static_cast<int>(leftconn.size());
+        t_celldata.PhyGroupElmtsNumVector_Global[2]=static_cast<int>(rightconn.size());
+        t_celldata.PhyGroupElmtsNumVector_Global[3]=static_cast<int>(bottomconn.size());
+        t_celldata.PhyGroupElmtsNumVector_Global[4]=static_cast<int>(topconn.size());
+        t_celldata.PhyGroupElmtsNumVector_Global[5]=static_cast<int>(backconn.size());
+        t_celldata.PhyGroupElmtsNumVector_Global[6]=static_cast<int>(frontconn.size());
+
+        /**
+         * setup id<---->name map
+        */
+        // id--->name map
+        t_celldata.PhyID2NameMap_Global[0]="alldomain";
+        t_celldata.PhyID2NameMap_Global[1]="left";
+        t_celldata.PhyID2NameMap_Global[2]="right";
+        t_celldata.PhyID2NameMap_Global[3]="bottom";
+        t_celldata.PhyID2NameMap_Global[4]="top";
+        t_celldata.PhyID2NameMap_Global[5]="back";
+        t_celldata.PhyID2NameMap_Global[6]="front";
+        // name--->id map
+        t_celldata.PhyName2IDMap_Global["alldomain"]=0;
+        t_celldata.PhyName2IDMap_Global["left"]=1;
+        t_celldata.PhyName2IDMap_Global["right"]=2;
+        t_celldata.PhyName2IDMap_Global["bottom"]=3;
+        t_celldata.PhyName2IDMap_Global["top"]=4;
+        t_celldata.PhyName2IDMap_Global["back"]=5;
+        t_celldata.PhyName2IDMap_Global["front"]=6;
+
+        /**
+         * Setup the global mapping, this should only be nonzero on master rank !!!
+        */
+        t_celldata.PhyName2MeshCellVectorMap_Global["alldomain"]=t_celldata.MeshCell_Total;
+        t_celldata.PhyName2MeshCellVectorMap_Global["left"]=leftconn;
+        t_celldata.PhyName2MeshCellVectorMap_Global["right"]=rightconn;
+        t_celldata.PhyName2MeshCellVectorMap_Global["bottom"]=bottomconn;
+        t_celldata.PhyName2MeshCellVectorMap_Global["top"]=topconn;
+        t_celldata.PhyName2MeshCellVectorMap_Global["back"]=backconn;
+        t_celldata.PhyName2MeshCellVectorMap_Global["front"]=frontconn;
+
+        t_celldata.PhyID2MeshCellVectorMap_Global[0]=t_celldata.MeshCell_Total;
+        t_celldata.PhyID2MeshCellVectorMap_Global[1]=leftconn;
+        t_celldata.PhyID2MeshCellVectorMap_Global[2]=rightconn;
+        t_celldata.PhyID2MeshCellVectorMap_Global[3]=bottomconn;
+        t_celldata.PhyID2MeshCellVectorMap_Global[4]=topconn;
+        t_celldata.PhyID2MeshCellVectorMap_Global[5]=backconn;
+        t_celldata.PhyID2MeshCellVectorMap_Global[6]=frontconn;
+
+        /**
+         * Setup the nodal physical info group
+        */
+        t_celldata.NodalPhyGroupNum_Global=6;
+        t_celldata.NodalPhyIDVector_Global.resize(6);
+        t_celldata.NodalPhyNameVector_Global.resize(6);
+        t_celldata.NodalPhyGroupNodesNumVector_Global.resize(6);
+
+        t_celldata.NodalPhyIDVector_Global[0]=10001;
+        t_celldata.NodalPhyIDVector_Global[1]=10002;
+        t_celldata.NodalPhyIDVector_Global[2]=10003;
+        t_celldata.NodalPhyIDVector_Global[3]=10004;
+        t_celldata.NodalPhyIDVector_Global[4]=10005;
+        t_celldata.NodalPhyIDVector_Global[5]=10006;
+
+        t_celldata.NodalPhyNameVector_Global[0]="leftnodes";
+        t_celldata.NodalPhyNameVector_Global[1]="rightnodes";
+        t_celldata.NodalPhyNameVector_Global[2]="bottomnodes";
+        t_celldata.NodalPhyNameVector_Global[3]="topnodes";
+        t_celldata.NodalPhyNameVector_Global[4]="backnodes";
+        t_celldata.NodalPhyNameVector_Global[5]="frontnodes";
+
+        t_celldata.NodalPhyGroupNodesNumVector_Global[0]=static_cast<int>(leftnodes.size());
+        t_celldata.NodalPhyGroupNodesNumVector_Global[1]=static_cast<int>(rightnodes.size());
+        t_celldata.NodalPhyGroupNodesNumVector_Global[2]=static_cast<int>(bottomnodes.size());
+        t_celldata.NodalPhyGroupNodesNumVector_Global[3]=static_cast<int>(topnodes.size());
+        t_celldata.NodalPhyGroupNodesNumVector_Global[4]=static_cast<int>(backnodes.size());
+        t_celldata.NodalPhyGroupNodesNumVector_Global[5]=static_cast<int>(frontnodes.size());
+        
+        t_celldata.NodalPhyID2NameMap_Global[10001]="left";
+        t_celldata.NodalPhyID2NameMap_Global[10002]="right";
+        t_celldata.NodalPhyID2NameMap_Global[10003]="bottom";
+        t_celldata.NodalPhyID2NameMap_Global[10004]="top";
+        t_celldata.NodalPhyID2NameMap_Global[10005]="back";
+        t_celldata.NodalPhyID2NameMap_Global[10006]="front";
+        
+        t_celldata.NodalPhyName2IDMap_Global["left"]=10001;
+        t_celldata.NodalPhyName2IDMap_Global["right"]=10002;
+        t_celldata.NodalPhyName2IDMap_Global["bottom"]=10003;
+        t_celldata.NodalPhyName2IDMap_Global["top"]=10004;
+        t_celldata.NodalPhyName2IDMap_Global["back"]=10005;
+        t_celldata.NodalPhyName2IDMap_Global["front"]=10006;
+
+        /**
+         * Now we start to distribute the gloabl mesh into different ranks
+        */
+        // send out the physical group info
+        MPI_Request request;
+        int cpuid;
+        for(cpuid=1;cpuid<size;cpuid++){
+            MPI_Isend(&t_celldata.PhyGroupElmtsNumVector_Global[0],1,MPI_INT,cpuid,1,MPI_COMM_WORLD,&request);
+            MPI_Wait(&request,MPI_STATUS_IGNORE);
+        }
+
+        // send out the total mesh cell
+        int iStart,iEnd,ranksize,LocalSize;
+        vector<SingleMeshCell> LocalCellVector;
+
+        t_celldata.PhyID2MeshCellVectorMap_Local.clear();
+        t_celldata.PhyName2MeshCellVectorMap_Local.clear();
+
+        for(cpuid=0;cpuid<size;cpuid++){
+            ranksize=t_celldata.BulkElmtsNum/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=t_celldata.BulkElmtsNum;
+            LocalSize=iEnd-iStart+1;
+
+            LocalCellVector.clear();
+            for(int e=iStart;e<=iEnd;e++){
+                LocalCellVector.push_back(t_celldata.MeshCell_Total[e-1]);
+            }
+            if(cpuid==0){
+                t_celldata.MeshCell_Local=LocalCellVector;
+                t_celldata.PhyID2MeshCellVectorMap_Local[0]=LocalCellVector;
+                t_celldata.PhyName2MeshCellVectorMap_Local["alldomain"]=t_celldata.MeshCell_Local;// each local rank share the same phy name as the master rank!!!
+            }
+            else{
+                MPI_Isend(&LocalSize,1,MPI_INT,cpuid,2,MPI_COMM_WORLD,&request);
+                MPI_Wait(&request,MPI_STATUS_IGNORE);
+            }
+
+            // for left conn
+            ranksize=static_cast<int>(leftconn.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(leftconn.size());
+            LocalSize=iEnd-iStart+1;
+            LocalCellVector.clear();
+            for(int e=iStart;e<=iEnd;e++){
+                LocalCellVector.push_back(leftconn[e-1]);
+            }
+            if(cpuid==0){
+                t_celldata.PhyID2MeshCellVectorMap_Local[1]=LocalCellVector;
+                t_celldata.PhyName2MeshCellVectorMap_Local["left"]=LocalCellVector;
+            }
+            else{
+                MPI_Isend(&LocalSize,1,MPI_INT,cpuid,3,MPI_COMM_WORLD,&request);
+                MPI_Wait(&request,MPI_STATUS_IGNORE);
+            }
+        }
+
     }// end-of-if(rank==0)
+
+    // now we distribute the global mesh into different ranks
+
+    return true;
 }
