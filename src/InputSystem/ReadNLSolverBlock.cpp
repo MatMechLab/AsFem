@@ -135,18 +135,6 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
         t_nlsolver.m_nlsolverblock.m_reltol_r=1.0e-9;
     }
     //**********************************************
-    if(t_json.contains("rel-tolerance")){
-        if(!t_json.at("rel-tolerance").is_number_float()){
-            MessagePrinter::printErrorTxt("the rel-tolerance in your nlsolver block is not a valid float,"
-                                          "please check your input file");
-            return false;
-        }
-        t_nlsolver.m_nlsolverblock.m_reltol_r=t_json.at("rel-tolerance");
-    }
-    else{
-        t_nlsolver.m_nlsolverblock.m_reltol_r=1.0e-9;
-    }
-    //**********************************************
     if(t_json.contains("s-tolerance")){
         if(!t_json.at("s-tolerance").is_number_float()){
             MessagePrinter::printErrorTxt("the s-tolerance in your nlsolver block is not a valid float,"
