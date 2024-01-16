@@ -35,6 +35,12 @@ set(inc ${inc} include/Utils/Timer.h)
 set(src ${src} src/Utils/Timer.cpp)
 
 #############################################################
+### For MPITool                                           ###
+#############################################################
+set(inc ${inc} include/MPITool/MPITool.h)
+set(src ${inc} src/MPITool/MPIToolForMeshCell.cpp)
+
+#############################################################
 ### For mathematic utils                                  ###
 #############################################################
 set(inc ${inc} include/MathUtils/Vector3d.h)
