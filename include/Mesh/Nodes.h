@@ -151,7 +151,7 @@ public:
     Nodes& operator=(const Nodes &a){
         m_size=a.m_size;
         m_coordinates.resize(m_size*3,0.0);
-        for(int i=1;i<=a.m_size*3;i++) m_coordinates[i]=a[i];
+        for(int i=1;i<=a.m_size*3;i++) m_coordinates[i-1]=a[i];
         return *this;
     }
     //************************************************
@@ -161,6 +161,10 @@ public:
      * get the size/number of total nodes
      */
     inline int getSize()const{return m_size;}
+    /**
+     * get the length of coordinate vector
+     */
+    inline int getLength()const{return m_size*3;}
     /**
      * get the i-th node's j-th coordinate
      * @param i i-th node
@@ -177,6 +181,19 @@ public:
         }
         return m_coordinates[(i-1)*3+j-1];
     }
+
+    /**
+     * get the data of the coordinates vector
+    */
+    inline double* getData(){return m_coordinates.data();}
+    /**
+     * get the reference of coordinate vector
+    */
+    inline vector<double>& getDataRef(){return m_coordinates;}
+    /**
+     * get the copy of coordinate vector
+    */
+    inline vector<double> getCopy()const{return m_coordinates;}
     
 
 private:
