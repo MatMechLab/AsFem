@@ -40,7 +40,7 @@ public:
      * @param tag the id of the sending message
      * @param cpuid the rank id used to receive the message
     */
-    static void sendMeshCell2Others(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
+    static void sendMeshCellToOthers(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
     /**
      * Receive the mesh cell data from master rank, this should be called on each rank locally
      * @param the mesh cell vector used to store the data from master rank
@@ -48,4 +48,34 @@ public:
      * @param cpuid the cpuid to receive the message
     */
     static void receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,const int &tag);
+
+    /**
+     * Send the physical name and mesh cell to each rank
+     * @param phyname the physical group name to be sent
+     * @param meshcellvec the mesh cell vector to be sent
+     * @param tag the id of the sending message
+     * @param cpuid the rank id used to receive the message
+    */
+    static void sendPhyName2MeshCellMapToOthers(const string &phyname,const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
+    /**
+     * Receive the physical group name and mesh cell for local map
+     * @param localmap the local phyname-->meshcellvector map
+     * @param tag the id of the sending message
+    */
+    static void receivePhyName2MeshCellMapFromMaster(map<string,vector<SingleMeshCell>> &localmap,const int &tag);
+
+    /**
+     * Send the physical id and mesh cell to each rank
+     * @param phyid the physical group id to be sent
+     * @param meshcellvec the mesh cell vector to be sent
+     * @param tag the id of the sending message
+     * @param cpuid the rank id used to receive the message
+    */
+    static void sendPhyName2MeshCellMapToOthers(const int &phyid,const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
+    /**
+     * Receive the physical group name and mesh cell for local map
+     * @param localmap the local id-->meshcellvector map
+     * @param tag the id of the sending message
+    */
+    static void receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCell>> &localmap,const int &tag);
 };

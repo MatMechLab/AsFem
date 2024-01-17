@@ -17,7 +17,7 @@
 
 #include "MPIUtils/MPIDataBus.h"
 
-void MPIDataBus::sendMeshCell2Others(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
+void MPIDataBus::sendMeshCellToOthers(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
     int basetag;
     basetag=tag;
 
@@ -105,4 +105,227 @@ void MPIDataBus::receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,c
         MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+8,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
     }
+}
+
+//***********************************************************
+void MPIDataBus::sendPhyName2MeshCellMapToOthers(const string &phyname,const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
+    int basetag;
+    basetag=tag;
+
+    int datasize;
+
+    MPI_Request request;
+
+    // send out the physical name to each rank
+    datasize=static_cast<int>(phyname.size());
+    MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    // send the char
+    MPI_Isend(phyname.c_str(),datasize,MPI_CHAR,cpuid,basetag+2,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    // send out the length of the mesh cell vector
+    datasize=static_cast<int>(meshcellvec.size());
+    MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+3,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    for(const auto &cell:meshcellvec){
+        // send Dim
+        MPI_Isend(&cell.Dim,1,MPI_INT,cpuid,basetag+4,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send NodesNumPerElmt
+        MPI_Isend(&cell.NodesNumPerElmt,1,MPI_INT,cpuid,basetag+5,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtConn
+        datasize=static_cast<int>(cell.ElmtConn.size());
+        MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+6,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        MPI_Isend(cell.ElmtConn.data(),datasize,MPI_INT,cpuid,basetag+7,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtNodeCoords0
+        datasize=static_cast<int>(cell.ElmtNodeCoords0.getSize());
+        MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+8,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        MPI_Isend(cell.ElmtNodeCoords0.getCopy().data(),datasize,MPI_INT,cpuid,basetag+9,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send VTKCellType
+        MPI_Isend(&cell.VTKCellType,1,MPI_INT,cpuid,basetag+10,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+    }
+}
+//*************************************************************************
+void MPIDataBus::receivePhyName2MeshCellMapFromMaster(map<string,vector<SingleMeshCell>> &localmap,const int &tag){
+    int basetag;
+    basetag=tag;
+
+    string phyname;
+    char buff[108];
+
+    int datasize;
+
+    MPI_Request request;
+    vector<SingleMeshCell> meshcellvec;
+
+    // send out the physical name to each rank
+    MPI_Irecv(&datasize,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    // send the char
+    MPI_Irecv(buff,datasize,MPI_CHAR,0,basetag+2,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    phyname.clear();
+    for(int i=0;i<datasize;i++) phyname.push_back(buff[i]);
+
+    // send out the length of the mesh cell vector
+    MPI_Irecv(&datasize,1,MPI_INT,0,basetag+3,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    meshcellvec.resize(datasize);
+    for(auto &cell:meshcellvec){
+        // send Dim
+        MPI_Irecv(&cell.Dim,1,MPI_INT,0,basetag+4,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send NodesNumPerElmt
+        MPI_Irecv(&cell.NodesNumPerElmt,1,MPI_INT,0,basetag+5,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtConn
+        datasize=0;
+        MPI_Irecv(&datasize,1,MPI_INT,0,basetag+6,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        cell.ElmtConn.resize(datasize,0);
+        MPI_Irecv(cell.ElmtConn.data(),datasize,MPI_INT,0,basetag+7,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtNodeCoords0
+        datasize=0;
+        MPI_Irecv(&datasize,1,MPI_INT,0,basetag+8,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        cell.ElmtNodeCoords0.resize(datasize);
+        MPI_Irecv(cell.ElmtNodeCoords0.getCopy().data(),datasize,MPI_INT,0,basetag+9,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        cell.ElmtNodeCoords=cell.ElmtNodeCoords0;
+
+        // send VTKCellType
+        MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+10,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+    }
+
+    localmap.clear();
+    localmap[phyname]=meshcellvec;
+    meshcellvec.clear();
+}
+
+//**************************************************************
+void MPIDataBus::sendPhyName2MeshCellMapToOthers(const int &phyid,const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
+    int basetag;
+    basetag=tag;
+
+    int datasize;
+
+    MPI_Request request;
+
+    // send out the physical name to each rank
+    MPI_Isend(&phyid,1,MPI_INT,cpuid,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    // send out the length of the mesh cell vector
+    datasize=static_cast<int>(meshcellvec.size());
+    MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+2,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    for(const auto &cell:meshcellvec){
+        // send Dim
+        MPI_Isend(&cell.Dim,1,MPI_INT,cpuid,basetag+3,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send NodesNumPerElmt
+        MPI_Isend(&cell.NodesNumPerElmt,1,MPI_INT,cpuid,basetag+4,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtConn
+        datasize=static_cast<int>(cell.ElmtConn.size());
+        MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+5,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        MPI_Isend(cell.ElmtConn.data(),datasize,MPI_INT,cpuid,basetag+6,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtNodeCoords0
+        datasize=static_cast<int>(cell.ElmtNodeCoords0.getSize());
+        MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+7,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        MPI_Isend(cell.ElmtNodeCoords0.getCopy().data(),datasize,MPI_INT,cpuid,basetag+8,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send VTKCellType
+        MPI_Isend(&cell.VTKCellType,1,MPI_INT,cpuid,basetag+9,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+    }
+}
+//***************************************************************
+void MPIDataBus::receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCell>> &localmap,const int &tag){
+    int basetag;
+    basetag=tag;
+
+    int datasize;
+    int phyid;
+
+    MPI_Request request;
+    vector<SingleMeshCell> meshcellvec;
+
+    // send out the physical name to each rank
+    MPI_Irecv(&phyid,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    // send out the length of the mesh cell vector
+    MPI_Irecv(&datasize,1,MPI_INT,0,basetag+2,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    meshcellvec.resize(datasize);
+    for(auto &cell:meshcellvec){
+        // send Dim
+        MPI_Irecv(&cell.Dim,1,MPI_INT,0,basetag+3,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send NodesNumPerElmt
+        MPI_Irecv(&cell.NodesNumPerElmt,1,MPI_INT,0,basetag+4,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtConn
+        datasize=0;
+        MPI_Irecv(&datasize,1,MPI_INT,0,basetag+5,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        cell.ElmtConn.resize(datasize,0);
+        MPI_Irecv(cell.ElmtConn.data(),datasize,MPI_INT,0,basetag+6,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtNodeCoords0
+        datasize=0;
+        MPI_Irecv(&datasize,1,MPI_INT,0,basetag+7,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        cell.ElmtNodeCoords0.resize(datasize);
+        MPI_Irecv(cell.ElmtNodeCoords0.getCopy().data(),datasize,MPI_INT,0,basetag+8,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        cell.ElmtNodeCoords=cell.ElmtNodeCoords0;
+
+        // send VTKCellType
+        MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+9,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+    }
+
+    localmap.clear();
+    localmap[phyid]=meshcellvec;
+    meshcellvec.clear();
 }
