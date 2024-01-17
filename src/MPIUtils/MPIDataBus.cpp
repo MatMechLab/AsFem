@@ -15,9 +15,9 @@
 //+++          Receive: others <----- master
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "MPITool/MPITool.h"
+#include "MPIUtils/MPIDataBus.h"
 
-void MPITool::sendMeshCell2Others(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
+void MPIDataBus::sendMeshCell2Others(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
     int basetag;
     basetag=tag;
 
@@ -52,7 +52,7 @@ void MPITool::sendMeshCell2Others(const vector<SingleMeshCell> &meshcellvec,cons
         MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+6,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
         //
-        MPI_Isend(cell.ElmtNodeCoords0.getData(),datasize,MPI_INT,cpuid,basetag+7,MPI_COMM_WORLD,&request);
+        MPI_Isend(cell.ElmtNodeCoords0.getCopy().data(),datasize,MPI_INT,cpuid,basetag+7,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
         // send VTKCellType

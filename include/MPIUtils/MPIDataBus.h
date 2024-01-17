@@ -27,12 +27,12 @@
 /**
  * This class implement the message send/receive API for mesh cell and other data structure among mpi ranks
 */
-class MPITool{
+class MPIDataBus{
 public:
     /**
      * Constructor
     */
-    MPITool(){}
+    MPIDataBus() {}
 
     /**
      * Send mesh cell data from master rank to others, this should be called on master rank

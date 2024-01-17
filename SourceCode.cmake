@@ -37,8 +37,8 @@ set(src ${src} src/Utils/Timer.cpp)
 #############################################################
 ### For MPITool                                           ###
 #############################################################
-set(inc ${inc} include/MPITool/MPITool.h)
-set(src ${inc} src/MPITool/MPIToolForMeshCell.cpp)
+set(inc ${inc} include/MPIUtils/MPIDataBus.h)
+set(src ${src} src/MPIUtils/MPIDataBus.cpp)
 
 #############################################################
 ### For mathematic utils                                  ###
