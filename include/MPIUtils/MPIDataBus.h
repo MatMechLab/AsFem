@@ -47,5 +47,5 @@ public:
      * @param tag the received message tag
      * @param cpuid the cpuid to receive the message
     */
-    static void receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
+    static void receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,const int &tag);
 };

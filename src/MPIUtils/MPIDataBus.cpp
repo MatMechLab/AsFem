@@ -61,3 +61,48 @@ void MPIDataBus::sendMeshCell2Others(const vector<SingleMeshCell> &meshcellvec,c
     }
 
 }
+//********************************************************
+void MPIDataBus::receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,const int &tag){
+    int basetag;
+    basetag=tag;
+
+    int datasize;
+
+    MPI_Request request;
+
+    // send out the length of the mesh cell vector
+    MPI_Irecv(&datasize,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    meshcellvec.resize(datasize);
+    for(auto &cell:meshcellvec){
+        // receive Dim 
+        MPI_Irecv(&cell.Dim,1,MPI_INT,0,basetag+2,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // receive NodesNumPerElmt
+        MPI_Irecv(&cell.NodesNumPerElmt,1,MPI_INT,0,basetag+3,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // receive ElmtConn
+        MPI_Irecv(&datasize,1,MPI_INT,0,basetag+4,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        cell.ElmtConn.resize(datasize,0);
+        MPI_Irecv(cell.ElmtConn.data(),datasize,MPI_INT,0,basetag+5,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        // send ElmtNodeCoords0
+        MPI_Irecv(&datasize,1,MPI_INT,0,basetag+6,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        //
+        cell.ElmtNodeCoords0.resize(datasize);
+        MPI_Irecv(cell.ElmtNodeCoords0.getData(),datasize,MPI_INT,0,basetag+7,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        cell.ElmtNodeCoords=cell.ElmtNodeCoords0;// make a copy
+
+        // send VTKCellType
+        MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+8,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+    }
+}
