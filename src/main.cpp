@@ -17,7 +17,6 @@
 
 #include "Welcome.h"
 #include "FEProblem/FEProblem.h"
-#include "MathUtils/SparseMatrix.h"
 
 int main(int args,char *argv[]){
     PetscErrorCode ierr;

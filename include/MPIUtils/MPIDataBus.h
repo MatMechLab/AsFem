@@ -71,7 +71,7 @@ public:
      * @param tag the id of the sending message
      * @param cpuid the rank id used to receive the message
     */
-    static void sendPhyName2MeshCellMapToOthers(const int &phyid,const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
+    static void sendPhyID2MeshCellMapToOthers(const int &phyid,const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid);
     /**
      * Receive the physical group name and mesh cell for local map
      * @param localmap the local id-->meshcellvector map
