@@ -124,6 +124,8 @@ set(inc ${inc} include/FECell/FECellGeneratorBase.h)
 ### for 3d lagrange mesh cell
 set(inc ${inc} include/FECell/Lagrange3DMeshCellGenerator.h)
 set(src ${src} src/FECell/Lagrange3DMeshCellGenerator.cpp)
+set(inc ${inc} include/FECell/FECellGenerator.h)
+set(src ${src} src/FECell/FECellGenerator.cpp)
 
 #############################################################
 ### For inputystem                                        ###
