@@ -48,7 +48,41 @@ public:
     */
     FECell(const FECell &a);
 
+    /**
+     * setup mesh geometry info for 1d case
+     * @param nx mesh number along x-axis
+     * @param xmin xmin value of the domain
+     * @param xmax xmax value of the domain
+     * @param meshtype the given mesh type
+    */
     void setMeshInfo(const int &nx,const double &xmin,const double &xmax,const MeshType &meshtype);
+    /**
+     * setup mesh geometry info for 2d case
+     * @param nx mesh number along x-axis
+     * @param ny mesh number along y-axis
+     * @param xmin xmin value of the domain
+     * @param xmax xmax value of the domain
+     * @param ymin ymin value of the domain
+     * @param ymax ymax value of the domain
+     * @param meshtype the given mesh type
+    */
+    void setMeshInfo(const int &nx,const int &ny,
+                     const double &xmin,const double &xmax,
+                     const double &ymin,const double &ymax,const MeshType &meshtype);
+    /**
+     * setup mesh geometry info for 3d case
+     * @param nx mesh number along x-axis
+     * @param ny mesh number along y-axis
+     * @param xmin xmin value of the domain
+     * @param xmax xmax value of the domain
+     * @param ymin ymin value of the domain
+     * @param ymax ymax value of the domain
+     * @param meshtype the given mesh type
+    */
+    void setMeshInfo(const int &nx,const int &ny,const int &nz,
+                     const double &xmin,const double &xmax,
+                     const double &ymin,const double &ymax,
+                     const double &zmin,const double &zmax,const MeshType &meshtype);
 
 
     /**
@@ -57,7 +91,7 @@ public:
     void printSummaryInfo()const;
 
 private:
-    FECellData CellData;/**< the FE cell data structure of the whole system */
+    FECellData m_CellData;/**< the FE cell data structure of the whole system */
 
 
 };

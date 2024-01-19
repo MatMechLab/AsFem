@@ -120,6 +120,7 @@ set(src ${src} src/Mesh/MeshFileImporter.cpp)
 set(inc ${inc} include/FECell/SingleMeshCell.h)
 set(inc ${inc} include/FECell/FECellData.h)
 set(inc ${inc} include/FECell/FECell.h)
+set(src ${src} src/FECell/FECell.cpp)
 set(inc ${inc} include/FECell/FECellGeneratorBase.h)
 ### for 3d lagrange mesh cell
 set(inc ${inc} include/FECell/Lagrange3DMeshCellGenerator.h)
