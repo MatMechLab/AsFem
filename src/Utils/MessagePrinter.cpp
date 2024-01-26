@@ -72,6 +72,14 @@ void MessagePrinter::printStars(MessageColor color){
     PetscPrintf(PETSC_COMM_WORLD,"\n");
     PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
+void MessagePrinter::printSingleTxt(string str,MessageColor color){
+    setColor(color);
+    PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
+    setColor(MessageColor::WHITE);
+}
+void MessagePrinter::printNewLine(){
+    PetscPrintf(PETSC_COMM_WORLD,"\n");
+}
 //*********************************************
 void MessagePrinter::printTxt(string str,MessageColor color){
     setColor(color);
@@ -111,6 +119,66 @@ void MessagePrinter::printTxt(string str,MessageColor color){
     PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
 //**********************************************************
+void MessagePrinter::printErrorTxt(string str,bool flag){
+    const string HeadTxt="*** Error: ";
+    const string EndTxt=" !!! ***";
+    vector<string> subvec;
+    MessagePrinter printer;
+    subvec=printer.splitStr2Vec(HeadTxt,EndTxt,str);
+    int i1=static_cast<int>(HeadTxt.size());
+    int i2=static_cast<int>(EndTxt.size());
+    int i3=static_cast<int>(str.size());
+    setColor(MessageColor::RED);
+    if(flag){
+        printStars(MessageColor::RED);
+    }
+    for(const auto &it:subvec){
+        setColor(MessageColor::RED);
+        PetscPrintf(PETSC_COMM_WORLD,"%s",HeadTxt.c_str());
+        setColor(MessageColor::WHITE);
+        PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
+        i3=static_cast<int>(it.size());
+        for(int i=0;i<_nWords-i1-i2-i3;i++){
+            PetscPrintf(PETSC_COMM_WORLD," ");
+        }
+        setColor(MessageColor::RED);
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",EndTxt.c_str());
+    }
+    if(flag){
+        printStars(MessageColor::RED);
+    }
+}
+//**********************************************************
+void MessagePrinter::printWarningTxt(string str,bool flag){
+    const string HeadTxt="*** Warning: ";
+    const string EndTxt=" !!! ***";
+    vector<string> subvec;
+    MessagePrinter printer;
+    subvec=printer.splitStr2Vec(HeadTxt,EndTxt,str);
+    int i1=static_cast<int>(HeadTxt.size());
+    int i2=static_cast<int>(EndTxt.size());
+    int i3=static_cast<int>(str.size());
+    setColor(MessageColor::YELLOW);
+    if(flag){
+        printStars(MessageColor::YELLOW);
+    }
+    for(const auto &it:subvec){
+        setColor(MessageColor::YELLOW);
+        PetscPrintf(PETSC_COMM_WORLD,"%s",HeadTxt.c_str());
+        setColor(MessageColor::WHITE);
+        PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
+        i3=static_cast<int>(it.size());
+        for(int i=0;i<_nWords-i1-i2-i3;i++){
+            PetscPrintf(PETSC_COMM_WORLD," ");
+        }
+        setColor(MessageColor::YELLOW);
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",EndTxt.c_str());
+    }
+    if(flag){
+        printStars(MessageColor::YELLOW);
+    }
+}
+//**********************************************************
 void MessagePrinter::printShortTxt(string str,MessageColor color){
     setColor(color);
     string _Head="*** ";
@@ -135,7 +203,7 @@ void MessagePrinter::printLongTxt(string str,MessageColor color){
     setColor(color);
     MessagePrinter printer;
     vector<string> strvec;
-    strvec=printer.splitStr2Vec(str);
+    strvec=printer.splitStr2Vec("***"," !!! ***",str);
     for(const auto &it:strvec){
         printShortTxt(it,color);
     }
@@ -162,293 +230,28 @@ void MessagePrinter::printWelcomeTxt(string str){
 
     PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
-//****************************************
-vector<string> MessagePrinter::splitStr2Vec(string str){
-    string _Head="*** ";
-    string _End=" !!! ***";
-    int i1=static_cast<int>(_Head.size());
-    int i2=static_cast<int>(_End.size());
-    int i3=static_cast<int>(str.size());
-    vector<string> strvec;
-    strvec.clear();
-    if(i3<=_nWords-i1-i2){
-        strvec.push_back(str);
-    }
-    else{
-        strvec.clear();
-        string substr;
-        substr.clear();
-        int count=0;
-        int nWords=_nWords-i1-i2;
-        for(int i=0;i<static_cast<int>(str.length());i++){
-            substr.push_back(str.at(i));
-            count+=1;
-            if(static_cast<int>(substr.size())==nWords){
-                strvec.push_back(substr);
-                substr.clear();
-                if(count==static_cast<int>(str.length())-1){
-                    break;
-                }
-            }
-            else{
-                if(count==static_cast<int>(str.length())-1){
-                    strvec.push_back(substr);
-                    break;
-                }
-            }
-        }
-    }
-    return strvec;
-}
-
-//**************************************************
-//*** for error message print
-//**************************************************
-vector<string> MessagePrinter::splitWarningStr2Vec(string str){
-    //string _Head="*** Warning:";
-    string _Head="***         ";
-    string _End=" !!! ***";
-    int i1=static_cast<int>(_Head.size());
-    int i2=static_cast<int>(_End.size());
-    int i3=static_cast<int>(str.size());
-    vector<string> strvec;
-    strvec.clear();
-    if(i3<=_nWords-i1-i2){
-        strvec.push_back(str);
-    }
-    else{
-        strvec.clear();
-        string substr;
-        substr.clear();
-        int count=0;
-        int nWords=_nWords-i1-i2;
-        for(int i=0;i<static_cast<int>(str.length());i++){
-            substr.push_back(str.at(i));
-            count+=1;
-            if(static_cast<int>(substr.size())==nWords){
-                strvec.push_back(substr);
-                substr.clear();
-            }
-            if(count==static_cast<int>(str.length()) && static_cast<int>(substr.size())<nWords){
-                strvec.push_back(substr);
-                substr.clear();
-                break;
-            }
-        }
-    }
-    return strvec;
-}
-vector<string> MessagePrinter::splitErrorStr2Vec(string str){
-    // string _Head="*** Error:";
-    string _Head="***       ";
-    string _End=" !!! ***";
-    int i1=static_cast<int>(_Head.size());
-    int i2=static_cast<int>(_End.size());
-    int i3=static_cast<int>(str.size());
-    vector<string> strvec;
-    strvec.clear();
-    if(i3<=_nWords-i1-i2){
-        strvec.push_back(str);
-    }
-    else{
-        strvec.clear();
-        string substr;
-        substr.clear();
-        int count=0;
-        int nWords=_nWords-i1-i2;
-        for(int i=0;i<static_cast<int>(str.length());i++){
-            substr.push_back(str.at(i));
-            count+=1;
-            if(static_cast<int>(substr.size())==nWords){
-                strvec.push_back(substr);
-                substr.clear();
-            }
-            if(count==static_cast<int>(str.length()) && static_cast<int>(substr.size())<nWords){
-                strvec.push_back(substr);
-                substr.clear();
-                break;
-            }
-        }
-    }
-    return strvec;
-}
-//****************************************************
-void MessagePrinter::printErrorTxt(string str,bool flag){
-    setColor(MessageColor::RED);
-    string _Head ="***       ";
-    string _Head1="*** Error:";
-    string _End=" !!! ***";
-    int i1=static_cast<int>(_Head1.size());
-    int i2=static_cast<int>(_End.size());
-    int i3=static_cast<int>(str.size());
-    if(i3<=_nWords-i1-i2){
-        if(flag) printStars(MessageColor::RED);
-        setColor(MessageColor::RED);
-        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
-        for(int i=0;i<_nWords-i1-i2-i3;i++){
-            PetscPrintf(PETSC_COMM_WORLD," ");
-        }
-        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        if(flag) printStars(MessageColor::RED);
-        setColor(MessageColor::RED);
-    }
-    else{
-        string substr1,substr2;
-        vector<string> strvec;
-        substr1=str.substr(0,_nWords-i1-i2);
-        substr2=str.substr(_nWords-i1-i2);
-        // for the first line
-        if(flag) printStars(MessageColor::RED);
-        setColor(MessageColor::RED);
-        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        // for the later lines
-        MessagePrinter printer;
-        strvec=printer.splitErrorStr2Vec(substr2);
-        i1=static_cast<int>(_Head.size());
-        for(const auto &it:strvec){
-            // cout<<"str("<<it.size()<<")="<<it<<endl;
-            PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
-            PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
-            i3=static_cast<int>(it.size());
-            for(int i=0;i<_nWords-i1-i2-i3;i++){
-                PetscPrintf(PETSC_COMM_WORLD," ");
-            }
-            PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        }
-        if(flag) printStars(MessageColor::RED);
-        setColor(MessageColor::RED);
-    }
-    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
-}
-//************************************************
-void MessagePrinter::printWarningTxt(string str,bool flag){
-    setColor(MessageColor::YELLOW);
-    string _Head ="***         ";
-    string _Head1="*** Warning:";
-    string _End=" !!! ***";
-    int i1=static_cast<int>(_Head1.size());
-    int i2=static_cast<int>(_End.size());
-    int i3=static_cast<int>(str.size());
-    if(i3<=_nWords-i1-i2){
-        if(flag) printStars(MessageColor::YELLOW);
-        setColor(MessageColor::YELLOW);
-        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
-        for(int i=0;i<_nWords-i1-i2-i3;i++){
-            PetscPrintf(PETSC_COMM_WORLD," ");
-        }
-        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        if(flag) printStars(MessageColor::YELLOW);
-        setColor(MessageColor::YELLOW);
-    }
-    else{
-        string substr1,substr2;
-        vector<string> strvec;
-        substr1=str.substr(0,_nWords-i1-i2);
-        substr2=str.substr(_nWords-i1-i2);
-        // for the first line
-        if(flag) printStars(MessageColor::YELLOW);
-        setColor(MessageColor::YELLOW);
-        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        // for the later lines
-        MessagePrinter printer;
-        strvec=printer.splitWarningStr2Vec(substr2);
-        i1=static_cast<int>(_Head.size());
-        for(const auto &it:strvec){
-            PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
-            PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
-            i3=static_cast<int>(it.size());
-            for(int i=0;i<_nWords-i1-i2-i3;i++){
-                PetscPrintf(PETSC_COMM_WORLD," ");
-            }
-            PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        }
-        if(flag) printStars(MessageColor::YELLOW);
-        setColor(MessageColor::YELLOW);
-    }
-    PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
-}
-//**********************************************
-vector<string> MessagePrinter::splitNormalStr2Vec(string str){
-    // string _Head="*** Error:";
-    string _Head="*** ";
-    string _End =" ***";
-    int i1=static_cast<int>(_Head.size());
-    int i2=static_cast<int>(_End.size());
-    int i3=static_cast<int>(str.size());
-    vector<string> strvec;
-    strvec.clear();
-    if(i3<=_nWords-i1-i2){
-        strvec.push_back(str);
-    }
-    else{
-        strvec.clear();
-        string substr;
-        substr.clear();
-        int count=0;
-        int nWords=_nWords-i1-i2;
-        for(int i=0;i<static_cast<int>(str.length());i++){
-            substr.push_back(str.at(i));
-            count+=1;
-            if(static_cast<int>(substr.size())==nWords){
-                strvec.push_back(substr);
-                substr.clear();
-                if(count==static_cast<int>(str.length())-1){
-                    break;
-                }
-            }
-            else{
-                if(count==static_cast<int>(str.length())-1){
-                    strvec.push_back(substr);
-                    break;
-                }
-            }
-        }
-    }
-    return strvec;
-}
+//**************************************
 void MessagePrinter::printNormalTxt(string str,MessageColor color){
     setColor(color);
-    string _Head="*** ";
-    string _End =" ***";
-    int i1=static_cast<int>(_Head.size());
-    int i2=static_cast<int>(_End.size());
+    string HeadTxt="*** ";
+    string EndTxt =" ***";
+    int i1=static_cast<int>(HeadTxt.size());
+    int i2=static_cast<int>(EndTxt.size());
     int i3=static_cast<int>(str.size());
-    if(i3<=_nWords-i1-i2){
-        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
+
+    vector<string> strvec;
+    
+    MessagePrinter printer;
+    strvec=printer.splitStr2Vec(HeadTxt,EndTxt,str);
+    for(const auto &it:strvec){
+        setColor(color);
+        PetscPrintf(PETSC_COMM_WORLD,"%s",HeadTxt.c_str());
+        PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
+        i3=static_cast<int>(it.size());
         for(int i=0;i<_nWords-i1-i2-i3;i++){
             PetscPrintf(PETSC_COMM_WORLD," ");
         }
-        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-    }
-    else{
-        string substr1,substr2;
-        vector<string> strvec;
-        substr1=str.substr(0,_nWords-i1-i2);
-        substr2=str.substr(_nWords-i1-i2);
-        // for the first line
-        PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s",substr1.c_str());
-        PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        // for the later lines
-        MessagePrinter printer;
-        strvec=printer.splitNormalStr2Vec(substr2);
-        i1=static_cast<int>(_Head.size());
-        for(const auto &it:strvec){
-            PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
-            PetscPrintf(PETSC_COMM_WORLD,"%s",it.c_str());
-            i3=static_cast<int>(it.size());
-            for(int i=0;i<_nWords-i1-i2-i3;i++){
-                PetscPrintf(PETSC_COMM_WORLD," ");
-            }
-            PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
-        }
+        PetscPrintf(PETSC_COMM_WORLD,"%s\n",EndTxt.c_str());
     }
     PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
 }
@@ -465,10 +268,48 @@ void MessagePrinter::printErrorInLineNumber(const int &linenumber){
     str=buff;
     int i3=static_cast<int>(str.size());
     PetscPrintf(PETSC_COMM_WORLD,"%s",_Head.c_str());
+    setColor(MessageColor::WHITE);
     PetscPrintf(PETSC_COMM_WORLD,"%s",str.c_str());
     for(int i=0;i<_nWords-i1-i2-i3;i++){
         PetscPrintf(PETSC_COMM_WORLD," ");
     }
+    setColor(MessageColor::RED);
     PetscPrintf(PETSC_COMM_WORLD,"%s\n",_End.c_str());
     PetscPrintf(PETSC_COMM_WORLD,"\033[0m");// recover color
+}
+//**********************************************
+vector<string> MessagePrinter::splitStr2Vec(const string &headtxt,const string &endtxt,string str){
+    int i1=static_cast<int>(headtxt.size());
+    int i2=static_cast<int>(endtxt.size());
+    int i3=static_cast<int>(str.size());
+    vector<string> strvec;
+    strvec.clear();
+    if(i3<=_nWords-i1-i2){
+        strvec.push_back(str);
+    }
+    else{
+        strvec.clear();
+        string substr;
+        substr.clear();
+        int count=0;
+        int nWords=_nWords-i1-i2;
+        for(int i=0;i<static_cast<int>(str.length());i++){
+            substr.push_back(str.at(i));
+            count+=1;
+            if(static_cast<int>(substr.size())==nWords){
+                strvec.push_back(substr);
+                substr.clear();
+                if(count==static_cast<int>(str.length())-1){
+                    break;
+                }
+            }
+            else{
+                if(count==static_cast<int>(str.length())-1){
+                    strvec.push_back(substr);
+                    break;
+                }
+            }
+        }
+    }
+    return strvec;
 }
