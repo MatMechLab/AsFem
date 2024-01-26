@@ -39,7 +39,28 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     
     MessagePrinter::printStars(MessageColor::BLUE);
     MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                      AAA");
-    MessagePrinter::printWelcomeTxt("Advanced Simulation kit based on Finite Element Method   // \\\\");
+    // MessagePrinter::printWelcomeTxt("Advanced Simulation kit based on Finite Element Method   // \\\\");
+
+    MessagePrinter::printSingleTxt("*** ",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("A",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("dvanced ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("S",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("imulation ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("kit based on ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("F",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("inite ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("E",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("lement ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("M",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("ethod ",MessageColor::WHITE);
+    MessagePrinter::printSingleTxt("  // \\\\",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("                ***",MessageColor::BLUE);
+    MessagePrinter::printNewLine();
 
     snprintf(buff,50,"Version: %-10.2f  Release @ %4d-%02d-%02d",version,year,month,day);
     str=buff;
