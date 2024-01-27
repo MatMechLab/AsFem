@@ -219,7 +219,6 @@ void MPIDataBus::receivePhyName2MeshCellMapFromMaster(map<string,vector<SingleMe
         MPI_Wait(&request,MPI_STATUS_IGNORE);
     }
 
-    localmap.clear();
     localmap[phyname]=meshcellvec;
     meshcellvec.clear();
 }
@@ -325,7 +324,6 @@ void MPIDataBus::receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCel
         MPI_Wait(&request,MPI_STATUS_IGNORE);
     }
 
-    localmap.clear();
     localmap[phyid]=meshcellvec;
     meshcellvec.clear();
 }
