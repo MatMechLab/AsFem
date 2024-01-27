@@ -30,6 +30,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
 
     t_celldata.ActiveDofsNum=0;
     t_celldata.TotalDofsNum=0;
+    t_celldata.MaxDofsPerNode=0;
 
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     MPI_Comm_size(MPI_COMM_WORLD,&size);
@@ -1964,7 +1965,6 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
             if(cpuid==size-1) iEnd=t_celldata.BulkElmtsNum;
 
             LocalCellVector.clear();
-            cout<<"cpuid="<<cpuid<<", iStart="<<iStart<<", iEnd="<<iEnd<<", mesh cell size="<<t_celldata.MeshCell_Total.size()<<endl;
             for(int e=iStart;e<iEnd;e++){
                 LocalCellVector.push_back(t_celldata.MeshCell_Total[e]);
             }

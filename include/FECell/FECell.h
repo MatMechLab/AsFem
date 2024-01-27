@@ -86,6 +86,12 @@ public:
 
 
     /**
+     * Get the reference of fecell data
+    */
+    inline FECellData& getCellDataRef(){return m_CellData;}
+
+
+    /**
      * Print out the summary information of FECell class, i.e., mpi-based mesh distribution, elements num, nodes num, etc.
     */
     void printSummaryInfo()const;
