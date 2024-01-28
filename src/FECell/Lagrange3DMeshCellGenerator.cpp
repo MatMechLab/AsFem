@@ -1931,19 +1931,26 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
         t_celldata.NodalPhyGroupNodesNumVector_Global[4]=static_cast<int>(backnodes.size());
         t_celldata.NodalPhyGroupNodesNumVector_Global[5]=static_cast<int>(frontnodes.size());
         
-        t_celldata.NodalPhyID2NameMap_Global[10001]="left";
-        t_celldata.NodalPhyID2NameMap_Global[10002]="right";
-        t_celldata.NodalPhyID2NameMap_Global[10003]="bottom";
-        t_celldata.NodalPhyID2NameMap_Global[10004]="top";
-        t_celldata.NodalPhyID2NameMap_Global[10005]="back";
-        t_celldata.NodalPhyID2NameMap_Global[10006]="front";
+        t_celldata.NodalPhyID2NameMap_Global[10001]="leftnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10002]="rightnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10003]="bottomnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10004]="topnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10005]="backnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10006]="frontnodes";
         
-        t_celldata.NodalPhyName2IDMap_Global["left"]=10001;
-        t_celldata.NodalPhyName2IDMap_Global["right"]=10002;
-        t_celldata.NodalPhyName2IDMap_Global["bottom"]=10003;
-        t_celldata.NodalPhyName2IDMap_Global["top"]=10004;
-        t_celldata.NodalPhyName2IDMap_Global["back"]=10005;
-        t_celldata.NodalPhyName2IDMap_Global["front"]=10006;
+        t_celldata.NodalPhyName2IDMap_Global["leftnodes"]=10001;
+        t_celldata.NodalPhyName2IDMap_Global["rightnodes"]=10002;
+        t_celldata.NodalPhyName2IDMap_Global["bottomnodes"]=10003;
+        t_celldata.NodalPhyName2IDMap_Global["topnodes"]=10004;
+        t_celldata.NodalPhyName2IDMap_Global["backnodes"]=10005;
+        t_celldata.NodalPhyName2IDMap_Global["frontnodes"]=10006;
+
+        t_celldata.NodalPhyName2NodeIDVecMap_Global["leftnodes"]=leftnodes;
+        t_celldata.NodalPhyName2NodeIDVecMap_Global["rightnodes"]=rightnodes;
+        t_celldata.NodalPhyName2NodeIDVecMap_Global["bottomnodes"]=bottomnodes;
+        t_celldata.NodalPhyName2NodeIDVecMap_Global["topnodes"]=topnodes;
+        t_celldata.NodalPhyName2NodeIDVecMap_Global["backnodes"]=backnodes;
+        t_celldata.NodalPhyName2NodeIDVecMap_Global["frontnodes"]=frontnodes;
 
         /**
          * Now we start to distribute the gloabl mesh into different ranks
@@ -2164,19 +2171,19 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
         t_celldata.NodalPhyNameVector_Global[4]="backnodes";
         t_celldata.NodalPhyNameVector_Global[5]="frontnodes";
         
-        t_celldata.NodalPhyID2NameMap_Global[10001]="left";
-        t_celldata.NodalPhyID2NameMap_Global[10002]="right";
-        t_celldata.NodalPhyID2NameMap_Global[10003]="bottom";
-        t_celldata.NodalPhyID2NameMap_Global[10004]="top";
-        t_celldata.NodalPhyID2NameMap_Global[10005]="back";
-        t_celldata.NodalPhyID2NameMap_Global[10006]="front";
+        t_celldata.NodalPhyID2NameMap_Global[10001]="leftnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10002]="rightnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10003]="bottomnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10004]="topnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10005]="backnodes";
+        t_celldata.NodalPhyID2NameMap_Global[10006]="frontnodes";
         
-        t_celldata.NodalPhyName2IDMap_Global["left"]=10001;
-        t_celldata.NodalPhyName2IDMap_Global["right"]=10002;
-        t_celldata.NodalPhyName2IDMap_Global["bottom"]=10003;
-        t_celldata.NodalPhyName2IDMap_Global["top"]=10004;
-        t_celldata.NodalPhyName2IDMap_Global["back"]=10005;
-        t_celldata.NodalPhyName2IDMap_Global["front"]=10006;
+        t_celldata.NodalPhyName2IDMap_Global["leftnodes"]=10001;
+        t_celldata.NodalPhyName2IDMap_Global["rightnodes"]=10002;
+        t_celldata.NodalPhyName2IDMap_Global["bottomnodes"]=10003;
+        t_celldata.NodalPhyName2IDMap_Global["topnodes"]=10004;
+        t_celldata.NodalPhyName2IDMap_Global["backnodes"]=10005;
+        t_celldata.NodalPhyName2IDMap_Global["frontnodes"]=10006;
         
         /**
          * Receive message from master rank

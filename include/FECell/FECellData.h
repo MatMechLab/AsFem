@@ -97,4 +97,7 @@ struct FECellData{
     map<int,string> NodalPhyID2NameMap_Global;/**< nodal physical id to name map among all ranks */
     map<string,int> NodalPhyName2IDMap_Global;/**< nodal physical name to id map among all ranks */
 
+    map<string,vector<int>> NodalPhyName2NodeIDVecMap_Global;/**< the global nodal phy name to node id map*/
+    map<string,vector<int>> NodalPhyName2NodeIDVecMap_Local;/**< the global nodal phy name to node id map*/
+
 };
