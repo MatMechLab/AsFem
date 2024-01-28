@@ -67,6 +67,8 @@ struct FECellData{
     int Ny;/**< elements num along y-axis */
     int Nz;/**< elements num along z-axis */
 
+    vector<double> NodeCoords_Global;/**< the nodal coordinates of all the mesh point, which is only stored in master rank */
+
     int MaxDofsPerNode;/**< the maximum dofs number of each node */
     int TotalDofsNum;/**< the total dofs number of the fe cell mesh */
     int ActiveDofsNum;/**< the active dofs number of the fe cell mesh */

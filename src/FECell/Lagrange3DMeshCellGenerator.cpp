@@ -120,6 +120,9 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                 }
             }// end-of-node-generation
 
+            t_celldata.NodeCoords_Global.clear();
+            for(const auto &it:nodecoords) t_celldata.NodeCoords_Global.push_back(it);
+
             // for the connectivity information of bulk elements
             t_celldata.MeshCell_Total.resize(t_celldata.BulkElmtsNum);
             leftconn.resize(t_celldata.Ny*t_celldata.Nz);
@@ -545,6 +548,9 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                 nodecoords[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*2*dy;
                 nodecoords[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz;
             }
+            t_celldata.NodeCoords_Global.clear();
+            for(const auto &it:nodecoords) t_celldata.NodeCoords_Global.push_back(it);
+
             // end-of-node-generation
             t_celldata.MeshCell_Total.resize(t_celldata.BulkElmtsNum);
             leftconn.resize(t_celldata.Ny*t_celldata.Nz);
@@ -1163,6 +1169,9 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                     nodecoords[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz;
                 }
             }
+            t_celldata.NodeCoords_Global.clear();
+            for(const auto &it:nodecoords) t_celldata.NodeCoords_Global.push_back(it);
+            
             // for the connectivity information of bulk elements
             t_celldata.MeshCell_Total.resize(t_celldata.BulkElmtsNum);
             leftconn.resize(t_celldata.Ny*t_celldata.Nz);

@@ -90,7 +90,10 @@ public:
     */
     inline FECellData& getCellDataRef(){return m_CellData;}
 
-
+    /**
+     * Save the FECell mesh to vtu file
+    */
+    void saveFECell2VTUFile()const;
     /**
      * Print out the summary information of FECell class, i.e., mpi-based mesh distribution, elements num, nodes num, etc.
     */

@@ -12,6 +12,7 @@
 //+++ Function: finite element cell management class
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+#include <fstream>
 #include "FECell/FECell.h"
 
 FECell::FECell(){}
@@ -50,6 +51,80 @@ void FECell::setMeshInfo(const int &nx,const int &ny,const int &nz,
     m_CellData.Zmin=zmin;
     m_CellData.Zmax=zmax;
     m_CellData.BulkElmtMeshType=meshtype;
+}
+//****************************************************
+void FECell::saveFECell2VTUFile()const{
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    if(rank==0){
+        std::ofstream out;
+        out.open("mesh.vtu",std::ios::out);
+        if(!out.is_open()){
+            MessagePrinter::printErrorTxt("can\'t create/open mesh.vtu, please make sure you have the write permission");
+            MessagePrinter::exitAsFem();
+        }
+        out << "<?xml version=\"1.0\"?>\n";
+        out << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\">\n";
+        out << "<UnstructuredGrid>\n";
+        out << "<Piece NumberOfPoints=\"" << m_CellData.NodesNum << "\" NumberOfCells=\"" << m_CellData.BulkElmtsNum << "\">\n";
+        out << "<Points>\n";
+        out << "<DataArray type=\"Float64\" Name=\"nodes\"  NumberOfComponents=\"3\"  format=\"ascii\">\n";
+
+        int i;
+        //*****************************
+        // print out node coordinates
+        out <<std::scientific << std::setprecision(6);
+        for (i = 1; i <= m_CellData.NodesNum; i++){
+            out << m_CellData.NodeCoords_Global[(i-1)*3+1-1] << " ";
+            out << m_CellData.NodeCoords_Global[(i-1)*3+2-1] << " ";
+            out << m_CellData.NodeCoords_Global[(i-1)*3+3-1] << "\n";
+        }
+        out << "</DataArray>\n";
+        out << "</Points>\n";
+
+        //***************************************
+        //*** For cell information
+        //***************************************
+        out << "<Cells>\n";
+        out << "<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
+        for(const auto &cell:m_CellData.MeshCell_Total){
+            for(const auto &id:cell.ElmtConn){
+                out<<id-1<<" ";
+            }
+            out<<"\n";
+        }
+        out << "</DataArray>\n";
+
+        //***************************************
+        //*** For offset
+        //***************************************
+        out << "<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
+        int offset = 0;
+        for(const auto &cell:m_CellData.MeshCell_Total){
+            offset+=cell.NodesNumPerElmt;
+            out << offset << "\n";
+        }
+        out << "</DataArray>\n";
+
+        //***************************************
+        //*** For vtk cell type
+        //***************************************
+        out << "<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
+        for(const auto &cell:m_CellData.MeshCell_Total){
+            out<<cell.VTKCellType<<"\n";
+        }
+        out << "</DataArray>\n";
+        out << "</Cells>\n";
+
+        //***************************************
+        //*** End of output
+        //***************************************
+        out << "</Piece>\n";
+        out << "</UnstructuredGrid>\n";
+        out << "</VTKFile>" << endl;
+
+        out.close();
+    }
 }
 void FECell::printSummaryInfo()const{
     MessagePrinter::printStars();

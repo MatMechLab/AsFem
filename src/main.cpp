@@ -38,9 +38,11 @@ int main(int args,char *argv[]){
 
     FECell mycell;
     FECellGenerator generator;
-    mycell.setMeshInfo(1,2,3,0.0,1.0,0.0,1.0,0.0,1.0,MeshType::HEX8);
-    generator.createFEMeshCell(MeshType::HEX8,mycell.getCellDataRef());
+    mycell.setMeshInfo(1,2,3,0.0,1.0,0.0,1.0,0.0,1.0,MeshType::HEX20);
+    generator.createFEMeshCell(MeshType::HEX20,mycell.getCellDataRef());
     mycell.printSummaryInfo();
+
+    mycell.saveFECell2VTUFile();
    
 
     ierr=PetscFinalize();CHKERRQ(ierr);
