@@ -1961,6 +1961,7 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
         // send out the total mesh cell
         int iStart,iEnd,ranksize;
         vector<SingleMeshCell> LocalCellVector;
+        vector<int> nodeids;
 
         t_celldata.PhyID2MeshCellVectorMap_Local.clear();
         t_celldata.PhyName2MeshCellVectorMap_Local.clear();
@@ -2090,6 +2091,100 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
                 MPIDataBus::sendPhyID2MeshCellMapToOthers(6,LocalCellVector,1000*cpuid+260,cpuid);
                 MPIDataBus::sendPhyName2MeshCellMapToOthers("front",LocalCellVector,1000*cpuid+280,cpuid);
             }
+
+            //***************************************************
+            // for nodal physical groups
+            //***************************************************
+            // for leftnodes
+            ranksize=static_cast<int>(leftnodes.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(leftnodes.size());
+            nodeids.clear();
+            for(int e=iStart;e<iEnd;e++){
+                nodeids.push_back(leftnodes[e]);
+            }
+            if(cpuid==0){
+                t_celldata.NodalPhyName2NodeIDVecMap_Local["leftnodes"]=nodeids;
+            }
+            else{
+                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("leftnodes",nodeids,1000*cpuid+300,cpuid);
+            }
+            // for rightnodes
+            ranksize=static_cast<int>(rightnodes.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(rightnodes.size());
+            nodeids.clear();
+            for(int e=iStart;e<iEnd;e++){
+                nodeids.push_back(rightnodes[e]);
+            }
+            if(cpuid==0){
+                t_celldata.NodalPhyName2NodeIDVecMap_Local["rightnodes"]=nodeids;
+            }
+            else{
+                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("rightnodes",nodeids,1000*cpuid+320,cpuid);
+            }
+            // for bottomnodes
+            ranksize=static_cast<int>(bottomnodes.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(bottomnodes.size());
+            nodeids.clear();
+            for(int e=iStart;e<iEnd;e++){
+                nodeids.push_back(bottomnodes[e]);
+            }
+            if(cpuid==0){
+                t_celldata.NodalPhyName2NodeIDVecMap_Local["bottomnodes"]=nodeids;
+            }
+            else{
+                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("bottomnodes",nodeids,1000*cpuid+340,cpuid);
+            }
+            // for topnodes
+            ranksize=static_cast<int>(topnodes.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(topnodes.size());
+            nodeids.clear();
+            for(int e=iStart;e<iEnd;e++){
+                nodeids.push_back(topnodes[e]);
+            }
+            if(cpuid==0){
+                t_celldata.NodalPhyName2NodeIDVecMap_Local["topnodes"]=nodeids;
+            }
+            else{
+                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("topnodes",nodeids,1000*cpuid+360,cpuid);
+            }
+            // for backnodes
+            ranksize=static_cast<int>(backnodes.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(backnodes.size());
+            nodeids.clear();
+            for(int e=iStart;e<iEnd;e++){
+                nodeids.push_back(backnodes[e]);
+            }
+            if(cpuid==0){
+                t_celldata.NodalPhyName2NodeIDVecMap_Local["backnodes"]=nodeids;
+            }
+            else{
+                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("backnodes",nodeids,1000*cpuid+380,cpuid);
+            }
+            // for frontnodes
+            ranksize=static_cast<int>(frontnodes.size())/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=static_cast<int>(frontnodes.size());
+            nodeids.clear();
+            for(int e=iStart;e<iEnd;e++){
+                nodeids.push_back(frontnodes[e]);
+            }
+            if(cpuid==0){
+                t_celldata.NodalPhyName2NodeIDVecMap_Local["frontnodes"]=nodeids;
+            }
+            else{
+                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("frontnodes",nodeids,1000*cpuid+400,cpuid);
+            }
         }// end-of-cpuid-loop
 
     }// end-of-if(rank==0)
@@ -2210,6 +2305,20 @@ bool Lagrange3DMeshCellGenerator::generateFECell(const MeshType &t_meshtype,FECe
         // for frontconn
         MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+260);
         MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+280);
+
+        //*** for nodal physical group
+        // for leftnodes
+        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+300);
+        // for rightnodes
+        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+320);
+        // for bottomnodes
+        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+340);
+        // for topnodes
+        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+360);
+        // for backnodes
+        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+380);
+        // for frontnodes
+        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+400);
     }
 
     return true;
