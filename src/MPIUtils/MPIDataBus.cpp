@@ -70,7 +70,7 @@ void MPIDataBus::receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,c
 
     MPI_Request request;
 
-    // send out the length of the mesh cell vector
+    // receive the length of the mesh cell vector
     MPI_Irecv(&datasize,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
 
@@ -92,7 +92,7 @@ void MPIDataBus::receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,c
         MPI_Irecv(cell.ElmtConn.data(),datasize,MPI_INT,0,basetag+5,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send ElmtNodeCoords0
+        // receive ElmtNodeCoords0
         MPI_Irecv(&datasize,1,MPI_INT,0,basetag+6,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
         //
@@ -101,7 +101,7 @@ void MPIDataBus::receiveMeshCellFromMaster(vector<SingleMeshCell> &meshcellvec,c
         MPI_Wait(&request,MPI_STATUS_IGNORE);
         cell.ElmtNodeCoords=cell.ElmtNodeCoords0;// make a copy
 
-        // send VTKCellType
+        // receive VTKCellType
         MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+8,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
     }
@@ -172,30 +172,30 @@ void MPIDataBus::receivePhyName2MeshCellMapFromMaster(map<string,vector<SingleMe
     MPI_Request request;
     vector<SingleMeshCell> meshcellvec;
 
-    // send out the physical name to each rank
+    // receive the physical name 
     MPI_Irecv(&datasize,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
-    // send the char
+    // receive the char of phy name
     MPI_Irecv(buff,datasize,MPI_CHAR,0,basetag+2,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
     phyname.clear();
     for(int i=0;i<datasize;i++) phyname.push_back(buff[i]);
 
-    // send out the length of the mesh cell vector
+    // receive the length of the mesh cell vector
     MPI_Irecv(&datasize,1,MPI_INT,0,basetag+3,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
 
     meshcellvec.resize(datasize);
     for(auto &cell:meshcellvec){
-        // send Dim
+        // receive Dim
         MPI_Irecv(&cell.Dim,1,MPI_INT,0,basetag+4,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send NodesNumPerElmt
+        // receive NodesNumPerElmt
         MPI_Irecv(&cell.NodesNumPerElmt,1,MPI_INT,0,basetag+5,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send ElmtConn
+        // receive ElmtConn
         datasize=0;
         MPI_Irecv(&datasize,1,MPI_INT,0,basetag+6,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
@@ -204,7 +204,7 @@ void MPIDataBus::receivePhyName2MeshCellMapFromMaster(map<string,vector<SingleMe
         MPI_Irecv(cell.ElmtConn.data(),datasize,MPI_INT,0,basetag+7,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send ElmtNodeCoords0
+        // receive ElmtNodeCoords0
         datasize=0;
         MPI_Irecv(&datasize,1,MPI_INT,0,basetag+8,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
@@ -214,7 +214,7 @@ void MPIDataBus::receivePhyName2MeshCellMapFromMaster(map<string,vector<SingleMe
         MPI_Wait(&request,MPI_STATUS_IGNORE);
         cell.ElmtNodeCoords=cell.ElmtNodeCoords0;
 
-        // send VTKCellType
+        // receive VTKCellType
         MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+10,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
     }
@@ -282,25 +282,25 @@ void MPIDataBus::receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCel
     MPI_Request request;
     vector<SingleMeshCell> meshcellvec;
 
-    // send out the physical name to each rank
+    // receive the physical name to each rank
     MPI_Irecv(&phyid,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-    // send out the length of the mesh cell vector
+    // receive the length of the mesh cell vector
     MPI_Irecv(&datasize,1,MPI_INT,0,basetag+2,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
 
     meshcellvec.resize(datasize);
     for(auto &cell:meshcellvec){
-        // send Dim
+        // receive Dim
         MPI_Irecv(&cell.Dim,1,MPI_INT,0,basetag+3,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send NodesNumPerElmt
+        // receive NodesNumPerElmt
         MPI_Irecv(&cell.NodesNumPerElmt,1,MPI_INT,0,basetag+4,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send ElmtConn
+        // receive ElmtConn
         datasize=0;
         MPI_Irecv(&datasize,1,MPI_INT,0,basetag+5,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
@@ -309,7 +309,7 @@ void MPIDataBus::receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCel
         MPI_Irecv(cell.ElmtConn.data(),datasize,MPI_INT,0,basetag+6,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
 
-        // send ElmtNodeCoords0
+        // receive ElmtNodeCoords0
         datasize=0;
         MPI_Irecv(&datasize,1,MPI_INT,0,basetag+7,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
@@ -319,7 +319,7 @@ void MPIDataBus::receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCel
         MPI_Wait(&request,MPI_STATUS_IGNORE);
         cell.ElmtNodeCoords=cell.ElmtNodeCoords0;
 
-        // send VTKCellType
+        // receive VTKCellType
         MPI_Irecv(&cell.VTKCellType,1,MPI_INT,0,basetag+9,MPI_COMM_WORLD,&request);
         MPI_Wait(&request,MPI_STATUS_IGNORE);
     }
@@ -341,7 +341,7 @@ void MPIDataBus::sendPhyName2NodeIDVecMapToOthers(const string &phyname,const ve
     datasize=static_cast<int>(phyname.size());
     MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+1,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
-    // send the char
+    // send the char of the phy name
     MPI_Isend(phyname.c_str(),datasize,MPI_CHAR,cpuid,basetag+2,MPI_COMM_WORLD,&request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
 
