@@ -18,6 +18,8 @@
 #include "Welcome.h"
 #include "FEProblem/FEProblem.h"
 
+#include "FECell/FECell.h"
+#include "FECell/FECellGenerator.h"
 int main(int args,char *argv[]){
     PetscErrorCode ierr;
     ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
@@ -29,10 +31,16 @@ int main(int args,char *argv[]){
 
     welcome(Year,Month,Day,Version);
 
-    FEProblem feProblem;
-    feProblem.initFEProblem(args,argv);
-    feProblem.run();
-    feProblem.finalize();
+    // FEProblem feProblem;
+    // feProblem.initFEProblem(args,argv);
+    // feProblem.run();
+    // feProblem.finalize();
+
+    FECell mycell;
+    FECellGenerator generator;
+    mycell.setMeshInfo(1,2,3,0.0,1.0,0.0,1.0,0.0,1.0,MeshType::HEX8);
+    generator.createFEMeshCell(MeshType::HEX8,mycell.getCellDataRef());
+    mycell.printSummaryInfo();
    
 
     ierr=PetscFinalize();CHKERRQ(ierr);

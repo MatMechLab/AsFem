@@ -52,6 +52,7 @@ void FECell::setMeshInfo(const int &nx,const int &ny,const int &nz,
     m_CellData.BulkElmtMeshType=meshtype;
 }
 void FECell::printSummaryInfo()const{
+    MessagePrinter::printStars();
     MessagePrinter::printNormalTxt("Summary information of FECell system");
     MessagePrinter::printDashLine();
     string txt;
@@ -124,6 +125,27 @@ void FECell::printSummaryInfo()const{
             MPI_Isend(&datasize,1,MPI_INT,0,5,MPI_COMM_WORLD,&request);
             MPI_Wait(&request,MPI_STATUS_IGNORE);
         }
+        // for nodal physical info
+        datasize=0;
+        for(const auto &it:m_CellData.NodalPhyName2NodeIDVecMap_Local) datasize+=static_cast<int>(it.second.size());
+        MPI_Isend(&datasize,1,MPI_INT,0,6,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+        datasize=static_cast<int>(m_CellData.NodalPhyName2NodeIDVecMap_Local.size());
+        MPI_Isend(&datasize,1,MPI_INT,0,7,MPI_COMM_WORLD,&request);
+        MPI_Wait(&request,MPI_STATUS_IGNORE);
+        for(const auto &it:m_CellData.NodalPhyName2NodeIDVecMap_Local){
+            datasize=static_cast<int>(it.first.size());
+            MPI_Isend(&datasize,1,MPI_INT,0,8,MPI_COMM_WORLD,&request);
+            MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+            MPI_Isend(it.first.c_str(),datasize,MPI_CHAR,0,9,MPI_COMM_WORLD,&request);
+            MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+            datasize=static_cast<int>(it.second.size());
+            MPI_Isend(&datasize,1,MPI_INT,0,10,MPI_COMM_WORLD,&request);
+            MPI_Wait(&request,MPI_STATUS_IGNORE);
+        }
     }
     else{
         int cpuid,datasize;
@@ -138,13 +160,25 @@ void FECell::printSummaryInfo()const{
         txt=string(buff);
         MessagePrinter::printNormalTxt(txt);
         for(const auto &it:m_CellData.PhyName2MeshCellVectorMap_Local){
-            snprintf(buff,65,"    \"%20s\"====> elmts num=%6d",it.first.c_str(),static_cast<int>(it.second.size()));
+            snprintf(buff,65,"      elmtset[%20s]====> elmts num=%6d",it.first.c_str(),static_cast<int>(it.second.size()));
+            txt=string(buff);
+            MessagePrinter::printNormalTxt(txt);
+        }
+
+        datasize=0;
+        for(const auto &it:m_CellData.NodalPhyName2NodeIDVecMap_Local) datasize+=static_cast<int>(it.second.size());
+
+        snprintf(buff,65,"    Local nodes num=%6d",datasize);
+        txt=string(buff);
+        MessagePrinter::printNormalTxt(txt);
+        for(const auto &it:m_CellData.NodalPhyName2NodeIDVecMap_Local){
+            snprintf(buff,65,"      nodeset[%20s]====> nodes num=%6d",it.first.c_str(),static_cast<int>(it.second.size()));
             txt=string(buff);
             MessagePrinter::printNormalTxt(txt);
         }
 
         MPI_Request req;
-        int phynum;
+        int phynum,nodesnum;
         string phyname;
 
         for(cpuid=1;cpuid<size;cpuid++){
@@ -175,7 +209,36 @@ void FECell::printSummaryInfo()const{
                 MPI_Irecv(&datasize,1,MPI_INT,cpuid,5,MPI_COMM_WORLD,&req);
                 MPI_Wait(&req,MPI_STATUS_IGNORE);
 
-                snprintf(buff,65,"    \"%20s\"====> elmts num=%6d",phyname.c_str(),datasize);
+                snprintf(buff,65,"      elmtset[%20s]====> elmts num=%6d",phyname.c_str(),datasize);
+                txt=string(buff);
+                MessagePrinter::printNormalTxt(txt);
+            }
+
+            // for nodal phy info
+            nodesnum=0;
+            MPI_Irecv(&nodesnum,1,MPI_INT,cpuid,6,MPI_COMM_WORLD,&req);
+            MPI_Wait(&req,MPI_STATUS_IGNORE);
+
+            snprintf(buff,65,"    Local nodes num=%6d",nodesnum);
+            txt=string(buff);
+            MessagePrinter::printNormalTxt(txt);
+
+            MPI_Irecv(&phynum,1,MPI_INT,cpuid,7,MPI_COMM_WORLD,&req);
+            MPI_Wait(&req,MPI_STATUS_IGNORE);
+
+            for(int i=0;i<phynum;i++){
+                MPI_Irecv(&datasize,1,MPI_INT,cpuid,8,MPI_COMM_WORLD,&req);
+                MPI_Wait(&req,MPI_STATUS_IGNORE);
+
+                phyname.clear();
+                MPI_Irecv(buff,datasize,MPI_CHAR,cpuid,9,MPI_COMM_WORLD,&req);
+                MPI_Wait(&req,MPI_STATUS_IGNORE);
+                for(int j=0;j<datasize;j++) phyname.push_back(buff[j]);
+
+                MPI_Irecv(&datasize,1,MPI_INT,cpuid,10,MPI_COMM_WORLD,&req);
+                MPI_Wait(&req,MPI_STATUS_IGNORE);
+
+                snprintf(buff,65,"      nodeset[%20s]====> nodes num=%6d",phyname.c_str(),datasize);
                 txt=string(buff);
                 MessagePrinter::printNormalTxt(txt);
             }
