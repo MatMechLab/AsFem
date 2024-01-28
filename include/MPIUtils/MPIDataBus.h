@@ -78,4 +78,23 @@ public:
      * @param tag the id of the sending message
     */
     static void receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCell>> &localmap,const int &tag);
+
+    //*************************************************************
+    //*** for nodal phy group transfer
+    //*************************************************************
+    /**
+     * Send the nodal physical name and nodes id to each rank
+     * @param phyname the physical group name to be sent
+     * @param nodesid the mesh cell vector to be sent
+     * @param tag the id of the sending message
+     * @param cpuid the rank id used to receive the message
+    */
+    static void sendPhyName2NodeIDVecMapToOthers(const string &phyname,const vector<int> &nodesid,const int &tag,const int &cpuid);
+    /**
+     * Receive the physical group name and mesh cell for local map
+     * @param localmap the local phyname-->nodeid map
+     * @param tag the id of the sending message
+    */
+    static void receivePhyName2NodeIDVecMapFromMaster(map<string,vector<int>> &localmap,const int &tag);
+
 };

@@ -327,3 +327,64 @@ void MPIDataBus::receivePhyID2MeshCellMapFromMaster(map<int,vector<SingleMeshCel
     localmap[phyid]=meshcellvec;
     meshcellvec.clear();
 }
+
+//******************************************************************
+void MPIDataBus::sendPhyName2NodeIDVecMapToOthers(const string &phyname,const vector<int> &nodesid,const int &tag,const int &cpuid){
+    int basetag;
+    basetag=tag;
+
+    int datasize;
+
+    MPI_Request request;
+
+    // send out the physical name to each rank
+    datasize=static_cast<int>(phyname.size());
+    MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    // send the char
+    MPI_Isend(phyname.c_str(),datasize,MPI_CHAR,cpuid,basetag+2,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    // send out the length of the node id vector
+    datasize=static_cast<int>(nodesid.size());
+    MPI_Isend(&datasize,1,MPI_INT,cpuid,basetag+3,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    // send out the node id vector
+    MPI_Isend(nodesid.data(),datasize,MPI_INT,cpuid,basetag+4,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+}
+//*********************************+
+void MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(map<string,vector<int>> &localmap,const int &tag){
+    int basetag;
+    basetag=tag;
+
+    string phyname;
+    char buff[108];
+
+    int datasize;
+
+    MPI_Request request;
+    vector<int> nodeidvec;
+
+    // receive the physical name length from master rank
+    MPI_Irecv(&datasize,1,MPI_INT,0,basetag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    // receive the phy name
+    MPI_Irecv(buff,datasize,MPI_CHAR,0,basetag+2,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    phyname.clear();
+    for(int i=0;i<datasize;i++) phyname.push_back(buff[i]);
+
+    // receive the length of the nodeid vector
+    MPI_Irecv(&datasize,1,MPI_INT,0,basetag+3,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    
+    nodeidvec.resize(datasize,0);
+    // receive the nodeid vector
+    MPI_Irecv(nodeidvec.data(),datasize,MPI_INT,0,basetag+4,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+
+    localmap[phyname]=nodeidvec;
+    nodeidvec.clear();
+}
