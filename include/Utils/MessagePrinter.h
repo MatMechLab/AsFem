@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -40,6 +40,18 @@ public:
      * constructor
      */
     MessagePrinter();
+
+    /**
+     * print out the single txt or sentences
+     * @param str the string to be printed
+     * @param color the color for current string printing
+    */
+    static void printSingleTxt(string str,MessageColor color=MessageColor::WHITE);
+
+    /**
+     * print out new line
+    */
+    static void printNewLine();
 
     /**
      * print out the standard text
@@ -122,27 +134,14 @@ public:
     static void setColor(const MessageColor &color);
 
 private:
-    static const int _nWords=78;/**< the number of characters in one single line output */
+    static const int _nWords=85;/**< the number of characters in one single line output */
 
     /**
-     * this function split the str into several substring once it is beyond the length limit
+     * this function split the str into several substring based on the given head and end txt
+     * @param headtxt head string txt
+     * @param endtxt end string txt
      * @param str the input string
      */
-    vector<string> splitStr2Vec(string str);
-    /**
-     * this function split the error str into several substring once it is beyond the length limit
-     * @param str the input string
-     */
-    vector<string> splitErrorStr2Vec(string str);
-    /**
-     * this function split the warning str into several substring once it is beyond the length limit
-     * @param str the input string
-     */
-    vector<string> splitWarningStr2Vec(string str);
-    /**
-     * this function split the normal str into several substring once it is beyond the length limit
-     * @param str the input string
-     */
-    vector<string> splitNormalStr2Vec(string str);
+    vector<string> splitStr2Vec(const string &headtxt,const string &endtxt,string str);
 
 };

@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -15,9 +15,11 @@
 
 #pragma once
 
+#include <vector>
 
 #include "Utils/MessagePrinter.h"
 
+using std::vector;
 
 /**
  * the nodes class, which stores the coordinates for multiple nodes, i.e., the nodes of one single element
@@ -42,7 +44,9 @@ public:
      * @param nodes another nodes class
      */
     Nodes(const Nodes &nodes){
-        m_size=nodes.m_size;m_coordinates=nodes.m_coordinates;
+        m_size=nodes.m_size;
+        m_coordinates.clear();
+        for(const auto &it:nodes.m_coordinates) m_coordinates.push_back(it);
     }
     /**
      * deconstructor
@@ -113,18 +117,41 @@ public:
         return m_coordinates[(i-1)*3+j-1];
     }
     /**
+     * [] operator for the I-th elements
+     * @param i i-th elements
+     */
+    double operator[](const int &i)const{
+        if(i<1||i>m_size*3){
+            MessagePrinter::printErrorTxt("your i index is out of your nodes elements' range");
+            MessagePrinter::exitAsFem();
+        }
+        return m_coordinates[i-1];
+    }
+    /**
+     * [] operator for the I-th elements
+     * @param i i-th elements
+     */
+    double& operator[](const int &i){
+        if(i<1||i>m_size*3){
+            MessagePrinter::printErrorTxt("your i index is out of your nodes elements' range");
+            MessagePrinter::exitAsFem();
+        }
+        return m_coordinates[i-1];
+    }
+    /**
      * = operator for the assignment with a scalar value
      */
-    Nodes& operator()(const double &val){
+    Nodes& operator=(const double &val){
         fill(m_coordinates.begin(),m_coordinates.end(),val);
         return *this;
     }
     /**
      * = operator for the assignment with another nodes class
      */
-    Nodes& operator()(const Nodes &a){
+    Nodes& operator=(const Nodes &a){
         m_size=a.m_size;
-        m_coordinates=a.m_coordinates;
+        m_coordinates.resize(m_size*3,0.0);
+        for(int i=1;i<=a.m_size*3;i++) m_coordinates[i-1]=a[i];
         return *this;
     }
     //************************************************
@@ -134,6 +161,10 @@ public:
      * get the size/number of total nodes
      */
     inline int getSize()const{return m_size;}
+    /**
+     * get the length of coordinate vector
+     */
+    inline int getLength()const{return m_size*3;}
     /**
      * get the i-th node's j-th coordinate
      * @param i i-th node
@@ -150,6 +181,19 @@ public:
         }
         return m_coordinates[(i-1)*3+j-1];
     }
+
+    /**
+     * get the data of the coordinates vector
+    */
+    inline double* getData(){return m_coordinates.data();}
+    /**
+     * get the reference of coordinate vector
+    */
+    inline vector<double>& getDataRef(){return m_coordinates;}
+    /**
+     * get the copy of coordinate vector
+    */
+    inline vector<double> getCopy()const{return m_coordinates;}
     
 
 private:

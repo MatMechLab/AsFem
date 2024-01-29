@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -121,18 +121,6 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
     }
     else{
         t_nlsolver.m_nlsolverblock.m_abstol_r=7.0e-7;
-    }
-    //**********************************************
-    if(t_json.contains("rel-tolerance")){
-        if(!t_json.at("rel-tolerance").is_number_float()){
-            MessagePrinter::printErrorTxt("the rel-tolerance in your nlsolver block is not a valid float,"
-                                          "please check your input file");
-            return false;
-        }
-        t_nlsolver.m_nlsolverblock.m_reltol_r=t_json.at("rel-tolerance");
-    }
-    else{
-        t_nlsolver.m_nlsolverblock.m_reltol_r=1.0e-9;
     }
     //**********************************************
     if(t_json.contains("rel-tolerance")){

@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -95,4 +95,11 @@ struct MeshData{
     int m_surfaceelmt_vtktype;/**< the vtk cell type of surface element */
     string m_bulkelmt_typename;/**< name of the bulk element type */
 
+};
+
+/**
+ * This structure defines the basic data set for both the bulk mesh cell and boundary mesh cell
+*/
+struct NewMeshData{
+    
 };

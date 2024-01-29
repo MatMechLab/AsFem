@@ -1,8 +1,8 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
@@ -39,7 +39,28 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     
     MessagePrinter::printStars(MessageColor::BLUE);
     MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                      AAA");
-    MessagePrinter::printWelcomeTxt("A Simple Finite Element Method Program                   // \\\\");
+    // MessagePrinter::printWelcomeTxt("Advanced Simulation kit based on Finite Element Method   // \\\\");
+
+    MessagePrinter::printSingleTxt("*** ",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("A",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("dvanced ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("S",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("imulation ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("kit based on ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("F",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("inite ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("E",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("lement ",MessageColor::WHITE);
+    //
+    MessagePrinter::printSingleTxt("M",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("ethod ",MessageColor::WHITE);
+    MessagePrinter::printSingleTxt("  // \\\\",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("                ***",MessageColor::BLUE);
+    MessagePrinter::printNewLine();
 
     snprintf(buff,50,"Version: %-10.2f  Release @ %4d-%02d-%02d",version,year,month,day);
     str=buff;
@@ -50,11 +71,11 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     MessagePrinter::printWelcomeTxt(str+"                                //     \\\\");
     
     MessagePrinter::printWelcomeTxt("License: GPL-3.0                                      //       \\\\");
-    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ M3-Group                          //_________\\\\");
+    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ MM-Lab                            //_________\\\\");
     MessagePrinter::printWelcomeTxt("Contact: yangbai90@outlook.com                      //-----------\\\\");
 
     MessagePrinter::printWelcomeTxt("QQ Group: 879908352                                //             \\\\");
-    MessagePrinter::printWelcomeTxt("Website: https://github.com/M3Group/AsFem         //               \\\\");
+    MessagePrinter::printWelcomeTxt("Website: https://github.com/MatMechLab/AsFem      //               \\\\");
     MessagePrinter::printWelcomeTxt("Feel free to use and discuss  .:.                **                 **");
     MessagePrinter::printStars(MessageColor::BLUE);
 

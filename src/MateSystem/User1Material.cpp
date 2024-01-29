@@ -1,19 +1,15 @@
 //****************************************************************
 //* This file is part of the AsFem framework
-//* A Simple Finite Element Method program (AsFem)
-//* All rights reserved, Yang Bai/M3 Group@CopyRight 2020-present
-//* https://github.com/M3Group/AsFem
+//* Advanced Simulation kit based on Finite Element Method (AsFem)
+//* All rights reserved, Yang Bai/MM-Lab@CopyRight 2020-present
+//* https://github.com/MatMechLab/AsFem
 //* Licensed under GNU GPLv3, please see LICENSE for details
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.08.26
-//+++ Purpose: Calculate the material properties required by diffusion
-//+++          element. In this code, we can define:
-//+++           1) D
-//+++           2) dD/dc
-//+++          Standard benchmark test for 2d nonlinear diffusion equation
+//+++ Date   : 2023.07.27
+//+++ Purpose: Calculate User-1 defined materials
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "MateSystem/User1Material.h"
