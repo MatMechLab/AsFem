@@ -6,10 +6,23 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Advanced Simulation kit based on Finite Element Method.">
+      
+      
+        <meta name="author" content="Yang Bai">
+      
+      
+        <link rel="canonical" href="https://matmechlab.github.io/AsFem/install/">
+      
+      
+        <link rel="prev" href="../about/">
+      
+      
+        <link rel="next" href="../Tutorial/step-0/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
     
     
       
@@ -17,14 +30,14 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.1d29e8d0.min.css">
-      
-        
-        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
-        
+      <link rel="stylesheet" href="../assets/stylesheets/main.50c56a3b.min.css">
       
       
+
+
     
+    
+      
     
     
       
@@ -36,23 +49,18 @@
       
     
     
-    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
+    
   </head>
   
   
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -72,7 +80,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
@@ -81,6 +91,7 @@
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
+      
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
@@ -101,8 +112,12 @@
     </div>
     
     
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
     
       <label class="md-header__button md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
@@ -111,12 +126,15 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -128,13 +146,25 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
   </div>
 </div>
     
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MatMechLab/AsFem
+  </div>
+</a>
+      </div>
     
   </nav>
   
@@ -158,6 +188,7 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
@@ -169,18 +200,35 @@
     AsFem
   </label>
   
+    <div class="md-nav__source">
+      <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MatMechLab/AsFem
+  </div>
+</a>
+    </div>
+  
   <ul class="md-nav__list" data-md-scrollfix>
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href=".." class="md-nav__link">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
     </li>
   
@@ -188,14 +236,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../about/" class="md-nav__link">
-        About
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
       </a>
     </li>
   
@@ -203,23 +256,28 @@
     
       
       
-      
-
   
   
     
   
   
+  
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
       
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Installation
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
       </a>
       
     </li>
@@ -228,429 +286,616 @@
     
       
       
-      
-
+  
   
   
   
     
+    
+    
+    
+    
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4">
-          Tutorial
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
-          <span class="md-nav__icon md-icon"></span>
-          Tutorial
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
           
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-0/" class="md-nav__link">
-        Step-0
+        
+  
+  <span class="md-ellipsis">
+    Step-0
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-1/" class="md-nav__link">
-        Step-1
+        
+  
+  <span class="md-ellipsis">
+    Step-1
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-2/" class="md-nav__link">
-        Step-2
+        
+  
+  <span class="md-ellipsis">
+    Step-2
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-3/" class="md-nav__link">
-        Step-3
+        
+  
+  <span class="md-ellipsis">
+    Step-3
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-4/" class="md-nav__link">
-        Step-4
+        
+  
+  <span class="md-ellipsis">
+    Step-4
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-5/" class="md-nav__link">
-        Step-5
+        
+  
+  <span class="md-ellipsis">
+    Step-5
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-6/" class="md-nav__link">
-        Step-6
+        
+  
+  <span class="md-ellipsis">
+    Step-6
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-7/" class="md-nav__link">
-        Step-7
+        
+  
+  <span class="md-ellipsis">
+    Step-7
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Tutorial/step-8/" class="md-nav__link">
-        Step-8
+        
+  
+  <span class="md-ellipsis">
+    Step-8
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
   
   
   
     
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_5">
-          Examples
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Examples" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
-          <span class="md-nav__icon md-icon"></span>
-          Examples
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_5_1">
-          PhaseField
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="PhaseField" data-md-level="2">
-        <label class="md-nav__title" for="__nav_5_1">
-          <span class="md-nav__icon md-icon"></span>
-          PhaseField
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
           
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    PhaseField
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            PhaseField
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Examples/PhaseFieldFracture/" class="md-nav__link">
-        Fracture
+        
+  
+  <span class="md-ellipsis">
+    Fracture
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
-      
-
   
   
   
+  
+    
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_6">
-          Document
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Document" data-md-level="1">
-        <label class="md-nav__title" for="__nav_6">
-          <span class="md-nav__icon md-icon"></span>
-          Document
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
           
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Document
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-mesh/" class="md-nav__link">
-        mesh block
+        
+  
+  <span class="md-ellipsis">
+    mesh block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-dofs/" class="md-nav__link">
-        dofs block
+        
+  
+  <span class="md-ellipsis">
+    dofs block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-elmts/" class="md-nav__link">
-        elmts block
+        
+  
+  <span class="md-ellipsis">
+    elmts block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-mates/" class="md-nav__link">
-        mate block
+        
+  
+  <span class="md-ellipsis">
+    mate block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-bcs/" class="md-nav__link">
-        bcs block
+        
+  
+  <span class="md-ellipsis">
+    bcs block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-ics/" class="md-nav__link">
-        ics block
+        
+  
+  <span class="md-ellipsis">
+    ics block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-qpoint/" class="md-nav__link">
-        qpoint block
+        
+  
+  <span class="md-ellipsis">
+    qpoint block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-projection/" class="md-nav__link">
-        projection block
+        
+  
+  <span class="md-ellipsis">
+    projection block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-nonlinearsolver/" class="md-nav__link">
-        nonlinear solver block
+        
+  
+  <span class="md-ellipsis">
+    nonlinear solver block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../Document/block-timestepping/" class="md-nav__link">
-        timestepping block
+        
+  
+  <span class="md-ellipsis">
+    timestepping block
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../release/" class="md-nav__link">
-        Release
+        
+  
+  <span class="md-ellipsis">
+    Release
+  </span>
+  
+
       </a>
     </li>
   
@@ -682,16 +927,20 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
+                  
+
+  
+  
 
 
 <h1 id="system-requirement">System requirement</h1>
 <ul>
 <li>Linux</li>
-<li>Windows (only works for Cygwin+VisualStudio 2020 or newer)</li>
+<li>Windows (only works in Cygwin/Mingw, <span style="color:red"><strong>without</strong></span> <strong>VisualStudio</strong>. <span style="color:red"><strong>It is not recommended!!!</strong></span>)</li>
 <li>MacOX (it should work, but we haven't tested it yet!)</li>
 </ul>
 <h1 id="basic-components">Basic components</h1>
@@ -705,19 +954,19 @@
 <p><span style="color:red">In the following installation, please <strong>do not</strong> use <code>sudo</code> or <code>root</code>!!! It's only supposed to be used for system installation like <code>sudo apt install</code>, <code>sudo zypper install</code>, <code>sudo yum install</code>, and so on</span>.</p>
 <p><strong>It is highly recommended to install the openmpi and PETSc packages from the source code!</strong></p>
 <h2 id="install-gcc">Install gcc</h2>
-<p>One can follow the steps list below to install a modern GCC compiler if one don't already have one. <strong>Otherwise, please go straight to the MPI setup</strong>.</p>
-<p><span style="color:red"><strong>Before you start, you'll need a GCC (the old one) compiler to compile another GCC, therefore if your system doesn't have one, please run(for Ubuntu)</strong></span>:</p>
+<p>If you don't already have a modern GCC compiler, you can use the steps listed below to install one. <strong>Otherwise, please proceed directly to the MPI setup.</strong></p>
+<p><span style="color:red"><strong>To compile a new GCC compiler, you will first need an old GCC compiler. If your system does not have one, please execute the following command (for Ubuntu) before proceeding.</strong></span>:</p>
 <pre><code>sudo apt install gcc g++ gfortran cmake git python3 build-essential
 </code></pre>
-<p>For ubuntu 22.04, <code>apt install</code> will bring you the <code>GCC11.2.0</code> package which is <strong>new</strong> and <strong>good</strong> enough for our installation, so you can skip the GCC installation part list below. Anyway, you can also install a newer version, i.e., GCC12.1.0 or even newer.</p>
-<p><span style="color:red"><strong>The installation itself is not limited to Ubuntu system, for other linux distributions, one need to change the command to the consistent one. For instance, <code>sudo zypper</code>, <code>sudo yum</code>, <code>sudo dnf</code>...</strong></span>:</p>
-<p>To begin, one should download and unzip the gcc source code:</p>
+<p>If you're using Ubuntu 22.04, the apt install command will provide you with the <code>GCC11.3.0</code> package, which is a suitable and up-to-date choice for our installation. As a result, you can skip the list of steps for installing GCC below. However, if you prefer, you can also install a more recent version of GCC, such as <code>GCC12.2.0</code> or even later.</p>
+<p><span style="color:red"><strong>The installation process is not exclusive to Ubuntu systems. For other Linux distributions, you may need to adjust the command to match the appropriate package manager. For example, you may need to use <code>sudo zypper</code>, <code>sudo yum</code>, <code>sudo dnf</code>, and so on.</strong></span>:</p>
+<p>To get started, you will need to download and extract the source code for GCC:</p>
 <pre><code>curl -L -O http://mirrors.concertpass.com/gcc/releases/gcc-11.3.0/gcc-11.3.0.tar.gz
 
 tar -xf gcc-11.3.0.tar.gz
 </code></pre>
-<p>or directly go to the official website <a href="https://gcc.gnu.org/">gcc</a>.</p>
-<p>Next, we'll need to download the GCC pre-request as follows:</p>
+<p>Alternatively, you can also directly visit the official <a href="https://gcc.gnu.org/">GCC</a> website to obtain the source code.</p>
+<p>Next, you will need to download the GCC prerequisites by following these steps:</p>
 <pre><code>cd gcc-11.3.0
 ./contrib/download_prerequisites
 </code></pre>
@@ -729,33 +978,34 @@ tar -xf gcc-11.3.0.tar.gz
 --enable-host-shared \
 --with-pic
 </code></pre>
-<p>where <code>**your-gcc-install-path**</code> represents the installation path on <strong>your own computer</strong>.</p>
+<p>where <span style="color:red"><code>**your-gcc-install-path**</code></span> represents the installation path on <strong>your own computer</strong>.</p>
 <p>Then one can execute:</p>
 <pre><code>make -j4
 </code></pre>
 <p>and</p>
 <pre><code>make install
 </code></pre>
-<p>In the following installation, we must configure our bash environment for using our modern GCC(if you have installed your gcc via <code>sudo apt</code> or <code>sudo yum</code> or <code>sudo zypper</code> or whatever <code>sudo x</code>, please skip this step, because your GCC is ready!):</p>
+<p>During the installation process, it is necessary to configure your bash environment to use the modern GCC compiler. However, if you have installed GCC using <code>sudo apt</code>, <code>sudo yum</code>, <code>sudo zypper</code>, or any similar command, you can skip this step since your GCC is already set up and ready to use.</p>
 <pre><code>export gcc=your-gcc-instal-path
 export PATH=$gcc/bin:$PATH
 export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/11.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/11.3.0:$LD_LIBRARY_PATH
 </code></pre>
-<p>you can either paste the above settings to your <code>~/.bashrc</code> file or put it into a new file, i.e., <code>~/.asfem-profile</code>.</p>
+<p>You can add the aforementioned settings to your <code>~/.bashrc</code> file, or create a new file named <code>~/.asfem-profile</code> and add them there.</p>
 <h2 id="install-mpi">Install mpi</h2>
-<p>The MPI compiler is required to use the PETSc package for parallelization. <strong>Please skip this stage if your machine already has the MPI compiler installed</strong>.</p>
-<pre><code>curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.4.tar.gz
+<p><strong>If your machine already has an MPI compiler installed, you can skip this step</strong>. Otherwise, you will need to install it in order to use the PETSc package for parallelization.</p>
+<p>You can download the OpenMPI source code using the following command:</p>
+<pre><code>curl -L -O https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.5.tar.gz
 </code></pre>
 <p>Alternatively, you can get the source code from <a href="https://www.open-mpi.org/">openmpi</a>.</p>
-<p>Then you can config, build and install your openmpi (<span style="color:red">if you installed the GCC by compiling the source code rather than using <code>sudo apt install</code>, then please do <code>source ~/.asfem-profile</code> to set up your environment before running the following step</span>):</p>
-<pre><code>tar -xf openmpi-4.1.4.tar.gz
-cd openmpi-4.1.4
+<p>Next, you can configure, build, and install OpenMPI. <span style="color:red">If you installed GCC by compiling the source code rather than using <code>sudo apt install</code>, please execute <code>source ~/.asfem-profile</code> to set up your environment before proceeding with the following step</span>.</p>
+<pre><code>tar -xf openmpi-4.1.5.tar.gz
+cd openmpi-4.1.5
 ./configure --prefix=*your-path-to-opemmpi*
 make -j8
 make install
 </code></pre>
-<p>again, <code>*your-path-to-opemmpi*</code> should be your own installation path.</p>
-<p>After that, you should put the related settings into your bash environment as follows:</p>
+<p>once again, <code>*your-path-to-opemmpi*</code> should be <span style="color:red">your own installation path</span>.</p>
+<p>Once you have installed OpenMPI, you will need to add the necessary settings to your bash environment as follows:</p>
 <pre><code>export MPI_DIR=your-path-to-openmpi
 
 export PATH=$PATH:$MPI_DIR/bin
@@ -779,20 +1029,20 @@ export LD_LIBRARY_PATH=$MPI_DIR/lib:$LD_LIBRARY_PATH
 </code></pre>
 <p>you should see 4x"Hi" in your terminal.</p>
 <h1 id="install-petsc">Install PETSc</h1>
-<p><strong>Before we begin, make sure your GCC and MPI compilers are up to date (by doing <code>source ~/.asfem-profile</code>)</strong>, (<span style="color:red">if both of your GCC and MPI are installed from <code>sudo</code>, then the newly opened terminal will find the gcc/mpicc compiler, which means you <strong>do not</strong> need to execute <code>source ~/.bashrc</code> or <code>source ~/.asfem-profile</code> !</span>):</p>
+<p><strong>Before proceeding, ensure that your GCC and MPI compilers are up to date by executing <code>source ~/.asfem-profile</code></strong>, (<span style="color:red">If you have installed both GCC and MPI using sudo commands, then the newly opened terminal will automatically recognize the gcc and mpicc compilers, and you will not need to execute <code>source ~/.bashrc</code> or <code>source ~/.asfem-profile</code> !</span>):</p>
 <pre><code>source ~/.asfem-profile
 gcc --version
 mpicxx --version
 </code></pre>
-<p>Plase keep in mind, these four lines must be <strong>uncommented</strong> in your <code>~/.asfem-profile</code></p>
+<p>Plase keep in mind, these four lines should be <strong>commented</strong> in your <code>~/.asfem-profile</code> (<span style="color:red">You can also <strong>uncomment</strong> these lines, but please make sure that the <code>MPI_DIR</code> is set correctly to match the selected mpicxx compiler.</span>)</p>
 <pre><code>#export CC=mpicc
 #export CXX=mpicxx
 #export FC=mpif90
 #export F90=mpif90
 </code></pre>
-<p>We will tell PETSc the path to the openmpi, then it will find the correct compiler.</p>
-<p>The PETSc package can be downloaded via (you can change the version number to whatever you like, for example, <code>petsc-3.17.2.tar.gz</code>, <code>petsc-3.16.3.tar.gz</code>):</p>
-<pre><code>curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.17.2.tar.gz
+<p>By specifying the path to OpenMPI (mpicxx,mpicc, etc.), PETSc will be able to locate the appropriate compiler.</p>
+<p>You can download the PETSc package using the following command (you can change the version number to any desired version, such as <code>petsc-3.18.2.tar.gz</code> or <code>petsc-3.19.1.tar.gz</code>):</p>
+<pre><code>curl -L -O  https://ftp.mcs.anl.gov/pub/petsc/release-snapshots/petsc-lite-3.18.6.tar.gz
 </code></pre>
 <p>or you can download it from the <a href="https://www.mcs.anl.gov/petsc/download/index.html">PETSc website</a>.</p>
 <p>For the configuration, one can use:</p>
@@ -808,14 +1058,19 @@ mpicxx --version
 --with-fortran-bindings=1 \
 --with-sowing=0 \
 --download-fblaslapack=1 \
-COPTFLAGS='-fPIC -O3 -march=native ' \
-CXXOPTFLAGS='-fPIC -O3 -march=native ' \
-FOPTFLAGS='-fPIC -O3 -march=native ' \
+COPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
+CXXOPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
+FOPTFLAGS='-fPIC -O3 -march=native -mtune=native ' \
 PETSC_DIR=`pwd`
 </code></pre>
-<p>once again, <code>***your-PETSc-install-path***</code> should be your PETSc installation path, and <code>***your-MPI-install-path***</code> is the path of your MPI. Then, by running the <code>make xxxx -j8</code> and <code>make xxxx install</code> command, one can finish the installation. Here <code>xxx</code> represents the command line which is shown by PETSc in your terminal!</p>
-<p>If <code>-march=native</code> flag doesn't work on your system, then please remove it.</p>
-<p>Afterwards, put the related settings into your <code>~/.asfem-profile</code> (now, you need to uncomment <code>export CC=xxx</code>) as follows:</p>
+<p>Once again, please note that <code>***your-PETSc-install-path***</code> should be replaced with the actual path <strong><em>where you want to install PETSc</em></strong>, and <code>***your-MPI-install-path***</code> should be replaced with the path to your MPI installation. <span style="color:red">Please ensure that the <code>--with-mpi-dir</code> option is set up correctly</span>.</p>
+<p>Finally, to complete the installation, run the command shown by PETSc in your terminal using the <code>make xxxx -j8</code> and <code>make xxxx install</code> commands. Replace <strong><em><code>xxx</code></em></strong> with the appropriate command line shown in your terminal(<span style="color:red">Note that the commands for your particular installation <strong>may be different</strong>, so please <strong>do not copy and modify the commands shown here</strong>. Instead, copy the commands specific to your own installation <strong>from your terminal</strong>!</span>)</p>
+<p>If the <code>-march=native</code> and <code>-mtune=native</code> flags do not work on your system, you should remove them from the compiler flags.</p>
+<p>It is important to note that if you wish to use the <strong><code>lu</code></strong> preconditioner or the <strong>direct solver</strong>, you will need to add one of the following lines for the lu solver:</p>
+<pre><code>--download-superlu_dist=1
+--download-mumps=1
+</code></pre>
+<p>Afterwards, add the necessary settings to your <code>~/.asfem-profile</code>. Please note that you will need to uncomment <code>export CC=xxx</code> options. Here is an example of a complete <code>~/.asfem-profile</code> file that includes the necessary settings for using PETSc.</p>
 <pre><code>export gcc=***your-path-to-gcc-install-path***
 export PETSC_DIR=***your-path-to-petsc-install-dir***
 export MPI_DIR=***your-path-to-openmpi***
@@ -825,10 +1080,10 @@ export PATH=$MPI_DIR/bin:$PATH
 
 export LD_LIBRARY_PATH=$gcc/lib64:$gcc/lib:$gcc/lib/gcc/x86_64-pc-linux-gnu/11.3.0:$gcc/libexec/gcc/x86_64-pc-linux-gnu/11.3.0:$LD_LIBRARY_PATH
 
-export CC=mpicc
-export CXX=mpicxx
-export FC=mpif90
-export F90=mpif90
+export CC=$MPI_DIR/bin/mpicc
+export CXX=$MPI_DIR/bin/mpicxx
+export FC=$MPI_DIR/bin/mpif90
+export F90=$MPI_DIR/bin/mpif90
 
 export C_INCLUDE_PATH=$MPI_DIR/include:$C_INCLUDE_PATH
 export CPLUS_INCLUDE_PATH=$MPI_DIR/include:$CPLUS_INCLUDE_PATH
@@ -838,14 +1093,14 @@ export LD_LIBRARY_PATH=$MPI_DIR/lib:$LD_LIBRARY_PATH
 
 export OMP_NUM_THREADS=1
 </code></pre>
-<p>Once again, if you installed your GCC and openmpi from <code>sudo</code>, then you only need:</p>
+<p>Once again, if you have installed GCC and OpenMPI using <code>sudo</code> commands, you only need to add the PETSc settings to your <code>~/.asfem-profile</code>. Here are some sample commands for configuring your profile:</p>
 <pre><code>export PETSC_DIR=***your-path-to-petsc-install-dir***
 export MPI_DIR=***your-path-to-openmpi***
 
-export CC=mpicc
-export CXX=mpicxx
-export FC=mpif90
-export F90=mpif90
+export CC=$MPI_DIR/bin/mpicc
+export CXX=$MPI_DIR/bin/mpicxx
+export FC=$MPI_DIR/bin/mpif90
+export F90=$MPI_DIR/bin/mpif90
 
 export OMP_NUM_THREADS=1
 </code></pre>
@@ -853,75 +1108,56 @@ export OMP_NUM_THREADS=1
 <p>Download AsFem:</p>
 <pre><code>git clone https://github.com/M3Group/AsFem.git
 </code></pre>
-<p>if one wants to have a try for the <code>devel</code> version (<strong>unstable</strong>), one can use:</p>
+<p>if you wish to try the devel version (which is considered to be <strong>unstable</strong>), you can use the following command:</p>
 <pre><code>git clone -b devel https://github.com/M3Group/AsFem.git
 </code></pre>
-<p>then execute <code>source ~/.asfem-profile</code>, and then we can get the makefile via:</p>
+<p>After executing source ~/.asfem-profile, you can obtain the <code>Makefile</code> using the following command:</p>
 <pre><code>cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release
 </code></pre>
-<p>afterwards, we can make the <code>asfem</code> by executing:</p>
+<p>After obtaining the <code>Makefile</code>, you can build <code>asfem</code> by executing the following command:</p>
 <pre><code>make -j4
 </code></pre>
-<p>the executable file <code>asfem</code> can be found in the <code>AsFem/bin</code> folder.</p>
-<p>It is also highly recommended to put <code>asfem</code> into your <code>PATH</code> as follows:</p>
+<p>Once you have built <code>asfem</code>, you can find the executable file in the <code>AsFem/bin</code> folder.</p>
+<p>It is highly recommended to add the <code>AsFem/bin</code> directory to your <code>PATH</code> environment variable as follows:</p>
 <pre><code>export asfem=**your-path-to-asfem**
 export PATH=$PATH:$asfem/bin
 </code></pre>
-<p>then one can easily run the AsFem job from the terminal as follows:</p>
-<pre><code>asfem -i yourjob.i
-mpirun -np 16 asfem -i yourjob.i
+<p>After adding the <code>AsFem/bin</code> directory to your PATH environment variable, you can easily run an AsFem job from the terminal using the following command:</p>
+<pre><code>asfem -i yourjob.json
+mpirun -np 16 asfem -i yourjob.json
 </code></pre>
 <p>That's all, enjoy!</p>
 
-              
-            </article>
-            
-          </div>
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
       
         <footer class="md-footer">
   
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../about/" class="md-footer__link md-footer__link--prev" aria-label="Previous: About" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              About
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../Tutorial/step-0/" class="md-footer__link md-footer__link--next" aria-label="Next: Step-0" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Step-0
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
-  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
+    </div>
   
   
     Made with
@@ -939,12 +1175,14 @@ mpirun -np 16 asfem -i yourjob.i
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../assets/javascripts/bundle.0238f547.min.js"></script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e1c3ead8.min.js"></script>
       
-        <script src="../javascripts/config.js"></script>
+        <script src="../javascripts/mathjax.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

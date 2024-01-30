@@ -6,10 +6,23 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Advanced Simulation kit based on Finite Element Method.">
+      
+      
+        <meta name="author" content="Yang Bai">
+      
+      
+        <link rel="canonical" href="https://matmechlab.github.io/AsFem/Tutorial/step-3/">
+      
+      
+        <link rel="prev" href="../step-2/">
+      
+      
+        <link rel="next" href="../step-4/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
     
     
       
@@ -17,14 +30,14 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
-      
-        
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
-        
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
       
       
+
+
     
+    
+      
     
     
       
@@ -36,23 +49,18 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
+    
   </head>
   
   
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -72,7 +80,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
@@ -81,6 +91,7 @@
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
+      
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
@@ -101,8 +112,12 @@
     </div>
     
     
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
     
       <label class="md-header__button md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
@@ -111,12 +126,15 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -128,13 +146,25 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
   </div>
 </div>
     
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MatMechLab/AsFem
+  </div>
+</a>
+      </div>
     
   </nav>
   
@@ -158,6 +188,7 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
@@ -169,18 +200,35 @@
     AsFem
   </label>
   
+    <div class="md-nav__source">
+      <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MatMechLab/AsFem
+  </div>
+</a>
+    </div>
+  
   <ul class="md-nav__list" data-md-scrollfix>
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
     </li>
   
@@ -188,14 +236,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../about/" class="md-nav__link">
-        About
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
       </a>
     </li>
   
@@ -203,14 +256,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../install/" class="md-nav__link">
-        Installation
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
       </a>
     </li>
   
@@ -218,441 +276,628 @@
     
       
       
-      
-
   
   
     
   
   
+  
+    
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4">
-          Tutorial
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
-          <span class="md-nav__icon md-icon"></span>
-          Tutorial
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
           
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-0/" class="md-nav__link">
-        Step-0
+        
+  
+  <span class="md-ellipsis">
+    Step-0
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-1/" class="md-nav__link">
-        Step-1
+        
+  
+  <span class="md-ellipsis">
+    Step-1
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-2/" class="md-nav__link">
-        Step-2
+        
+  
+  <span class="md-ellipsis">
+    Step-2
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
   
   
     
   
   
+  
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
       
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Step-3
+        
+  
+  <span class="md-ellipsis">
+    Step-3
+  </span>
+  
+
       </a>
       
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-4/" class="md-nav__link">
-        Step-4
+        
+  
+  <span class="md-ellipsis">
+    Step-4
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-5/" class="md-nav__link">
-        Step-5
+        
+  
+  <span class="md-ellipsis">
+    Step-5
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-6/" class="md-nav__link">
-        Step-6
+        
+  
+  <span class="md-ellipsis">
+    Step-6
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-7/" class="md-nav__link">
-        Step-7
+        
+  
+  <span class="md-ellipsis">
+    Step-7
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-8/" class="md-nav__link">
-        Step-8
+        
+  
+  <span class="md-ellipsis">
+    Step-8
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
   
   
   
     
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_5">
-          Examples
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Examples" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
-          <span class="md-nav__icon md-icon"></span>
-          Examples
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_5_1">
-          PhaseField
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="PhaseField" data-md-level="2">
-        <label class="md-nav__title" for="__nav_5_1">
-          <span class="md-nav__icon md-icon"></span>
-          PhaseField
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
           
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    PhaseField
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            PhaseField
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Examples/PhaseFieldFracture/" class="md-nav__link">
-        Fracture
+        
+  
+  <span class="md-ellipsis">
+    Fracture
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
-      
-
   
   
   
+  
+    
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_6">
-          Document
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Document" data-md-level="1">
-        <label class="md-nav__title" for="__nav_6">
-          <span class="md-nav__icon md-icon"></span>
-          Document
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
           
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Document
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-mesh/" class="md-nav__link">
-        mesh block
+        
+  
+  <span class="md-ellipsis">
+    mesh block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-dofs/" class="md-nav__link">
-        dofs block
+        
+  
+  <span class="md-ellipsis">
+    dofs block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-elmts/" class="md-nav__link">
-        elmts block
+        
+  
+  <span class="md-ellipsis">
+    elmts block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-mates/" class="md-nav__link">
-        mate block
+        
+  
+  <span class="md-ellipsis">
+    mate block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-bcs/" class="md-nav__link">
-        bcs block
+        
+  
+  <span class="md-ellipsis">
+    bcs block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-ics/" class="md-nav__link">
-        ics block
+        
+  
+  <span class="md-ellipsis">
+    ics block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-qpoint/" class="md-nav__link">
-        qpoint block
+        
+  
+  <span class="md-ellipsis">
+    qpoint block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-projection/" class="md-nav__link">
-        projection block
+        
+  
+  <span class="md-ellipsis">
+    projection block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
-        nonlinear solver block
+        
+  
+  <span class="md-ellipsis">
+    nonlinear solver block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-timestepping/" class="md-nav__link">
-        timestepping block
+        
+  
+  <span class="md-ellipsis">
+    timestepping block
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../release/" class="md-nav__link">
-        Release
+        
+  
+  <span class="md-ellipsis">
+    Release
+  </span>
+  
+
       </a>
     </li>
   
@@ -684,16 +929,20 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
+                  
+
+  
+  
 
 
 <h1 id="introduction">Introduction</h1>
 <p>In this step, we will try to solve the linear elasticity problem.</p>
 <h1 id="the-stress-equilibrium-equation">The stress equilibrium equation</h1>
-<p>The problem we want to solve is the equation of stress equilibrium that reads as follows:
+<p>The problem we want to solve is the equation of stress equilibrium (without body force and acceleration) that reads as follows:
 $$
 \begin{equation}
 \mathbf{\nabla}\cdot\mathbf{\sigma}=\mathbf{0}
@@ -701,7 +950,7 @@ $$
 \tag{1}
 \end{equation}
 $$
-where <span class="arithmatex">\(\mathbf{\sigma}\)</span> denotes Cauchy stress tensor. The constitutive laws for the stress and strain of the small deformation case are below:
+where <span class="arithmatex">\(\mathbf{\sigma}\)</span> denotes Cauchy stress tensor. Below are the constitutive laws for stress and strain in the case of small deformations:
 $$
 \begin{equation}
 \mathbf{\sigma}=\mathbb{C}:\mathbf{\epsilon}
@@ -736,236 +985,208 @@ $$
 $$
 where the traction free condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:traction}\)</span></p>
 <h1 id="define-a-mesh">Define a mesh</h1>
-<p>For our calculation, we use a rectangular domain here, and then the <code>[mesh]</code> block can be given as:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=2
-  xmax=5.0
-  ymax=5.0
-  nx=50
-  ny=50
-  meshtype=quad4
-[end]
+<p>We will be using a rectangular domain for our calculations. To define this domain, we use the <code>mesh</code> block, which can be expressed as follows:</p>
+<pre><code>&quot;mesh&quot;:{
+        &quot;type&quot;:&quot;asfem&quot;,
+        &quot;dim&quot;:2,
+        &quot;nx&quot;:50,
+        &quot;ny&quot;:50,
+        &quot;xmax&quot;:5.0,
+        &quot;ymax&quot;:5.0,
+        &quot;meshtype&quot;:&quot;quad4&quot;,
+        &quot;savemesh&quot;:true
+    },
 </code></pre>
 <p>where a <span class="arithmatex">\(50\times50\)</span> mesh is defined.</p>
 <h1 id="define-the-dofs">Define the DoFs</h1>
-<p>The DoFs used in this step is the displacement vector, namely <span class="arithmatex">\(u_{x}\)</span> and <span class="arithmatex">\(u_{y}\)</span>. Then the <code>[dofs]</code> block can be read as:</p>
-<pre><code>[dofs]
-name=ux uy
-[end]
+<p>In this step, the displacement vector is used as the degree of freedom, specifically <span class="arithmatex">\(u_{x}\)</span> and <span class="arithmatex">\(u_{y}\)</span>. The <code>dofs</code> block can be expressed as follows:</p>
+<pre><code>&quot;dofs&quot;:{
+        &quot;names&quot;:[&quot;ux&quot;,&quot;uy&quot;]
+    }
 </code></pre>
 <h1 id="element-for-stress-equilibrium-equation">Element for stress equilibrium equation</h1>
-<p>The model in Eq.<span class="arithmatex">\(\eqref{eq:stress-eq}\)</span> can be applied in the following lines</p>
-<pre><code>[elmts]
-  [mysolid]
-    type=mechanics
-    dofs=ux uy
-    mate=mymate
-  [end]
-[end]
+<p>The model given in Eq.<span class="arithmatex">\(\eqref{eq:stress-eq}\)</span> can be implemented using the following lines:</p>
+<pre><code>&quot;elements&quot;:{
+        &quot;elmt1&quot;:{
+            &quot;type&quot;:&quot;mechanics&quot;,
+            &quot;dofs&quot;:[&quot;ux&quot;,&quot;uy&quot;],
+            &quot;material&quot;:{
+                &quot;type&quot;:&quot;linearelastic&quot;,
+                &quot;parameters&quot;:{
+                    &quot;E&quot;:1.0e3,
+                    &quot;nu&quot;:0.3
+                }
+            }
+        }
+    }
 </code></pre>
-<p>where <code>type=mechanics</code> option specifies the element we want to use for solid mechanics problem. Moreover, we will use the linear elasticity material property, therefore, the related material definition will be given in <code>mymate</code> block.</p>
+<p>The <code>"type":"mechanics"</code> option in the above lines specifies the element to be used for the solid mechanics problem. Additionally, since we will be using linear elasticity material properties, the related material definition will be provided in the <code>material</code> block.</p>
 <h2 id="linear-elasticity-material">Linear elasticity material</h2>
-<p>Via the following lines in your <code>[mates]</code> block, the linear elasticity material can be easily defined:</p>
-<pre><code>[mates]
-  [mymate]
-    type=linearelastic
-    params=210.0 0.3
-  [end]
-[end]
+<p>The following lines within the <code>material</code> block can be used to define the linear elasticity material:</p>
+<pre><code>&quot;material&quot;:{
+                &quot;type&quot;:&quot;linearelastic&quot;,
+                &quot;parameters&quot;:{
+                    &quot;E&quot;:1.0e3,
+                    &quot;nu&quot;:0.3
+                }
+            }
 </code></pre>
-<p>where <code>type=linearelastic</code> specifies linear elasticity material type. <code>params=</code> defines the Youngs modulus (<span class="arithmatex">\(E=210GPa\)</span>) and Poisson ratio (<span class="arithmatex">\(\nu=0.3\)</span>)</p>
+<p>where <code>"type":"linearelastic"</code> specifies linear elasticity material model. <code>parameters</code> defines the Youngs modulus (<span class="arithmatex">\(E=100GPa\)</span>) and Poisson ratio (<span class="arithmatex">\(\nu=0.3\)</span>). </p>
+<h2 id="it-is-worth-noting-that-asfem-does-not-enforce-any-specific-unit-system-or-interpret-results-in-a-particular-unit-therefore-the-user-must-ensure-that-the-input-parameters-and-result-interpretation-are-consistent-with-their-intended-application"><span style="color:red"><strong>It is worth noting that AsFem does not enforce any specific unit system or interpret results in a particular unit. Therefore, the user must ensure that the input parameters and result interpretation are consistent with their intended application.</strong></span>.</h2>
 <h1 id="boundary-conditions">Boundary conditions</h1>
-<p>The boundary conditions, as mentioned in Eq.<span class="arithmatex">\(\eqref{eq:disp}\)</span>, can be applied via the <code>[bcs]</code> block. In our case, the <em>traction</em> boundary condition in Eq.<span class="arithmatex">\(\eqref{eq:traction}\)</span> is zero, therefore, only the <em>displacement</em> boundary condition needs to be considered:</p>
-<pre><code>[bcs]
-  [fixbottomX]
-    type=dirichlet
-    dof=ux
-    value=0.0
-    boundary=bottom
-  [end]
-  [fixbottomY]
-    type=dirichlet
-    dof=uy
-    value=0.0
-    boundary=bottom
-  [end]
-  [loadY]
-    type=dirichlet
-    dof=uy
-    value=0.1
-    boundary=top
-  [end]
-[end]
+<p>The boundary conditions mentioned in Eq.<span class="arithmatex">\(\eqref{eq:disp}\)</span> can be implemented using the <code>bcs</code> block. In this case, since the traction boundary condition in Eq.<span class="arithmatex">\(\eqref{eq:traction}\)</span> is zero, we only need to consider the displacement boundary condition.</p>
+<pre><code>&quot;bcs&quot;:{
+        &quot;fix&quot;:{
+            &quot;type&quot;:&quot;dirichlet&quot;,
+            &quot;dofs&quot;:[&quot;ux&quot;,&quot;uy&quot;],
+            &quot;bcvalue&quot;:0.0,
+            &quot;side&quot;:[&quot;bottom&quot;]
+        },
+        &quot;load&quot;:{
+            &quot;type&quot;:&quot;dirichlet&quot;,
+            &quot;dofs&quot;:[&quot;uy&quot;],
+            &quot;bcvalue&quot;:0.1,
+            &quot;side&quot;:[&quot;top&quot;]
+        }
+    }
 </code></pre>
-<p>where we fix the <span class="arithmatex">\(u_{x}\)</span> and <span class="arithmatex">\(u_{y}\)</span> to be zero at the bottom edge. While <span class="arithmatex">\(u_{y}=0.1\)</span> is applied at the top edge of the domain.</p>
+<p>where we fix <span class="arithmatex">\(u_{x}\)</span> and <span class="arithmatex">\(u_{y}\)</span> to be zero at the bottom edge of the domain, while <span class="arithmatex">\(u_{y}=0.1\)</span> is applied at the top edge.</p>
 <h1 id="static-analysis">Static analysis</h1>
-<p>Again, we need a <code>[job]</code> block to start the FEM calculation, which can be given as follows:</p>
-<pre><code>[job]
-  type=static
-  debug=dep
-[end]
+<p>To start the FEM calculation, we need to use the <code>job</code> block. The following lines can be used for this purpose:</p>
+<pre><code>&quot;job&quot;:{
+        &quot;type&quot;:&quot;static&quot;,
+        &quot;print&quot;:&quot;dep&quot;
+    }
 </code></pre>
 <h1 id="projection">Projection</h1>
-<p>Wait for a minute, where are the stresses and strain? How can I output them? Noooo worries, the <code>[projection]</code> block can help you to project the quantities on each <code>Gauss point</code> to the <code>Nodal point</code> of your mesh. So, if we want to check how the vonMises stress, <span class="arithmatex">\(\sigma_{xx}\)</span>, <span class="arithmatex">\(\sigma_{yy}\)</span>, <span class="arithmatex">\(\sigma_{xy}\)</span> looks like, we can use:</p>
-<pre><code>[projection]
-name=vonMises stress_xx stress_yy stress_xy
-[end]
+<p>Wait for a second, where are the stresses and strain? How can I output them? </p>
+<p>Noooo worries, the <code>projection</code> block can be used to project the quantities from each <code>Gauss point</code> to the <code>Nodal point</code> of your mesh. To visualize the vonMises stress, <span class="arithmatex">\(\sigma_{xx}\)</span>, <span class="arithmatex">\(\sigma_{yy}\)</span>, and <span class="arithmatex">\(\sigma_{xy}\)</span>, you can use the following code:</p>
+<pre><code>&quot;projection&quot;:{
+        &quot;type&quot;:&quot;default&quot;,
+        &quot;scalarmate&quot;:[&quot;vonMises-stress&quot;],
+        &quot;rank2mate&quot;:[&quot;stress&quot;,&quot;strain&quot;]
+    }
 </code></pre>
-<p>Done!</p>
+<p>The default option for the <code>projection</code> block (<code>"type":"default"</code>) will execute the simplified least squares projection algorithm.</p>
 <h2 id="explanation-of-projection">Explanation of projection</h2>
-<p>There is no magic for <code>[projection]</code> block, if you take a look at our <code>MechanicsElmt.cpp</code> in the <code>ElmtSystem</code> class, you will find the following code:</p>
-<pre><code>gpProj[0]=ScalarMaterials.at(&quot;vonMises&quot;);
-gpProj[1]=Rank2Materials.at(&quot;stress&quot;)(1,1);//sigma_xx
-if(nDim==2){
-    gpProj[2]=Rank2Materials.at(&quot;stress&quot;)(2,2);//sigma_yy
-    gpProj[3]=Rank2Materials.at(&quot;stress&quot;)(1,2);//sigma_xy
-
-    gpProj[4]=Rank2Materials.at(&quot;strain&quot;)(1,1);//epsilon_xx
-    gpProj[5]=Rank2Materials.at(&quot;strain&quot;)(2,2);//epsilon_yy
-    gpProj[6]=Rank2Materials.at(&quot;strain&quot;)(1,2);//epsilon_xy
-}
-else if(nDim==3){
-    gpProj[2]=Rank2Materials.at(&quot;stress&quot;)(2,2);//sigma_yy
-    gpProj[3]=Rank2Materials.at(&quot;stress&quot;)(3,3);//sigma_zz
-    gpProj[4]=Rank2Materials.at(&quot;stress&quot;)(2,3);//sigma_yz
-    gpProj[5]=Rank2Materials.at(&quot;stress&quot;)(1,3);//sigma_xz
-    gpProj[6]=Rank2Materials.at(&quot;stress&quot;)(1,2);//sigma_xy
-
-    gpProj[7] =Rank2Materials.at(&quot;strain&quot;)(1,1);//epsilon_xx
-    gpProj[8] =Rank2Materials.at(&quot;strain&quot;)(2,2);//epsilon_yy
-    gpProj[9] =Rank2Materials.at(&quot;strain&quot;)(3,3);//epsilon_zz
-    gpProj[10]=Rank2Materials.at(&quot;strain&quot;)(2,3);//epsilon_yz
-    gpProj[11]=Rank2Materials.at(&quot;strain&quot;)(1,3);//epsilon_xz
-    gpProj[12]=Rank2Materials.at(&quot;strain&quot;)(1,2);//epsilon_xy
-}
+<p>The <code>projection</code> block is not a magic tool. If you examine the LinearElasticMaterial.cpp file in the MateSystem class, you will find the following code:</p>
+<pre><code>mate.ScalarMaterial(&quot;vonMises-stress&quot;)=sqrt(1.5*m_devStress.doubledot(m_devStress));
+mate.Rank2Material(&quot;strain&quot;)=m_strain;
+mate.Rank2Material(&quot;stress&quot;)=m_stress;
 </code></pre>
-<p>Yelp, the order of the name you give in your <code>[projection]</code> block is related to the <code>gpProj</code> quantities in your element. So, if you want to project the quantities in a 3D case, then you will need:</p>
-<pre><code>[projection]
-name=vonMises stress_xx stress_yy stress_zz stress_yz stress_xz stress_xy
-[end]
-</code></pre>
-<p>Hold on, where is my strain tensor in 2D case? Take it easy, here it is:</p>
-<pre><code>[projection]
-name=vonMises stress_xx stress_yy stress_xy epsilon_xx epsilon_yy epsilon_xy
-[end]
-</code></pre>
-<p>Done!</p>
+<p>The material properties, which include scalar, vector, and tensor materials, are stored in the material class and can be easily accessed using their respective material names. Users only need to provide the names of the output material properties in the <code>projection</code> block. Additionally, the general tensor form used in this block is designed to work for all dimensions, from 1D to 3D.</p>
 <h1 id="run-it-in-asfem">Run it in AsFem</h1>
-<p>Now, let's try your third example in AsFem. You can create a new text file and name it as step3.i or whatever you like. Then copy the following lines into your input file:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=2
-  xmax=5.0
-  ymax=5.0
-  nx=50
-  ny=50
-  meshtype=quad4
-[end]
-
-[dofs]
-name=ux uy
-[end]
-
-[elmts]
-  [mysolid]
-    type=mechanics
-    dofs=ux uy
-    mate=mymate
-  [end]
-[end]
-
-[mates]
-  [mymate]
-    type=linearelastic
-    params=210.0 0.3
-  [end]
-[end]
-
-[bcs]
-  [fixbottomX]
-    type=dirichlet
-    dof=ux
-    value=0.0
-    boundary=bottom
-  [end]
-  [fixbottomY]
-    type=dirichlet
-    dof=uy
-    value=0.0
-    boundary=bottom
-  [end]
-  [loadY]
-    type=dirichlet
-    dof=uy
-    value=0.1
-    boundary=top
-  [end]
-[end]
-
-[projection]
-name=vonMises stress_xx stress_yy stress_xy
-[end]
-
-[job]
-  type=static
-  debug=dep
-[end]
+<p>To try the third example in AsFem, create a new text file and name it <code>step3.json</code> or any other name you prefer. Then, copy and paste the following lines into your input file:</p>
+<pre><code>{
+    &quot;mesh&quot;:{
+        &quot;type&quot;:&quot;asfem&quot;,
+        &quot;dim&quot;:2,
+        &quot;nx&quot;:50,
+        &quot;ny&quot;:50,
+        &quot;xmax&quot;:5.0,
+        &quot;ymax&quot;:5.0,
+        &quot;meshtype&quot;:&quot;quad4&quot;,
+        &quot;savemesh&quot;:true
+    },
+    &quot;dofs&quot;:{
+        &quot;names&quot;:[&quot;ux&quot;,&quot;uy&quot;]
+    },
+    &quot;elements&quot;:{
+        &quot;elmt1&quot;:{
+            &quot;type&quot;:&quot;mechanics&quot;,
+            &quot;dofs&quot;:[&quot;ux&quot;,&quot;uy&quot;],
+            &quot;material&quot;:{
+                &quot;type&quot;:&quot;linearelastic&quot;,
+                &quot;parameters&quot;:{
+                    &quot;E&quot;:1.0e3,
+                    &quot;nu&quot;:0.3
+                }
+            }
+        }
+    },
+    &quot;projection&quot;:{
+        &quot;type&quot;:&quot;default&quot;,
+        &quot;scalarmate&quot;:[&quot;vonMises-stress&quot;],
+        &quot;rank2mate&quot;:[&quot;stress&quot;,&quot;strain&quot;]
+    },
+    &quot;nlsolver&quot;:{
+        &quot;type&quot;:&quot;newton&quot;,
+        &quot;solver&quot;:&quot;gmres&quot;,
+        &quot;maxiters&quot;:50,
+        &quot;abs-tolerance&quot;:5.0e-7,
+        &quot;rel-tolerance&quot;:5.0e-10,
+        &quot;s-tolerance&quot;:0.0,
+        &quot;preconditioner&quot;:&quot;lu&quot;
+    },
+    &quot;output&quot;:{
+        &quot;type&quot;:&quot;vtu&quot;,
+        &quot;interval&quot;:1
+    },
+    &quot;bcs&quot;:{
+        &quot;fix&quot;:{
+            &quot;type&quot;:&quot;dirichlet&quot;,
+            &quot;dofs&quot;:[&quot;ux&quot;,&quot;uy&quot;],
+            &quot;bcvalue&quot;:0.0,
+            &quot;side&quot;:[&quot;bottom&quot;]
+        },
+        &quot;load&quot;:{
+            &quot;type&quot;:&quot;dirichlet&quot;,
+            &quot;dofs&quot;:[&quot;uy&quot;],
+            &quot;bcvalue&quot;:0.1,
+            &quot;side&quot;:[&quot;top&quot;]
+        }
+    },
+    &quot;qpoints&quot;:{
+        &quot;bulk&quot;:{
+            &quot;type&quot;:&quot;gauss-legendre&quot;,
+            &quot;order&quot;:2
+        }
+    },
+    &quot;job&quot;:{
+        &quot;type&quot;:&quot;static&quot;,
+        &quot;print&quot;:&quot;dep&quot;
+    }
+}
 </code></pre>
-<p>You can also find the complete input file in <code>examples/tutorial/step3.i</code>.</p>
-<p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
+<p><span style="color:red">It's worth noting that if the <code>"preconditioner":"lu"</code> option in the <code>nlsolver</code> block doesn't work, you may need to either change <code>lu</code> to <code>jacobi</code>, or install MUMPS or SuperLU for your PETSc</span>.</p>
+<p>You can also find the complete input file in <code>examples/tutorial/step3-2d.json</code>.</p>
+<p>If everything goes well, you can see the following images in your <a href="https://www.paraview.org/download/">Paraview</a>:
 <img alt="" src="step3-2d-uy.jpeg" />
 <img alt="" src="step3-2d-vonMises.jpeg" /></p>
 
-              
-            </article>
-            
-          </div>
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
       
         <footer class="md-footer">
   
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../step-2/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-2" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Step-2
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../step-4/" class="md-footer__link md-footer__link--next" aria-label="Next: Step-4" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Step-4
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
-  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
+    </div>
   
   
     Made with
@@ -983,12 +1204,14 @@ name=vonMises stress_xx stress_yy stress_xy
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.0238f547.min.js"></script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e1c3ead8.min.js"></script>
       
-        <script src="../../javascripts/config.js"></script>
+        <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

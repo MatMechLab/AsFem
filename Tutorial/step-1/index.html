@@ -6,10 +6,23 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Advanced Simulation kit based on Finite Element Method.">
+      
+      
+        <meta name="author" content="Yang Bai">
+      
+      
+        <link rel="canonical" href="https://matmechlab.github.io/AsFem/Tutorial/step-1/">
+      
+      
+        <link rel="prev" href="../step-0/">
+      
+      
+        <link rel="next" href="../step-2/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.3.0, mkdocs-material-8.3.8">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
     
     
       
@@ -17,14 +30,14 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.1d29e8d0.min.css">
-      
-        
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
-        
+      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
       
       
+
+
     
+    
+      
     
     
       
@@ -36,23 +49,18 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
+    
   </head>
   
   
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+    <body dir="ltr">
   
-    
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -72,7 +80,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
@@ -81,6 +91,7 @@
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
+      
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
@@ -101,8 +112,12 @@
     </div>
     
     
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
     
       <label class="md-header__button md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
       </label>
       <div class="md-search" data-md-component="search" role="dialog">
@@ -111,12 +126,15 @@
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
-        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
         </button>
       </nav>
@@ -128,13 +146,25 @@
           <div class="md-search-result__meta">
             Initializing search
           </div>
-          <ol class="md-search-result__list"></ol>
+          <ol class="md-search-result__list" role="presentation"></ol>
         </div>
       </div>
     </div>
   </div>
 </div>
     
+    
+      <div class="md-header__source">
+        <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MatMechLab/AsFem
+  </div>
+</a>
+      </div>
     
   </nav>
   
@@ -158,6 +188,7 @@
                     
 
 
+
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
@@ -169,18 +200,35 @@
     AsFem
   </label>
   
+    <div class="md-nav__source">
+      <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    MatMechLab/AsFem
+  </div>
+</a>
+    </div>
+  
   <ul class="md-nav__list" data-md-scrollfix>
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../.." class="md-nav__link">
-        Home
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
       </a>
     </li>
   
@@ -188,14 +236,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../about/" class="md-nav__link">
-        About
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
       </a>
     </li>
   
@@ -203,14 +256,19 @@
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../install/" class="md-nav__link">
-        Installation
+        
+  
+  <span class="md-ellipsis">
+    Installation
+  </span>
+  
+
       </a>
     </li>
   
@@ -218,441 +276,628 @@
     
       
       
-      
-
   
   
     
   
   
+  
+    
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_4">
-          Tutorial
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Tutorial" data-md-level="1">
-        <label class="md-nav__title" for="__nav_4">
-          <span class="md-nav__icon md-icon"></span>
-          Tutorial
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
           
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Tutorial
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-0/" class="md-nav__link">
-        Step-0
+        
+  
+  <span class="md-ellipsis">
+    Step-0
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
   
   
     
   
   
+  
     <li class="md-nav__item md-nav__item--active">
       
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
         
       
       
       <a href="./" class="md-nav__link md-nav__link--active">
-        Step-1
+        
+  
+  <span class="md-ellipsis">
+    Step-1
+  </span>
+  
+
       </a>
       
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-2/" class="md-nav__link">
-        Step-2
+        
+  
+  <span class="md-ellipsis">
+    Step-2
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-3/" class="md-nav__link">
-        Step-3
+        
+  
+  <span class="md-ellipsis">
+    Step-3
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-4/" class="md-nav__link">
-        Step-4
+        
+  
+  <span class="md-ellipsis">
+    Step-4
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-5/" class="md-nav__link">
-        Step-5
+        
+  
+  <span class="md-ellipsis">
+    Step-5
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-6/" class="md-nav__link">
-        Step-6
+        
+  
+  <span class="md-ellipsis">
+    Step-6
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-7/" class="md-nav__link">
-        Step-7
+        
+  
+  <span class="md-ellipsis">
+    Step-7
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../step-8/" class="md-nav__link">
-        Step-8
+        
+  
+  <span class="md-ellipsis">
+    Step-8
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
 
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
   
   
   
     
-    <li class="md-nav__item md-nav__item--nested">
-      
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_5">
-          Examples
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Examples" data-md-level="1">
-        <label class="md-nav__title" for="__nav_5">
-          <span class="md-nav__icon md-icon"></span>
-          Examples
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
-          
-            
-              
-  
-  
-  
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5_1" type="checkbox" id="__nav_5_1" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_5_1">
-          PhaseField
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="PhaseField" data-md-level="2">
-        <label class="md-nav__title" for="__nav_5_1">
-          <span class="md-nav__icon md-icon"></span>
-          PhaseField
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" >
+        
           
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    PhaseField
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_1">
+            <span class="md-nav__icon md-icon"></span>
+            PhaseField
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Examples/PhaseFieldFracture/" class="md-nav__link">
-        Fracture
+        
+  
+  <span class="md-ellipsis">
+    Fracture
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
-      
-
   
   
   
+  
+    
+    
+    
+    
     
     <li class="md-nav__item md-nav__item--nested">
       
-      
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
-      
-      
-      
-      
-        <label class="md-nav__link" for="__nav_6">
-          Document
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <nav class="md-nav" aria-label="Document" data-md-level="1">
-        <label class="md-nav__title" for="__nav_6">
-          <span class="md-nav__icon md-icon"></span>
-          Document
-        </label>
-        <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
           
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Document
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Document
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-mesh/" class="md-nav__link">
-        mesh block
+        
+  
+  <span class="md-ellipsis">
+    mesh block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-dofs/" class="md-nav__link">
-        dofs block
+        
+  
+  <span class="md-ellipsis">
+    dofs block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-elmts/" class="md-nav__link">
-        elmts block
+        
+  
+  <span class="md-ellipsis">
+    elmts block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-mates/" class="md-nav__link">
-        mate block
+        
+  
+  <span class="md-ellipsis">
+    mate block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-bcs/" class="md-nav__link">
-        bcs block
+        
+  
+  <span class="md-ellipsis">
+    bcs block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-ics/" class="md-nav__link">
-        ics block
+        
+  
+  <span class="md-ellipsis">
+    ics block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-qpoint/" class="md-nav__link">
-        qpoint block
+        
+  
+  <span class="md-ellipsis">
+    qpoint block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-projection/" class="md-nav__link">
-        projection block
+        
+  
+  <span class="md-ellipsis">
+    projection block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
-        nonlinear solver block
+        
+  
+  <span class="md-ellipsis">
+    nonlinear solver block
+  </span>
+  
+
       </a>
     </li>
   
 
-            
-          
+              
             
               
+                
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../Document/block-timestepping/" class="md-nav__link">
-        timestepping block
+        
+  
+  <span class="md-ellipsis">
+    timestepping block
+  </span>
+  
+
       </a>
     </li>
   
 
+              
             
-          
-        </ul>
-      </nav>
+          </ul>
+        </nav>
+      
     </li>
   
 
     
       
       
-      
-
+  
   
   
   
     <li class="md-nav__item">
       <a href="../../release/" class="md-nav__link">
-        Release
+        
+  
+  <span class="md-ellipsis">
+    Release
+  </span>
+  
+
       </a>
     </li>
   
@@ -684,188 +929,217 @@
               </div>
             
           
-          <div class="md-content" data-md-component="content">
-            <article class="md-content__inner md-typeset">
-              
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
                 
+                  
+
+  
+  
 
 
 <h1 id="introduction">Introduction</h1>
-<p>Before we begin the actual FEM simulation, we must define our computation domain and discretize it into multiple subdomains. For this purpose, the <code>[mesh]</code> block is introduced.</p>
+<p>Before performing a FEM simulation, you must define the computation domain and discretize it into multiple <strong>finite element mesh</strong>. To accomplish this, AsFem provides the <code>mesh</code> block.</p>
 <h1 id="1d-example">1D example</h1>
-<p>Let's take the 1D solid line as an example, this line can be discretized into several 1D Lagrange mesh as follows:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=1
-  xmin=0.0
-  xmax=1.0
-  nx=10
-  meshtype=edge2
-[end]
+<p>As an example, let's consider a 1D solid line that needs to be discretized into several 1D Lagrange meshes. This can be achieved using the following input file:</p>
+<pre><code>&quot;mesh&quot;:{
+    &quot;type&quot;:&quot;asfem&quot;,
+    &quot;dim&quot;:1,
+    &quot;nx&quot;:20,
+    &quot;xmax&quot;:1.5,
+    &quot;meshtype&quot;:&quot;edge2&quot;,
+    &quot;savemesh&quot;:true
+}
 </code></pre>
 <h2 id="options">Options</h2>
-<p>The <code>type=</code>  option specifies the type of mesh generation we plan to use. We are offering two kinds of mesh generation in AsFem. The first one is the built-in mesh generation for a regular domain, i.e. the straight line (1d), the rectangle domain (2d), and the cubic domain (3d). For the second one, users can import their favorite mesh from other packages, like gmsh ( <code>type=gmsh</code> ) or netgen ( <code>type=gmsh2</code> ).</p>
-<p><code>dim=</code>  determines the domain's dimension, which should be 1, 2, or 3.</p>
+<p>The <code>type</code> option in the <code>mesh</code> block determines the type of mesh generation to be used. AsFem provides two types of mesh generation: built-in mesh generation for regular domains (such as 1D lines, 2D rectangles, and 3D cubes), and external mesh generation using pre-generated mesh files in standard formats such as Gmsh, Netgen, or Abaqus. For the second option, users can import their own mesh from other packages, such as Gmsh (using <code>"type": "gmsh"</code>) or Netgen (using <code>"type":"gmsh2"</code>).</p>
+<p>The <code>dim</code> option specifies the dimension of the computational domain, which can be either 1, 2, or 3.</p>
 <p><code>xmin=</code> and <code>xmax=</code> denote the size of the domain, you will need <code>ymin=</code> and <code>ymax=</code> for the 2D case, and <code>zmin=</code> and <code>zmax=</code> in the 3D case. One can also <strong>ignore</strong> these options, by default, the size of the domain will be unit, namely <code>[1]</code> in 1D, <code>[1,1]</code> in 2D, <code>[1,1,1]</code> in 3D.</p>
-<p>Simultaneously, <code>nx</code>, <code>ny</code>, and <code>nz</code> represent the number of mesh along these three axes, respectively.</p>
-<p><code>meshtype=</code> option offers the choices of different kinds of mesh, for instance, the second order Lagrange mesh in 1D case can be obtained via <code>meshtype=edge3</code>. Currently, AsFem offers:</p>
+<p>The <code>xmin</code> and <code>xmax</code> options in the "mesh" block specify the size of the computational domain in the x-direction. For 2D cases, <code>ymin</code> and <code>ymax</code> are also needed, while for 3D cases, <code>zmin</code> and <code>zmax</code> are required. Users can also omit these options, in which case the domain size defaults to one unit, represented as <code>[1]</code> for 1D cases, <code>[1, 1]</code> for 2D cases, and <code>[1, 1, 1]</code> for 3D cases.</p>
+<p>The <code>nx</code>, <code>ny</code>, and <code>nz</code> options represent the number of meshes along the x, y, and z axes, respectively.</p>
+<p>The <code>meshtype</code> option within the <code>mesh</code> block provides different choices of mesh types. For example, second-order Lagrange mesh can be obtained in 1D by setting <code>"meshtype":"edge3"</code>. AsFem currently offers the following mesh types:</p>
 <pre><code>edge2,edge3,edge4 // in 1D case
 quad4,quad8,quad9 // in 2D case
 hex8, hex20,hex27 // in 3D case
 </code></pre>
-<p>If one want to save the created mesh, one will need the <code>savemesh=true</code> option. The mesh will be saved as a <em>.vtu</em> file, which should be named as 'your_input_file_name'+'_mesh.vtu' (<em>.i</em> is removed from your input file name). For example, if your input file is: <em>test.i</em>, then the mesh file name is: <em>test_mesh.vtu</em>.</p>
-<h2 id="complete-mesh-block">Complete mesh block</h2>
-<p>Then the complete <code>[mesh]</code> block should look like:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=1
-  xmin=0.0
-  xmax=1.0
-  nx=10
-  meshtype=edge2
-  savemesh=true
-[end]
-</code></pre>
-<h1 id="2d-and-3d-examples">2D and 3D examples</h1>
+<p>If users want to save the mesh created by AsFem, they need to set the "savemesh" option within the "mesh" block to <strong>true</strong>. The mesh will be saved as a <em>.vtu</em> file named as 'your_input_file_name' + _mesh.vtu (the <em>.i</em> extension in the input file name is removed). For example, if the input file name is <em>test.json</em>, the mesh file name will be <em>test_mesh.vtu</em>.</p>
+<h1 id="2d-and-3d-mesh">2D and 3D mesh</h1>
 <p>Similarly, for 2D and 3D cases, one can use:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=2
-  xmin=0.0
-  xmax=1.0
-  ymin=0.0
-  ymax=1.0
-  nx=10
-  ny=10
-  meshtype=quad4
-[end]
+<pre><code>&quot;mesh&quot;:{
+        &quot;type&quot;:&quot;asfem&quot;,
+        &quot;dim&quot;:2,
+        &quot;nx&quot;:5,
+        &quot;ny&quot;:15,
+        &quot;xmax&quot;:0.5,
+        &quot;ymax&quot;:1.5,
+        &quot;meshtype&quot;:&quot;quad4&quot;,
+        &quot;savemesh&quot;:true
+    }
 </code></pre>
 <p>and</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=3
-  xmin=0.0
-  xmax=1.0
-  ymin=0.0
-  ymax=1.0
-  zmin=0.0
-  zmax=1.0
-  nx=10
-  ny=10
-  nz=10
-  meshtype=hex8
-[end]
+<pre><code>&quot;mesh&quot;:{
+        &quot;type&quot;:&quot;asfem&quot;,
+        &quot;dim&quot;:3,
+        &quot;nx&quot;:5,
+        &quot;ny&quot;:20,
+        &quot;nz&quot;:20,
+        &quot;xmax&quot;:0.5,
+        &quot;ymax&quot;:0.5,
+        &quot;zmax&quot;:2.0,
+        &quot;meshtype&quot;:&quot;hex8&quot;,
+        &quot;savemesh&quot;:true
+    }
 </code></pre>
 <p>Or, one can also use:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=3
-  nx=10
-  ny=10
-  nz=10
-  meshtype=hex8
-[end]
+<pre><code>&quot;mesh&quot;:{
+        &quot;type&quot;:&quot;asfem&quot;,
+        &quot;dim&quot;:3,
+        &quot;nx&quot;:5,
+        &quot;ny&quot;:20,
+        &quot;nz&quot;:20,
+        &quot;meshtype&quot;:&quot;hex8&quot;,
+        &quot;savemesh&quot;:true
+    }
 </code></pre>
-<p>then the unit <code>[0,1]x[0,1]x[0,1]</code> 3D domain will be used by default.</p>
-<h1 id="first-try-in-your-asfem">First try in your AsFem</h1>
-<p>Now, lets try your first example in AsFem. You can create a new text file or simply run the following commands(you can use whatever your like, here we use nano and vim):</p>
-<pre><code>nano firstrun.i
+<p>them a unit domain <code>[0,1]x[0,1]x[0,1]</code> will be used by default in 3D cases.</p>
+<h1 id="first-try-in-asfem">First try in AsFem</h1>
+<p>To try the first example in AsFem, users can either create a new text file or use their preferred text editor. Here are some examples using <code>nano</code> or <code>vim</code>:</p>
+<pre><code>nano firstrun.json
 </code></pre>
 <p>or</p>
-<pre><code>vim firstrun.i
+<pre><code>vim firstrun.json
 </code></pre>
-<p>then copy and paste the following <code>[mesh]</code> block into your <code>firstrun.i</code>:</p>
-<pre><code>[mesh]
-  type=asfem
-  dim=3
-  nx=10
-  ny=10
-  nz=10
-  meshtype=hex8
-  savemesh=true
-[end]
+<p>then copy and paste the following <code>mesh</code> block into your <code>firstrun.json</code>:</p>
+<pre><code>&quot;mesh&quot;:{
+        &quot;type&quot;:&quot;asfem&quot;,
+        &quot;dim&quot;:1,
+        &quot;nx&quot;:20,
+        &quot;xmax&quot;:1.5,
+        &quot;meshtype&quot;:&quot;edge2&quot;,
+        &quot;savemesh&quot;:true
+    }
 </code></pre>
 <p>save it and then execute your <code>AsFem</code> as follows:</p>
-<pre><code>asfem -i firstrun.i --read-only
+<pre><code>asfem -i firstrun.json --read-only
 </code></pre>
 <p>or in parallel:</p>
-<pre><code>mpirun -np 4 asfem -i firstrun.i --read-only
+<pre><code>mpirun -np 4 asfem -i firstrun.json --read-only
 </code></pre>
-<p>Here one need the <code>--read-only</code> option, since we do not have a complete input file but only the <code>[mesh]</code> block. If everthing works fine, you should see the following output:</p>
-<pre><code>*****************************************************************************
-*** Welcome to use AsFem                                                  ***
-*** A Simple Finite Element Method Program                                ***
-*** Version: 0.40        Release @ 2021-01-01                             ***
-*** PETSc version:  3.14.3                                                ***
-*** License: GPL-3.0                                                      ***
-*** Author: Yang Bai                                                      ***
-*** Contact: walkandthinker@gmail.com                                     ***
-*** QQ Group: 879908352                                                   ***
-*** Website: https://github.com/yangbai90/AsFem                           ***
-*** Feel free to use and discuss  .:.                                     ***
-*****************************************************************************
-*** Start to create mesh ...                                              ***
-*** Mesh generation finished !                                            ***
-*** Save mesh to [                         step1_mesh.vtu]                ***
-***-----------------------------------------------------------------------***
-***-----------------------------------------------------------------------***
-*** Read-only mode analysis is finished !                                 ***
-*****************************************************************************
+<p>Here one need the <code>--read-only</code> option, since we do not have a complete input file but only the <code>mesh</code> block. If everthing works fine, you should see the following output:</p>
+<pre><code>******************************************************************************
+*** Welcome to use AsFem                                      AAA          ***
+*** A Simple Finite Element Method Program                   // \\         ***
+*** Version: 0.80        Release @ 2022-10-19               //   \\        ***
+*** PETSc version:  3.18.5                                 //     \\       ***
+*** License: GPL-3.0                                      //       \\      ***
+*** Author: Yang Bai @ M3-Group                          //_________\\     ***
+*** Contact: yangbai90@outlook.com                      //-----------\\    ***
+*** QQ Group: 879908352                                //             \\   ***
+*** Website: https://github.com/M3Group/AsFem         //               \\  ***
+*** Feel free to use and discuss  .:.                **                 ** ***
+******************************************************************************
+******************************************************************************
+*** Start to read the input file                                           ***
+*** mesh generator is done, your mesh is generated                         ***
+*** save mesh to step1-3d-mesh.vtu                                         ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [bcs] block found in your input file, then the 'zero' n !!! ***
+***         eumann bc is assumed                                       !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [ics] block found in your input file, then no any initi !!! ***
+***         al conditions will be applied                              !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [projection] block found in your input file, then no qu !!! ***
+***         antities will be projected                                 !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [postprocess] block found in your input file, then no p !!! ***
+***         ostprocess will be executed                                !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [nlsolver] block found in your input file, then the def !!! ***
+***         ault options will be used                                  !!! ***
+******************************************************************************
+******************************************************************************
+*** Warning:no [output] block found in your input file, then the defau !!! ***
+***         lt options will be used                                    !!! ***
+******************************************************************************
+*** Input file reading is done, elapsed time=   7.00000e-03 [s]            ***
+******************************************************************************
+******************************************************************************
+*** Mesh information summary                                               ***
+***   nodes=    2646, nodes per bulk elmt=  8, max dim= 3, min dim= 2      ***
+***   elmts=    3200, bulk=    2000, surf=    1200, line=       0          ***
+***   bulk mesh type is hex8, mesh order= 1                                ***
+***   total physical group=    7, nodeset physical group=    6             ***
+***------------------------------------------------------------------------***
+***   phy id              phy name       dim       nodes/elmt       elmts  ***
+***      1                   left         2             4            400   ***
+***      2                  right         2             4            400   ***
+***      3                 bottom         2             4            100   ***
+***      4                    top         2             4            100   ***
+***      5                   back         2             4            100   ***
+***      6                  front         2             4            100   ***
+***      7              alldomain         3             8           2000   ***
+***------------------------------------------------------------------------***
+***   nodal phy id             phy name             nodes number           ***
+***      1000                     left                      441            ***
+***      2000                    right                      441            ***
+***      3000                   bottom                      126            ***
+***      4000                      top                      126            ***
+***      5000                     back                      126            ***
+***      6000                    front                      126            ***
+******************************************************************************
+***------------------------------------------------------------------------***
+*** 1 CPU is used for the simulation                                       ***
+***------------------------------------------------------------------------***
+*** AsFem has been executed in 'read-only' mode                            ***
+******************************************************************************
+*** 'Simulation' is done, elapsed time=   9.00000e-03 [s]                  ***
+******************************************************************************
 </code></pre>
-<p>Then, one can use the <a href="https://www.paraview.org/download/">Paraview</a> to check our 3D mesh, which looks like below:
+<p>Afterwards, you can visualize the generated 3D mesh using <a href="https://www.paraview.org/download/">Paraview</a>. The resulting visualization should resemble the following image:
 <img alt="" src="step1.jpeg" /></p>
-<p>As an exercise for the'[mesh]' block, it is highly recommended to try various options to generate the mesh you need before moving to the next step.</p>
-<p>The complete input files can be fund in <code>examples/tutorial</code>.</p>
+<p>As a practice for the <code>mesh</code> block, we recommend trying different options to generate the desired mesh before proceeding to the next step.</p>
+<p>The complete input files can be found in the <code>examples/tutorial</code> directory.</p>
 
-              
-            </article>
-            
-          </div>
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
       </main>
       
         <footer class="md-footer">
   
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../step-0/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-0" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Step-0
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../step-2/" class="md-footer__link md-footer__link--next" aria-label="Next: Step-2" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Step-2
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
-  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
+    </div>
   
   
     Made with
@@ -883,12 +1157,14 @@ hex8, hex20,hex27 // in 3D case
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b97dbffb.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.0238f547.min.js"></script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e1c3ead8.min.js"></script>
       
-        <script src="../../javascripts/config.js"></script>
+        <script src="../../javascripts/mathjax.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
