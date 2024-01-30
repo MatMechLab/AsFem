@@ -1,15 +1,15 @@
 site_name: AsFem
-site_url: https://m3group.github.io/AsFem/
+site_url: https://matmechlab.github.io/AsFem/
 site_author: Yang Bai
 site_description: >-
-  An open source finite element code for phase-field modeling and multiphysics simulation.
+  Advanced Simulation kit based on Finite Element Method.
 
 # Copyright
-copyright: Copyright &copy; 2020 - 2023 Yang Bai/M3-Group
+copyright: Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
 
 # Repository
-repo_name: M3Group/AsFem
-repo_url: https://github.com/M3Group/AsFem
+repo_name: MatMechLab/AsFem
+repo_url: https://github.com/MatMechLab/AsFem
 
 markdown_extensions:
   - pymdownx.arithmatex:

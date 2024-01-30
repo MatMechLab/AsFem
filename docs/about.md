@@ -1,5 +1,5 @@
 # What is it?
-This is *A* *S*imple *F*inite *E*lement *M*ethod program for the phase-field modeling and multiphysics simulation, which is short for **AsFem**.
+**A**dvanced **S**imulation kit based on **F**inite **E**lement **M**ethod program for the phase-field modeling and multiphysics simulation.
 
 # What can it do ?
 
@@ -7,6 +7,7 @@ This is *A* *S*imple *F*inite *E*lement *M*ethod program for the phase-field mod
 - [x] CahnHilliard diffusion
 - [x] Phase-field fracture model
 - [x] Linear elastic materials
+- [x] User-defined-Model (UM)
 
 # How to use it ?
 The documentation is under construction at present. If you have any questions, just email me: [Yang](mailto:yangbai90@outlook.com)

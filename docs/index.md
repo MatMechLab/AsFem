@@ -1,6 +1,6 @@
 # Welcome to AsFem website
 
-This is **A** **S**imple **F**inite **E**lement **M**ethod program for the phase-field modeling and multiphysics simulation, which is short for ***AsFem***.
+**AsFem**: **A**dvanced **S**imulation kit based on **F**inite **E**lement **M**ethod. AsFem is written in C++ and designed for phase-field modeling and multiphysics coupling. The PETSc library and MPI package are involved in AsFem for the parallel computing.
 
 
 For efficient computation and simulation, the package is written in C++ and relies heavily on the [PETSc](https://www.mcs.anl.gov/petsc/) library. It is primarily developed for solid mechanics and phase-field modeling.

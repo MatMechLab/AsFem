@@ -1,7 +1,7 @@
 # System requirement
 
 * Linux
-* Windows (only works in Cygwin/Mingw, <span style="color:red">**without**</span> **VisualStudio**)
+* Windows (only works in Cygwin/Mingw, <span style="color:red">**without**</span> **VisualStudio**. <span style="color:red">**It is not recommended!!!**</span>)
 * MacOX (it should work, but we haven't tested it yet!)
 
 
