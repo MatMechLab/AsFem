@@ -11,6 +11,7 @@ copyright: Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
 repo_name: MatMechLab/AsFem
 repo_url: https://github.com/MatMechLab/AsFem
 
+
 markdown_extensions:
   - pymdownx.arithmatex:
       generic: true
