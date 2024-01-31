@@ -19,13 +19,21 @@ FECellGenerator::FECellGenerator(){
 }
 //********************************************
 bool FECellGenerator::createFEMeshCell(const MeshType &meshtype,FECellData &meshdata){
-    if(meshtype==MeshType::HEX8||
-       meshtype==MeshType::HEX20||
-       meshtype==MeshType::HEX27){
-        return Lagrange3DMeshCellGenerator::generateFECell(meshtype,meshdata);
-    }
-    else{
-        return false;
+    switch (meshtype)
+    {
+    case MeshType::HEX8:
+        return Lagrange3DHex8MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::HEX20:
+        return Lagrange3DHex20MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::HEX27:
+        return Lagrange3DHex27MeshCellGenerator::generateFECell(meshdata);
+        break;
+    default:
+        MessagePrinter::printErrorTxt("Unsupported meshtype for FEMeshCell generation");
+        MessagePrinter::exitAsFem();
+        break;
     }
     return true;
 }

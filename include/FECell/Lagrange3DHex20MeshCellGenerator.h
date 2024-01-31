@@ -8,36 +8,36 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2024.01.06
-//+++ Purpose: the base class for FE cell generator
+//+++ Date   : 2024.01.31
+//+++ Purpose: the 3D hex20 lagrange FE cell generator
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include <iostream>
-#include <algorithm>
+#include "FECell/FECellGeneratorBase.h"
 
-#include "mpi.h"
-#include "FECell/FECellData.h"
-
-using std::sort;
-using std::make_pair;
 
 /**
- * this is the base class for fe cell(mesh) generator, all the generator should inherit this base class
+ * the cell generator for 3d hex20 lagrange mesh
  */
-class FECellGeneratorBase{
+class Lagrange3DHex20MeshCellGenerator:public FECellGeneratorBase{
 public:
     /**
      * constructor
      */
-    FECellGeneratorBase(){}
+    Lagrange3DHex20MeshCellGenerator();
+    /**
+     * deconstructor
+     */
+    ~Lagrange3DHex20MeshCellGenerator();
 
     /**
-     * virtual function for the details of different cell(mesh) generation, the child class should
-     * offer the implementations
+     * function for the details of 3d lagrange mesh generation, if everything works fine, it will return true.
+     * @param t_meshtype the type of mesh one want to use for the mesh generation
      * @param t_celldata the fe cell data structure, which should be updated within each cell generator!
      */
-    virtual bool generateFECell(FECellData &t_celldata)=0;
+    virtual bool generateFECell(FECellData &t_celldata) override;
+private:
+    bool m_mesh_generated=false;
 
 };

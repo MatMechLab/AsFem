@@ -8,8 +8,8 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2024.01.06
-//+++ Purpose: the 3D lagrange FE cell generator
+//+++ Date   : 2024.01.31
+//+++ Purpose: the 3D hex27 lagrange FE cell generator
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
@@ -18,25 +18,25 @@
 
 
 /**
- * the cell generator for 3d lagrange mesh
+ * the cell generator for 3d hex27 lagrange mesh
  */
-class Lagrange3DMeshCellGenerator:public FECellGeneratorBase{
+class Lagrange3DHex27MeshCellGenerator:public FECellGeneratorBase{
 public:
     /**
      * constructor
      */
-    Lagrange3DMeshCellGenerator();
+    Lagrange3DHex27MeshCellGenerator();
     /**
      * deconstructor
      */
-    ~Lagrange3DMeshCellGenerator();
+    ~Lagrange3DHex27MeshCellGenerator();
 
     /**
      * function for the details of 3d lagrange mesh generation, if everything works fine, it will return true.
      * @param t_meshtype the type of mesh one want to use for the mesh generation
      * @param t_celldata the fe cell data structure, which should be updated within each cell generator!
      */
-    virtual bool generateFECell(const MeshType &t_meshtype,FECellData &t_celldata) override;
+    virtual bool generateFECell(FECellData &t_celldata) override;
 private:
     bool m_mesh_generated=false;
 

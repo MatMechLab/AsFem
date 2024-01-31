@@ -14,13 +14,17 @@
 
 #pragma once
 
-#include "FECell/Lagrange3DMeshCellGenerator.h"
+#include "FECell/Lagrange3DHex8MeshCellGenerator.h"
+#include "FECell/Lagrange3DHex20MeshCellGenerator.h"
+#include "FECell/Lagrange3DHex27MeshCellGenerator.h"
 
 
 /**
  * This class offers the FE mesh cell generator for default mesh in AsFem
 */
-class FECellGenerator:public Lagrange3DMeshCellGenerator{
+class FECellGenerator:public Lagrange3DHex8MeshCellGenerator,
+                      public Lagrange3DHex20MeshCellGenerator,
+                      public Lagrange3DHex27MeshCellGenerator{
 public:
     /**
      * Constructor
