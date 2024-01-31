@@ -9,32 +9,30 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2020.12.28
+//+++ Update : 2024.01.31
 //+++ Purpose: the main program of the whole AsFem framework
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include <iostream>
-#include "petsc.h"
 
-#include "Welcome.h"
+#include "Application.h"
 #include "FEProblem/FEProblem.h"
 
 int main(int args,char *argv[]){
-    PetscErrorCode ierr;
-    ierr=PetscInitialize(&args,&argv,NULL,NULL);if (ierr) return ierr;
+    Application myapp;
 
-    const PetscInt Year=2022;
-    const PetscInt Month=10;
-    const PetscInt Day=19;
-    const PetscReal Version=0.8;
+    if(myapp.init(args,argv)) return 1;
 
-    welcome(Year,Month,Day,Version);
+    const int Year=2022;
+    const int Month=10;
+    const int Day=19;
+    const double Version=0.8;
+    myapp.printAppInfo(Year,Month,Day,Version);
 
     FEProblem feProblem;
     feProblem.initFEProblem(args,argv);
     feProblem.run();
     feProblem.finalize();
 
-
-    ierr=PetscFinalize();CHKERRQ(ierr);
-    return ierr;
+    return myapp.finalize();
 }

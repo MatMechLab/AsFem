@@ -6,8 +6,8 @@
 ### Do not edit the following lines !!!                   ###
 #############################################################
 #############################################################
-# For Welcome header file and main.cpp
-set(inc include/Welcome.h)
+# For main.cpp
+set(inc "")
 set(src src/main.cpp)
 
 #############################################################
@@ -703,3 +703,10 @@ set(src ${src} src/FEProblem/FEProblem.cpp)
 set(src ${src} src/FEProblem/RunFEProblem.cpp)
 set(src ${src} src/FEProblem/RunStaticAnalysis.cpp)
 set(src ${src} src/FEProblem/RunTransientAnalysis.cpp) 
+
+
+#############################################################
+### For Application class                                 ###
+#############################################################
+set(inc ${inc} include/Application.h)
+set(src ${src} src/Application.cpp)

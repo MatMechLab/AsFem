@@ -8,30 +8,35 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.06.29
-//+++ Purpose: Implement the welcome screen for the initial running
-//+++          of AsFem.
-//+++          This printer offers the summary information, i.e.
-//+++            version of AsFem, PETSc
-//+++            news report... and so on.
+//+++ Date   : 2024.01.31
+//+++ Purpose: the application level management for AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include <iostream>
-#include <string>
+#include "Application.h"
 
-#include "petsc.h"
-#include "Utils/MessagePrinter.h"
+Application::Application(){}
 
-using std::string;
-
-/**
- * print the welcome message in your terminal
- * @param year the integer number of release year
- * @param month the integer number of release month
- * @param day the integer number of release day
- * @param version the double number of release version (2-digital)
- */
-void welcome(const int &year,const int &month,const int &day,const double &version){
+PetscErrorCode Application::init(int args,char *argv[]){
+    PetscCall(PetscInitialize(&args,&argv,NULL,NULL));
+    /**
+     * setup the necessary petsc options
+    */
+    PetscCall(PetscOptionsCreate(&m_Options));
+    PetscCall(PetscOptionsInsertString(m_Options,"-options_left no"));
+    PetscCall(PetscOptionsPush(m_Options));
+    PetscCall(PetscOptionsLeft(m_Options));
+    return 0;
+}
+//*****************************************
+PetscErrorCode Application::finalize(){
+    // uncomment following two lines will raise the PETSc warning !
+    // PetscCall(PetscOptionsPop());
+    // PetscCall(PetscOptionsDestroy(&m_Options));
+    PetscCall(PetscFinalize());
+    return 0;
+}
+//***********************************************
+void Application::printAppInfo(const int &year,const int &month,const int &day,const double &version)const{
     PetscInt Major,Minor,SubMinor;
     PetscGetVersionNumber(&Major,&Minor,&SubMinor,NULL);
     char buff[50];
@@ -39,8 +44,7 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     
     MessagePrinter::printStars(MessageColor::BLUE);
     MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                      AAA");
-    // MessagePrinter::printWelcomeTxt("Advanced Simulation kit based on Finite Element Method   // \\\\");
-
+    
     MessagePrinter::printSingleTxt("*** ",MessageColor::BLUE);
     MessagePrinter::printSingleTxt("A",MessageColor::BLUE);
     MessagePrinter::printSingleTxt("dvanced ",MessageColor::WHITE);
@@ -66,7 +70,7 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     str=buff;
     MessagePrinter::printWelcomeTxt(str+"               //   \\\\");
 
-    snprintf(buff,50,"PETSc version: %2d.%2d.%-2d",Major,Minor,SubMinor);
+    snprintf(buff,50,"PETSc version: %2d.%2d.%-2d",static_cast<int>(Major),static_cast<int>(Minor),static_cast<int>(SubMinor));
     str=buff;
     MessagePrinter::printWelcomeTxt(str+"                                //     \\\\");
     
@@ -78,5 +82,4 @@ void welcome(const int &year,const int &month,const int &day,const double &versi
     MessagePrinter::printWelcomeTxt("Website: https://github.com/MatMechLab/AsFem      //               \\\\");
     MessagePrinter::printWelcomeTxt("Feel free to use and discuss  .:.                **                 **");
     MessagePrinter::printStars(MessageColor::BLUE);
-
 }
