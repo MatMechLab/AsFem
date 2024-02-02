@@ -21,6 +21,15 @@ FECellGenerator::FECellGenerator(){
 bool FECellGenerator::createFEMeshCell(const MeshType &meshtype,FECellData &meshdata){
     switch (meshtype)
     {
+    case MeshType::QUAD4:
+        return Lagrange2DQuad4MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::QUAD8:
+        return Lagrange2DQuad8MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::QUAD9:
+        return Lagrange2DQuad9MeshCellGenerator::generateFECell(meshdata);
+        break;
     case MeshType::HEX8:
         return Lagrange3DHex8MeshCellGenerator::generateFECell(meshdata);
         break;

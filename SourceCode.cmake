@@ -122,6 +122,16 @@ set(inc ${inc} include/FECell/FECellData.h)
 set(inc ${inc} include/FECell/FECell.h)
 set(src ${src} src/FECell/FECell.cpp)
 set(inc ${inc} include/FECell/FECellGeneratorBase.h)
+### for 2d lagrange mesh cell
+### for quad4
+set(inc ${inc} include/FECell/Lagrange2DQuad4MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange2DQuad4MeshCellGenerator.cpp)
+### for quad8
+set(inc ${inc} include/FECell/Lagrange2DQuad8MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange2DQuad8MeshCellGenerator.cpp)
+### for quad9
+set(inc ${inc} include/FECell/Lagrange2DQuad9MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange2DQuad9MeshCellGenerator.cpp)
 ### for 3d lagrange mesh cell
 ### for 3d-hex8 mesh cell
 set(inc ${inc} include/FECell/Lagrange3DHex8MeshCellGenerator.h)
