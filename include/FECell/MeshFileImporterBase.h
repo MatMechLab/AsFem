@@ -8,7 +8,7 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.08.26
+//+++ Date   : 2024.02.03
 //+++ Purpose: Define the abstract class for FE cell mesh import function.
 //+++          Other meshio, i.e. gmsh and netgen should inherit
 //+++          from this one
@@ -42,7 +42,7 @@ using std::make_pair;
  * This is the abstract class for fe cell mesh file reader, if one wants to have the specific mesh file importer, one 
  * should inherit this class and offers the implementation details
  */
-class FECellMeshFileImporterBase{
+class MeshFileImporterBase{
 protected:
     /**
      * This function implement the mesh file import.

@@ -159,7 +159,7 @@ set(src ${src} src/FECell/FECellGenerator.cpp)
 #############################################################
 ### For FE cell importer class                            ###
 #############################################################
-set(inc ${inc} include/FECell/FECellMeshFileImporterBase.h)
+set(inc ${inc} include/FECell/MeshFileImporterBase.h)
 
 
 #############################################################
