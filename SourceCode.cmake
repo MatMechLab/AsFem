@@ -157,6 +157,12 @@ set(inc ${inc} include/FECell/FECellGenerator.h)
 set(src ${src} src/FECell/FECellGenerator.cpp)
 
 #############################################################
+### For FE cell importer class                            ###
+#############################################################
+set(inc ${inc} include/FECell/FECellMeshFileImporterBase.h)
+
+
+#############################################################
 ### For inputystem                                        ###
 #############################################################
 set(inc ${inc} include/InputSystem/InputSystem.h)
