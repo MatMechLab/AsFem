@@ -14,6 +14,10 @@
 
 #pragma once
 
+#include "FECell/Lagrange1DEdge2MeshCellGenerator.h"
+#include "FECell/Lagrange1DEdge3MeshCellGenerator.h"
+#include "FECell/Lagrange1DEdge4MeshCellGenerator.h"
+//
 #include "FECell/Lagrange2DQuad4MeshCellGenerator.h"
 #include "FECell/Lagrange2DQuad8MeshCellGenerator.h"
 #include "FECell/Lagrange2DQuad9MeshCellGenerator.h"
@@ -26,7 +30,11 @@
 /**
  * This class offers the FE mesh cell generator for default mesh in AsFem
 */
-class FECellGenerator:public Lagrange2DQuad4MeshCellGenerator,
+class FECellGenerator:public Lagrange1DEdge2MeshCellGenerator,
+                      public Lagrange1DEdge3MeshCellGenerator,
+                      public Lagrange1DEdge4MeshCellGenerator,
+                      //
+                      public Lagrange2DQuad4MeshCellGenerator,
                       public Lagrange2DQuad8MeshCellGenerator,
                       public Lagrange2DQuad9MeshCellGenerator,
                       //
