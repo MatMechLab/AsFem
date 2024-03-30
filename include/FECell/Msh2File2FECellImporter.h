@@ -16,13 +16,13 @@
 
 #pragma once
 
-#include "FECell/MeshFileImporterBase.h"
+#include "FECell/MeshFile2FECellImporterBase.h"
 #include "Mesh/MshFileUtils.h"
 
 /**
  * This class implements the msh file (version-2) import function.
  */
-class Msh2FileImporter:public MeshFileImporterBase{
+class Msh2File2FECellImporter:public MeshFile2FECellImporterBase{
 protected:
     /**
      * This function implement the mesh file import.

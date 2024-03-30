@@ -14,9 +14,9 @@
 //+++          For version-4, please use Msh4FileImporter.
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "FECell/Msh2FileImporter.h"
+#include "FECell/Msh2File2FECellImporter.h"
 
-int Msh2FileImporter::getMaxMeshDim(const string &filename)const{
+int Msh2File2FECellImporter::getMaxMeshDim(const string &filename)const{
     ifstream in;
     string str;
     int maxdim;
@@ -48,7 +48,7 @@ int Msh2FileImporter::getMaxMeshDim(const string &filename)const{
     return maxdim;
 }
 
-bool Msh2FileImporter::importMeshFile(const string &filename,FECellData &t_celldata){
+bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &t_celldata){
 
     ifstream in;
     in.open(filename.c_str(),ios::in);

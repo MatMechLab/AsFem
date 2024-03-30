@@ -42,7 +42,7 @@ using std::make_pair;
  * This is the abstract class for fe cell mesh file reader, if one wants to have the specific mesh file importer, one 
  * should inherit this class and offers the implementation details
  */
-class MeshFileImporterBase{
+class MeshFile2FECellImporterBase{
 protected:
     /**
      * This function implement the mesh file import.

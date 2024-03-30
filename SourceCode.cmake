@@ -159,10 +159,10 @@ set(src ${src} src/FECell/FECellGenerator.cpp)
 #############################################################
 ### For FE cell importer class                            ###
 #############################################################
-set(inc ${inc} include/FECell/MeshFileImporterBase.h)
+set(inc ${inc} include/FECell/MeshFile2FECellImporterBase.h)
 ### for msh2 file importer
-set(inc ${inc} include/FECell/Msh2FileImporter.h)
-set(src ${src} src/FECell/Msh2FileImporter.cpp)
+set(inc ${inc} include/FECell/Msh2File2FECellImporter.h)
+set(src ${src} src/FECell/Msh2File2FECellImporter.cpp)
 
 
 #############################################################
