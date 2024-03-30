@@ -41,6 +41,7 @@ struct SingleMeshCell{
     Nodes ElmtNodeCoords0;/**< node coordinates of current mesh cell (undeformed)*/
     Nodes ElmtNodeCoords ;/**< node coordinates of current mesh cell (deformed)*/
     int VTKCellType;/**< the vtk cell type of current mesh */ 
+    MeshType CellMeshType;/**< the mesh type of current mesh cell */
 
     int            PhysicalGroupNums;/**< number of physical groups of current mesh cell, default one should be 1 */
     vector<string> PhysicalNameList;/**< pyhsical name list of current mesh cell, it can have more than one name */
