@@ -15,6 +15,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FECell/Msh2File2FECellImporter.h"
+#include "MPIUtils/MPIDataBus.h"
 
 int Msh2File2FECellImporter::getMaxMeshDim(const string &filename)const{
     ifstream in;
@@ -557,7 +558,101 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
             t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=t_celldata.MeshCell_Total;
         } // end-of-nonzero-volume-phy-info-case
 
+        /**
+         * distribute the total physical group info to each local rank
+        */
+        int iStart,iEnd,ranksize;
+        vector<SingleMeshCell> LocalCellVector;
+        vector<int> nodeids;
+        int phyid,dim,k;
+        string phyname;
+        for(int cpuid=0;cpuid<size;cpuid++){
+            // send out the phynum, phyname, phyid info (except the "alldomain" group !!!)
+            MPIDataBus::sendIntegerToOthers(t_celldata.PhyGroupNum_Global,cpuid*10000+0,cpuid);
+            for(k=0;k<t_celldata.PhyGroupNum_Global-1;k++){
+                phyid=t_celldata.PhyIDVector_Global[k];
+                dim=t_celldata.PhyDimVector_Global[k];
+                phyname=t_celldata.PhyNameVector_Global[k];
+
+                MPIDataBus::sendIntegerToOthers( phyid,cpuid*10000+k*1000+1,cpuid);
+                MPIDataBus::sendIntegerToOthers(   dim,cpuid*10000+k*1000+2,cpuid);
+                MPIDataBus::sendStringToOthers(phyname,cpuid*10000+k*1000+3,cpuid);
+
+                ranksize=static_cast<int>(t_celldata.PhyID2MeshCellVectorMap_Global[phyid].size())/size;
+                iStart=cpuid*ranksize;
+                iEnd=(cpuid+1)*ranksize;
+                if(cpuid==size-1) iEnd=static_cast<int>(t_celldata.PhyID2MeshCellVectorMap_Global[phyid].size());
+                
+                LocalCellVector.clear();
+                for(int e=iStart;e<iEnd;e++){
+                    LocalCellVector.push_back(t_celldata.MeshCell_Total[e]);
+                }
+                if(cpuid==0){
+                    t_celldata.PhyID2MeshCellVectorMap_Local[phyid]=LocalCellVector;
+                    t_celldata.PhyName2MeshCellVectorMap_Local[phyname]=LocalCellVector;// each local rank share the same phy name as the master rank!!!
+                }
+                else{
+                    MPIDataBus::sendPhyID2MeshCellMapToOthers(    phyid,LocalCellVector,10000*cpuid+k*1000+4   ,cpuid);
+                    MPIDataBus::sendPhyName2MeshCellMapToOthers(phyname,LocalCellVector,10000*cpuid+k*1000+4+20,cpuid);
+                }
+            }
+            // send out the "alldomain" mesh cell
+            k=t_celldata.PhyGroupNum_Global-1;
+            ranksize=t_celldata.BulkElmtsNum/size;
+            iStart=cpuid*ranksize;
+            iEnd=(cpuid+1)*ranksize;
+            if(cpuid==size-1) iEnd=t_celldata.BulkElmtsNum;
+
+            LocalCellVector.clear();
+            for(int e=iStart;e<iEnd;e++){
+                LocalCellVector.push_back(t_celldata.MeshCell_Total[e]);
+            }
+            if(cpuid==0){
+                t_celldata.MeshCell_Local=LocalCellVector;
+                t_celldata.PhyID2MeshCellVectorMap_Local[0]=LocalCellVector;
+                t_celldata.PhyName2MeshCellVectorMap_Local["alldomain"]=t_celldata.MeshCell_Local;// each local rank share the same phy name as the master rank!!!
+            }
+            else{
+                MPIDataBus::sendMeshCellToOthers(                       LocalCellVector,10000*cpuid+k*1000+4+40,cpuid);
+                MPIDataBus::sendPhyID2MeshCellMapToOthers(            0,LocalCellVector,10000*cpuid+k*1000+4+60,cpuid);
+                MPIDataBus::sendPhyName2MeshCellMapToOthers("alldomain",LocalCellVector,10000*cpuid+k*1000+4+80,cpuid);
+            }
+        } 
+
     }// end-of-master-rank-process
+    else{
+        // each local rank receive info from master rank
+        int phyid,k,dim,maxdim;
+        string phyname;
+        MPIDataBus::receiveIntegerFromMaster(k,rank*10000+0);
+        t_celldata.PhyGroupNum_Global=k;
+        t_celldata.PhyDimVector_Global.resize(k,0);
+        t_celldata.PhyIDVector_Global.resize(k,0);
+        t_celldata.PhyNameVector_Global.resize(k);
+        maxdim=-1;
+        for(k=0;k<t_celldata.PhyGroupNum_Global-1;k++){
+            MPIDataBus::receiveIntegerFromMaster( phyid,rank*10000+k*1000+1);
+            MPIDataBus::receiveIntegerFromMaster(   dim,rank*10000+k*1000+2);
+            MPIDataBus::receiveStringFromMaster(phyname,rank*10000+k*1000+3);
+
+            t_celldata.PhyIDVector_Global[k]=phyid;
+            t_celldata.PhyDimVector_Global[k]=dim;
+            t_celldata.PhyNameVector_Global[k]=phyname;
+
+            if(dim>maxdim) maxdim=dim;
+
+            MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,10000*rank+k*1000+4);
+            MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,10000*rank+k*1000+4+20);
+        }
+        k=t_celldata.PhyGroupNum_Global-1;
+        t_celldata.PhyIDVector_Global[k]=0;
+        t_celldata.PhyDimVector_Global[k]=maxdim;
+        t_celldata.PhyNameVector_Global[k]="alldomain";
+
+        MPIDataBus::receiveMeshCellFromMaster(t_celldata.MeshCell_Local,10000*rank+k*1000+4+40);
+        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,10000*rank+k*1000+4+60);
+        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,10000*rank+k*1000+4+80);
+    }
 
     return true;
 }
