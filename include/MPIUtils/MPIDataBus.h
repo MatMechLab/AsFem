@@ -50,6 +50,21 @@ public:
     static void receiveIntegerFromMaster(int &val,const int &tag);
 
     /**
+     * Send string from master rank to others, this should be called on master rank
+     * @param txt the string to be sent
+     * @param tag the id of the sending message
+     * @param cpuid the rank id used to receive the message
+    */
+    static void sendStringToOthers(const string &txt,const int &tag,const int &cpuid);
+    /**
+     * Receive the string from master rank, this should be called on each rank locally
+     * @param txt the string used to store the data from master rank
+     * @param tag the received message tag
+     * @param cpuid the cpuid to receive the message
+    */
+    static void receiveStringFromMaster(string &txt,const int &tag);
+
+    /**
      * Send mesh cell data from master rank to others, this should be called on master rank
      * @param meshcellvec the mesh cell vector to be sent
      * @param tag the id of the sending message

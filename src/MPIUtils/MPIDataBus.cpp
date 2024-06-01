@@ -28,6 +28,27 @@ void MPIDataBus::receiveIntegerFromMaster(int &val,const int &tag){
     MPI_Wait(&request,MPI_STATUS_IGNORE);
 }
 //********************************************************
+void MPIDataBus::sendStringToOthers(const string &txt,const int &tag,const int &cpuid){
+    MPI_Request request;
+    int datasize;
+    datasize=static_cast<int>(txt.size());
+    MPI_Isend(&datasize,1,MPI_INT,cpuid,tag,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    //
+    MPI_Isend(txt.data(),datasize,MPI_CHAR,cpuid,tag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+}
+void MPIDataBus::receiveStringFromMaster(string &txt,const int &tag){
+    MPI_Request request;
+    int datasize;
+    MPI_Irecv(&datasize,1,MPI_INT,0,tag,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+    //
+    txt.resize(datasize);
+    MPI_Irecv(txt.data(),datasize,MPI_CHAR,0,tag+1,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+}
+//********************************************************
 void MPIDataBus::sendMeshCellToOthers(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
     int basetag;
     basetag=tag;
