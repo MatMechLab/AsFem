@@ -43,7 +43,7 @@ void Application::printAppInfo(const int &year,const int &month,const int &day,c
     string str;
     
     MessagePrinter::printStars(MessageColor::BLUE);
-    MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                      AAA");
+    MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                            AAA");
     
     MessagePrinter::printSingleTxt("*** ",MessageColor::BLUE);
     MessagePrinter::printSingleTxt("A",MessageColor::BLUE);
@@ -62,24 +62,24 @@ void Application::printAppInfo(const int &year,const int &month,const int &day,c
     //
     MessagePrinter::printSingleTxt("M",MessageColor::BLUE);
     MessagePrinter::printSingleTxt("ethod ",MessageColor::WHITE);
-    MessagePrinter::printSingleTxt("  // \\\\",MessageColor::BLUE);
-    MessagePrinter::printSingleTxt("                ***",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("        // \\\\",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("          ***",MessageColor::BLUE);
     MessagePrinter::printNewLine();
 
     snprintf(buff,50,"Version: %-10.2f  Release @ %4d-%02d-%02d",version,year,month,day);
     str=buff;
-    MessagePrinter::printWelcomeTxt(str+"               //   \\\\");
+    MessagePrinter::printWelcomeTxt(str+"                     //   \\\\");
 
     snprintf(buff,50,"PETSc version: %2d.%2d.%-2d",static_cast<int>(Major),static_cast<int>(Minor),static_cast<int>(SubMinor));
     str=buff;
-    MessagePrinter::printWelcomeTxt(str+"                                //     \\\\");
+    MessagePrinter::printWelcomeTxt(str+"                                      //     \\\\");
     
-    MessagePrinter::printWelcomeTxt("License: GPL-3.0                                      //       \\\\");
-    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ MM-Lab                            //_________\\\\");
-    MessagePrinter::printWelcomeTxt("Contact: yangbai90@outlook.com                      //-----------\\\\");
+    MessagePrinter::printWelcomeTxt("License: GPL-3.0                                            //       \\\\");
+    MessagePrinter::printWelcomeTxt("Author: Yang Bai @ MM-Lab                                  //_________\\\\");
+    MessagePrinter::printWelcomeTxt("Contact: yangbai90@outlook.com                            //___________\\\\");
 
-    MessagePrinter::printWelcomeTxt("QQ Group: 879908352                                //             \\\\");
-    MessagePrinter::printWelcomeTxt("Website: https://github.com/MatMechLab/AsFem      //               \\\\");
-    MessagePrinter::printWelcomeTxt("Feel free to use and discuss  .:.                **                 **");
+    MessagePrinter::printWelcomeTxt("QQ Group: 879908352                                      //             \\\\");
+    MessagePrinter::printWelcomeTxt("Website: https://github.com/MatMechLab/AsFem            //               \\\\");
+    MessagePrinter::printWelcomeTxt("Feel free to use and discuss  .:.                      **                 **");
     MessagePrinter::printStars(MessageColor::BLUE);
 }
