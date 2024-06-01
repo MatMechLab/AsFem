@@ -17,6 +17,17 @@
 
 #include "MPIUtils/MPIDataBus.h"
 
+void MPIDataBus::sendIntegerToOthers(const int &val,const int &tag,const int &cpuid){
+    MPI_Request request;
+    MPI_Isend(&val,1,MPI_INT,cpuid,tag,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+}
+void MPIDataBus::receiveIntegerFromMaster(int &val,const int &tag){
+    MPI_Request request;
+    MPI_Irecv(&val,1,MPI_INT,0,tag,MPI_COMM_WORLD,&request);
+    MPI_Wait(&request,MPI_STATUS_IGNORE);
+}
+//********************************************************
 void MPIDataBus::sendMeshCellToOthers(const vector<SingleMeshCell> &meshcellvec,const int &tag,const int &cpuid){
     int basetag;
     basetag=tag;

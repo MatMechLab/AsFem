@@ -35,6 +35,21 @@ public:
     MPIDataBus() {}
 
     /**
+     * Send integer from master rank to others, this should be called on master rank
+     * @param val the integer to be sent
+     * @param tag the id of the sending message
+     * @param cpuid the rank id used to receive the message
+    */
+    static void sendIntegerToOthers(const int &val,const int &tag,const int &cpuid);
+    /**
+     * Receive the integer from master rank, this should be called on each rank locally
+     * @param the mesh cell vector used to store the data from master rank
+     * @param tag the received message tag
+     * @param cpuid the cpuid to receive the message
+    */
+    static void receiveIntegerFromMaster(int &val,const int &tag);
+
+    /**
      * Send mesh cell data from master rank to others, this should be called on master rank
      * @param meshcellvec the mesh cell vector to be sent
      * @param tag the id of the sending message
