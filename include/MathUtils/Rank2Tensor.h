@@ -190,14 +190,13 @@ public:
         return *this;
     }
     /**
-     * add scalar value to diagnal element, the current tensor=old-tensor+I*a, where I is the identity tensor
+     * add scalar value to diagnal element, the new_tensor=old_tensor+I*a, where I is the identity tensor
      * @param val the scalar value to be added
      */
-    inline Rank2Tensor& addIa(const double &val){
+    inline void addIa(const double &val){
         (*this)(1,1)+=val;
         (*this)(2,2)+=val;
         (*this)(3,3)+=val;
-        return *this;
     }
     //*******************************
     //*** for -  operator
@@ -294,7 +293,7 @@ public:
     }
     /**
      * double dot(:, the double contruction) between rank-2 and rank-4 tensor, 
-     * the result is \f$\sum a_{ij}c_{ijkl}=b_{kl}\f$, which is a scalar
+     * the result is \f$\sum a_{ij}c_{ijkl}=b_{kl}\f$, which is a rank-2 tensor
      * @param a the right hand side rank-2 tensor
      */
     Rank2Tensor doubledot(const Rank4Tensor &a) const;
@@ -328,7 +327,7 @@ public:
      */
     inline Rank2Tensor operator/(const double &a) const{
         if(abs(a)<1.0e-16){
-            MessagePrinter::printErrorTxt("a="+to_string(a)+" is singular for / operator in rank-2 tensor");
+            MessagePrinter::printErrorTxt("a="+to_string(a)+" is singular for A/a operator in rank-2 tensor");
             MessagePrinter::exitAsFem();
         }
         Rank2Tensor temp(0.0);
@@ -605,9 +604,10 @@ public:
      */
     void setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy);
     /**
-     * fill up current rank-2 tensor from the gradient of ux and uy
+     * fill up current rank-2 tensor from the gradient of ux, uy, and uz
      * @param gradUx the gradient of Ux, namely, \f$\nabla u_{x}\f$
      * @param gradUy the gradient of Uy, namely, \f$\nabla u_{y}\f$
+     * @param gradUz the gradient of Uz, namely, \f$\nabla u_{z}\f$
      */
     void setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz);
     /**
@@ -742,11 +742,11 @@ public:
     /**
      * calculate the eigen value and eigen vector for current rank-2 tensor
      * @param eigval the double array, which stores the eigen value
-     * @param eigvec the rank-2 tensor, where each column store the related eigen vector
+     * @param eigvec the rank-2 tensor, whoses column stores the related eigen vector
      */
     void calcEigenValueAndEigenVectors(double (&eigval)[3],Rank2Tensor &eigvec) const;
     /**
-     * calculate the positive projection tensor(a rank-4 tensor), this algorithm is taken from Miehe's paper, for the details, please see the cpp file
+     * calculate the eigen value and eigen vector for current rank-2 tensor
      * @param eigval the double array, which stores the eigen value
      * @param eigvec the rank-2 tensor, whoses column stores the related eigen vector
      */

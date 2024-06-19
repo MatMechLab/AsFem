@@ -127,7 +127,7 @@ Rank2Tensor exp(const Rank2Tensor &a){
           +a*a*a*a*a*a*(1.0/(1.0*2.0*3.0*4.0*5.0*6.0));
 }
 Rank2Tensor dexp(const double &a,const Rank2Tensor &b){
-    // return dexp(ab)/db
+    // return dexp(ab)/da
     return b
           +b*b*a*(1.0/1.0)
           +b*b*b*a*a*(1.0/(1.0*2.0))
