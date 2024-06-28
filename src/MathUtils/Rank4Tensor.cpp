@@ -17,33 +17,52 @@
 #include "MathUtils/Rank4Tensor.h"
 
 Rank4Tensor::Rank4Tensor(){
-    m_vals.resize(81,0.0);
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            for(int k=0;k<3;k++){
+                for(int l=0;l<3;l++){
+                    m_vals[i][j][k][l]=0.0;
+                }
+            }
+        }
+    }
 }
 Rank4Tensor::Rank4Tensor(const double &val){
-    m_vals.resize(81,val);
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            for(int k=0;k<3;k++){
+                for(int l=0;l<3;l++){
+                    m_vals[i][j][k][l]=val;
+                }
+            }
+        }
+    }
 }
 Rank4Tensor::Rank4Tensor(const Rank4Tensor &a){
-    m_vals.resize(81,0.0);
-    for(int i=0;i<N4;i++) m_vals[i]=a.m_vals[i];
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            for(int k=0;k<3;k++){
+                for(int l=0;l<3;l++){
+                    m_vals[i][j][k][l]=a.m_vals[i][j][k][l];
+                }
+            }
+        }
+    }
 }
 Rank4Tensor::Rank4Tensor(const InitMethod &method){
     if(method==InitMethod::ZERO){
-        m_vals.resize(81,0.0);
+        setToZeros();
     }
     else if(method==InitMethod::IDENTITY){
-        m_vals.resize(81,0.0);
         setToIdentity();
     }
     else if(method==InitMethod::IDENTITY4){
-        m_vals.resize(81,0.0);
         setToIdentity4();
     }
     else if(method==InitMethod::IDENTITY4SYMMETRIC){
-        m_vals.resize(81,0.0);
         setToIdentity4Symmetric();
     }
     else if(method==InitMethod::IDENTITY4TRANS){
-        m_vals.resize(81,0.0);
         setIdentity4Transpose();
     }
     else{
@@ -52,7 +71,6 @@ Rank4Tensor::Rank4Tensor(const InitMethod &method){
     }
 }
 Rank4Tensor::~Rank4Tensor(){
-    m_vals.clear();
 }
 //************************************************************************
 double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
@@ -67,13 +85,13 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
             return (*this)(1,1,3,3);
         }
         else if(j==4){
-            return (*this)(1,1,2,3);
+            return (*this)(1,1,1,2);
         }
         else if(j==5){
-            return (*this)(1,1,1,3);
+            return (*this)(1,1,2,3);
         }
         else if(j==6){
-            return (*this)(1,1,1,2);
+            return (*this)(1,1,3,1);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -82,7 +100,7 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==2){
         if(j==1){
-            return (*this)(2,2,1,1);
+            return (*this)(1,1,2,2);
         }
         else if(j==2){
             return (*this)(2,2,2,2);
@@ -91,13 +109,13 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
             return (*this)(2,2,3,3);
         }
         else if(j==4){
-            return (*this)(2,2,2,3);
+            return (*this)(2,2,1,2);
         }
         else if(j==5){
-            return (*this)(2,2,1,3);
+            return (*this)(2,2,2,3);
         }
         else if(j==6){
-            return (*this)(2,2,1,2);
+            return (*this)(2,2,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -106,22 +124,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==3){
         if(j==1){
-            return (*this)(3,3,1,1);
+            return (*this)(1,1,3,3);
         }
         else if(j==2){
-            return (*this)(3,3,2,2);
+            return (*this)(2,2,3,3);
         }
         else if(j==3){
             return (*this)(3,3,3,3);
         }
         else if(j==4){
-            return (*this)(3,3,2,3);
+            return (*this)(3,3,1,2);
         }
         else if(j==5){
-            return (*this)(3,3,1,3);
+            return (*this)(3,3,2,3);
         }
         else if(j==6){
-            return (*this)(3,3,1,2);
+            return (*this)(3,3,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -130,22 +148,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==4){
         if(j==1){
-            return (*this)(2,3,1,1);
+            return (*this)(1,1,1,2);
         }
         else if(j==2){
-            return (*this)(2,3,2,2);
+            return (*this)(2,2,1,2);
         }
         else if(j==3){
-            return (*this)(2,3,3,3);
+            return (*this)(3,3,1,2);
         }
         else if(j==4){
-            return (*this)(2,3,2,3);
+            return (*this)(1,2,1,2);
         }
         else if(j==5){
-            return (*this)(2,3,1,3);
+            return (*this)(1,2,2,3);
         }
         else if(j==6){
-            return (*this)(2,3,1,2);
+            return (*this)(1,2,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -154,22 +172,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==5){
         if(j==1){
-            return (*this)(1,3,1,1);
+            return (*this)(1,1,2,3);
         }
         else if(j==2){
-            return (*this)(1,3,2,2);
+            return (*this)(2,2,2,3);
         }
         else if(j==3){
-            return (*this)(1,3,3,3);
+            return (*this)(3,3,2,3);
         }
         else if(j==4){
-            return (*this)(1,3,2,3);
+            return (*this)(1,2,2,3);
         }
         else if(j==5){
-            return (*this)(1,3,1,3);
+            return (*this)(2,3,2,3);
         }
         else if(j==6){
-            return (*this)(1,3,1,2);
+            return (*this)(2,3,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -178,22 +196,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==6){
         if(j==1){
-            return (*this)(1,2,1,1);
+            return (*this)(1,1,1,3);
         }
         else if(j==2){
-            return (*this)(1,2,2,2);
+            return (*this)(2,2,1,3);
         }
         else if(j==3){
-            return (*this)(1,2,3,3);
+            return (*this)(3,3,1,3);
         }
         else if(j==4){
-            return (*this)(1,2,2,3);
-        }
-        else if(j==5){
             return (*this)(1,2,1,3);
         }
+        else if(j==5){
+            return (*this)(2,3,1,3);
+        }
         else if(j==6){
-            return (*this)(1,2,1,2);
+            return (*this)(1,3,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -219,13 +237,13 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
             return (*this)(1,1,3,3);
         }
         else if(j==4){
-            return (*this)(1,1,2,3);
+            return (*this)(1,1,1,2);
         }
         else if(j==5){
-            return (*this)(1,1,1,3);
+            return (*this)(1,1,2,3);
         }
         else if(j==6){
-            return (*this)(1,1,1,2);
+            return (*this)(1,1,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -234,7 +252,7 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==2){
         if(j==1){
-            return (*this)(2,2,1,1);
+            return (*this)(1,1,2,2);
         }
         else if(j==2){
             return (*this)(2,2,2,2);
@@ -243,13 +261,13 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
             return (*this)(2,2,3,3);
         }
         else if(j==4){
-            return (*this)(2,2,2,3);
+            return (*this)(2,2,1,2);
         }
         else if(j==5){
-            return (*this)(2,2,1,3);
+            return (*this)(2,2,2,3);
         }
         else if(j==6){
-            return (*this)(2,2,1,2);
+            return (*this)(2,2,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -258,22 +276,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==3){
         if(j==1){
-            return (*this)(3,3,1,1);
+            return (*this)(1,1,3,3);
         }
         else if(j==2){
-            return (*this)(3,3,2,2);
+            return (*this)(2,2,3,3);
         }
         else if(j==3){
             return (*this)(3,3,3,3);
         }
         else if(j==4){
-            return (*this)(3,3,2,3);
+            return (*this)(3,3,1,2);
         }
         else if(j==5){
-            return (*this)(3,3,1,3);
+            return (*this)(3,3,2,3);
         }
         else if(j==6){
-            return (*this)(3,3,1,2);
+            return (*this)(3,3,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -282,22 +300,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==4){
         if(j==1){
-            return (*this)(2,3,1,1);
+            return (*this)(1,1,1,2);
         }
         else if(j==2){
-            return (*this)(2,3,2,2);
+            return (*this)(2,2,1,2);
         }
         else if(j==3){
-            return (*this)(2,3,3,3);
+            return (*this)(3,3,1,2);
         }
         else if(j==4){
-            return (*this)(2,3,2,3);
+            return (*this)(1,2,1,2);
         }
         else if(j==5){
-            return (*this)(2,3,1,3);
+            return (*this)(1,2,2,3);
         }
         else if(j==6){
-            return (*this)(2,3,1,2);
+            return (*this)(1,2,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -306,22 +324,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==5){
         if(j==1){
-            return (*this)(1,3,1,1);
+            return (*this)(1,1,2,3);
         }
         else if(j==2){
-            return (*this)(1,3,2,2);
+            return (*this)(2,2,2,3);
         }
         else if(j==3){
-            return (*this)(1,3,3,3);
+            return (*this)(3,3,2,3);
         }
         else if(j==4){
-            return (*this)(1,3,2,3);
+            return (*this)(1,2,2,3);
         }
         else if(j==5){
-            return (*this)(1,3,1,3);
+            return (*this)(2,3,2,3);
         }
         else if(j==6){
-            return (*this)(1,3,1,2);
+            return (*this)(2,3,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -330,22 +348,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==6){
         if(j==1){
-            return (*this)(1,2,1,1);
+            return (*this)(1,1,1,3);
         }
         else if(j==2){
-            return (*this)(1,2,2,2);
+            return (*this)(2,2,1,3);
         }
         else if(j==3){
-            return (*this)(1,2,3,3);
+            return (*this)(3,3,1,3);
         }
         else if(j==4){
-            return (*this)(1,2,2,3);
-        }
-        else if(j==5){
             return (*this)(1,2,1,3);
         }
+        else if(j==5){
+            return (*this)(2,3,1,3);
+        }
         else if(j==6){
-            return (*this)(1,2,1,2);
+            return (*this)(1,3,1,3);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -361,12 +379,11 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
 //************************************************************************
 Rank4Tensor Rank4Tensor::operator*(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
-                    temp(i,j,k,l)=0.0;
-                    for(int m=1;m<=N;m++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
+                    for(int m=1;m<=3;m++){
                         temp(i,j,k,l)+=(*this)(i,j,k,m)*a(m,l);
                     }
                 }
@@ -377,11 +394,10 @@ Rank4Tensor Rank4Tensor::operator*(const Rank2Tensor &a) const{
 }
 Rank2Tensor Rank4Tensor::doubledot(const Rank2Tensor &a) const{
     Rank2Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            temp(i,j)=0.0;
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j)+=(*this)(i,j,k,l)*a(k,l);
                 }
             }
@@ -391,13 +407,12 @@ Rank2Tensor Rank4Tensor::doubledot(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank4Tensor::doubledot(const Rank4Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
-                    temp(i,j,k,l)=0.0;
-                    for(int m=1;m<=N;m++){
-                        for(int n=1;n<=N;n++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
+                    for(int m=1;m<=3;m++){
+                        for(int n=1;n<=3;n++){
                             temp(i,j,k,l)+=(*this)(i,j,m,n)*a(m,n,k,l);
                         }
                     }
@@ -412,18 +427,25 @@ Rank4Tensor Rank4Tensor::doubledot(const Rank4Tensor &a) const{
 //*******************************************************************
 Rank4Tensor operator*(const double &lhs,const Rank4Tensor &a){
     Rank4Tensor temp(0.0);
-    for(int i=0;i<a.N4;i++) temp.m_vals[i]=lhs*a.m_vals[i];
+    for(int i=0;i<3;i++){
+        for(int j=0;j<3;j++){
+            for(int k=0;k<3;k++){
+                for(int l=0;l<3;l++){
+                    temp.m_vals[i][j][k][l]=lhs*a.m_vals[i][j][k][l];
+                }
+            }
+        }
+    }
     return temp;
 }
 Rank4Tensor operator*(const Rank2Tensor &lhs,const Rank4Tensor &a){
     // C_ijkl=B_ip*A_pjkl
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=a.N;i++){
-        for(int j=1;j<=a.N;j++){
-            for(int k=1;k<=a.N;k++){
-                for(int l=1;l<=a.N;l++){
-                    temp(i,j,k,l)=0.0;
-                    for(int p=1;p<=a.N;p++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
+                    for(int p=1;p<=3;p++){
                         temp(i,j,k,l)+=lhs(i,p)*a(p,j,k,l);
                     }
                 }
@@ -439,10 +461,10 @@ void Rank4Tensor::setFromLameAndG(const double &Lame,const double &G){
     // taken from: https://en.wikipedia.org/wiki/Linear_elasticity
     // C_ijkl = Lame*de_ij*de_kl + G*(de_ik*de_jl + de_il*de_jk)
     setToZeros();
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     (*this)(i,j,k,l)=Lame*(i==j)*(k==l)
                                     +G*(i==k)*(j==l)
                                     +G*(i==l)*(j==k);
@@ -488,10 +510,10 @@ void Rank4Tensor::setFromSymmetric9(const vector<double> &vec){
     (*this)(1,2,1,2)=vec[8];
 
     // complete the symmetric part
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     (*this)(i,j,l,k)=(*this)(i,j,k,l);
 
                     (*this)(j,i,k,l)=(*this)(i,j,k,l);
@@ -533,10 +555,10 @@ void Rank4Tensor::setToOrthotropic(const vector<double> &vec){
     (*this)(1,2,1,2)=vec[8];
 
     // complete the symmetric part
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     (*this)(i,j,l,k)=(*this)(i,j,k,l);
 
                     (*this)(j,i,k,l)=(*this)(i,j,k,l);
@@ -562,7 +584,7 @@ Rank4Tensor Rank4Tensor::rotate(const Rank2Tensor &rot) const{
         for(int j=1;j<=3;j++){
             for(int k=1;k<=3;k++){
                 for(int l=1;l<=3;l++){
-                    temp(i,j,k,l)=0.0;
+                    //
                     for(int m=1;m<=3;m++){
                         for(int n=1;n<=3;n++){
                             for(int p=1;p<=3;p++){
@@ -587,15 +609,15 @@ Rank4Tensor Rank4Tensor::pushForward(const Rank2Tensor &F) const{
     // push forward the jacobian from reference one to the current configuration or similar operation
     // new Ran-4 tensor c_ijkl=F_iA*F_jB*F_kC*F_lD*C_ABCD
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
-                    temp(i,j,k,l)=0.0;
-                    for(int A=1;A<=N;A++){
-                        for(int B=1;B<=N;B++){
-                            for(int C=1;C<=N;C++){
-                                for(int D=1;D<=N;D++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
+                    //
+                    for(int A=1;A<=3;A++){
+                        for(int B=1;B<=3;B++){
+                            for(int C=1;C<=3;C++){
+                                for(int D=1;D<=3;D++){
                                     temp(i,j,k,l)+=F(i,A)*F(j,B)*F(k,C)*F(l,D)*(*this)(A,B,C,D);
                                 }
                             }
@@ -611,12 +633,12 @@ Rank4Tensor Rank4Tensor::conjPushForward(const Rank2Tensor &F) const{
     // calculate the conjugate rank-4 tensor regulate by F
     // C_ijkl=F_im*C_mjnl*F_kn
     Rank4Tensor A(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
-                    for(int m=1;m<=N;m++){
-                        for(int n=1;n<=N;n++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
+                    for(int m=1;m<=3;m++){
+                        for(int n=1;n<=3;n++){
                             A(i,j,k,l)+=F(i,m)*(*this)(m,j,n,l)*F(k,n);
                         }
                     }
