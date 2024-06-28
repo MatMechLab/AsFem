@@ -92,7 +92,7 @@ public:
             MessagePrinter::printErrorTxt("i="+to_string(i)+" or j="+to_string(j)+" is out of range when you call a rank-2 tensor");
             MessagePrinter::exitAsFem();
         }
-        return m_vals[(i-1)*N+j-1];
+        return m_vals[i-1][j-1];
     }
     /** for index based access(start from 1, instead of zero !!!)
      * @param i i index of the rank-2 tensor, start from 1
@@ -103,32 +103,7 @@ public:
             MessagePrinter::printErrorTxt("i="+to_string(i)+" or j="+to_string(j)+" is out of range when you call a rank-2 tensor");
             MessagePrinter::exitAsFem();
         }
-        return m_vals[(i-1)*N+j-1];
-    }
-    //*******************************
-    //*** for []  operator
-    //*******************************
-    /**
-     * [] operator for element access
-     * @param i global index, range from 1~9
-     */
-    inline double operator[](const int &i) const{
-        if(i<1||i>N2){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range when you call a rank-2 tensor");
-            MessagePrinter::exitAsFem();
-        }
-        return m_vals[i-1];
-    }
-    /**
-     * [] operator for element access
-     * @param i global index, range from 1~9
-     */
-    inline double& operator[](const int &i){
-        if(i<1||i>N2){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range when you call a rank-2 tensor");
-            MessagePrinter::exitAsFem();
-        }
-        return m_vals[i-1];
+        return m_vals[i-1][j-1];
     }
     //*******************************
     //*** for =  operator
@@ -138,7 +113,9 @@ public:
      * @param a right hand side scalar
      */
     inline Rank2Tensor& operator=(const double &a){
-        for(int i=0;i<N2;i++) m_vals[i]=a;
+        for(int i=0;i<3;i++){
+            m_vals[i][0]=a;m_vals[i][1]=a;m_vals[i][2]=a;
+        }
         return *this;
     }
     /**
@@ -146,7 +123,9 @@ public:
      * @param a the right hand side rank-2 tensor
      */
     inline Rank2Tensor& operator=(const Rank2Tensor &a){
-        for(int i=0;i<N2;i++) m_vals[i]=a.m_vals[i];
+        for(int i=1;i<=3;i++){
+            m_vals[i-1][0]=a(i,1);m_vals[i-1][1]=a(i,2);m_vals[i-1][2]=a(i,3);
+        }
         return *this;
     }
     //*******************************
@@ -158,7 +137,11 @@ public:
      */
     inline Rank2Tensor operator+(const double &a) const{
         Rank2Tensor temp(0.0);
-        for(int i=0;i<N2;i++) temp.m_vals[i]=m_vals[i]+a;
+        for(int i=1;i<=3;i++){
+            temp.m_vals[i-1][0]=m_vals[i-1][0]+a;
+            temp.m_vals[i-1][1]=m_vals[i-1][1]+a;
+            temp.m_vals[i-1][2]=m_vals[i-1][2]+a;
+        }
         return temp;
     }
     /**
@@ -167,7 +150,11 @@ public:
      */
     inline Rank2Tensor operator+(const Rank2Tensor &a) const{
         Rank2Tensor temp(0.0);
-        for(int i=0;i<N2;i++) temp.m_vals[i]=m_vals[i]+a.m_vals[i];
+        for(int i=1;i<=3;i++){
+            temp.m_vals[i-1][0]=m_vals[i-1][0]+a(i,1);
+            temp.m_vals[i-1][1]=m_vals[i-1][1]+a(i,2);
+            temp.m_vals[i-1][2]=m_vals[i-1][2]+a(i,3);
+        }
         return temp;
     }
     //*******************************
@@ -178,7 +165,11 @@ public:
      * @param a right hand side scalar
      */
     inline Rank2Tensor& operator+=(const double &a) {
-        for(int i=0;i<N2;i++) m_vals[i]+=a;
+        for(int i=0;i<3;i++){
+            m_vals[i][0]=m_vals[i][0]+a;
+            m_vals[i][1]=m_vals[i][1]+a;
+            m_vals[i][2]=m_vals[i][2]+a;
+        }
         return *this;
     }
     /**
@@ -186,7 +177,11 @@ public:
      * @param a right hand side tensor
      */
     inline Rank2Tensor& operator+=(const Rank2Tensor &a){
-        for(int i=0;i<N2;i++) m_vals[i]+=a.m_vals[i];
+        for(int i=0;i<3;i++){
+            m_vals[i][0]=m_vals[i][0]+a.m_vals[i][0];
+            m_vals[i][1]=m_vals[i][1]+a.m_vals[i][1];
+            m_vals[i][2]=m_vals[i][2]+a.m_vals[i][2];
+        }
         return *this;
     }
     /**
@@ -207,7 +202,11 @@ public:
      */
     inline Rank2Tensor operator-(const double &a) const{
         Rank2Tensor temp(0.0);
-        for(int i=0;i<N2;i++) temp.m_vals[i]=m_vals[i]-a;
+        for(int i=0;i<3;i++){
+            temp.m_vals[i][0]=m_vals[i][0]-a;
+            temp.m_vals[i][1]=m_vals[i][1]-a;
+            temp.m_vals[i][2]=m_vals[i][2]-a;
+        }
         return temp;
     }
     /**
@@ -216,7 +215,11 @@ public:
      */
     inline Rank2Tensor operator-(const Rank2Tensor &a) const{
         Rank2Tensor temp(0.0);
-        for(int i=0;i<N2;i++) temp.m_vals[i]=m_vals[i]-a.m_vals[i];
+        for(int i=0;i<3;i++){
+            temp.m_vals[i][0]=m_vals[i][0]-a.m_vals[i][0];
+            temp.m_vals[i][1]=m_vals[i][1]-a.m_vals[i][1];
+            temp.m_vals[i][2]=m_vals[i][2]-a.m_vals[i][2];
+        }
         return temp;
     }
     //*******************************
@@ -227,7 +230,11 @@ public:
      * @param a right hand side scalar
      */
     inline Rank2Tensor& operator-=(const double &a) {
-        for(int i=0;i<N2;i++) m_vals[i]-=a;
+        for(int i=0;i<3;i++){
+            m_vals[i][0]=m_vals[i][0]-a;
+            m_vals[i][1]=m_vals[i][1]-a;
+            m_vals[i][2]=m_vals[i][2]-a;
+        }
         return *this;
     }
     /**
@@ -235,7 +242,11 @@ public:
      * @param a right hand side tensor
      */
     inline Rank2Tensor& operator-=(const Rank2Tensor &a){
-        for(int i=0;i<N2;i++) m_vals[i]-=a.m_vals[i];
+        for(int i=0;i<3;i++){
+            m_vals[i][0]=m_vals[i][0]-a.m_vals[i][0];
+            m_vals[i][1]=m_vals[i][1]-a.m_vals[i][1];
+            m_vals[i][2]=m_vals[i][2]-a.m_vals[i][2];
+        }
         return *this;
     }
     //*******************************
@@ -247,7 +258,11 @@ public:
      */
     inline Rank2Tensor operator*(const double &a) const{
         Rank2Tensor temp(0.0);
-        for(int i=0;i<N2;++i) temp.m_vals[i]=m_vals[i]*a;
+        for(int i=0;i<3;i++){
+            temp.m_vals[i][0]=m_vals[i][0]*a;
+            temp.m_vals[i][1]=m_vals[i][1]*a;
+            temp.m_vals[i][2]=m_vals[i][2]*a;
+        }
         return temp;
     }
     /**
@@ -256,7 +271,7 @@ public:
      */
     inline Vector3d operator*(const Vector3d &a) const{
         Vector3d temp(0.0);
-        for(int i=1;i<=N;i++){
+        for(int i=1;i<=3;i++){
             temp(i)=(*this)(i,1)*a(1)+(*this)(i,2)*a(2)+(*this)(i,3)*a(3);
         }
         return temp;
@@ -268,9 +283,11 @@ public:
     inline Rank2Tensor operator*(const Rank2Tensor &a) const{
         // return A*B(still rank-2 tensor)
         Rank2Tensor temp(0.0);
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
-                temp(i,j)=(*this)(i,1)*a(1,j)+(*this)(i,2)*a(2,j)+(*this)(i,3)*a(3,j);
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
+                for(int k=1;k<=3;k++){
+                    temp(i,j)+=(*this)(i,k)*a(k,j);
+                }
             }
         }
         return temp;
@@ -282,8 +299,8 @@ public:
     inline double doubledot(const Rank2Tensor &a) const{
         // return A:B calculation
         double sum=0.0;
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
                 // You may see A:B=A_ijB_ji in other books/literature, here we use A_ijB_ij
                 // in Rank4Tensor, we follow the same definition!
                 sum+=(*this)(i,j)*a(i,j);// use this to get the positive definite case!!!
@@ -305,7 +322,9 @@ public:
      * @param a right hand side scalar
      */
     inline Rank2Tensor& operator*=(const double &a) {
-        for(int i=0;i<N2;i++) m_vals[i]*=a;
+        for(int i=0;i<3;i++){
+            m_vals[i][0]*=a;m_vals[i][1]*=a;m_vals[i][2]*=a;
+        }
         return *this;
     }
     /**
@@ -331,7 +350,11 @@ public:
             MessagePrinter::exitAsFem();
         }
         Rank2Tensor temp(0.0);
-        for(int i=0;i<N2;i++) temp.m_vals[i]=m_vals[i]/a;
+        for(int i=0;i<3;i++) {
+            temp.m_vals[i][0]=m_vals[i][0]/a;
+            temp.m_vals[i][1]=m_vals[i][1]/a;
+            temp.m_vals[i][2]=m_vals[i][2]/a;
+        }
         return temp;
     }
     //*******************************
@@ -346,7 +369,11 @@ public:
             MessagePrinter::printErrorTxt("a="+to_string(a)+" is singular for /= operator in rank-2 tensor");
             MessagePrinter::exitAsFem();
         }
-        for(int i=0;i<N2;i++) m_vals[i]/=a;
+        for(int i=0;i<3;i++){
+            m_vals[i][0]=m_vals[i][0]/a;
+            m_vals[i][1]=m_vals[i][1]/a;
+            m_vals[i][2]=m_vals[i][2]/a;
+        }
         return *this;
     }
     //*******************************************************************
@@ -540,14 +567,16 @@ public:
      * set the elements of current rank-2 tensor to be zero
      */
     inline void setToZeros(){
-        for(int i=0;i<N2;i++) m_vals[i]=0.0;
+        for(int i=0;i<3;i++) {
+            m_vals[i][0]=0.0;m_vals[i][1]=0.0;m_vals[i][2]=0.0;
+        }
     }
     /**
      * set current rannk-2 tensor to be an identitiy tensor, where \f$a_{ij}=\delta_{ij}\f$.
      */
     inline void setToIdentity(){
-        for(int i=1;i<=N;++i){
-            for(int j=1;j<=N;++j){
+        for(int i=1;i<=3;++i){
+            for(int j=1;j<=3;++j){
                 if(i==j){
                     (*this)(i,j)=1.0;
                 }
@@ -562,8 +591,8 @@ public:
      */
     inline void setToRandom(){
         srand(time(0));
-        for(int i=1;i<=N;++i){
-            for(int j=1;j<=N;++j){
+        for(int i=1;i<=3;++i){
+            for(int j=1;j<=3;++j){
                 (*this)(i,j)=static_cast<double>(1.0*rand()/RAND_MAX);
             }
         }
@@ -574,8 +603,8 @@ public:
      * @param b vector<double> for 2nd dimension
      */
     inline void setFromVectorDyad(const vector<double> &a,const vector<double> &b){
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
                 (*this)(i,j)=a[i-1]*b[j-1];
             }
         }
@@ -586,8 +615,8 @@ public:
      * @param b the second vector
      */ 
     inline void setFromVectorDyad(const Vector3d &a,const Vector3d &b){
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
                 (*this)(i,j)=a(i)*b(j);
             }
         }
@@ -645,7 +674,11 @@ public:
      */
     inline double norm() const{
         double sum=0.0;
-        for(int i=0;i<N2;i++) sum+=static_cast<double>(m_vals[i]*m_vals[i]);
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                sum+=static_cast<double>(m_vals[i][j]*m_vals[i][j]);
+            }
+        }
         return sqrt(sum);
     }
     
@@ -654,7 +687,11 @@ public:
      */
     inline double normsq() const{
         double sum=0.0;
-        for(int i=0;i<N2;i++) sum+=static_cast<double>(m_vals[i]*m_vals[i]);
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                sum+=static_cast<double>(m_vals[i][j]*m_vals[i][j]);
+            }
+        }
         return sum;
     }
     //*** for the different invariants of stress(strain)
@@ -712,8 +749,8 @@ public:
      */
     inline Rank2Tensor transpose() const{
         Rank2Tensor temp(0.0);
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
                 temp(i,j)=(*this)(j,i);
             }
         }
@@ -770,7 +807,5 @@ public:
 
 
 private:
-    const int N=3;/**< the dimension of current rank-2 tensor */
-    const int N2=9;/**< the total length of current rank-2 tensor */
-    vector<double> m_vals;/**< vector for the elements of rank-2 tensor */
+    double m_vals[3][3];/**< matrix for the rank-2 tensor */
 };
