@@ -30,6 +30,7 @@
 #include "Utils/StringUtils.h"
 
 #include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "FE/FE.h"
@@ -95,6 +96,30 @@ public:
                        OutputSystem &t_output,
                        Postprocessor &t_postprocess,
                        FEJobBlock &t_jobblock);
+    /**
+     * read the input file (json)
+     * @param t_fecell the fecell class
+     * @param t_dofhandler the dofhandler class
+     * @param t_elmtSystem the element system class
+     * @param t_fe the fe space class for shape function and qpoints
+     * @param t_bcsystem the boundary condition system class
+     * @param t_icsystem the initial condition system class
+     * @param t_projsystem the projection system class
+     * @param t_nlsolver the nonlinear solver system
+     * @param t_timestepping the time stepping system
+     * @param t_output the output system
+     * @param t_postprocess the postprocessor system
+     * @param t_jobblock the job block
+     */
+    bool readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,ElmtSystem &t_elmtSystem,
+                       FE &t_fe,
+                       BCSystem &t_bcsystem,ICSystem &t_icsystem,
+                       ProjectionSystem &t_projsystem,
+                       NonlinearSolver &t_nlsolver,
+                       TimeStepping &t_timestepping,
+                       OutputSystem &t_output,
+                       Postprocessor &t_postprocess,
+                       FEJobBlock &t_jobblock);
     //*******************************************************
     //*** gettings
     //*******************************************************
@@ -115,6 +140,12 @@ private:
      * @param t_mesh the mesh class
      */
     bool readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh);
+    /**
+     * read the mesh block from json file
+     * @param t_json the json parse which contains 'mesh'
+     * @param t_fecell the fecell class
+     */
+    bool readMeshBlock(nlohmann::json &t_json,FECell &t_fecell);
     /**
      * read the dofs block from json file
      * @param t_json the json parse which contains 'dofs'
