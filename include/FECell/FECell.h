@@ -89,6 +89,115 @@ public:
      * Get the reference of fecell data
     */
     inline FECellData& getCellDataRef(){return m_CellData;}
+    /**
+     * Get the copy of fecell data
+    */
+    inline FECellData getCellDataCopy()const{return m_CellData;}
+
+
+    /**
+     * Get the number of bulk FE cell
+     */
+    inline int getBulkFECellNum()const{return m_CellData.BulkElmtsNum;}
+    /**
+     * Get the number of surface FE cell
+     */
+    inline int getSurfFECellNum()const{return m_CellData.SurfElmtsNum;}
+    /**
+     * Get the number of line FE cell
+     */
+    inline int getLineFECellNum()const{return m_CellData.LineElmtsNum;}
+    /**
+     * Get the copy of the local bulk mesh cell vector
+     */
+    inline vector<SingleMeshCell>  getLocalBulkFECellVecCopy()const{return m_CellData.MeshCell_Local;}
+    /**
+     * Get the reference of the local bulk mesh cell vector
+     */
+    inline vector<SingleMeshCell>& getLocalBulkFECellVecRef(){return m_CellData.MeshCell_Local;}
+
+    /**
+     * Get the copy of local physical id to fe cell vector mapping
+     */
+    inline map<int,vector<SingleMeshCell>> getLocalPhyID2MeshCellVectorMapCopy()const{
+        return m_CellData.PhyID2MeshCellVectorMap_Local;
+    }
+    /**
+     * Get the reference of local physical id to fe cell vector mapping
+     */
+    inline map<int,vector<SingleMeshCell>>& getLocalPhyID2MeshCellVectorMapRef(){
+        return m_CellData.PhyID2MeshCellVectorMap_Local;
+    }
+
+    /**
+     * Get the copy of global physical id to fe cell vector mapping
+     */
+    inline map<int,vector<SingleMeshCell>> getGlobalPhyID2MeshCellVectorMapCopy()const{
+        return m_CellData.PhyID2MeshCellVectorMap_Global;
+    }
+    /**
+     * Get the reference of local physical id to fe cell vector mapping
+     */
+    inline map<int,vector<SingleMeshCell>>& getGlobalPhyID2MeshCellVectorMapRef(){
+        return m_CellData.PhyID2MeshCellVectorMap_Global;
+    }
+
+    /**
+     * Get the copy of the local physical name to fe cell vector mapping
+     */
+    inline map<string,vector<SingleMeshCell>> getLocalPhyName2MeshCellVectorMapCopy()const{
+        return m_CellData.PhyName2MeshCellVectorMap_Local;
+    }
+    /**
+     * Get the reference of the local physical name to fe cell vector mapping
+     */
+    inline map<string,vector<SingleMeshCell>>& getLocalPhyName2MeshCellVectorMapRef(){
+        return m_CellData.PhyName2MeshCellVectorMap_Local;
+    }
+    /**
+     * Get the copy of the global physical name to fe cell vector mapping
+     */
+    inline map<string,vector<SingleMeshCell>> getGlobalPhyName2MeshCellVectorMapCopy()const{
+        return m_CellData.PhyName2MeshCellVectorMap_Global;
+    }
+    /**
+     * Get the reference of the global physical name to fe cell vector mapping
+     */
+    inline map<string,vector<SingleMeshCell>>& getGlobalPhyName2MeshCellVectorMapRef(){
+        return m_CellData.PhyName2MeshCellVectorMap_Global;
+    }
+
+    //********************************************************
+    //*** for physical group info
+    //********************************************************
+    /**
+     * Get the number of physical groups
+     */
+    inline int getPhysicalGroupNum()const{return m_CellData.PhyGroupNum_Global;}
+    /**
+     * Get the physical group dim vector copy
+     */
+    inline vector<int> getPhysicalGroupDimVecCopy()const{return m_CellData.PhyDimVector_Global;}
+    /**
+     * Get the physical group id vector copy
+     */
+    inline vector<int> getPhysicalGroupIDVecCopy()const{return m_CellData.PhyIDVector_Global;}
+    /**
+     * Get the physical group name vector copy
+     */
+    inline vector<string> getPhysicalGroupNameVecCopy()const{return m_CellData.PhyNameVector_Global;}
+    /**
+     * Get the physical group elements number vector copy
+     */
+    inline vector<int> getPhysicalGroupElmtsNumVecCopy()const{return m_CellData.PhyGroupElmtsNumVector_Global;}
+    /**
+     * Get physical id to physical name mapping 
+     */
+    inline map<int,string> getPhysicalID2NameMapCopy()const{return m_CellData.PhyID2NameMap_Global;}
+    /**
+     * Get the physical name to physical id mapping
+     */
+    inline map<string,int> getPhysicalName2IDMapCopy()const{return m_CellData.PhyName2IDMap_Global;}
 
     /**
      * Save the FECell mesh to vtu file
