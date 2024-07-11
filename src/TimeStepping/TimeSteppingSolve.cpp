@@ -14,7 +14,7 @@
 
 #include "TimeStepping/TimeStepping.h"
 
-bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
+bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
                          ElmtSystem &elmtsystem,MateSystem &matesystem,
                          FESystem &fesystem,
                          BCSystem &bcsystem,
@@ -34,31 +34,31 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
     fectrlinfo.CurrentStep=0;
 
     solutionsystem.m_u_current.setToZero();
-    icsystem.applyInitialConditions(mesh,dofhandler,solutionsystem.m_u_current);
+    icsystem.applyInitialConditions(fecell,dofhandler,solutionsystem.m_u_current);
     solutionsystem.m_u_old.copyFrom(solutionsystem.m_u_current);
     solutionsystem.m_u_older.copyFrom(solutionsystem.m_u_current);
 
     // initialize the material
     fesystem.formBulkFE(FECalcType::INITMATERIAL,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,
-                        mesh,dofhandler,fe,
+                        fecell,dofhandler,fe,
                         elmtsystem,matesystem,
                         solutionsystem,
                         equationsystem.m_amatrix,equationsystem.m_rhs);
-    projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
+    projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
     MessagePrinter::printDashLine();
     MessagePrinter::printNormalTxt("Material properties have been initialized");
     MessagePrinter::printDashLine();
     
     output.savePVDHead();
     output.savePVDEnd();
-    output.saveResults2File(0,mesh,dofhandler,solutionsystem,projection);
+    output.saveResults2File(0,fecell,dofhandler,solutionsystem,projection);
     output.savePVDResults(0.0);
     MessagePrinter::printDashLine(MessageColor::BLUE);
     MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);
     MessagePrinter::printDashLine(MessageColor::BLUE);
     if(postprocess.hasPostprocess()){
         postprocess.prepareCSVFileHeader();
-        postprocess.executePostprocess(mesh,dofhandler,fe,matesystem,projection,solutionsystem);
+        postprocess.executePostprocess(fecell,dofhandler,fe,matesystem,projection,solutionsystem);
         postprocess.savePPSResults2CSVFile(0.0);
         MessagePrinter::printDashLine(MessageColor::BLUE);
         MessagePrinter::printNormalTxt("Save postprocess result to "+postprocess.getCSVFileName(),MessageColor::BLUE);
@@ -70,7 +70,7 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
         snprintf(buff,68,"Time=%13.5e, step=%8d, dt=%13.5e",fectrlinfo.t+fectrlinfo.dt,fectrlinfo.CurrentStep+1,fectrlinfo.dt);
         str=buff;
         MessagePrinter::printNormalTxt(str);
-        if(nlsolver.solve(mesh,dofhandler,fe,
+        if(nlsolver.solve(fecell,dofhandler,fe,
                           elmtsystem,matesystem,fesystem,
                           bcsystem,solutionsystem,equationsystem,
                           fectrlinfo)){
@@ -82,15 +82,15 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
             // update the solution
             solutionsystem.m_u_temp.copyFrom(solutionsystem.m_u_current);
             fesystem.formBulkFE(FECalcType::UPDATEMATERIAL,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,
-                                mesh,dofhandler,fe,
+                                fecell,dofhandler,fe,
                                 elmtsystem,matesystem,
                                 solutionsystem,
                                 equationsystem.m_amatrix,equationsystem.m_rhs);
 
 
             if(fectrlinfo.CurrentStep%output.getIntervalNum()==0){
-                projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
-                output.saveResults2File(fectrlinfo.CurrentStep,mesh,dofhandler,solutionsystem,projection);
+                projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
+                output.saveResults2File(fectrlinfo.CurrentStep,fecell,dofhandler,solutionsystem,projection);
                 output.savePVDResults(fectrlinfo.t);
                 MessagePrinter::printDashLine(MessageColor::BLUE);
                 MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);
@@ -99,9 +99,9 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
             if(postprocess.hasPostprocess()){
                 if(fectrlinfo.CurrentStep%postprocess.getInterval()==0){
                     if(fectrlinfo.CurrentStep%output.getIntervalNum()!=0){
-                        projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
+                        projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
                     }
-                    postprocess.executePostprocess(mesh,dofhandler,fe,matesystem,projection,solutionsystem);
+                    postprocess.executePostprocess(fecell,dofhandler,fe,matesystem,projection,solutionsystem);
                     postprocess.savePPSResults2CSVFile(fectrlinfo.t);
                     MessagePrinter::printDashLine(MessageColor::BLUE);
                     MessagePrinter::printNormalTxt("Save postprocess result to "+postprocess.getCSVFileName(),MessageColor::BLUE);
@@ -143,8 +143,8 @@ bool TimeStepping::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
         }
     }
     if(fectrlinfo.CurrentStep%output.getIntervalNum()!=0){
-        projection.executeProjection(mesh,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
-        output.saveResults2File(fectrlinfo.CurrentStep,mesh,dofhandler,solutionsystem,projection);
+        projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
+        output.saveResults2File(fectrlinfo.CurrentStep,fecell,dofhandler,solutionsystem,projection);
         output.savePVDResults(fectrlinfo.t);
         MessagePrinter::printDashLine(MessageColor::BLUE);
         MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);

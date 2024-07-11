@@ -14,16 +14,16 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::readShapeFunBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &t_fe){
+bool InputSystem::readShapeFunBlock(nlohmann::json &t_json,const FECell &t_fecell,FE &t_fe){
     // json already constains "shapefuns"
     // before we read the info, we should preset the default value for each "shp"
-    t_fe.m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+    t_fe.m_bulk_shp.setMeshType(t_fecell.getFECellBulkElmtMeshType());
     t_fe.m_bulk_shp.setShapeFunType(ShapeFunType::DEFAULT);
 
-    t_fe.m_surface_shp.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
+    t_fe.m_surface_shp.setMeshType(t_fecell.getFECellSurfElmtMeshType());
     t_fe.m_surface_shp.setShapeFunType(ShapeFunType::DEFAULT);
 
-    t_fe.m_line_shp.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+    t_fe.m_line_shp.setMeshType(t_fecell.getFECellLineElmtMeshType());
     t_fe.m_line_shp.setShapeFunType(ShapeFunType::DEFAULT);
 
     if(t_json.contains("bulk")){
@@ -90,9 +90,9 @@ bool InputSystem::readShapeFunBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE
     }
 
     if(t_json.contains("surface")){
-        if(t_mesh.getBulkMeshMaxDim()<3){
+        if(t_fecell.getFECellMaxDim()<3){
             MessagePrinter::printErrorTxt("you can\'t define surface shape fun, the max dim of your mesh is "
-                                          +to_string(t_mesh.getBulkMeshMaxDim())
+                                          +to_string(t_fecell.getFECellMaxDim())
                                           +", please check your input file");
             MessagePrinter::exitAsFem();
         }
@@ -159,9 +159,9 @@ bool InputSystem::readShapeFunBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE
     }
 
     if(t_json.contains("line")){
-        if(t_mesh.getBulkMeshMaxDim()<2){
+        if(t_fecell.getFECellMaxDim()<2){
             MessagePrinter::printErrorTxt("you can\'t define line shape fun, the max dim of your mesh is "
-                                          +to_string(t_mesh.getBulkMeshMaxDim())
+                                          +to_string(t_fecell.getFECellMaxDim())
                                           +", please check your input file");
             MessagePrinter::exitAsFem();
         }

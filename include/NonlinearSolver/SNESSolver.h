@@ -21,7 +21,7 @@
  * This is the struct that will be used to pass down/up the args we need to call SNES
  */
 typedef struct{
-    Mesh *_mesh;
+    FECell *_fecell;
     DofHandler *_dofHandler;
     BCSystem *_bcSystem;
     ElmtSystem *_elmtSystem;
@@ -108,7 +108,7 @@ public:
 
     /**
      * solve the nonlinear equation, if success then return true
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof class
      * @param t_fe the fe class
      * @param t_elmtsyste the element system class
@@ -119,7 +119,7 @@ public:
      * @param t_equationsystem the equation system class
      * @param t_fectrlinfo the fe control info
      */
-    virtual bool solve(Mesh &t_mesh,DofHandler &t_dofhandler,FE &t_fe,
+    virtual bool solve(FECell &t_fecell,DofHandler &t_dofhandler,FE &t_fe,
                        ElmtSystem &t_elmtsyste,MateSystem &t_matesystem,
                        FESystem &t_fesystem,
                        BCSystem &t_bcsystem,

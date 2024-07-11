@@ -65,54 +65,6 @@ set(src ${src} src/MathUtils/Rank4Tensor.cpp)
 set(inc ${inc} include/MathUtils/MathFuns.h)
 set(src ${src} src/MathUtils/MathFuns.cpp)
 
-
-#############################################################
-### For mesh class                                        ###
-#############################################################
-### for nodes
-set(inc ${inc} include/Mesh/Nodes.h)
-### for mesh type
-set(inc ${inc} include/Mesh/MeshType.h)
-### for mesh structure data
-set(inc ${inc} include/Mesh/MeshData.h)
-### for mesh generator class
-set(inc ${inc} include/Mesh/MeshGeneratorBase.h)
-### for 1d mesh generator class
-set(inc ${inc} include/Mesh/Lagrange1DMeshGenerator.h)
-set(src ${src} src/Mesh/Lagrange1DMeshGenerator.cpp)
-### for 2d mesh generator class
-set(inc ${inc} include/Mesh/Lagrange2DMeshGenerator.h)
-set(src ${src} src/Mesh/Lagrange2DMeshGenerator.cpp)
-### for 3d mesh generator class
-set(inc ${inc} include/Mesh/Lagrange3DMeshGenerator.h)
-set(src ${src} src/Mesh/Lagrange3DMeshGenerator.cpp)
-### for general mesh generator class
-set(inc ${inc} include/Mesh/MeshGenerator.h)
-set(src ${src} src/Mesh/MeshGenerator.cpp)
-### for bulk mesh
-set(inc ${inc} include/Mesh/BulkMesh.h)
-set(src ${src} src/Mesh/BulkMesh.cpp)
-set(src ${src} src/Mesh/SaveMesh.cpp)
-set(src ${src} src/Mesh/PrintMesh.cpp)
-### for the final mesh
-set(inc ${inc} include/Mesh/Mesh.h)
-### utils for msh file
-set(inc ${inic} include/Mesh/MshFileUtils.h)
-set(src ${src} src/Mesh/MshFileUtils.cpp)
-### for msh2 file
-set(inc ${inc} include/Mesh/Msh2FileImporter.h)
-set(src ${src} src/Mesh/Msh2FileImporter.cpp)
-### for msh2 file
-set(inc ${inc} include/Mesh/Msh4FileImporter.h)
-set(src ${src} src/Mesh/Msh4FileImporter.cpp)
-### for gmsh2 file
-set(inc ${inc} include/Mesh/Gmsh2FileImporter.h)
-set(src ${src} src/Mesh/Gmsh2FileImporter.cpp)
-### for MeshIO
-set(inc ${inc} include/Mesh/MeshFileImporterBase.h)
-set(inc ${inc} include/Mesh/MeshFileImporter.h)
-set(src ${src} src/Mesh/MeshFileImporter.cpp)
-
 #############################################################
 ### For FE cell class                                     ###
 #############################################################
@@ -159,10 +111,16 @@ set(src ${src} src/FECell/FECellGenerator.cpp)
 #############################################################
 ### For FE cell importer class                            ###
 #############################################################
+### for msh file utils and nodes
+set(inc ${inc} include/FECell/Nodes.h include/FECell/MshFileUtils.h)
+set(src ${src} src/FECell/Nodes.cpp src/FECell/MshFileUtils.cpp)
 set(inc ${inc} include/FECell/MeshFile2FECellImporterBase.h)
 ### for msh2 file importer
 set(inc ${inc} include/FECell/Msh2File2FECellImporter.h)
 set(src ${src} src/FECell/Msh2File2FECellImporter.cpp)
+### for msh4 file importer
+set(inc ${inc} include/FECell/Msh4File2FECellImporter.h)
+set(src ${src} src/FECell/Msh4File2FECellImporter.cpp)
 
 
 #############################################################

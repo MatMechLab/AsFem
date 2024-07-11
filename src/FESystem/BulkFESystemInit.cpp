@@ -14,12 +14,12 @@
 
 #include "FESystem/BulkFESystem.h"
 
-void BulkFESystem::init(const Mesh &t_mesh,const DofHandler &t_dofhandler){
+void BulkFESystem::init(const FECell &t_fecell,const DofHandler &t_dofhandler){
     m_max_elmt_dofs=t_dofhandler.getMaxDofsPerElmt();
     m_max_nodal_dofs=t_dofhandler.getMaxDofsPerNode();
-    m_bulkelmt_nodesnum=t_mesh.getBulkMeshNodesNumPerBulkElmt();
+    m_bulkelmt_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
 
-    m_local_elmtinfo.m_dim=t_mesh.getBulkMeshMaxDim();
+    m_local_elmtinfo.m_dim=t_fecell.getFECellMaxDim();
     m_local_elmtinfo.m_nodesnum=m_bulkelmt_nodesnum;
 
     m_max_k_coeff=-1.0e16;

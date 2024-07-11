@@ -20,7 +20,7 @@ void FEProblem::runTransientAnalysis(){
     MessagePrinter::printNormalTxt("Start the transient analysis ...");
     MessagePrinter::printStars();
     m_timer.startTimer();
-    if(m_timestepping.solve(m_mesh,m_dofhandler,m_fe,
+    if(m_timestepping.solve(m_fecell,m_dofhandler,m_fe,
                             m_elmtsystem,m_matesystem,m_fesystem,
                             m_bcsystem,m_icsystem,
                             m_solutionsystem,m_equationsystem,m_projsystem,

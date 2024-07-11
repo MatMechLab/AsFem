@@ -21,7 +21,7 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
                                 const nlohmann::json &json,
                                 const vector<int> &dofids,
                                 const vector<string> &bcnamelist,
-                                const Mesh &mesh,const DofHandler &dofhandler,
+                                const FECell &fecell,const DofHandler &dofhandler,
                                 Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                                 Vector &V,
                                 SparseMatrix &AMATRIX,
@@ -33,6 +33,8 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
     int rankne,eStart,eEnd;
     vector<int> globaldofids;
     globaldofids.resize(dofids.size(),0);
+
+    if(fecell.getFECellBulkElmtsNum()){}
 
     m_local_elmtinfo.m_dofsnum=static_cast<int>(dofids.size());
     if(Uold.getSize()||Uolder.getSize()||V.getSize()) {}
@@ -46,21 +48,23 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
 
     for(const auto &name:bcnamelist){
-        nElmts=mesh.getBulkMeshElmtsNumViaPhyName(name);
+        nElmts=2;//mesh.getBulkMeshElmtsNumViaPhyName(name);
+        if(name.size()){}
         rankne=nElmts/m_size;
         eStart=m_rank*rankne;
         eEnd=(m_rank+1)*rankne;
         if(m_rank==m_size-1) eEnd=nElmts;
-        m_local_elmtinfo.m_dim=mesh.getBulkMeshElmtDimViaPhyName(name);
+        // m_local_elmtinfo.m_dim=mesh.getBulkMeshElmtDimViaPhyName(name);
 
         for(e=eStart;e<eEnd;e++){
-            m_local_elmtinfo.m_nodesnum=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
+            // m_local_elmtinfo.m_nodesnum=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
             
             for(i=1;i<=m_local_elmtinfo.m_nodesnum;i++){
-                j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
-                m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
-                m_local_elmtinfo.m_gpCoords0(2)=mesh.getBulkMeshIthNodeJthCoord0(j,2);
-                m_local_elmtinfo.m_gpCoords0(3)=mesh.getBulkMeshIthNodeJthCoord0(j,3);
+                // j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                // m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
+                // m_local_elmtinfo.m_gpCoords0(2)=mesh.getBulkMeshIthNodeJthCoord0(j,2);
+                // m_local_elmtinfo.m_gpCoords0(3)=mesh.getBulkMeshIthNodeJthCoord0(j,3);
+                j=1;
 
                 for(k=1;k<=m_local_elmtinfo.m_dofsnum;k++){
                     iInd=dofhandler.getIthNodeJthDofID(j,dofids[k-1]);

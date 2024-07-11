@@ -43,10 +43,10 @@ public:
 
     /**
      * initialize the projection system
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof handler class
      */
-    void init(const Mesh &t_mesh,const DofHandler &t_dofhandler);
+    void init(const FECell &t_fecell,const DofHandler &t_dofhandler);
 
     //********************************************************
     //*** general settings
@@ -224,7 +224,7 @@ public:
 
     /**
      * execute the projection process
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param t_elmtsystem the element system class
      * @param t_matesystem the material system class
@@ -232,7 +232,7 @@ public:
      * @param t_solution the solution system class
      * @param t_fectrlinfo the fe control info 
      */
-    void executeProjection(const Mesh &t_mesh,
+    void executeProjection(const FECell &t_fecell,
                            const DofHandler &t_dofhandler,
                            const ElmtSystem &t_elmtsystem,
                            MateSystem &t_matesystem,
@@ -264,7 +264,7 @@ private:
     /**
      * for different projection methods
      * @param flag true for local, false for global
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param nodesnum nodes number of current element
      * @param t_elconn the local element's connectivity
      * @param detjac the jacobian determinte
@@ -273,7 +273,7 @@ private:
      * @param t_data the projection data
      */
     void runProjectionLibs(const bool &flag,
-                           const Mesh &t_mesh,
+                           const FECell &t_fecell,
                            const int &nodesnum,
                            const vector<int> &t_elconn,
                            const double &detjac,

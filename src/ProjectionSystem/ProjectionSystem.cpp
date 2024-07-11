@@ -39,8 +39,8 @@ ProjectionSystem::ProjectionSystem(){
 //******************************************************************
 //*** init
 //******************************************************************
-void ProjectionSystem::init(const Mesh &t_mesh,const DofHandler &t_dofhandler){
-    m_nodesnum=t_mesh.getBulkMeshNodesNum();
+void ProjectionSystem::init(const FECell &t_fecell,const DofHandler &t_dofhandler){
+    m_nodesnum=t_fecell.getFECellNodesNum();
     if(getScalarMaterialNum()){
         m_data.m_proj_scalarmate_vec.resize(m_nodesnum*(1+1*m_data.m_scalarmate_num),0.0);
     }
@@ -55,7 +55,7 @@ void ProjectionSystem::init(const Mesh &t_mesh,const DofHandler &t_dofhandler){
     }
 
     int m_max_nodal_dofs=t_dofhandler.getMaxDofsPerNode();
-    m_bulkelmt_nodesnum=t_mesh.getBulkMeshNodesNumPerBulkElmt();
+    m_bulkelmt_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
 
     m_elmtconn.resize(m_bulkelmt_nodesnum,0);
     m_subelmtdofsid.resize(m_max_nodal_dofs+1,0);

@@ -16,7 +16,7 @@
 #pragma once
 
 #include "InputSystem/InputSystem.h"
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "MateSystem/MateSystem.h"
@@ -76,7 +76,7 @@ private:
     
 private:
     InputSystem m_inputSystem;/**< input system for input file reading */
-    Mesh m_mesh;/**< mesh class for mesh I/O, mesh generation, etc. */
+    FECell m_fecell;/**< fe cell class for mesh I/O, mesh generation, etc. */
     DofHandler m_dofhandler;/**< dof class for Dof map generation and management */
     ElmtSystem m_elmtsystem;/**< the element system class */
     MateSystem m_matesystem;/**< the material system class */

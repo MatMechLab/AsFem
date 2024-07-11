@@ -18,7 +18,7 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                                           const int &dofid,
                                           const vector<string> &sidenames,
                                           const nlohmann::json &t_parameters,
-                                          const Mesh &t_mesh,
+                                          const FECell &t_fecell,
                                           const DofHandler &t_dofhandler,
                                           FE &t_fe,
                                           SolutionSystem &t_soln,
@@ -30,6 +30,8 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
     int nqpoints;
     double dist;
     double xi,eta,w,JxW;
+
+    if(t_fecell.getFECellBulkElmtsNum()){}
 
     MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
@@ -43,18 +45,18 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
     side_area=0.0;
     for(i=0;i<static_cast<int>(sidenames.size());i++){
         sidename=sidenames[i];
-        nElmts=t_mesh.getBulkMeshElmtsNumViaPhyName(sidename);
+        nElmts=2;//t_mesh.getBulkMeshElmtsNumViaPhyName(sidename);
 
         rankne=nElmts/m_size;
         eStart=m_rank*rankne;
         eEnd=(m_rank+1)*rankne;
         if(m_rank==m_size-1) eEnd=nElmts;
 
-        m_local_elmtinfo.m_dim=t_mesh.getBulkMeshElmtDimViaPhyName(sidename);
+        // m_local_elmtinfo.m_dim=t_mesh.getBulkMeshElmtDimViaPhyName(sidename);
         nNodesPerBCElmt=0;
 
         for(e=eStart;e<eEnd;e++){
-            nNodesPerBCElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(sidename,e+1);
+            // nNodesPerBCElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(sidename,e+1);
             m_local_elmtinfo.m_nodesnum=nNodesPerBCElmt;
             JxW=0.0;
             if(m_local_elmtinfo.m_dim==0){
@@ -62,11 +64,11 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                 JxW=1.0;
                 side_area=1.0;
                 for(i=1;i<=nNodesPerBCElmt;i++){
-                    j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);// global node id
+                    // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);// global node id
                     iInd=t_dofhandler.getIthNodeJthDofID(j,dofid);
-                    m_local_elmtinfo.m_gpCoords0(1)=t_mesh.getBulkMeshIthNodeJthCoord0(j,1);
-                    m_local_elmtinfo.m_gpCoords0(2)=t_mesh.getBulkMeshIthNodeJthCoord0(j,2);
-                    m_local_elmtinfo.m_gpCoords0(3)=t_mesh.getBulkMeshIthNodeJthCoord0(j,3);
+                    // m_local_elmtinfo.m_gpCoords0(1)=t_mesh.getBulkMeshIthNodeJthCoord0(j,1);
+                    // m_local_elmtinfo.m_gpCoords0(2)=t_mesh.getBulkMeshIthNodeJthCoord0(j,2);
+                    // m_local_elmtinfo.m_gpCoords0(3)=t_mesh.getBulkMeshIthNodeJthCoord0(j,3);
                     m_local_shp.m_test=1.0;
                     m_local_shp.m_grad_test=0.0;
                     m_local_shp.m_trial=0.0;
@@ -75,7 +77,7 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                 }
             }// end-of-dim=0-case
             else{
-                t_mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(sidename,e+1,m_nodes0);
+                // t_mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(sidename,e+1,m_nodes0);
 
                 nqpoints=0;
                 if(m_local_elmtinfo.m_dim==1){
@@ -151,17 +153,17 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                     
                     m_local_elmtinfo.m_gpCoords0=0.0;
                     for(i=1;i<=nNodesPerBCElmt;i++){
-                        j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);//global id
+                        // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);//global id
 
                         if(m_local_elmtinfo.m_dim==1){
-                            m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
-                            m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
-                            m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,3);
+                            // m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
+                            // m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
+                            // m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_line_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,3);
                         }
                         else if(m_local_elmtinfo.m_dim==2){   
-                            m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_surface_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
-                            m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_surface_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
-                            m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_surface_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,3);
+                            // m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_surface_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
+                            // m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_surface_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
+                            // m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_surface_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,3);
                         }   
                     }// end-of-node-loop-for-phy-quantities
 
@@ -178,7 +180,7 @@ double Postprocessor::executeSideIntegralPostprocess(const PostprocessorType &pp
                             m_local_shp.m_trial=0.0;
                             m_local_shp.m_grad_trial=0.0;
                         }
-                        j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);//global id
+                        // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(sidename,e+1,i);//global id
                         if(dofid<1){
                             // this means no dof is given in the postprocess block, it is processing the material properties
                             iInd=t_dofhandler.getIthNodeJthDofID(j,1);

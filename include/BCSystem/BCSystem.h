@@ -123,7 +123,7 @@ public:
      * @param t_calctype the calculation type
      * @param t current time
      * @param ctan the time derivative vector
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param t_fe the fe space class
      * @param U the solution vector
@@ -136,7 +136,7 @@ public:
      */
     void applyBoundaryConditions(const FECalcType &t_calctype,
                                  const double &t,const double (&ctan)[3],
-                                 const Mesh &t_mesh,
+                                 const FECell &t_fecell,
                                  const DofHandler &t_dofhandler,
                                  FE &t_fe,
                                  Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
@@ -148,7 +148,7 @@ public:
      * apply the preset boundary condition, this will only modify the U vector, K and R will not be touched.
      * @param t_calctype the calculation type
      * @param t current time
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param U the solution vector
      * @param Ucopy the solution vector's copy
@@ -160,7 +160,7 @@ public:
      */
     void applyPresetBoundaryConditions(const FECalcType &t_calctype,
                                  const double &t,
-                                 const Mesh &t_mesh,
+                                 const FECell &t_fecell,
                                  const DofHandler &t_dofhandler,
                                  Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                                  Vector &V,
@@ -212,7 +212,7 @@ private:
      * @param t_json the json content for bc block
      * @param t_dofids the local dofs id of current bc block
      * @param t_bcnamelist the boundary name list
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param U the solution vector
      * @param Ucopy the solution vector's copy
@@ -228,7 +228,7 @@ private:
                           const nlohmann::json &t_json,
                           const vector<int> &t_dofids,
                           const vector<string> &t_bcnamelist,
-                          const Mesh &t_mesh,const DofHandler &t_dofhandler,
+                          const FECell &t_fecell,const DofHandler &t_dofhandler,
                           Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                           Vector &V,
                           SparseMatrix &AMATRIX,
@@ -243,7 +243,7 @@ private:
      * @param t_parameters the json parameter content for bc block
      * @param t_dofids the local dofs id of current bc block
      * @param t_bcnamelist the boundary name list
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param t_fe the FE space class
      * @param U the solution vector
@@ -260,7 +260,7 @@ private:
                            const nlohmann::json &t_parameters,
                            const vector<int> &t_dofids,
                            const vector<string> &t_bcnamelist,
-                           const Mesh &t_mesh,const DofHandler &t_dofhandler,
+                           const FECell &t_fecell,const DofHandler &t_dofhandler,
                            FE &t_fe,
                            Vector &U,Vector &Uold,Vector &Uolder,
                            Vector &V,

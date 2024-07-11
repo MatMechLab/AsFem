@@ -215,11 +215,13 @@ void LeastSquareProjection::projectLocalRank4Mate2Global(const int &nodesnum,
 //******************************************************
 //*** for global projection action
 //******************************************************
-void LeastSquareProjection::globalProjectionAction(const Mesh &mesh,
+void LeastSquareProjection::globalProjectionAction(const FECell &fecell,
                                                    ProjectionData &data){
     int i,j,k,iInd,ee,nproj;
     double value,weight,newvalue;
     PetscMPIInt rank,size;
+
+    if(fecell.getFECellBulkElmtsNum()){}
 
     // assemble all the local projection value
     data.m_proj_scalarmate_vec.assemble();
@@ -237,10 +239,10 @@ void LeastSquareProjection::globalProjectionAction(const Mesh &mesh,
     MPI_Comm_size(PETSC_COMM_WORLD,&size);
 
 
-    int rankne=mesh.getBulkMeshNodesNum()/size;
+    int rankne=1;//mesh.getBulkMeshNodesNum()/size;
     int eStart=rank*rankne;
     int eEnd=(rank+1)*rankne;
-    if(rank==size-1) eEnd=mesh.getBulkMeshNodesNum();
+    // if(rank==size-1) eEnd=mesh.getBulkMeshNodesNum();
 
     data.m_proj_scalarmate_vec.setToZero();
     data.m_proj_vectormate_vec.setToZero();

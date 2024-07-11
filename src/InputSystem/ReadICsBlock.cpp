@@ -14,7 +14,7 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,ICSystem &t_icsystem){
+bool InputSystem::readICsBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,ICSystem &t_icsystem){
     // now the json should already read 'bcs'
     ICBlock icBlock;
     int nblocks=0;
@@ -39,7 +39,7 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
 
         if(icjson.contains("type")){
             if(!icjson.at("type").is_string()){
-                MessagePrinter::printErrorTxt("invalid type name in ["+icBlock.m_icBlockName+"] in [ics] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid type name in '"+icBlock.m_icBlockName+"' in 'ics' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             icBlock.m_icTypeName=icjson.at("type");
@@ -98,7 +98,7 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
             }
             else{
                 MessagePrinter::printErrorTxt("type="+icBlock.m_icTypeName
-                    +" is invalid in ["+icBlock.m_icBlockName+"] of your [ics] subblock, please check your input file");
+                    +" is invalid in '"+icBlock.m_icBlockName+"' of your 'ics' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             HasType=true;
@@ -106,24 +106,24 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
 
         if(icjson.contains("dofs")){
             if(icjson.at("dofs").size()<1){
-                MessagePrinter::printErrorTxt("invalid dofs name or empty dofs name in ["
-                                              +icBlock.m_icBlockName+"] of your [ics] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid dofs name or empty dofs name in '"
+                                              +icBlock.m_icBlockName+"' of your 'ics' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             else{
                 string dofname;
                 for(int i=0;i<static_cast<int>(icjson.at("dofs").size());i++){
                     if(!icjson.at("dofs").at(i).is_string()){
-                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of ["+icBlock.m_icBlockName+"] in your [bcs] subblock, please check your input file");
+                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of '"+icBlock.m_icBlockName+"' in your 'bcs' subblock, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                     dofname=icjson.at("dofs").at(i);
                     if(dofname.size()<1){
-                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid or empty in 'dofs' of ["+icBlock.m_icBlockName+"] in your [bcs] subblock, please check your input file");
+                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid or empty in 'dofs' of '"+icBlock.m_icBlockName+"' in your 'bcs' subblock, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                     if(!t_dofhandler.isValidDofName(dofname)){
-                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of ["+icBlock.m_icBlockName+"] in your [bcs] subblock,"
+                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of '"+icBlock.m_icBlockName+"' in your 'bcs' subblock,"
                                                       " it must be one of the names in your 'dofs' block, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
@@ -135,28 +135,28 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
         }
         else{
             HasDof=false;
-            MessagePrinter::printErrorTxt("can\'t find dofs name in ["+icBlock.m_icBlockName+"] of your [ics] subblock, please check your input file");
+            MessagePrinter::printErrorTxt("can\'t find dofs name in '"+icBlock.m_icBlockName+"' of your 'ics' subblock, please check your input file");
             MessagePrinter::exitAsFem();
         }// end-of-dofs-reading
 
         if(icjson.contains("domain")){
             if(icjson.at("domain").size()<1){
-                MessagePrinter::printErrorTxt("invalid or empty domain name in ["+icBlock.m_icBlockName+"] of your [ics] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid or empty domain name in '"+icBlock.m_icBlockName+"' of your 'ics' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             string domain;
             for(int i=0;i<static_cast<int>(icjson.at("domain").size());i++){
                 if(!icjson.at("domain").at(i).is_string()){
-                    MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of ["+icBlock.m_icBlockName+"] in your [ics] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of '"+icBlock.m_icBlockName+"' in your 'ics' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 domain=icjson.at("domain").at(i);
                 if(domain.size()<1){
-                    MessagePrinter::printErrorTxt("domain name is invalid or empty in 'domain' of ["+icBlock.m_icBlockName+"] in your [ics] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("domain name is invalid or empty in 'domain' of '"+icBlock.m_icBlockName+"' in your 'ics' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
-                if(!t_mesh.isBulkElmtPhyNameValid(domain)){
-                   MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of ["+icBlock.m_icBlockName+"] in your [ics] subblock, please check your input file");
+                if(!t_fecell.isFECellBulkElmtPhyNameValid(domain)){
+                   MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of '"+icBlock.m_icBlockName+"' in your 'ics' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 icBlock.m_domainNameList.push_back(domain);
@@ -165,7 +165,7 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
         }
         else{
             HasDomain=false;
-            MessagePrinter::printErrorTxt("can\'t find 'domain' in ["+icBlock.m_icBlockName+"] of your [ics] subblock, "
+            MessagePrinter::printErrorTxt("can\'t find 'domain' in '"+icBlock.m_icBlockName+"' of your 'ics' subblock, "
                                           "please check your input file");
             MessagePrinter::exitAsFem();
         } //end-of-'domain'-reading
@@ -180,7 +180,7 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
 
         if(icjson.contains("icvalue")){
             if(!icjson.at("icvalue").is_number()){
-                MessagePrinter::printErrorTxt("invalid ic value in ["+icBlock.m_icBlockName+"] in [ics] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid ic value in '"+icBlock.m_icBlockName+"' in 'ics' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             icBlock.m_icvalue=icjson.at("icvalue");
@@ -190,12 +190,12 @@ bool InputSystem::readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
         }//end-of-parameters-reading
 
         if(!HasParams){
-            MessagePrinter::printWarningTxt("no parameters found in ["+icBlock.m_icBlockName+"], then no parameters will be used in this ic");
+            MessagePrinter::printWarningTxt("no parameters found in '"+icBlock.m_icBlockName+"', then no parameters will be used in this ic");
         }
 
         if(!HasType || !HasDomain || !HasDof){
-            MessagePrinter::printErrorTxt("information of your [ics] subblock(["+icBlock.m_icBlockName
-                                          +"]) is not complete,please check your input file");
+            MessagePrinter::printErrorTxt("information of your 'ics' subblock('"+icBlock.m_icBlockName
+                                          +"') is not complete,please check your input file");
             MessagePrinter::exitAsFem();
         }
         else{

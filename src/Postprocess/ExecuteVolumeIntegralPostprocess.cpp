@@ -18,7 +18,7 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                                             const int &dofid,
                                             const vector<string> &domainnames,
                                             const nlohmann::json &t_parameters,
-                                            const Mesh &t_mesh,
+                                            const FECell &t_fecell,
                                             const DofHandler &t_dofhandler,
                                             FE &t_fe,
                                             SolutionSystem &t_soln,
@@ -29,6 +29,8 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
     int i,j,iInd,e,rankne,eStart,eEnd,nElmts,nNodesPerElmt;
     int nqpoints;
     double xi,eta,zeta,w,JxW;
+
+    if(t_fecell.getFECellBulkElmtsNum()){}
 
     MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
@@ -42,18 +44,18 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
     domain_volume=0.0;
     for(i=0;i<static_cast<int>(domainnames.size());i++){
         domainname=domainnames[i];
-        nElmts=t_mesh.getBulkMeshElmtsNumViaPhyName(domainname);
+        nElmts=2.0;//t_mesh.getBulkMeshElmtsNumViaPhyName(domainname);
         
         rankne=nElmts/m_size;
         eStart=m_rank*rankne;
         eEnd=(m_rank+1)*rankne;
         if(m_rank==m_size-1) eEnd=nElmts;
 
-        m_local_elmtinfo.m_dim=t_mesh.getBulkMeshElmtDimViaPhyName(domainname);
+        // m_local_elmtinfo.m_dim=t_mesh.getBulkMeshElmtDimViaPhyName(domainname);
         nNodesPerElmt=0;
 
         for(e=eStart;e<eEnd;e++){
-            nNodesPerElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(domainname,e+1);
+            // nNodesPerElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(domainname,e+1);
             m_local_elmtinfo.m_nodesnum=nNodesPerElmt;
             JxW=0.0;
             if(m_local_elmtinfo.m_dim<=0){
@@ -61,7 +63,7 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                 MessagePrinter::exitAsFem();
             }// end-of-dim=0-case
             else{
-                t_mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(domainname,e+1,m_nodes0);
+                // t_mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(domainname,e+1,m_nodes0);
 
                 nqpoints=t_fe.m_bulk_qpoints.getQPointsNum();
 
@@ -86,11 +88,11 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                     
                     m_local_elmtinfo.m_gpCoords0=0.0;
                     for(i=1;i<=nNodesPerElmt;i++){
-                        j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
+                        // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
                 
-                        m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
-                        m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
-                        m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,3);
+                        // m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,1);
+                        // m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,2);
+                        // m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_bulk_shp.shape_value(i)*t_mesh.getBulkMeshIthNodeJthCoord(j,3);
                        
                     }// end-of-node-loop-for-phy-quantities
 
@@ -99,7 +101,7 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                         m_local_shp.m_grad_test=t_fe.m_bulk_shp.shape_grad(i);
                         m_local_shp.m_trial=0.0;
                         m_local_shp.m_grad_trial=0.0;
-                        j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
+                        // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
                         if(dofid<1){
                             // if no dofid is given, then we use the first one
                             iInd=t_dofhandler.getIthNodeJthDofID(j,1);

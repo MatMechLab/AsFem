@@ -142,14 +142,14 @@ public:
 
     /**
      * execute the postprocess for different functions
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param t_fe the fe space
      * @param t_matesystem the material system class
      * @param t_projsystem the projection system class
      * @param t_solution the solution system class
      */
-    void executePostprocess(const Mesh &t_mesh,
+    void executePostprocess(const FECell &t_fecell,
                             const DofHandler &t_dofhandler,
                             FE &t_fe,
                             MateSystem &t_matesystem,
@@ -214,7 +214,7 @@ private:
      * @param dofid the local id of the specific dof
      * @param sidenames the sides name vector
      * @param t_parameters the json parameters taken from input file
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof handler class
      * @param t_fe the fe space class
      * @param t_soln the solution system
@@ -224,7 +224,7 @@ private:
                                           const int &dofid,
                                           const vector<string> &sidenames,
                                           const nlohmann::json &t_parameters,
-                                          const Mesh &t_mesh,
+                                          const FECell &t_fecell,
                                           const DofHandler &t_dofhandler,
                                           FE &t_fe,
                                           SolutionSystem &t_soln,
@@ -256,7 +256,7 @@ private:
      * @param dofid the local id of the specific dof
      * @param domainnames the domain name vector
      * @param t_parameters the json parameters taken from input file
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof handler class
      * @param t_fe the fe space class
      * @param t_soln the solution system
@@ -266,7 +266,7 @@ private:
                                             const int &dofid,
                                             const vector<string> &domainnames,
                                             const nlohmann::json &t_parameters,
-                                            const Mesh &t_mesh,
+                                            const FECell &t_fecell,
                                             const DofHandler &t_dofhandler,
                                             FE &t_fe,
                                             SolutionSystem &t_soln,

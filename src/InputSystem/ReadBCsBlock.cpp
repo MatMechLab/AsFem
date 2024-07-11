@@ -14,7 +14,7 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,BCSystem &t_bcsystem){
+bool InputSystem::readBCsBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,BCSystem &t_bcsystem){
     // now the json should already read 'bcs'
     BCBlock bcBlock;
     int nblocks=0;
@@ -101,30 +101,15 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
             else if(bcBlock.m_bcTypeName=="user5" && bcBlock.m_bcTypeName!="user5dirichlet"){
                 bcBlock.m_bcType=BCType::USER5BC;
             }
-            else if(bcBlock.m_bcTypeName=="user6" && bcBlock.m_bcTypeName!="user6dirichlet"){
-                bcBlock.m_bcType=BCType::USER6BC;
-            }
-            else if(bcBlock.m_bcTypeName=="user7" && bcBlock.m_bcTypeName!="user7dirichlet"){
-                bcBlock.m_bcType=BCType::USER7BC;
-            }
-            else if(bcBlock.m_bcTypeName=="user8" && bcBlock.m_bcTypeName!="user8dirichlet"){
-                bcBlock.m_bcType=BCType::USER8BC;
-            }
-            else if(bcBlock.m_bcTypeName=="user9" && bcBlock.m_bcTypeName!="user9dirichlet"){
-                bcBlock.m_bcType=BCType::USER9BC;
-            }
-            else if(bcBlock.m_bcTypeName=="user10" && bcBlock.m_bcTypeName!="user10dirichlet"){
-                bcBlock.m_bcType=BCType::USER10BC;
-            }
             else{
                 MessagePrinter::printErrorTxt("type="+bcBlock.m_bcTypeName
-                    +" is invalid in ["+bcBlock.m_bcBlockName+"] of your [bcs] block, please check your input file");
+                    +" is invalid in '"+bcBlock.m_bcBlockName+"' of your 'bcs' block, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             HasType=true;
         }
         else{
-            MessagePrinter::printErrorTxt("type= can\'t be found in ["+bcBlock.m_bcBlockName+"] in your [bcs] block,"
+            MessagePrinter::printErrorTxt("type= can\'t be found in '"+bcBlock.m_bcBlockName+"' in your 'bcs' block,"
                                           " please check your input file");
             MessagePrinter::exitAsFem();
             HasType=false;
@@ -132,24 +117,24 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
 
         if(bcjson.contains("dofs")){
             if(bcjson.at("dofs").size()<1){
-                MessagePrinter::printErrorTxt("invalid dofs name or empty dofs name in ["
-                                              +bcBlock.m_bcBlockName+"] of your [bcs] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid dofs name or empty dofs name in '"
+                                              +bcBlock.m_bcBlockName+"' of your 'bcs' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             else{
                 string dofname;
                 for(int i=0;i<static_cast<int>(bcjson.at("dofs").size());i++){
                     if(!bcjson.at("dofs").at(i).is_string()){
-                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of ["+bcBlock.m_bcBlockName+"] in your [bcs] subblock, please check your input file");
+                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of '"+bcBlock.m_bcBlockName+"' in your 'bcs' subblock, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                     dofname=bcjson.at("dofs").at(i);
                     if(dofname.size()<1){
-                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid or empty in 'dofs' of ["+bcBlock.m_bcBlockName+"] in your [bcs] subblock, please check your input file");
+                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid or empty in 'dofs' of '"+bcBlock.m_bcBlockName+"' in your 'bcs' subblock, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                     if(!t_dofhandler.isValidDofName(dofname)){
-                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of ["+bcBlock.m_bcBlockName+"] in your [bcs] subblock,"
+                        MessagePrinter::printErrorTxt("dof-"+to_string(i+1)+"'s name is invalid in 'dofs' of '"+bcBlock.m_bcBlockName+"' in your 'bcs' subblock,"
                                                       " it must be one of the names in your 'dofs' block, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
@@ -161,7 +146,7 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
         }
         else{
             HasDof=false;
-            MessagePrinter::printErrorTxt("can\'t find dofs name in ["+bcBlock.m_bcBlockName+"] of your [bcs] subblock, please check your input file");
+            MessagePrinter::printErrorTxt("can\'t find dofs name in '"+bcBlock.m_bcBlockName+"' of your 'bcs' subblock, please check your input file");
             MessagePrinter::exitAsFem();
         }// end-of-dofs-reading
 
@@ -192,8 +177,8 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
                     if(StringUtils::isValidTimeDependentExpression(str)){
                         numbers=StringUtils::splitStrNum(str);
                         if(numbers.size()<1){
-                            MessagePrinter::printErrorTxt("can\'t find numbers in 'bcvalue' of ["+bcBlock.m_bcBlockName
-                                                         +"] in your [bcs] subblock, please check your input file");
+                            MessagePrinter::printErrorTxt("can\'t find numbers in 'bcvalue' of '"+bcBlock.m_bcBlockName
+                                                         +"' in your 'bcs' subblock, please check your input file");
                             MessagePrinter::exitAsFem();
                         }
                         bcBlock.m_bcValue=numbers[0];
@@ -201,16 +186,16 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
                         HasValue=true;
                     }
                     else{
-                        MessagePrinter::printErrorTxt("you are trying to define an invalid time-dependent expression in ["+bcBlock.m_bcBlockName+
-                                                      "] in your [bcs] subblock, please check your input file");
+                        MessagePrinter::printErrorTxt("you are trying to define an invalid time-dependent expression in '"+bcBlock.m_bcBlockName+
+                                                      "' in your 'bcs' subblock, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                 }
                 else{
                     numbers=StringUtils::splitStrNum(str);
                     if(numbers.size()<1){
-                        MessagePrinter::printErrorTxt("can\'t find numbers in 'bcvalue' of ["+bcBlock.m_bcBlockName
-                                                         +"] in your [bcs] subblock, please check your input file");
+                        MessagePrinter::printErrorTxt("can\'t find numbers in 'bcvalue' of '"+bcBlock.m_bcBlockName
+                                                         +"' in your 'bcs' subblock, please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                     bcBlock.m_bcValue=numbers[0];
@@ -219,8 +204,8 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
             }
             else{
                 HasValue=false;
-                MessagePrinter::printErrorTxt("unsupported expression in 'bcvalue' of ["
-                    +bcBlock.m_bcBlockName+"] in your [bcs] subblock, "
+                MessagePrinter::printErrorTxt("unsupported expression in 'bcvalue' of '"
+                    +bcBlock.m_bcBlockName+"' in your 'bcs' subblock, "
                     "it should be either a float number or an expression('1.0' or '1.0*t'), "
                     "please check your input file");
                 MessagePrinter::exitAsFem();
@@ -229,22 +214,22 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
 
         if(bcjson.contains("side")){
             if(bcjson.at("side").size()<1){
-                MessagePrinter::printErrorTxt("invalid side name in ["+bcBlock.m_bcBlockName+"] of your [bcs] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid side name in '"+bcBlock.m_bcBlockName+"' of your 'bcs' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             string sidename;
             for(int i=0;i<static_cast<int>(bcjson.at("side").size());i++){
                 if(!bcjson.at("side").at(i).is_string()){
-                    MessagePrinter::printErrorTxt("side name is invalid in 'sides' of ["+bcBlock.m_bcBlockName+"] in your [bcs] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("side name is invalid in 'sides' of '"+bcBlock.m_bcBlockName+"' in your 'bcs' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 sidename=bcjson.at("side").at(i);
                 if(sidename.size()<1){
-                    MessagePrinter::printErrorTxt("side name is invalid or empty in 'side' of ["+bcBlock.m_bcBlockName+"] in your [bcs] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("side name is invalid or empty in 'side' of '"+bcBlock.m_bcBlockName+"' in your 'bcs' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
-                if(!t_mesh.isBCElmtPhyNameValid(sidename)){
-                   MessagePrinter::printErrorTxt("side name is invalid in 'side' of ["+bcBlock.m_bcBlockName+"] in your [bcs] subblock, please check your input file");
+                if(!t_fecell.isFECellBCElmtPhyNameValid(sidename)){
+                   MessagePrinter::printErrorTxt("side name is invalid in 'side' of '"+bcBlock.m_bcBlockName+"' in your 'bcs' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 bcBlock.m_boundaryNameList.push_back(sidename);
@@ -253,7 +238,7 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
         }
         else{
             HasBoundary=false;
-            MessagePrinter::printErrorTxt("can\'t find 'side' in ["+bcBlock.m_bcBlockName+"] of your [bcs] subblock, "
+            MessagePrinter::printErrorTxt("can\'t find 'side' in '"+bcBlock.m_bcBlockName+"' of your 'bcs' subblock, "
                                           "please check your input file");
             MessagePrinter::exitAsFem();
         } //end-of-'side'-reading
@@ -269,8 +254,8 @@ bool InputSystem::readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const D
         if(HasParams){}
 
         if(!HasType || !HasValue || !HasBoundary || !HasDof){
-            MessagePrinter::printErrorTxt("information of your [bcs] subblock(["+bcBlock.m_bcBlockName
-                                          +"]) is not complete,please check your input file");
+            MessagePrinter::printErrorTxt("information of your 'bcs' subblock('"+bcBlock.m_bcBlockName
+                                          +"') is not complete,please check your input file");
             MessagePrinter::exitAsFem();
         }
         else{

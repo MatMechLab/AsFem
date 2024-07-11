@@ -28,7 +28,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
 
     MessagePrinter::printStars();
     MessagePrinter::printNormalTxt("Start to read the input file");
-    m_inputSystem.readInputFile(m_mesh,m_dofhandler,m_elmtsystem,m_fe,
+    m_inputSystem.readInputFile(m_fecell,m_dofhandler,m_elmtsystem,m_fe,
                                 m_bcsystem,m_icsystem,
                                 m_projsystem,
                                 m_nlsolver,
@@ -38,7 +38,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
                                 m_jobblock);
     m_timer.endTimer();
     m_timer.printElapseTime("Input file reading is done",false);
-    m_mesh.printBulkMeshInfo();
+    m_fecell.printSummaryInfo();
 
     if(m_inputSystem.isReadOnly()) return;
 
@@ -47,7 +47,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     //***************************************
     m_timer.startTimer();
     MessagePrinter::printNormalTxt("Start to create dofs map ...");
-    m_dofhandler.createBulkDofsMap(m_mesh,m_elmtsystem);
+    m_dofhandler.createBulkDofsMap(m_fecell,m_elmtsystem);
     m_timer.endTimer();
     m_timer.printElapseTime("Dofs map generation is done",false);
     m_dofhandler.printBulkDofsInfo();
@@ -57,7 +57,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     //***************************************
     m_timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the Element system ...");
-    m_elmtsystem.init(m_mesh);
+    // m_elmtsystem.init(m_fecell);
     m_timer.endTimer();
     m_timer.printElapseTime("Element system is initialized",false);
 
@@ -84,7 +84,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     //***************************************
     m_timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the FE space ...");
-    m_fe.init(m_mesh);
+    m_fe.init(m_fecell);
     m_timer.endTimer();
     m_timer.printElapseTime("FE space is initialized",false);
 
@@ -93,7 +93,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     //***************************************
     m_timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the FE system ...");
-    m_fesystem.init(m_mesh,m_dofhandler);
+    m_fesystem.init(m_fecell,m_dofhandler);
     m_timer.endTimer();
     m_timer.printElapseTime("FE system is initialized",false);
 
@@ -123,7 +123,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     //***************************************
     m_timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the Projection system ...");
-    m_projsystem.init(m_mesh,m_dofhandler);
+    m_projsystem.init(m_fecell,m_dofhandler);
     m_timer.endTimer();
     m_timer.printElapseTime("Projection system is initialized",false);
 
@@ -171,7 +171,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
 }
 //*******************************************
 void FEProblem::finalize(){
-    m_mesh.releaseMemory();
+    m_fecell.releaseMemory();
     m_dofhandler.releaseMemory();
     m_fe.releaseMemory();
     m_elmtsystem.releaseMemory();

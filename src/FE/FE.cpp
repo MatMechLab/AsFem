@@ -20,95 +20,95 @@ FE::FE(){
     m_mindim=0;
 }
 
-void FE::initdefault(const Mesh &t_mesh){
-    if(t_mesh.getBulkMeshMaxDim()==1){
+void FE::initdefault(const FECell &t_fecell){
+    if(t_fecell.getFECellMaxDim()==1){
         // for 1d mesh
         m_maxdim=1;
         m_mindim=0;
         // for shape functions
-        m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_shp.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_bulk_shp.init();
 
         // for gauss points
-        m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
-        m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_qpoints.setDim(t_fecell.getFECellMaxDim());
+        m_bulk_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         m_bulk_qpoints.createQPoints();
     }
-    else if(t_mesh.getBulkMeshMaxDim()==2){
+    else if(t_fecell.getFECellMaxDim()==2){
         // for 2d mesh
         m_maxdim=2;
         m_mindim=1;
         // for shape functions
-        m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_shp.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_bulk_shp.init();
 
-        m_line_shp.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_shp.setMeshType(t_fecell.getFECellLineElmtMeshType());
         m_line_shp.init();
 
         // for gauss points
-        m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
-        m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_qpoints.setDim(t_fecell.getFECellMaxDim());
+        m_bulk_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         m_bulk_qpoints.createQPoints();
         //
         m_line_qpoints.setDim(m_mindim);
-        m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         m_line_qpoints.createQPoints();
     }
-    else if(t_mesh.getBulkMeshMaxDim()==3){
+    else if(t_fecell.getFECellMaxDim()==3){
         // for 3d mesh
         m_maxdim=3;
-        m_mindim=t_mesh.getBulkMeshMinDim();
+        m_mindim=t_fecell.getFeCellMinDim();
         // for shape functions
-        m_bulk_shp.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_shp.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_bulk_shp.init();
 
-        m_surface_shp.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
+        m_surface_shp.setMeshType(t_fecell.getFECellSurfElmtMeshType());
         m_surface_shp.init();
 
-        m_line_shp.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_shp.setMeshType(t_fecell.getFECellLineElmtMeshType());
         m_line_shp.init();
 
         // for gauss points
-        m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
-        m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+        m_bulk_qpoints.setDim(t_fecell.getFECellMaxDim());
+        m_bulk_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
         m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         m_bulk_qpoints.createQPoints();
         //
         m_surface_qpoints.setDim(2);
-        m_surface_qpoints.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
+        m_surface_qpoints.setMeshType(t_fecell.getFECellSurfElmtMeshType());
         m_surface_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        m_surface_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_surface_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         m_surface_qpoints.createQPoints();
         //
         m_line_qpoints.setDim(1);
-        m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+        m_line_qpoints.setMeshType(t_fecell.getFECellLineElmtMeshType());
         m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+        m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         m_line_qpoints.createQPoints();
     }
     else{
-        MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_mesh.getBulkMeshMaxDim())+") for FE initializing");
+        MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_fecell.getFECellMaxDim())+") for FE initializing");
         MessagePrinter::exitAsFem();
     }
 }
-void FE::init(const Mesh &t_mesh){
+void FE::init(const FECell &t_fecell){
     // this should only be used on user defines shp and qp block in their input file
     // here the different shp and qpoint have already been defined/given in your input file !!!
-    m_maxdim=t_mesh.getBulkMeshMaxDim();
-    m_mindim=t_mesh.getBulkMeshMinDim();
-    if(t_mesh.getBulkMeshMaxDim()==1){
+    m_maxdim=t_fecell.getFECellMaxDim();
+    m_mindim=t_fecell.getFeCellMinDim();
+    if(t_fecell.getFECellMaxDim()==1){
         // for 1d case
         m_bulk_shp.init();
         m_bulk_qpoints.createQPoints();
     }
-    else if(t_mesh.getBulkMeshMaxDim()==2){
+    else if(t_fecell.getFECellMaxDim()==2){
         // for 2d case
         m_bulk_shp.init();
         m_bulk_qpoints.createQPoints();
@@ -116,7 +116,7 @@ void FE::init(const Mesh &t_mesh){
         m_line_shp.init();
         m_line_qpoints.createQPoints();
     }
-    else if(t_mesh.getBulkMeshMaxDim()==3){
+    else if(t_fecell.getFECellMaxDim()==3){
         // for 3d case
         m_bulk_shp.init();
         m_bulk_qpoints.createQPoints();
@@ -128,7 +128,7 @@ void FE::init(const Mesh &t_mesh){
         m_line_qpoints.createQPoints();
     }
     else{
-        MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_mesh.getBulkMeshMaxDim())+") for FE initializing");
+        MessagePrinter::printErrorTxt("unsupported dim(="+to_string(t_fecell.getFECellMaxDim())+") for FE initializing");
         MessagePrinter::exitAsFem();
     }
 }

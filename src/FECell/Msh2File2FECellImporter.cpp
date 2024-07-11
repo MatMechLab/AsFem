@@ -246,6 +246,9 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
 
                 mshPhyID2CellVecMap.clear();
                 mshPhyName2CellVecMap.clear();
+
+                nodes=dim=vtktype=elmtorder=1;
+                meshtypename.clear();
                 
                 PointsNum=0;
                 for(int e=0;e<t_celldata.ElmtsNum;e++){

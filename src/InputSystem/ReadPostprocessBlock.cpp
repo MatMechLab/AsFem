@@ -15,7 +15,7 @@
 #include "InputSystem/InputSystem.h"
 
 bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
-                                       const Mesh &t_mesh,
+                                       const FECell &t_fecell,
                                        const DofHandler &t_dofhandler,
                                        Postprocessor &t_postprocessor){
     // the json already contains "postprocess" block
@@ -163,22 +163,22 @@ bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
 
         if(ejson.contains("domain")){
             if(ejson.at("domain").size()<1){
-                MessagePrinter::printErrorTxt("invalid or empty domain name in ["+ppsblock.m_block_name+"] of your [postprocess] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid or empty domain name in '"+ppsblock.m_block_name+"' of your 'postprocess' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             string domain;
             for(int i=0;i<static_cast<int>(ejson.at("domain").size());i++){
                 if(!ejson.at("domain").at(i).is_string()){
-                    MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of ["+ppsblock.m_block_name+"] in your [postprocess] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of '"+ppsblock.m_block_name+"' in your 'postprocess' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 domain=ejson.at("domain").at(i);
                 if(domain.size()<1){
-                    MessagePrinter::printErrorTxt("domain name is invalid or empty in 'domain' of ["+ppsblock.m_block_name+"] in your [postprocess] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("domain name is invalid or empty in 'domain' of '"+ppsblock.m_block_name+"' in your 'postprocess' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
-                if(!t_mesh.isBulkElmtPhyNameValid(domain)){
-                   MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of ["+ppsblock.m_block_name+"] in your [postprocess] subblock, please check your input file");
+                if(!t_fecell.isFECellBulkElmtPhyNameValid(domain)){
+                   MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of '"+ppsblock.m_block_name+"' in your 'postprocess' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 ppsblock.m_domainnamelist.push_back(domain);
@@ -191,22 +191,22 @@ bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
 
         if(ejson.contains("side")){
             if(ejson.at("side").size()<1){
-                MessagePrinter::printErrorTxt("invalid or empty side name in ["+ppsblock.m_block_name+"] of your [postprocess] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid or empty side name in '"+ppsblock.m_block_name+"' of your 'postprocess' subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             string sidename;
             for(int i=0;i<static_cast<int>(ejson.at("side").size());i++){
                 if(!ejson.at("side").at(i).is_string()){
-                    MessagePrinter::printErrorTxt("side name is invalid in 'side' of ["+ppsblock.m_block_name+"] in your [postprocess] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("side name is invalid in 'side' of '"+ppsblock.m_block_name+"' in your 'postprocess' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 sidename=ejson.at("side").at(i);
                 if(sidename.size()<1){
-                    MessagePrinter::printErrorTxt("side name is invalid or empty in 'side' of ["+ppsblock.m_block_name+"] in your [postprocess] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("side name is invalid or empty in 'side' of '"+ppsblock.m_block_name+"' in your 'postprocess' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
-                if(!t_mesh.isBCElmtPhyNameValid(sidename)){
-                   MessagePrinter::printErrorTxt("side name is invalid in 'side' of ["+ppsblock.m_block_name+"] in your [postprocess] subblock, please check your input file");
+                if(!t_fecell.isFECellBCElmtPhyNameValid(sidename)){
+                   MessagePrinter::printErrorTxt("side name is invalid in 'side' of '"+ppsblock.m_block_name+"' in your 'postprocess' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 ppsblock.m_sidenamelist.push_back(sidename);
@@ -223,8 +223,8 @@ bool InputSystem::readPostprocessBlock(nlohmann::json &t_json,
         }
         
         if(!HasType){
-            MessagePrinter::printErrorTxt("information in ["+ppsblock.m_block_name
-                                         +"] of your [postprocess] subblock is not complete, please check your input file");
+            MessagePrinter::printErrorTxt("information in '"+ppsblock.m_block_name
+                                         +"' of your 'postprocess' subblock is not complete, please check your input file");
             return false;
         }
         t_postprocessor.addPPSBlock2List(ppsblock);

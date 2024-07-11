@@ -15,7 +15,7 @@
 #include "InputSystem/InputSystem.h"
 #include "ElmtSystem/ElmtBlock.h"
 
-bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,ElmtSystem &t_elmtsystem){
+bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,ElmtSystem &t_elmtsystem){
     // now the json should already read 'elements'
     ElmtBlock elmtBlock;
     int blocks=0;
@@ -118,36 +118,6 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_elmt_typename=="user10"){
                 elmtBlock.m_elmttype=ElmtType::USER10ELMT;
             }
-            else if(elmtBlock.m_elmt_typename=="user11"){
-                elmtBlock.m_elmttype=ElmtType::USER11ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user12"){
-                elmtBlock.m_elmttype=ElmtType::USER12ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user13"){
-                elmtBlock.m_elmttype=ElmtType::USER13ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user14"){
-                elmtBlock.m_elmttype=ElmtType::USER14ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user15"){
-                elmtBlock.m_elmttype=ElmtType::USER15ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user16"){
-                elmtBlock.m_elmttype=ElmtType::USER16ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user17"){
-                elmtBlock.m_elmttype=ElmtType::USER17ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user18"){
-                elmtBlock.m_elmttype=ElmtType::USER18ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user19"){
-                elmtBlock.m_elmttype=ElmtType::USER19ELMT;
-            }
-            else if(elmtBlock.m_elmt_typename=="user20"){
-                elmtBlock.m_elmttype=ElmtType::USER20ELMT;
-            }
             else{
                 MessagePrinter::printErrorTxt("unsupported element type in "+elmtBlock.m_elmt_blockname+", please check your input file");
                 MessagePrinter::exitAsFem();
@@ -193,22 +163,22 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
 
         if(ejson.contains("domain")){
             if(ejson.at("domain").size()<1){
-                MessagePrinter::printErrorTxt("invalid or empty domain name in ["+elmtBlock.m_elmt_blockname+"] of your [elmts] subblock, please check your input file");
+                MessagePrinter::printErrorTxt("invalid or empty domain name in '"+elmtBlock.m_elmt_blockname+"' of your [elmts] subblock, please check your input file");
                 MessagePrinter::exitAsFem();
             }
             string domain;
             for(int i=0;i<static_cast<int>(ejson.at("domain").size());i++){
                 if(!ejson.at("domain").at(i).is_string()){
-                    MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of ["+elmtBlock.m_elmt_blockname+"] in your [elmts] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of '"+elmtBlock.m_elmt_blockname+"' in your 'elmts' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 domain=ejson.at("domain").at(i);
                 if(domain.size()<1){
-                    MessagePrinter::printErrorTxt("domain name is invalid or empty in 'domain' of ["+elmtBlock.m_elmt_blockname+"] in your [elmts] subblock, please check your input file");
+                    MessagePrinter::printErrorTxt("domain name is invalid or empty in 'domain' of '"+elmtBlock.m_elmt_blockname+"' in your 'elmts' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
-                if(!t_mesh.isBulkElmtPhyNameValid(domain)){
-                   MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of ["+elmtBlock.m_elmt_blockname+"] in your [elmts] subblock, please check your input file");
+                if(!t_fecell.isFECellBulkElmtPhyNameValid(domain)){
+                   MessagePrinter::printErrorTxt("domain name is invalid in 'domain' of '"+elmtBlock.m_elmt_blockname+"' in your 'elmts' subblock, please check your input file");
                     MessagePrinter::exitAsFem();
                 }
                 elmtBlock.m_domain_namelist.push_back(domain);
@@ -335,36 +305,6 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
             else if(elmtBlock.m_mate_typename=="user10"){
                 elmtBlock.m_matetype=MateType::USER10MATE;
             }
-            else if(elmtBlock.m_mate_typename=="user11"){
-                elmtBlock.m_matetype=MateType::USER11MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user12"){
-                elmtBlock.m_matetype=MateType::USER12MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user13"){
-                elmtBlock.m_matetype=MateType::USER13MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user14"){
-                elmtBlock.m_matetype=MateType::USER14MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user15"){
-                elmtBlock.m_matetype=MateType::USER15MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user16"){
-                elmtBlock.m_matetype=MateType::USER16MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user17"){
-                elmtBlock.m_matetype=MateType::USER17MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user18"){
-                elmtBlock.m_matetype=MateType::USER18MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user19"){
-                elmtBlock.m_matetype=MateType::USER19MATE;
-            }
-            else if(elmtBlock.m_mate_typename=="user20"){
-                elmtBlock.m_matetype=MateType::USER20MATE;
-            }
             else{
                 MessagePrinter::printErrorTxt("unsupported material type name in "+elmtBlock.m_elmt_blockname," please check your input file");
                 MessagePrinter::exitAsFem();
@@ -387,8 +327,8 @@ bool InputSystem::readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const
         } //end-of-'material'-reading
 
         if(!HasType || !HasDofs){
-            MessagePrinter::printErrorTxt("information in ["+elmtBlock.m_elmt_blockname
-                                         +"] of your [elmts] subblock is not complete, please check your input file");
+            MessagePrinter::printErrorTxt("information in '"+elmtBlock.m_elmt_blockname
+                                         +"' of your 'elmts' subblock is not complete, please check your input file");
             return false;
         }
 

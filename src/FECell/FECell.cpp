@@ -19,6 +19,8 @@ FECell::FECell(){}
 
 // setup 1d mesh info
 void FECell::setMeshInfo(const int &nx,const double &xmin,const double &xmax,const MeshType &meshtype){
+    m_CellData.MaxDim=1;
+    m_CellData.MinDim=0;
     m_CellData.Nx=nx;
     m_CellData.Xmin=xmin;
     m_CellData.Xmax=xmax;
@@ -321,4 +323,8 @@ void FECell::printSummaryInfo()const{
         }
     }
     MessagePrinter::printStars();
+}
+
+void FECell::releaseMemory(){
+    
 }

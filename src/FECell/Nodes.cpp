@@ -8,31 +8,26 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2020.12.28
-//+++ Update : 2024.01.31
-//+++ Purpose: the main program of the whole AsFem framework
+//+++ Date   : 2024.07.10
+//+++ Purpose: this class stores the coordinates of nodes of 
+//+++          a single element
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include <iostream>
+#include "FECell/Nodes.h"
 
-#include "Application.h"
-#include "FEProblem/FEProblem.h"
-
-int main(int args,char *argv[]){
-    Application myapp;
-
-    if(myapp.init(args,argv)) return 1;
-
-    const int Year=2022;
-    const int Month=10;
-    const int Day=19;
-    const double Version=0.8;
-    myapp.printAppInfo(Year,Month,Day,Version);
-
-    FEProblem feProblem;
-    feProblem.initFEProblem(args,argv);
-    // feProblem.run();
-    feProblem.finalize();
-
-    return myapp.finalize();
+Nodes::Nodes(){
+    m_coordinates.clear();m_size=0;
+}
+Nodes::Nodes(const int &n){
+    m_size=n;m_coordinates.resize(n*3,0.0);
+}
+Nodes::Nodes(const Nodes &nodes){
+    m_size=nodes.m_size;
+    m_coordinates.clear();
+    for(const auto &it:nodes.m_coordinates) m_coordinates.push_back(it);
+}
+   
+Nodes::~Nodes(){
+    m_size=0;
+    m_coordinates.clear();
 }

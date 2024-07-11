@@ -22,7 +22,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                                  const nlohmann::json &parameters,
                                  const vector<int> &dofids,
                                  const vector<string> &bcnamelist,
-                                 const Mesh &mesh,const DofHandler &dofhandler,
+                                 const FECell &fecell,const DofHandler &dofhandler,
                                  FE &fe,
                                  Vector &U,Vector &Uold,Vector &Uolder,
                                  Vector &V,
@@ -33,6 +33,8 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
     int rankne,eStart,eEnd,nNodesPerBCElmt;
     int e,i,j,k,iInd,jInd,gpInd;
     double xi,eta,w,JxW,dist;
+
+    if(fecell.getFECellBulkElmtsNum()){}
 
     m_local_elmtinfo.m_dofsnum=static_cast<int>(dofids.size());
 
@@ -45,11 +47,12 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
     V.makeGhostCopy();    
 
     for(const auto &name:bcnamelist){
-        rankne=mesh.getBulkMeshElmtsNumViaPhyName(name)/m_size;
+        rankne=1;//mesh.getBulkMeshElmtsNumViaPhyName(name)/m_size;
+        if(name.size()){}
         eStart=m_rank*rankne;
         eEnd=(m_rank+1)*rankne;
-        if(m_rank==m_size-1) eEnd=mesh.getBulkMeshElmtsNumViaPhyName(name);
-        m_local_elmtinfo.m_dim=mesh.getBulkMeshElmtDimViaPhyName(name);
+        // if(m_rank==m_size-1) eEnd=mesh.getBulkMeshElmtsNumViaPhyName(name);
+        // m_local_elmtinfo.m_dim=mesh.getBulkMeshElmtDimViaPhyName(name);
         nNodesPerBCElmt=0;
 
         if(m_local_elmtinfo.m_dim>2 || m_local_elmtinfo.m_dim<0){
@@ -58,14 +61,14 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
         }
 
         for(e=eStart;e<eEnd;e++){
-            nNodesPerBCElmt=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);      
+            // nNodesPerBCElmt=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);      
             if(m_local_elmtinfo.m_dim==0){
                  // for 'point' case
                 for(i=1;i<=nNodesPerBCElmt;i++){
-                    j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);// global id
-                    m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
-                    m_local_elmtinfo.m_gpCoords0(2)=mesh.getBulkMeshIthNodeJthCoord0(j,2);
-                    m_local_elmtinfo.m_gpCoords0(3)=mesh.getBulkMeshIthNodeJthCoord0(j,3);
+                    // j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);// global id
+                    // m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
+                    // m_local_elmtinfo.m_gpCoords0(2)=mesh.getBulkMeshIthNodeJthCoord0(j,2);
+                    // m_local_elmtinfo.m_gpCoords0(3)=mesh.getBulkMeshIthNodeJthCoord0(j,3);
                     for(k=0;k<m_local_elmtinfo.m_dofsnum;k++){
                         iInd=dofhandler.getIthNodeJthDofID(j,k+1);
                         // get the local solutions
@@ -85,7 +88,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                         m_local_shp.m_grad_test=0.0;
                         m_local_shp.m_trial=0.0;
                         m_local_shp.m_grad_trial=0.0;
-                        iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                        // iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                         runBCLibs(calctype,bctype,bcvalue,ctan,parameters,
                                   m_normal,
                                   m_local_elmtinfo,m_local_elmtsoln,m_local_shp,
@@ -98,11 +101,11 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                     for(i=1;i<=nNodesPerBCElmt;i++){
                         m_local_shp.m_test=1.0;
                         m_local_shp.m_grad_test=0.0;
-                        iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                        // iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                         for(j=1;j<=nNodesPerBCElmt;j++){
                             m_local_shp.m_trial=0.0;
                             m_local_shp.m_grad_trial=0.0;
-                            jInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,j);
+                            // jInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,j);
                             runBCLibs(calctype,bctype,bcvalue,ctan,parameters,
                                       m_normal,
                                       m_local_elmtinfo,m_local_elmtsoln,m_local_shp,
@@ -116,7 +119,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
             }// end-of-dim=0-case
             else if(m_local_elmtinfo.m_dim==1){
                 // for 'line' element case
-                mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(name,e+1,m_nodes0);
+                // mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(name,e+1,m_nodes0);
                 
                 // do the gauss point integration loop
                 for(gpInd=1;gpInd<=fe.m_line_qpoints.getQPointsNum();gpInd++){
@@ -155,7 +158,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                     m_local_elmtinfo.m_gpCoords0=0.0;
                             
                     for(i=1;i<=nNodesPerBCElmt;i++){
-                        j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);//global id
+                        // j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);//global id
                         for(k=1;k<=m_local_elmtinfo.m_dofsnum;k++){
                             iInd=dofhandler.getIthNodeJthDofID(j,dofids[k-1]);
 
@@ -177,9 +180,9 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                             m_local_elmtsoln.m_gpGradUolder[k](3)+=fe.m_line_shp.shape_grad(i)(3)*Uolder.getIthValueFromGhost(iInd);
                         }
                                 
-                        m_local_elmtinfo.m_gpCoords0(1)+=fe.m_line_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,1);
-                        m_local_elmtinfo.m_gpCoords0(2)+=fe.m_line_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,2);
-                        m_local_elmtinfo.m_gpCoords0(3)+=fe.m_line_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,3);
+                        // m_local_elmtinfo.m_gpCoords0(1)+=fe.m_line_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,1);
+                        // m_local_elmtinfo.m_gpCoords0(2)+=fe.m_line_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,2);
+                        // m_local_elmtinfo.m_gpCoords0(3)+=fe.m_line_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,3);
                             
                     }// end-of-node-loop-for-phy-quantities
 
@@ -189,7 +192,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                             m_local_shp.m_grad_test=fe.m_line_shp.shape_grad(i);
                             m_local_shp.m_trial=0.0;
                             m_local_shp.m_grad_trial=0.0;
-                            iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                            // iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                             runBCLibs(calctype,bctype,bcvalue,ctan,parameters,
                                       m_normal,
                                       m_local_elmtinfo,m_local_elmtsoln,m_local_shp,
@@ -202,11 +205,11 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                         for(i=1;i<=nNodesPerBCElmt;i++){
                             m_local_shp.m_test=fe.m_line_shp.shape_value(i);
                             m_local_shp.m_grad_test=fe.m_line_shp.shape_grad(i);
-                            iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                            // iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                             for(j=1;j<=nNodesPerBCElmt;j++){
                                 m_local_shp.m_trial=fe.m_line_shp.shape_value(j);
                                 m_local_shp.m_grad_trial=fe.m_line_shp.shape_grad(j);
-                                jInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,j);
+                                // jInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,j);
 
                                 runBCLibs(calctype,bctype,bcvalue,ctan,parameters,
                                           m_normal,
@@ -223,7 +226,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
             } // end-of-dim=1-case
             else if(m_local_elmtinfo.m_dim==2){
                 // for 'surf' element case
-                mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(name,e+1,m_nodes0);
+                // mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(name,e+1,m_nodes0);
 
                 for(gpInd=1;gpInd<=fe.m_surface_qpoints.getQPointsNum();gpInd++){
                     xi =fe.m_surface_qpoints.getIthPointJthCoord(gpInd,1);
@@ -268,7 +271,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                     }
                     m_local_elmtinfo.m_gpCoords0=0.0;
                     for(i=1;i<=nNodesPerBCElmt;i++){
-                        j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);//global id
+                        // j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);//global id
                         for(k=1;k<=m_local_elmtinfo.m_dofsnum;k++){
                             iInd=dofhandler.getIthNodeJthDofID(j,dofids[k-1]);
 
@@ -290,9 +293,9 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                             m_local_elmtsoln.m_gpGradUolder[k](3)+=fe.m_surface_shp.shape_grad(i)(3)*Uolder.getIthValueFromGhost(iInd);
                         }
                                 
-                        m_local_elmtinfo.m_gpCoords0(1)+=fe.m_surface_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,1);
-                        m_local_elmtinfo.m_gpCoords0(2)+=fe.m_surface_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,2);
-                        m_local_elmtinfo.m_gpCoords0(3)+=fe.m_surface_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,3);
+                        // m_local_elmtinfo.m_gpCoords0(1)+=fe.m_surface_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,1);
+                        // m_local_elmtinfo.m_gpCoords0(2)+=fe.m_surface_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,2);
+                        // m_local_elmtinfo.m_gpCoords0(3)+=fe.m_surface_shp.shape_value(i)*mesh.getBulkMeshIthNodeJthCoord(j,3);
                     
                     }// end-of-node-loop-for-phy-quantities
 
@@ -302,7 +305,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                             m_local_shp.m_grad_test=fe.m_surface_shp.shape_grad(i);
                             m_local_shp.m_trial=0.0;
                             m_local_shp.m_grad_trial=0.0;
-                            iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                            // iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                             runBCLibs(calctype,bctype,bcvalue,ctan,parameters,
                                       m_normal,
                                       m_local_elmtinfo,m_local_elmtsoln,m_local_shp,
@@ -316,11 +319,11 @@ void BCSystem::applyIntegratedBC(const FECalcType &calctype,
                         for(i=1;i<=nNodesPerBCElmt;i++){
                             m_local_shp.m_test=fe.m_surface_shp.shape_value(i);
                             m_local_shp.m_grad_test=fe.m_surface_shp.shape_grad(i);
-                            iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
+                            // iInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
                             for(j=1;j<=nNodesPerBCElmt;j++){
                                 m_local_shp.m_trial=fe.m_surface_shp.shape_value(j);
                                 m_local_shp.m_grad_trial=fe.m_surface_shp.shape_grad(j);
-                                jInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,j);
+                                // jInd=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,j);
 
                                 runBCLibs(calctype,bctype,bcvalue,ctan,parameters,
                                           m_normal,

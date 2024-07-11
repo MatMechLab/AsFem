@@ -58,7 +58,7 @@ PetscErrorCode computeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
                                 user->_fectrlinfo->t+user->_fectrlinfo->dt,
                                 user->_fectrlinfo->dt,
                                 user->_fectrlinfo->ctan,
-                                *user->_mesh,
+                                *user->_fecell,
                                 *user->_dofHandler,
                                 *user->_fe,
                                 *user->_elmtSystem,
@@ -73,7 +73,7 @@ PetscErrorCode computeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     user->_bcSystem->applyBoundaryConditions(FECalcType::COMPUTERESIDUAL,
                                              user->_fectrlinfo->t+user->_fectrlinfo->dt,
                                              user->_fectrlinfo->ctan,
-                                             *user->_mesh,
+                                             *user->_fecell,
                                              *user->_dofHandler,
                                              *user->_fe,
                                              user->_solutionSystem->m_u_temp,
@@ -103,7 +103,7 @@ PetscErrorCode computeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
                                 user->_fectrlinfo->t+user->_fectrlinfo->dt,
                                 user->_fectrlinfo->dt,
                                 user->_fectrlinfo->ctan,
-                                *user->_mesh,
+                                *user->_fecell,
                                 *user->_dofHandler,
                                 *user->_fe,
                                 *user->_elmtSystem,
@@ -118,7 +118,7 @@ PetscErrorCode computeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
     user->_bcSystem->applyBoundaryConditions(FECalcType::COMPUTEJACOBIAN,
                                              user->_fectrlinfo->t+user->_fectrlinfo->dt,
                                              user->_fectrlinfo->ctan,
-                                             *user->_mesh,
+                                             *user->_fecell,
                                              *user->_dofHandler,
                                              *user->_fe,
                                              user->_solutionSystem->m_u_temp,
@@ -142,7 +142,7 @@ PetscErrorCode computeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
 //***************************************************************
 //*** here we solve our nonlinear equations for R(x)->0 
 //***************************************************************
-bool SNESSolver::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
+bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
                        ElmtSystem &elmtsystem,MateSystem &matesystem,
                        FESystem &fesystem,
                        BCSystem &bcsystem,
@@ -152,7 +152,7 @@ bool SNESSolver::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
     
     solutionsystem.m_u_copy.copyFrom(solutionsystem.m_u_current);
     
-    m_appctx=AppCtx{&mesh,&dofhandler,
+    m_appctx=AppCtx{&fecell,&dofhandler,
                    &bcsystem,
                    &elmtsystem,&matesystem,
                    &solutionsystem,&equationsystem,
@@ -167,7 +167,7 @@ bool SNESSolver::solve(Mesh &mesh,DofHandler &dofhandler,FE &fe,
     
     m_appctx._bcSystem->applyPresetBoundaryConditions(FECalcType::UPDATEU,
                                              m_appctx._fectrlinfo->t+m_appctx._fectrlinfo->dt,
-                                             *m_appctx._mesh,
+                                             *m_appctx._fecell,
                                              *m_appctx._dofHandler,
                                              m_appctx._solutionSystem->m_u_current,
                                              m_appctx._solutionSystem->m_u_copy,

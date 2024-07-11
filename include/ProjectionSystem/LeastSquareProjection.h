@@ -27,10 +27,10 @@ public:
 protected:
     /**
      * the global projection action
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_data the projection data structure
      */
-    virtual void globalProjectionAction(const Mesh &t_mesh,
+    virtual void globalProjectionAction(const FECell &t_fecell,
                                         ProjectionData &t_data) override;
     /**
      * the local projection action

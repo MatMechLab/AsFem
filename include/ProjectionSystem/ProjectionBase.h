@@ -24,7 +24,7 @@
 #include "Utils/MessagePrinter.h"
 
 #include "ProjectionSystem/ProjectionData.h"
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "FE/ShapeFun.h"
 #include "MateSystem/MaterialsContainer.h"
@@ -40,10 +40,10 @@ class ProjectionBase{
 protected:
     /**
      * the global projection action
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_data the projection data structure
      */
-    virtual void globalProjectionAction(const Mesh &t_mesh,ProjectionData &t_data)=0;
+    virtual void globalProjectionAction(const FECell &t_fecell,ProjectionData &t_data)=0;
     /**
      * the local projection action
      * @param nodesnum the nodes number of current element

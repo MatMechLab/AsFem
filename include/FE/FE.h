@@ -18,7 +18,7 @@
 #include "FE/QPoint.h"
 #include "FE/ShapeFun.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 
 /**
  * This class implement the general function and management of both shape functions and qpoints classes
@@ -31,15 +31,15 @@ public:
     FE();
     /**
      * initialize the FE class, this option assumes that no info is given in your input file
-     * @param t_mesh the mesh class for FE initializing
+     * @param t_fecell the fe cell class for FE initializing
      */
-    void initdefault(const Mesh &t_mesh);
+    void initdefault(const FECell &t_fecell);
 
     /**
      * init the FE class with preset info(defined in your input file)
-     * @param t_mesh the mesh class for FE initializing
+     * @param t_fecell the fe cell class for FE initializing
      */
-    void init(const Mesh &t_mesh);
+    void init(const FECell &t_fecell);
 
     /**
      * get the maximum dim of FE space

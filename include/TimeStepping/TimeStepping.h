@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "BCSystem/BCSystem.h"
 #include "ICSystem/ICSystem.h"
@@ -146,7 +146,7 @@ public:
 
     /**
      * solve the transient equation
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof class
      * @param t_fe the fe class
      * @param t_elmtsystem the element system class
@@ -162,7 +162,7 @@ public:
      * @param t_output  the output system
      * @param t_postprocess the postprocess system
      */
-    bool solve(Mesh &t_mesh,DofHandler &t_dofhandler,FE &t_fe,
+    bool solve(FECell &t_fecell,DofHandler &t_dofhandler,FE &t_fe,
                ElmtSystem &t_elmtsystem,MateSystem &t_matesystem,
                FESystem &t_fesystem,
                BCSystem &t_bcsystem,

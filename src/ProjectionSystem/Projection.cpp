@@ -15,7 +15,7 @@
 
 #include "ProjectionSystem/ProjectionSystem.h"
 
-void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_dofhandler,
+void ProjectionSystem::executeProjection(const FECell &t_fecell,const DofHandler &t_dofhandler,
                            const ElmtSystem &t_elmtsystem,
                            MateSystem &t_matesystem,
                            FE &t_fe,
@@ -47,34 +47,34 @@ void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
     MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
 
-    int rankne=t_mesh.getBulkMeshBulkElmtsNum()/m_size;
+    int rankne=t_fecell.getFECellBulkElmtsNum()/m_size;
     int eStart=m_rank*rankne;
     int eEnd=(m_rank+1)*rankne;
-    if(m_rank==m_size-1) eEnd=t_mesh.getBulkMeshBulkElmtsNum();
+    if(m_rank==m_size-1) eEnd=t_fecell.getFECellBulkElmtsNum();
 
     int nDim,e,qpoints_num;
     double xi,eta,zeta,w,J,JxW;
-    nDim=t_mesh.getBulkMeshMaxDim();
+    nDim=t_fecell.getFECellMaxDim();
 
     int subelmtid;
     int globaldofid,globalnodeid;
 
     m_local_elmtinfo.m_dim=nDim;
-    m_local_elmtinfo.m_nodesnum=t_mesh.getBulkMeshNodesNumPerBulkElmt();
+    m_local_elmtinfo.m_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
     m_local_elmtinfo.m_t=t_fectrlinfo.t;
     m_local_elmtinfo.m_dt=t_fectrlinfo.dt;
-    m_local_elmtinfo.m_elmtsnum=t_mesh.getBulkMeshBulkElmtsNum();
+    m_local_elmtinfo.m_elmtsnum=t_fecell.getFECellBulkElmtsNum();
 
-    m_bulkelmt_nodesnum=t_mesh.getBulkMeshNodesNumPerBulkElmt();
+    m_bulkelmt_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
 
     for(int ee=eStart;ee<eEnd;ee++){
         e=ee+1;
         m_local_elmtinfo.m_elmtid=e;
 
-        t_mesh.getBulkMeshIthBulkElmtNodeCoords0(e,m_nodes0);// for nodal coordinates in reference configuration
-        t_mesh.getBulkMeshIthBulkElmtNodeCoords(e,m_nodes);// for nodal coordinates in current configuration
+        // t_mesh.getBulkMeshIthBulkElmtNodeCoords0(e,m_nodes0);// for nodal coordinates in reference configuration
+        // t_mesh.getBulkMeshIthBulkElmtNodeCoords(e,m_nodes);// for nodal coordinates in current configuration
 
-        t_mesh.getBulkMeshIthBulkElmtConnectivity(e,m_elmtconn);// for current element's connectivity
+        // t_mesh.getBulkMeshIthBulkElmtConnectivity(e,m_elmtconn);// for current element's connectivity
 
         qpoints_num=t_fe.m_bulk_qpoints.getQPointsNum();
         m_local_elmtinfo.m_qpointsnum=qpoints_num;
@@ -136,7 +136,8 @@ void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_
 
                     m_local_elmtsoln.m_gpGradV[i+1]=0.0;
                     for(int j=1;j<=m_bulkelmt_nodesnum;j++){
-                        globalnodeid=t_mesh.getBulkMeshIthBulkElmtJthNodeID(e,j);
+                        // globalnodeid=t_mesh.getBulkMeshIthBulkElmtJthNodeID(e,j);
+                        globalnodeid=1;
                         globaldofid=t_dofhandler.getIthNodeJthDofID(globalnodeid,m_subelmtdofsid[i]);
                         m_local_elmtsoln.m_gpUolder[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_u_older.getIthValueFromGhost(globaldofid);
                         m_local_elmtsoln.m_gpUold[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_u_old.getIthValueFromGhost(globaldofid);
@@ -175,7 +176,7 @@ void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_
 
             }// end-of-sub-element-loop
             // true--> for local projection
-            runProjectionLibs(true,t_mesh,m_bulkelmt_nodesnum,m_elmtconn,JxW,t_fe.m_bulk_shp,t_matesystem.m_materialcontainer,m_data);
+            runProjectionLibs(true,t_fecell,m_bulkelmt_nodesnum,m_elmtconn,JxW,t_fe.m_bulk_shp,t_matesystem.m_materialcontainer,m_data);
 
         }// end-of-qpoints-loop
 
@@ -195,6 +196,6 @@ void ProjectionSystem::executeProjection(const Mesh &t_mesh,const DofHandler &t_
     //*** one needs to execute the global projection behavior
     //******************************************************
     // false--> for global projection action
-    runProjectionLibs(false,t_mesh,m_bulkelmt_nodesnum,m_elmtconn,JxW,t_fe.m_bulk_shp,t_matesystem.m_materialcontainer,m_data);
+    runProjectionLibs(false,t_fecell,m_bulkelmt_nodesnum,m_elmtconn,JxW,t_fe.m_bulk_shp,t_matesystem.m_materialcontainer,m_data);
 
 }

@@ -14,24 +14,24 @@
 
 #include "InputSystem/InputSystem.h"
 
-bool InputSystem::readQPointBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &t_fe){
+bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,FE &t_fe){
     // here json already contains "qpoints"
 
     // once user defines the "qpoints" block, we init all the sub-block with default options
     t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-    t_fe.m_bulk_qpoints.setDim(t_mesh.getBulkMeshMaxDim());
-    t_fe.m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+2);
-    t_fe.m_bulk_qpoints.setMeshType(t_mesh.getBulkMeshBulkElmtMeshType());
+    t_fe.m_bulk_qpoints.setDim(t_fecell.getFECellMaxDim());
+    t_fe.m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+    t_fe.m_bulk_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
 
     t_fe.m_surface_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
     t_fe.m_surface_qpoints.setDim(2);
-    t_fe.m_surface_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+2);
-    t_fe.m_surface_qpoints.setMeshType(t_mesh.getBulkMeshSurfaceElmtMeshType());
+    t_fe.m_surface_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+    t_fe.m_surface_qpoints.setMeshType(t_fecell.getFECellSurfElmtMeshType());
 
     t_fe.m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
     t_fe.m_line_qpoints.setDim(1);
-    t_fe.m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+2);
-    t_fe.m_line_qpoints.setMeshType(t_mesh.getBulkMeshLineElmtMeshType());
+    t_fe.m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+    t_fe.m_line_qpoints.setMeshType(t_fecell.getFECellLineElmtMeshType());
 
     if(t_json.contains("bulk")){
         auto json_bulk=t_json.at("bulk");
@@ -80,13 +80,13 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &
             t_fe.m_bulk_qpoints.setOrder(order);
         }
         else{
-            t_fe.m_bulk_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+            t_fe.m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         }
     }
 
     if(t_json.contains("surface")){
-        if(t_mesh.getBulkMeshMaxDim()<3){
-            MessagePrinter::printErrorTxt("the max dim of your mesh is "+to_string(t_mesh.getBulkMeshMaxDim())+", you can\'t define qpoint for a surface mesh,"
+        if(t_fecell.getFECellMaxDim()<3){
+            MessagePrinter::printErrorTxt("the max dim of your mesh is "+to_string(t_fecell.getFECellMaxDim())+", you can\'t define qpoint for a surface mesh,"
                                           " please check your input file");
             MessagePrinter::exitAsFem();
         }
@@ -137,14 +137,14 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &
             t_fe.m_surface_qpoints.setOrder(order);
         }
         else{
-            t_fe.m_surface_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+            t_fe.m_surface_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         }
 
     }
 
     if(t_json.contains("line")){
-        if(t_mesh.getBulkMeshMaxDim()<2){
-            MessagePrinter::printErrorTxt("the max dim of your mesh is "+to_string(t_mesh.getBulkMeshMaxDim())+", you can\'t define qpoint for a line mesh,"
+        if(t_fecell.getFECellMaxDim()<2){
+            MessagePrinter::printErrorTxt("the max dim of your mesh is "+to_string(t_fecell.getFECellMaxDim())+", you can\'t define qpoint for a line mesh,"
                                           " please check your input file");
             MessagePrinter::exitAsFem();
         }
@@ -195,7 +195,7 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &
             t_fe.m_line_qpoints.setOrder(order);
         }
         else{
-            t_fe.m_line_qpoints.setOrder(t_mesh.getBulkMeshBulkElmtOrder()+1);
+            t_fe.m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         }
 
     }

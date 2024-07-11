@@ -15,7 +15,7 @@
 #include "ProjectionSystem/ProjectionSystem.h"
 
 void ProjectionSystem::runProjectionLibs(const bool &flag,
-                                         const Mesh &t_mesh,
+                                         const FECell &t_fecell,
                                          const int &nodesnum,
                                          const vector<int> &t_elconn,
                                          const double &detjac,
@@ -30,7 +30,7 @@ void ProjectionSystem::runProjectionLibs(const bool &flag,
             LeastSquareProjection::localProjectionAction(nodesnum,t_elconn,detjac,t_shp,t_mate,t_data);
         }
         else{
-            LeastSquareProjection::globalProjectionAction(t_mesh,t_data);
+            LeastSquareProjection::globalProjectionAction(t_fecell,t_data);
         }
         break;
     }

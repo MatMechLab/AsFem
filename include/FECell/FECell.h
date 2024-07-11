@@ -83,6 +83,21 @@ public:
                      const double &xmin,const double &xmax,
                      const double &ymin,const double &ymax,
                      const double &zmin,const double &zmax,const MeshType &meshtype);
+    
+    //*****************************************************
+    //*** general gettings
+    //*****************************************************
+    //**************************************************
+    //*** for dims
+    //**************************************************
+    /**
+     * Get the max dim of bulk mesh
+     */
+    inline int getFECellMaxDim()const{return m_CellData.MaxDim;}
+    /**
+     * Get the min dim of bulk mesh
+     */
+    inline int getFeCellMinDim()const{return m_CellData.MinDim;}
 
 
     /**
@@ -94,19 +109,40 @@ public:
     */
     inline FECellData getCellDataCopy()const{return m_CellData;}
 
-
+    /**
+     * Get the number of toal fe cell
+     */
+    inline int getFECellElmtsNum()const{return m_CellData.ElmtsNum;}
     /**
      * Get the number of bulk FE cell
      */
-    inline int getBulkFECellNum()const{return m_CellData.BulkElmtsNum;}
+    inline int getFECellBulkElmtsNum()const{return m_CellData.BulkElmtsNum;}
     /**
      * Get the number of surface FE cell
      */
-    inline int getSurfFECellNum()const{return m_CellData.SurfElmtsNum;}
+    inline int getFECellSurfElmtsNum()const{return m_CellData.SurfElmtsNum;}
     /**
      * Get the number of line FE cell
      */
-    inline int getLineFECellNum()const{return m_CellData.LineElmtsNum;}
+    inline int getFECellLineElmtsNum()const{return m_CellData.LineElmtsNum;}
+
+    /**
+     * Get the nodes number of FE cell
+     */
+    inline int getFECellNodesNum()const{return m_CellData.NodesNum;}
+    /**
+     * Get the nodes number of bulk FE cell
+     */
+    inline int getFECellNodesNumPerBulkElmt()const{return m_CellData.NodesNumPerBulkElmt;}
+    /**
+     * Get the nodes number of surface FE cell
+     */
+    inline int getFECellNodesNumPerSurfElmt()const{return m_CellData.NodesNumPerSurfElmt;}
+    /**
+     * Get the nodes number of line FE cell
+     */
+    inline int getFECellNodesNumPerLineElmt()const{return m_CellData.NodesNumPerLineElmt;}
+
     /**
      * Get the copy of the local bulk mesh cell vector
      */
@@ -167,6 +203,70 @@ public:
         return m_CellData.PhyName2MeshCellVectorMap_Global;
     }
 
+    /**
+     * Get the number of elements via its physical name
+     * @param name string for the physical name 
+     */
+    inline int getFECellElmtsNumViaPhyName(const string &name)const{
+        for(int i=0;i<m_CellData.PhyGroupNum_Global;i++){
+            if(m_CellData.PhyNameVector_Global[i]==name){
+                return m_CellData.PhyGroupElmtsNumVector_Global[i];
+            }
+        }
+        MessagePrinter::printErrorTxt("can\'t find elements number for phyname="+name+" in your fe cell class");
+        MessagePrinter::exitAsFem();
+        return 0;// if the name is not there, then return 0
+    }
+    /**
+     * get the number of bulk elements via its physical name
+     * @param name string for the physical name 
+     */
+    inline int getFECellBulkElmtsNumViaPhyName(const string &name)const{
+        for(int i=0;i<m_CellData.PhyGroupNum_Global;i++){
+            if(m_CellData.PhyNameVector_Global[i]==name &&
+               m_CellData.PhyDimVector_Global[i]==m_CellData.MaxDim){
+                return m_CellData.PhyGroupElmtsNumVector_Global[i];
+            }
+        }
+        MessagePrinter::printErrorTxt("can\'t find elements number for phyname="+name+" in your fe cell class");
+        MessagePrinter::exitAsFem();
+        return 0;
+    }
+    /**
+     * Get the mesh order of bulk elements
+     */
+    inline int getFECellBulkMeshOrder()const{return m_CellData.MeshOrder;}
+    /**
+     * Get the dim of elements via its physical name
+     * @param name string for the physical name 
+     */
+    inline int getFECellElmtDimViaPhyName(const string &name)const{
+        for(int i=0;i<m_CellData.PhyGroupNum_Global;i++){
+            if(m_CellData.PhyNameVector_Global[i]==name){
+                return m_CellData.PhyDimVector_Global[i];
+            }
+        }
+        MessagePrinter::printErrorTxt("can\'t find element dim for phyname="+name+" in fe cell class");
+        MessagePrinter::exitAsFem();
+        return 0;// if the name is not there, then return 0
+    }
+    /**
+     * Get the mesh type of bulk elements
+     */
+    inline MeshType getFECellBulkElmtMeshType()const{return m_CellData.BulkElmtMeshType;}
+    /**
+     * Get the mesh type of line elements
+     */
+    inline MeshType getFECellLineElmtMeshType()const{return m_CellData.LineElmtMeshType;}
+    /**
+     * Get the mesh type of surface elements
+     */
+    inline MeshType getFECellSurfElmtMeshType()const{return m_CellData.SurfElmtMeshType;}
+
+
+
+
+
     //********************************************************
     //*** for physical group info
     //********************************************************
@@ -198,6 +298,33 @@ public:
      * Get the physical name to physical id mapping
      */
     inline map<string,int> getPhysicalName2IDMapCopy()const{return m_CellData.PhyName2IDMap_Global;}
+    /**
+     * Check whether the given string name is a valid physical group name for boundary mesh
+     * @param phyname the physical name of the boundary mesh
+     */
+    inline bool isFECellBCElmtPhyNameValid(const string &phyname)const{
+        for(int i=0;i<m_CellData.PhyGroupNum_Global;i++){
+            if(m_CellData.PhyDimVector_Global[i]<m_CellData.MaxDim && 
+               m_CellData.PhyNameVector_Global[i]==phyname){
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Check whether the given string name is a valid physical group name for bulk mesh
+     * @param phyname the physical name of the bulk mesh
+     */
+    inline bool isFECellBulkElmtPhyNameValid(const string &phyname)const{
+        for(int i=0;i<m_CellData.PhyGroupNum_Global;i++){
+            if(m_CellData.PhyDimVector_Global[i]==m_CellData.MaxDim && 
+               m_CellData.PhyNameVector_Global[i]==phyname){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Save the FECell mesh to vtu file
@@ -207,6 +334,8 @@ public:
      * Print out the summary information of FECell class, i.e., mpi-based mesh distribution, elements num, nodes num, etc.
     */
     void printSummaryInfo()const;
+
+    void releaseMemory();
 
 private:
     FECellData m_CellData;/**< the FE cell data structure of the whole system */

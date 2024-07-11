@@ -17,7 +17,7 @@
 
 void BCSystem::applyBoundaryConditions(const FECalcType &t_calctype,
                                        const double &t,const double (&ctan)[3],
-                                       const Mesh &t_mesh,
+                                       const FECell &t_fecell,
                                        const DofHandler &t_dofhandler,
                                        FE &t_fe,
                                        Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
@@ -39,7 +39,7 @@ void BCSystem::applyBoundaryConditions(const FECalcType &t_calctype,
            it.m_bcType==BCType::USER4DIRICHLETBC||
            it.m_bcType==BCType::USER5DIRICHLETBC||
            it.m_bcType==BCType::POISSON2DBENCHMARKBC){
-            applyDirichletBC(t_calctype,bcvalue,it.m_bcType,it.m_json_params,it.m_dofIDs,it.m_boundaryNameList,t_mesh,t_dofhandler,U,Ucopy,Uold,Uolder,V,AMATRIX,RHS);
+            applyDirichletBC(t_calctype,bcvalue,it.m_bcType,it.m_json_params,it.m_dofIDs,it.m_boundaryNameList,t_fecell,t_dofhandler,U,Ucopy,Uold,Uolder,V,AMATRIX,RHS);
         }
         else if(it.m_bcType==BCType::NODALDIRICHLETBC){
             continue;
@@ -61,7 +61,7 @@ void BCSystem::applyBoundaryConditions(const FECalcType &t_calctype,
                               it.m_json_params,
                               it.m_dofIDs,
                               it.m_boundaryNameList,
-                              t_mesh,t_dofhandler,t_fe,
+                              t_fecell,t_dofhandler,t_fe,
                               U,Uold,Uolder,V,
                               AMATRIX,RHS);
         }// end-of-boundary-type-choose
@@ -74,7 +74,7 @@ void BCSystem::applyBoundaryConditions(const FECalcType &t_calctype,
 //****************************************************************
 void BCSystem::applyPresetBoundaryConditions(const FECalcType &t_calctype,
                                  const double &t,
-                                 const Mesh &t_mesh,
+                                 const FECell &t_fecell,
                                  const DofHandler &t_dofhandler,
                                  Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                                  Vector &V,
@@ -94,7 +94,7 @@ void BCSystem::applyPresetBoundaryConditions(const FECalcType &t_calctype,
            it.m_bcType==BCType::USER4DIRICHLETBC||
            it.m_bcType==BCType::USER5DIRICHLETBC||
            it.m_bcType==BCType::POISSON2DBENCHMARKBC){
-            applyDirichletBC(t_calctype,bcvalue,it.m_bcType,it.m_json_params,it.m_dofIDs,it.m_boundaryNameList,t_mesh,t_dofhandler,U,Ucopy,Uold,Uolder,V,AMATRIX,RHS);
+            applyDirichletBC(t_calctype,bcvalue,it.m_bcType,it.m_json_params,it.m_dofIDs,it.m_boundaryNameList,t_fecell,t_dofhandler,U,Ucopy,Uold,Uolder,V,AMATRIX,RHS);
         }
         else if(it.m_bcType==BCType::NODALDIRICHLETBC){
             continue;

@@ -15,11 +15,18 @@
 
 #include "ICSystem/ICSystem.h"
 
-void ICSystem::applyInitialConditions(const Mesh &t_mesh,const DofHandler &t_dofhandler,Vector &U0){
+void ICSystem::applyInitialConditions(const FECell &t_fecell,const DofHandler &t_dofhandler,Vector &U0){
     int e,i,j,k,iInd,dofs,dim;
     int rankne,eStart,eEnd,nElmts,nNodesPerElmt;
     double icvalue;
     Vector3d nodecoords0;
+    e=i=j=k=iInd=dofs=dim=1;
+    rankne=eStart=eEnd=nElmts=nNodesPerElmt=1;
+    icvalue=1.0;
+    if(e||i||j||k||iInd||dofs||dim||rankne||eStart||eEnd||nElmts||
+       nNodesPerElmt||icvalue||t_fecell.getFECellBulkElmtsNum()||
+       t_dofhandler.getBulkElmtsNum()||
+       U0.getSum()){}
 
     MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
@@ -37,29 +44,29 @@ void ICSystem::applyInitialConditions(const Mesh &t_mesh,const DofHandler &t_dof
             m_maxval=JsonUtils::getValue(it.m_json_params,"maxval");
             PetscRandomSetInterval(m_rnd,m_minval,m_maxval);
         }
-        for(const auto &name:it.m_domainNameList){
-            nElmts=t_mesh.getBulkMeshElmtsNumViaPhyName(name);
-            rankne=nElmts/m_size;
-            eStart=m_rank*rankne;
-            eEnd=(m_rank+1)*rankne;
-            if(m_rank==m_size-1) eEnd=nElmts;
-            dim=t_mesh.getBulkMeshElmtDimViaPhyName(name);
-            for(e=eStart;e<eEnd;e++){
-                nNodesPerElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
-                for(i=1;i<=nNodesPerElmt;i++){
-                    if(it.m_icType==ICType::RANDOMIC) PetscRandomGetValue(m_rnd,&icvalue);
-                    j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);// global id
-                    nodecoords0(1)=t_mesh.getBulkMeshIthNodeJthCoord0(j,1);
-                    nodecoords0(2)=t_mesh.getBulkMeshIthNodeJthCoord0(j,2);
-                    nodecoords0(3)=t_mesh.getBulkMeshIthNodeJthCoord0(j,3);
-                    runICLibs(it.m_icType,it.m_json_params,icvalue,dim,dofs,nodecoords0,m_localU);
-                    for(k=1;k<=dofs;k++){
-                        iInd=t_dofhandler.getIthNodeJthDofID(j,it.m_dofIDs[k-1]);
-                        U0.insertValue(iInd,m_localU(k));
-                    }
-                }
-            }
-        }
+        // for(const auto &name:it.m_domainNameList){
+        //     // nElmts=t_mesh.getBulkMeshElmtsNumViaPhyName(name);
+        //     rankne=nElmts/m_size;
+        //     eStart=m_rank*rankne;
+        //     eEnd=(m_rank+1)*rankne;
+        //     if(m_rank==m_size-1) eEnd=nElmts;
+        //     // dim=t_mesh.getBulkMeshElmtDimViaPhyName(name);
+        //     for(e=eStart;e<eEnd;e++){
+        //         // nNodesPerElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
+        //         for(i=1;i<=nNodesPerElmt;i++){
+        //             if(it.m_icType==ICType::RANDOMIC) PetscRandomGetValue(m_rnd,&icvalue);
+        //             // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);// global id
+        //             // nodecoords0(1)=t_mesh.getBulkMeshIthNodeJthCoord0(j,1);
+        //             // nodecoords0(2)=t_mesh.getBulkMeshIthNodeJthCoord0(j,2);
+        //             // nodecoords0(3)=t_mesh.getBulkMeshIthNodeJthCoord0(j,3);
+        //             runICLibs(it.m_icType,it.m_json_params,icvalue,dim,dofs,nodecoords0,m_localU);
+        //             for(k=1;k<=dofs;k++){
+        //                 iInd=t_dofhandler.getIthNodeJthDofID(j,it.m_dofIDs[k-1]);
+        //                 U0.insertValue(iInd,m_localU(k));
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     U0.assemble();

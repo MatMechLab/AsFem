@@ -23,7 +23,7 @@
  * For AsFem's own header files
  */
 #include "Mesh/Nodes.h"
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "FE/FE.h"
 #include "EquationSystem/EquationSystem.h"
@@ -60,10 +60,10 @@ public:
     //***************************************************************
     /**
      * init the bulk FE system
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof handler class
      */
-    void init(const Mesh &t_mesh, const DofHandler &t_dofhandler);
+    void init(const FECell &t_fecell, const DofHandler &t_dofhandler);
     
     /**
      * reset the maximum coefficient of K matrix
@@ -76,7 +76,7 @@ public:
      * @param t double value for the current time
      * @param dt double value for the current time increment
      * @param ctan the 3-d vector for the time derivative coefficients
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofHandler class
      * @param t_fe the fe class for the shape function and gauss points
      * @param t_elmtsystem the element system class
@@ -86,7 +86,7 @@ public:
      * @param RHS the system residual vector
      */
     void formBulkFE(const FECalcType &t_calctype,const double &t,const double &dt,const double (&ctan)[3],
-                    Mesh &t_mesh,const DofHandler &t_dofhandler,FE &t_fe,
+                    FECell &t_fecell,const DofHandler &t_dofhandler,FE &t_fe,
                     ElmtSystem &t_elmtsystem,MateSystem &t_matesystem,
                     SolutionSystem &t_solutionsystem,
                     SparseMatrix &AMATRIX,Vector &RHS);

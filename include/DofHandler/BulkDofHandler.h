@@ -24,7 +24,7 @@
  * for AsFem's header files
  */
 #include "Utils/MessagePrinter.h"
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "ElmtSystem/ElmtSystem.h"
 
 using std::vector;
@@ -54,10 +54,10 @@ public:
     void init();
     /**
      * create the bulk elements' dofs map
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_elmtSystem the element class
      */
-    void createBulkDofsMap(const Mesh &t_mesh,const ElmtSystem &t_elmtSystem);
+    void createBulkDofsMap(const FECell &t_fecell,const ElmtSystem &t_elmtSystem);
     /**
      * add dof name to the namelist, it must be unique and non-duplicated name
      * @param dofname string for the name of one single dof
