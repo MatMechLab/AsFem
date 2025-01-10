@@ -15,39 +15,44 @@
 #include "BCSystem/User1DirichletBC.h"
 
 User1DirichletBC::User1DirichletBC(){
-    m_localU.resize(11,0.0);// the maximum dofs of each bc block is 10!
+    m_LocalU.resize(11,0.0);// the maximum dofs of each bc block is 10!
 }
 
-void User1DirichletBC::computeBCValue(const FECalcType &calctype,const double &penalty,const double &bcvalue,const nlohmann::json &json,
-                                const LocalElmtInfo &elmtinfo,
-                                const LocalElmtSolution &elmtsoln,
-                                const vector<int> &dofids,
-                                Vector &U,
-                                SparseMatrix &K,
-                                Vector &RHS){
-    if(calctype==FECalcType::COMPUTERESIDUAL){
-        for(int i=0;i<static_cast<int>(dofids.size());i++){
-            RHS.insertValue(dofids[i],0.0);
+void User1DirichletBC::computeBCValue(const FECalcType &CalcType,
+                                      const double &Penalty,
+                                      const double &BCValue,
+                                      const nlohmann::json &Params,
+                                      const LocalElmtInfo &ElmtInfo,
+                                      const LocalElmtSolution &ElmtSoln,
+                                      const vector<int> &DofIDs,
+                                      Vector &U,
+                                      SparseMatrix &K,
+                                      Vector &RHS){
+    if(CalcType==FECalcType::COMPUTERESIDUAL){
+        for(int i=0;i<static_cast<int>(DofIDs.size());i++){
+            RHS.insertValue(DofIDs[i],0.0);
         }
     }
-    else if(calctype==FECalcType::COMPUTEJACOBIAN){
-        for(int i=0;i<static_cast<int>(dofids.size());i++){
-            K.insertValue(dofids[i],dofids[i],penalty);
+    else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        for(int i=0;i<static_cast<int>(DofIDs.size());i++){
+            K.insertValue(DofIDs[i],DofIDs[i],Penalty);
         }
     }
 
-    computeU(bcvalue,json,dofids,elmtinfo,elmtsoln,m_localU);
-    for(int i=0;i<static_cast<int>(dofids.size());i++){
-        U.insertValue(dofids[i],m_localU(i+1));
+    computeU(BCValue,Params,DofIDs,ElmtInfo,ElmtSoln,m_LocalU);
+    for(int i=0;i<static_cast<int>(DofIDs.size());i++){
+        U.insertValue(DofIDs[i],m_LocalU(i+1));
     }
 
 }
 
-void User1DirichletBC::computeU(const double &bcvalue,const nlohmann::json &json,const vector<int> &dofids,
-                          const LocalElmtInfo &elmtinfo,
-                          const LocalElmtSolution &elmtsoln,
-                          VectorXd &localU){
-    if(bcvalue||json.size()||dofids.size()||elmtinfo.m_t||elmtsoln.m_gpU.size()||localU.getM()){}
+void User1DirichletBC::computeU(const double &BCValue,
+                                const nlohmann::json &Params,
+                                const vector<int> &DofIDs,
+                                const LocalElmtInfo &ElmtInfo,
+                                const LocalElmtSolution &ElmtSoln,
+                                VectorXd &LocalU){
+    if(BCValue||Params.size()||DofIDs.size()||ElmtInfo.m_T||ElmtSoln.m_QpU.size()||LocalU.getM()){}
     //******************************************************
     //*** here you must implement your own dirichlet bc
     //*** please see the example below, where the bcvalue

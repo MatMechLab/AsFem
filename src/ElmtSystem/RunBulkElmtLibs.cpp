@@ -24,7 +24,7 @@ void BulkElmtSystem::runBulkElmtLibs(const FECalcType &t_calctype,const double (
                                      const LocalShapeFun &t_shp,
                                      MatrixXd &K,
                                      VectorXd &R){
-    switch (m_elmtblock_list[t_subelmtid-1].m_elmttype)
+    switch (m_ElmtBlockList[t_subelmtid-1].m_ElmtType)
     {
     case ElmtType::LAPLACEELMT:
         LaplaceElement::computeAll(t_calctype,t_elmtinfo,ctan,t_elmtsoln,t_shp,t_materialscontainer_old,t_materialscontainer,K,R);

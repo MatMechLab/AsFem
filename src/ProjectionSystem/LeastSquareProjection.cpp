@@ -215,13 +215,10 @@ void LeastSquareProjection::projectLocalRank4Mate2Global(const int &nodesnum,
 //******************************************************
 //*** for global projection action
 //******************************************************
-void LeastSquareProjection::globalProjectionAction(const FECell &fecell,
+void LeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
                                                    ProjectionData &data){
-    int i,j,k,iInd,ee,nproj;
+    int j,k,iInd,nproj;
     double value,weight,newvalue;
-    PetscMPIInt rank,size;
-
-    if(fecell.getFECellBulkElmtsNum()){}
 
     // assemble all the local projection value
     data.m_proj_scalarmate_vec.assemble();
@@ -229,111 +226,97 @@ void LeastSquareProjection::globalProjectionAction(const FECell &fecell,
     data.m_proj_rank2mate_vec.assemble();
     data.m_proj_rank4mate_vec.assemble();
 
-
     data.m_proj_scalarmate_vec.makeGhostCopy();
     data.m_proj_vectormate_vec.makeGhostCopy();
     data.m_proj_rank2mate_vec.makeGhostCopy();
     data.m_proj_rank4mate_vec.makeGhostCopy();
-
-    MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
-    MPI_Comm_size(PETSC_COMM_WORLD,&size);
-
-
-    int rankne=1;//mesh.getBulkMeshNodesNum()/size;
-    int eStart=rank*rankne;
-    int eEnd=(rank+1)*rankne;
-    // if(rank==size-1) eEnd=mesh.getBulkMeshNodesNum();
 
     data.m_proj_scalarmate_vec.setToZero();
     data.m_proj_vectormate_vec.setToZero();
     data.m_proj_rank2mate_vec.setToZero();
     data.m_proj_rank4mate_vec.setToZero();
 
-    for(ee=eStart;ee<eEnd;++ee){
-        i=ee+1;
+    for (const auto &GlobalNodeID:t_FECell.getLocalFECellNodeIDsCopy()) {
         //****************************************
         // for scalar materials
         //****************************************
-        nproj=data.m_scalarmate_num;
-        if(nproj){
-            iInd=(i-1)*(1+nproj)+0+1;
-            weight=data.m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
-            for(j=1;j<=nproj;j++){
-                iInd=(i-1)*(nproj+1)+j+1;
-                value=data.m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
-                if(abs(weight)>1.0e-15){
-                    newvalue=value/weight;
+        nproj = data.m_scalarmate_num;
+        if (nproj) {
+            iInd = (GlobalNodeID - 1) * (1 + nproj) + 0 + 1;
+            weight = data.m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
+            for (j = 1; j <= nproj; j++) {
+                iInd = (GlobalNodeID - 1) * (nproj + 1) + j + 1;
+                value = data.m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
+                if (abs(weight) > 1.0e-15) {
+                    newvalue = value / weight;
+                } else {
+                    newvalue = value;
                 }
-                else{
-                    newvalue=value;
-                }
-                data.m_proj_scalarmate_vec.addValue(iInd,newvalue);
+                data.m_proj_scalarmate_vec.addValue(iInd, newvalue);
             }
         }
         //****************************************
         // for vector materials
         //****************************************
-        nproj=data.m_vectormate_num;
-        if(nproj){
-            iInd=(i-1)*(1+3*nproj)+0+1;
-            weight=data.m_proj_vectormate_vec.getIthValueFromGhost(iInd);
-            for(j=1;j<=nproj;j++){
-                for(k=1;k<=3;k++){
-                    iInd=(i-1)*(3*nproj+1)+3*(j-1)+k+1;
-                    value=data.m_proj_vectormate_vec.getIthValueFromGhost(iInd);
-                    if(abs(weight)>1.0e-15){
-                        newvalue=value/weight;
+        nproj = data.m_vectormate_num;
+        if (nproj) {
+            iInd = (GlobalNodeID - 1) * (1 + 3 * nproj) + 0 + 1;
+            weight = data.m_proj_vectormate_vec.getIthValueFromGhost(iInd);
+            for (j = 1; j <= nproj; j++) {
+                for (k = 1; k <= 3; k++) {
+                    iInd = (GlobalNodeID - 1) * (3 * nproj + 1) + 3 * (j - 1) + k + 1;
+                    value = data.m_proj_vectormate_vec.getIthValueFromGhost(iInd);
+                    if (abs(weight) > 1.0e-15) {
+                        newvalue = value / weight;
+                    } else {
+                        newvalue = value;
                     }
-                    else{
-                        newvalue=value;
-                    }
-                    data.m_proj_vectormate_vec.addValue(iInd,newvalue);
+                    data.m_proj_vectormate_vec.addValue(iInd, newvalue);
                 }
             }
         }
         //****************************************
         // for rank-2 materials
         //****************************************
-        nproj=data.m_rank2mate_num;
-        if(nproj){
-            iInd=(i-1)*(1+9*nproj)+0+1;
-            weight=data.m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
-            for(j=1;j<=nproj;j++){
-                for(k=1;k<=9;k++){
-                    iInd=(i-1)*(9*nproj+1)+9*(j-1)+k+1;
-                    value=data.m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
-                    if(abs(weight)>1.0e-15){
-                        newvalue=value/weight;
+        nproj = data.m_rank2mate_num;
+        if (nproj) {
+            iInd = (GlobalNodeID - 1) * (1 + 9 * nproj) + 0 + 1;
+            weight = data.m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
+            for (j = 1; j <= nproj; j++) {
+                for (k = 1; k <= 9; k++) {
+                    iInd = (GlobalNodeID - 1) * (9 * nproj + 1) + 9 * (j - 1) + k + 1;
+                    value = data.m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
+                    if (abs(weight) > 1.0e-15) {
+                        newvalue = value / weight;
+                    } else {
+                        newvalue = value;
                     }
-                    else{
-                        newvalue=value;
-                    }
-                    data.m_proj_rank2mate_vec.addValue(iInd,newvalue);
+                    data.m_proj_rank2mate_vec.addValue(iInd, newvalue);
                 }
             }
         }
         //****************************************
         // for rank-4 materials
         //****************************************
-        nproj=data.m_rank4mate_num;
-        if(nproj){
-            iInd=(i-1)*(1+36*nproj)+0+1;
-            weight=data.m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
-            for(j=1;j<=nproj;j++){
-                for(k=1;k<=36;k++){
-                    iInd=(i-1)*(36*nproj+1)+36*(j-1)+k+1;
-                    value=data.m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
-                    if(abs(weight)>1.0e-15){
-                        newvalue=value/weight;
+        nproj = data.m_rank4mate_num;
+        if (nproj) {
+            iInd = (GlobalNodeID - 1) * (1 + 36 * nproj) + 0 + 1;
+            weight = data.m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
+            for (j = 1; j <= nproj; j++) {
+                for (k = 1; k <= 36; k++) {
+                    iInd = (GlobalNodeID - 1) * (36 * nproj + 1) + 36 * (j - 1) + k + 1;
+                    value = data.m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
+                    if (abs(weight) > 1.0e-15) {
+                        newvalue = value / weight;
+                    } else {
+                        newvalue = value;
                     }
-                    else{
-                        newvalue=value;
-                    }
-                    data.m_proj_rank4mate_vec.addValue(iInd,newvalue);
+                    data.m_proj_rank4mate_vec.addValue(iInd, newvalue);
                 }
             }
         }
-    }
+    } //end-of-local-element-nodes-loop
+
 
     data.m_proj_scalarmate_vec.assemble();
     data.m_proj_vectormate_vec.assemble();

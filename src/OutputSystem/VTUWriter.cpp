@@ -23,7 +23,7 @@ void VTUWriter::saveResults(const string &t_filename,
 
     if(t_dofHandler.getActiveDofs()){}
 
-    t_solution.m_u_current.makeGhostCopy();
+    t_solution.m_Ucurrent.makeGhostCopy();
     t_projection.getProjectionDataRef().m_proj_scalarmate_vec.makeGhostCopy();
     t_projection.getProjectionDataRef().m_proj_vectormate_vec.makeGhostCopy();
     t_projection.getProjectionDataRef().m_proj_rank2mate_vec.makeGhostCopy();
@@ -47,182 +47,179 @@ void VTUWriter::saveResults(const string &t_filename,
         out << "<Points>\n";
         out << "<DataArray type=\"Float64\" Name=\"nodes\"  NumberOfComponents=\"3\"  format=\"ascii\">\n";
 
-        // //*****************************
-        // // print out node coordinates
-        // out <<std::scientific << std::setprecision(6);
-        // for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-        //     out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 1) << " ";
-        //     out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 2) << " ";
-        //     out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 3) << "\n";
-        // }
-        // out << "</DataArray>\n";
-        // out << "</Points>\n";
+        //*****************************
+        // print out node coordinates
+        out <<std::scientific << std::setprecision(6);
+        for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+            out << t_fecell.getFECellIthNodeJthCoord(i, 1) << " ";
+            out << t_fecell.getFECellIthNodeJthCoord(i, 2) << " ";
+            out << t_fecell.getFECellIthNodeJthCoord(i, 3) << "\n";
+        }
+        out << "</DataArray>\n";
+        out << "</Points>\n";
 
-        // //***************************************
-        // //*** For cell information
-        // //***************************************
-        // out << "<Cells>\n";
-        // out << "<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
-        // for (e = 1; e <= t_mesh.getBulkMeshBulkElmtsNum(); e++){
-        //     for (j = 1; j <= t_mesh.getBulkMeshIthBulkElmtNodesNum(e); j++){
-        //         out << t_mesh.getBulkMeshIthBulkElmtJthNodeID(e,j) - 1 << " ";
-        //     }
-        //     out << "\n";
-        // }
-        // out << "</DataArray>\n";
+        //***************************************
+        //*** For cell information
+        //***************************************
+        out << "<Cells>\n";
+        out << "<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
+        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
+            for (j = 1; j <= t_fecell.getFECellIthBulkElmtNodesNum(e); j++){
+                out << t_fecell.getFECellIthBulkElmtJthNodeID(e,j) - 1 << " ";
+            }
+            out << "\n";
+        }
+        out << "</DataArray>\n";
 
-        // //***************************************
-        // //*** For offset
-        // //***************************************
-        // out << "<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
-        // int offset = 0;
-        // for (e = 1; e <= t_mesh.getBulkMeshBulkElmtsNum(); e++){
-        //     offset += t_mesh.getBulkMeshIthBulkElmtNodesNum(e);
-        //     out << offset << "\n";
-        // }
-        // out << "</DataArray>\n";
+        //***************************************
+        //*** For offset
+        //***************************************
+        out << "<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
+        int offset = 0;
+        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
+            offset += t_fecell.getFECellIthBulkElmtNodesNum(e);
+            out << offset << "\n";
+        }
+        out << "</DataArray>\n";
 
-        // //***************************************
-        // //*** For connectivity
-        // //***************************************
-        // out << "<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
-        // for (e = 1; e <= t_mesh.getBulkMeshBulkElmtsNum(); e++){
-        //     out << t_mesh.getBulkMeshBulkElmtVTKCellType() << "\n";
-        // }
-        // out << "</DataArray>\n";
-        // out << "</Cells>\n";
-
-
-        // //***************************************
-        // //*** For solutions
-        // //***************************************
-        // string dofname;
-        // double value;
-        // string ScalarName,VectorName,Rank2Name,Rank4Name,TensorName;
-
-        // ScalarName="<PointData Scalar=\"";
-        // for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
-        //     ScalarName+=t_dofHandler.getIthDofName(j)+" ";
-        // }
-        // for(j=1;j<=t_projection.getScalarMaterialNum();j++){
-        //     ScalarName+=t_projection.getIthScalarMateName(j)+" ";
-        // }
-        // ScalarName+="\" ";
-
-        // VectorName.clear();
-        // if(t_projection.getVectorMaterialNum()){
-        //     VectorName="Vector=\"";
-        //     for(j=1;j<=t_projection.getVectorMaterialNum();j++){
-        //         VectorName+=t_projection.getIthVectorMateName(j)+" ";
-        //     }
-        //     VectorName+="\" ";
-        // }
-
-        // TensorName.clear();
-        // if(t_projection.getRank2MaterialNum()||t_projection.getRank4MaterialNum()){
-        //     TensorName="Tensor=\"";
-        //     for(j=1;j<=t_projection.getRank2MaterialNum();j++){
-        //         TensorName+=t_projection.getIthRank2MateName(j)+" ";
-        //     }
-        //     for(j=1;j<=t_projection.getRank4MaterialNum();j++){
-        //         TensorName+=t_projection.getIthRank4MateName(j)+" ";
-        //     }
-        //     TensorName+="\" ";
-        // }
-
-        // out << ScalarName<< VectorName<< TensorName<<">\n";
-
-        // //**************************************
-        // //*** for solution output
-        // //**************************************
-        // for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
-        //     dofname =t_dofHandler.getIthDofName(j);
-        //     out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
-        //     out<<std::scientific<<std::setprecision(6);
-        //     for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-        //         iInd = t_dofHandler.getIthNodeJthDofID(i,j);
-        //         value=t_solution.m_u_current.getIthValueFromGhost(iInd);
-        //         out << value << "\n";
-        //     }
-        //     out << "</DataArray>\n\n";
-        // }
+        //***************************************
+        //*** For connectivity
+        //***************************************
+        out << "<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
+        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
+            out << t_fecell.getFECellIthBulkElmtVTKCellType(e) << "\n";
+        }
+        out << "</DataArray>\n";
+        out << "</Cells>\n";
 
 
-        // int nproj;
-        // //**************************************
-        // //*** for projected scalar output
-        // //**************************************
-        // nproj=t_projection.getScalarMaterialNum();
-        // for (j = 1;j<=nproj;j++){
-        //     dofname = t_projection.getIthScalarMateName(j);
-        //     out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
-        //     out<<std::scientific<<std::setprecision(6);
-        //     for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-        //         iInd = (i-1)*(1+nproj)+j+1;
-        //         value=t_projection.getProjectionDataRef().m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
-        //         out << value << "\n";
-        //     }
-        //     out << "</DataArray>\n\n";
-        // }
+        //***************************************
+        //*** For solutions
+        //***************************************
+        string dofname;
+        double value;
+        string ScalarName,VectorName,Rank2Name,Rank4Name,TensorName;
 
-        // //**************************************
-        // //*** for projected vector output
-        // //**************************************
-        // nproj=t_projection.getVectorMaterialNum();
-        // for (j = 1;j<=nproj;j++){
-        //     dofname = t_projection.getIthVectorMateName(j);
-        //     out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"3\" format=\"ascii\">\n";
-        //     out<<std::scientific<<std::setprecision(6);
-        //     for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-        //         for(k=1;k<=3;k++){
-        //             iInd = (i-1)*(1+nproj*3)+3*(j-1)+k+1;
-        //             value=t_projection.getProjectionDataRef().m_proj_vectormate_vec.getIthValueFromGhost(iInd);
-        //             out << value << " ";
-        //         }
-        //         out <<"\n";
-        //     }
-        //     out << "</DataArray>\n\n";
-        // }
+        ScalarName="<PointData Scalar=\"";
+        for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
+            ScalarName+=t_dofHandler.getIthDofName(j)+" ";
+        }
+        for(j=1;j<=t_projection.getScalarMaterialNum();j++){
+            ScalarName+=t_projection.getIthScalarMateName(j)+" ";
+        }
+        ScalarName+="\" ";
 
-        // //**************************************
-        // //*** for projected rank-2 output
-        // //**************************************
-        // nproj=t_projection.getRank2MaterialNum();
-        // for (j = 1;j<=nproj;j++){
-        //     dofname = t_projection.getIthRank2MateName(j);
-        //     out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"9\" format=\"ascii\">\n";
-        //     out<<std::scientific<<std::setprecision(6);
-        //     for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-        //         for(k=1;k<=9;k++){
-        //             iInd = (i-1)*(1+nproj*9)+9*(j-1)+k+1;
-        //             value=t_projection.getProjectionDataRef().m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
-        //             out << value << " ";
-        //         }
-        //         out <<"\n";
-        //     }
-        //     out << "</DataArray>\n\n";
-        // }
+        VectorName.clear();
+        if(t_projection.getVectorMaterialNum()){
+            VectorName="Vector=\"";
+            for(j=1;j<=t_projection.getVectorMaterialNum();j++){
+                VectorName+=t_projection.getIthVectorMateName(j)+" ";
+            }
+            VectorName+="\" ";
+        }
 
-        // //**************************************
-        // //*** for projected rank-4 output
-        // //**************************************
-        // nproj=t_projection.getRank4MaterialNum();
-        // for (j = 1;j<=nproj;j++){
-        //     dofname = t_projection.getIthRank4MateName(j);
-        //     out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"36\" format=\"ascii\">\n";
-        //     out<<std::scientific<<std::setprecision(6);
-        //     for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-        //         for(k=1;k<=36;k++){
-        //             iInd = (i-1)*(1+nproj*36)+36*(j-1)+k+1;
-        //             value=t_projection.getProjectionDataRef().m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
-        //             out << value << " ";
-        //         }
-        //         out <<"\n";
-        //     }
-        //     out << "</DataArray>\n\n";
-        // }
+        TensorName.clear();
+        if(t_projection.getRank2MaterialNum()||t_projection.getRank4MaterialNum()){
+            TensorName="Tensor=\"";
+            for(j=1;j<=t_projection.getRank2MaterialNum();j++){
+                TensorName+=t_projection.getIthRank2MateName(j)+" ";
+            }
+            for(j=1;j<=t_projection.getRank4MaterialNum();j++){
+                TensorName+=t_projection.getIthRank4MateName(j)+" ";
+            }
+            TensorName+="\" ";
+        }
 
-        
+        out << ScalarName<< VectorName<< TensorName<<">\n";
+
+        //**************************************
+        //*** for solution output
+        //**************************************
+        for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
+            dofname =t_dofHandler.getIthDofName(j);
+            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
+            out<<std::scientific<<std::setprecision(6);
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+                iInd = t_dofHandler.getIthNodeJthDofID(i,j);
+                value=t_solution.m_Ucurrent.getIthValueFromGhost(iInd);
+                out << value << "\n";
+            }
+            out << "</DataArray>\n\n";
+        }
+
+        int nproj;
+        //**************************************
+        //*** for projected scalar output
+        //**************************************
+        nproj=t_projection.getScalarMaterialNum();
+        for (j = 1;j<=nproj;j++){
+            dofname = t_projection.getIthScalarMateName(j);
+            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
+            out<<std::scientific<<std::setprecision(6);
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+                iInd = (i-1)*(1+nproj)+j+1;
+                value=t_projection.getProjectionDataRef().m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
+                out << value << "\n";
+            }
+            out << "</DataArray>\n\n";
+        }
+
+        //**************************************
+        //*** for projected vector output
+        //**************************************
+        nproj=t_projection.getVectorMaterialNum();
+        for (j = 1;j<=nproj;j++){
+            dofname = t_projection.getIthVectorMateName(j);
+            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"3\" format=\"ascii\">\n";
+            out<<std::scientific<<std::setprecision(6);
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+                for(k=1;k<=3;k++){
+                    iInd = (i-1)*(1+nproj*3)+3*(j-1)+k+1;
+                    value=t_projection.getProjectionDataRef().m_proj_vectormate_vec.getIthValueFromGhost(iInd);
+                    out << value << " ";
+                }
+                out <<"\n";
+            }
+            out << "</DataArray>\n\n";
+        }
+
+        //**************************************
+        //*** for projected rank-2 output
+        //**************************************
+        nproj=t_projection.getRank2MaterialNum();
+        for (j = 1;j<=nproj;j++){
+            dofname = t_projection.getIthRank2MateName(j);
+            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"9\" format=\"ascii\">\n";
+            out<<std::scientific<<std::setprecision(6);
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+                for(k=1;k<=9;k++){
+                    iInd = (i-1)*(1+nproj*9)+9*(j-1)+k+1;
+                    value=t_projection.getProjectionDataRef().m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
+                    out << value << " ";
+                }
+                out <<"\n";
+            }
+            out << "</DataArray>\n\n";
+        }
+
+        //**************************************
+        //*** for projected rank-4 output
+        //**************************************
+        nproj=t_projection.getRank4MaterialNum();
+        for (j = 1;j<=nproj;j++){
+            dofname = t_projection.getIthRank4MateName(j);
+            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"36\" format=\"ascii\">\n";
+            out<<std::scientific<<std::setprecision(6);
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+                for(k=1;k<=36;k++){
+                    iInd = (i-1)*(1+nproj*36)+36*(j-1)+k+1;
+                    value=t_projection.getProjectionDataRef().m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
+                    out << value << " ";
+                }
+                out <<"\n";
+            }
+            out << "</DataArray>\n\n";
+        }
 
         //***************************************
         //*** End of output
@@ -236,7 +233,7 @@ void VTUWriter::saveResults(const string &t_filename,
 
     }// end-of-master-rank-process
 
-    t_solution.m_u_current.destroyGhostCopy();
+    t_solution.m_Ucurrent.destroyGhostCopy();
     t_projection.getProjectionDataRef().m_proj_scalarmate_vec.destroyGhostCopy();
     t_projection.getProjectionDataRef().m_proj_vectormate_vec.destroyGhostCopy();
     t_projection.getProjectionDataRef().m_proj_rank2mate_vec.destroyGhostCopy();

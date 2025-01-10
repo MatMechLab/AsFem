@@ -19,15 +19,15 @@ void FEProblem::runTransientAnalysis(){
     MessagePrinter::printStars();
     MessagePrinter::printNormalTxt("Start the transient analysis ...");
     MessagePrinter::printStars();
-    m_timer.startTimer();
-    if(m_timestepping.solve(m_fecell,m_dofhandler,m_fe,
-                            m_elmtsystem,m_matesystem,m_fesystem,
-                            m_bcsystem,m_icsystem,
-                            m_solutionsystem,m_equationsystem,m_projsystem,
-                            m_fectrlinfo,m_nlsolver,m_output,m_postprocessor)){
-        m_timer.endTimer();
+    m_Timer.startTimer();
+    if(m_TimeStepping.solve(m_FECell,m_DofHandler,m_FE,
+                            m_ElmtSystem,m_MateSystem,m_FESystem,
+                            m_BCSystem,m_ICSystem,
+                            m_SolnSystem,m_EqSystem,m_ProjSystem,
+                            m_FECtrlInfo,m_NLSolver,m_Output,m_PostProcessor)){
+        m_Timer.endTimer();
         MessagePrinter::printStars();
-        m_timer.printElapseTime("Transient analysis is done");
+        m_Timer.printElapseTime("Transient analysis is done");
         MessagePrinter::printStars();
     }
     else{

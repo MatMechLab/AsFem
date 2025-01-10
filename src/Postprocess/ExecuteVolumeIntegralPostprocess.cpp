@@ -35,10 +35,10 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
     MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
 
-    t_soln.m_u_current.makeGhostCopy();
-    t_soln.m_u_old.makeGhostCopy();
-    t_soln.m_u_older.makeGhostCopy();
-    t_soln.m_v.makeGhostCopy();
+    t_soln.m_Ucurrent.makeGhostCopy();
+    t_soln.m_Uold.makeGhostCopy();
+    t_soln.m_Uolder.makeGhostCopy();
+    t_soln.m_V.makeGhostCopy();
 
     pps_value=0.0;
     domain_volume=0.0;
@@ -56,37 +56,37 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
 
         for(e=eStart;e<eEnd;e++){
             // nNodesPerElmt=t_mesh.getBulkMeshIthElmtNodesNumViaPhyName(domainname,e+1);
-            m_local_elmtinfo.m_nodesnum=nNodesPerElmt;
+            m_local_elmtinfo.m_NodesNum=nNodesPerElmt;
             JxW=0.0;
-            if(m_local_elmtinfo.m_dim<=0){
+            if(m_local_elmtinfo.m_Dim<=0){
                 MessagePrinter::printErrorTxt("Invalid dim(<=0) for volume integral postprocess, please check your input file or your code");
                 MessagePrinter::exitAsFem();
             }// end-of-dim=0-case
             else{
                 // t_mesh.getBulkMeshIthElmtNodeCoords0ViaPhyName(domainname,e+1,m_nodes0);
 
-                nqpoints=t_fe.m_bulk_qpoints.getQPointsNum();
+                nqpoints=t_fe.m_BulkQpoints.getQPointsNum();
 
                 // do the gauss point integration loop
                 for(int gpInd=1;gpInd<=nqpoints;gpInd++){
-                    xi=t_fe.m_bulk_qpoints.getIthPointJthCoord(gpInd,1);
-                    if(m_local_elmtinfo.m_dim==2){
-                        eta=t_fe.m_bulk_qpoints.getIthPointJthCoord(gpInd,2);
+                    xi=t_fe.m_BulkQpoints.getIthPointJthCoord(gpInd,1);
+                    if(m_local_elmtinfo.m_Dim==2){
+                        eta=t_fe.m_BulkQpoints.getIthPointJthCoord(gpInd,2);
                     }
-                    else if(m_local_elmtinfo.m_dim==3){
-                        eta =t_fe.m_bulk_qpoints.getIthPointJthCoord(gpInd,2);
-                        zeta=t_fe.m_bulk_qpoints.getIthPointJthCoord(gpInd,3);
+                    else if(m_local_elmtinfo.m_Dim==3){
+                        eta =t_fe.m_BulkQpoints.getIthPointJthCoord(gpInd,2);
+                        zeta=t_fe.m_BulkQpoints.getIthPointJthCoord(gpInd,3);
                     }
-                    w  =t_fe.m_bulk_qpoints.getIthPointJthCoord(gpInd,0);
-                    t_fe.m_bulk_shp.calc(xi,eta,zeta,m_nodes0,true);
-                    JxW=w*t_fe.m_bulk_shp.getJacDet();
+                    w  =t_fe.m_BulkQpoints.getIthPointJthCoord(gpInd,0);
+                    t_fe.m_BulkShp.calc(xi,eta,zeta,m_nodes0,true);
+                    JxW=w*t_fe.m_BulkShp.getJacDet();
                     domain_volume+=1.0*JxW;
 
                     //********************************************************
                     //*** for the physical quantities on current qpoint
                     //********************************************************
                     
-                    m_local_elmtinfo.m_gpCoords0=0.0;
+                    m_local_elmtinfo.m_QpCoords0=0.0;
                     for(i=1;i<=nNodesPerElmt;i++){
                         // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
                 
@@ -97,10 +97,10 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
                     }// end-of-node-loop-for-phy-quantities
 
                     for(i=1;i<=nNodesPerElmt;i++){
-                        m_local_shp.m_test=t_fe.m_bulk_shp.shape_value(i);
-                        m_local_shp.m_grad_test=t_fe.m_bulk_shp.shape_grad(i);
-                        m_local_shp.m_trial=0.0;
-                        m_local_shp.m_grad_trial=0.0;
+                        m_local_shp.m_Test    =t_fe.m_BulkShp.shape_value(i);
+                        m_local_shp.m_GradTest=t_fe.m_BulkShp.shape_grad(i);
+                        m_local_shp.m_Trial    =0.0;
+                        m_local_shp.m_GradTrial=0.0;
                         // j=t_mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(domainname,e+1,i);//global id
                         if(dofid<1){
                             // if no dofid is given, then we use the first one
@@ -120,10 +120,10 @@ double Postprocessor::executeVolumeIntegralPostprocess(const PostprocessorType &
     }// end-of-side-name-loop
 
 
-    t_soln.m_u_current.destroyGhostCopy();
-    t_soln.m_u_old.destroyGhostCopy();
-    t_soln.m_u_older.destroyGhostCopy();
-    t_soln.m_v.destroyGhostCopy();
+    t_soln.m_Ucurrent.destroyGhostCopy();
+    t_soln.m_Uold.destroyGhostCopy();
+    t_soln.m_Uolder.destroyGhostCopy();
+    t_soln.m_V.destroyGhostCopy();
 
     // collect all the values from all the cpus
     MPI_Allreduce(&pps_value,&pps_value_global,1,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);

@@ -15,44 +15,44 @@
 #include "DofHandler/BulkDofHandler.h"
 
 BulkDofHandler::BulkDofHandler(){
-    m_dof_namelist.clear();
-    m_dof_idlist.clear();
+    m_DofNameList.clear();
+    m_DofIDList.clear();
 
-    m_bulkelmts=0;
-    m_nodes=0;
-    m_maxdofs_pernode=0;
-    m_maxdofs_perelmt=0;
-    m_total_dofs=0;
-    m_active_dofs=0;
-    m_elmt_dofids.clear();
-    m_nodal_dofids.clear();
+    m_BulkElmtsNum=0;
+    m_NodesNum=0;
+    m_MaxDofsPerNode=0;
+    m_MaxDofsPerElmt=0;
+    m_TotalDofs=0;
+    m_ActiveDofs=0;
+    m_ElementalDofIDs_Global.clear();
+    m_NodalDofIDs_Global.clear();
 }
 
 void BulkDofHandler::releaseMemory(){
-    m_dof_namelist.clear();
-    m_dof_idlist.clear();
+    m_DofNameList.clear();
+    m_DofIDList.clear();
 
-    m_bulkelmts=0;
-    m_nodes=0;
-    m_maxdofs_pernode=0;
-    m_maxdofs_perelmt=0;
-    m_total_dofs=0;
-    m_active_dofs=0;
-    m_elmt_dofids.clear();
-    m_nodal_dofids.clear();
+    m_BulkElmtsNum=0;
+    m_NodesNum=0;
+    m_MaxDofsPerNode=0;
+    m_MaxDofsPerElmt=0;
+    m_TotalDofs=0;
+    m_ActiveDofs=0;
+    m_ElementalDofIDs_Global.clear();
+    m_NodalDofIDs_Global.clear();
 }
 BulkDofHandler::~BulkDofHandler(){
-    m_dof_namelist.clear();
-    m_dof_idlist.clear();
+    m_DofNameList.clear();
+    m_DofIDList.clear();
 
-    m_bulkelmts=0;
-    m_nodes=0;
-    m_maxdofs_pernode=0;
-    m_maxdofs_perelmt=0;
-    m_total_dofs=0;
-    m_active_dofs=0;
-    m_elmt_dofids.clear();
-    m_nodal_dofids.clear();
+    m_BulkElmtsNum=0;
+    m_NodesNum=0;
+    m_MaxDofsPerNode=0;
+    m_MaxDofsPerElmt=0;
+    m_TotalDofs=0;
+    m_ActiveDofs=0;
+    m_ElementalDofIDs_Global.clear();
+    m_NodalDofIDs_Global.clear();
 }
 
 void BulkDofHandler::printBulkDofsInfo()const{
@@ -65,6 +65,11 @@ void BulkDofHandler::printBulkDofsInfo()const{
                                                                                 getMaxDofsPerNode());
     str=string(buff);
     MessagePrinter::printNormalTxt(str);
+
+    snprintf(buff,69,"  max nnz=%9d, max row nnz=%9d",getMaxNNZ(),getMaxRowNNZ());
+    str=string(buff);
+    MessagePrinter::printNormalTxt(str);
+
     MessagePrinter::printNormalTxt("  dofs id                                     dofs name");
     for(int i=1;i<=getMaxDofsPerNode();i++){
         snprintf(buff,69,"   %3d                              %18s",getIthDofID(i),getIthDofName(i).c_str());
@@ -87,31 +92,31 @@ void BulkDofHandler::printBulkElementalDofsInfo(const bool &flag)const{
                 MessagePrinter::printErrorTxt("can\'t create dofs.map file, please ensure you have the write permission");
                 MessagePrinter::exitAsFem();
             }
-            out<<"*** total number of bulk elements="<<m_bulkelmts
-               <<", total nodes="<<m_nodes<<endl;
-            out<<"*** total dofs="<<m_total_dofs
-               <<", active dofs="<<m_active_dofs
-               <<", max dofs per node="<<m_maxdofs_pernode
-               <<", max dofs per elmt="<<m_maxdofs_perelmt<<endl;
-            for(int e=1;e<=m_bulkelmts;e++){
+            out<<"*** total number of bulk elements="<<m_BulkElmtsNum
+               <<", total nodes="<<m_NodesNum<<endl;
+            out<<"*** total dofs="<<m_TotalDofs
+               <<", active dofs="<<m_ActiveDofs
+               <<", max dofs per node="<<m_MaxDofsPerNode
+               <<", max dofs per elmt="<<m_MaxDofsPerElmt<<endl;
+            for(int e=1;e<=m_BulkElmtsNum;e++){
                 str="*** "+to_string(e)+"-th element: ";
-                for(const auto &dofid:m_elmt_dofids[e-1]) str+=to_string(dofid)+" ";
+                for(const auto &dofid:m_ElementalDofIDs_Global[e-1]) str+=to_string(dofid)+" ";
                 out<<str<<endl;
             }
             out.close();
         }
     }
     else{
-        cout<<"*** total number of bulk elements="<<m_bulkelmts
-            <<", total nodes="<<m_nodes<<endl;
-        cout<<"*** total dofs="<<m_total_dofs
-            <<", active dofs="<<m_active_dofs
-            <<", max dofs per node="<<m_maxdofs_pernode
-            <<", max dofs per elmt="<<m_maxdofs_perelmt<<endl;
+        cout<<"*** total number of bulk elements="<<m_BulkElmtsNum
+            <<", total nodes="<<m_NodesNum<<endl;
+        cout<<"*** total dofs="<<m_TotalDofs
+            <<", active dofs="<<m_ActiveDofs
+            <<", max dofs per node="<<m_MaxDofsPerNode
+            <<", max dofs per elmt="<<m_MaxDofsPerElmt<<endl;
         string str;
-        for(int e=1;e<=m_bulkelmts;e++){
+        for(int e=1;e<=m_BulkElmtsNum;e++){
             str="*** "+to_string(e)+"-th element: ";
-            for(const auto &dofid:m_elmt_dofids[e-1]) str+=to_string(dofid)+" ";
+            for(const auto &dofid:m_ElementalDofIDs_Global[e-1]) str+=to_string(dofid)+" ";
             cout<<str<<endl;
         }
     }

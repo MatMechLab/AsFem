@@ -18,38 +18,37 @@ void FEProblem::runStaticAnalysis(){
     MessagePrinter::printStars();
     MessagePrinter::printNormalTxt("Start the static analysis ...");
     MessagePrinter::printStars();
-    m_timer.startTimer();
+    m_Timer.startTimer();
 
     // initialize the material
-    m_fesystem.formBulkFE(FECalcType::INITMATERIAL,m_fectrlinfo.t,m_fectrlinfo.dt,m_fectrlinfo.ctan,
-                        m_fecell,m_dofhandler,m_fe,
-                        m_elmtsystem,m_matesystem,
-                        m_solutionsystem,
-                        m_equationsystem.m_amatrix,m_equationsystem.m_rhs);
+    m_FESystem.formBulkFE(FECalcType::INITMATERIAL,m_FECtrlInfo.T,m_FECtrlInfo.Dt,m_FECtrlInfo.Ctan,
+                        m_FECell,m_DofHandler,m_FE,
+                        m_ElmtSystem,m_MateSystem,
+                        m_SolnSystem,
+                        m_EqSystem.m_AMATRIX,m_EqSystem.m_RHS);
     MessagePrinter::printDashLine();
     MessagePrinter::printNormalTxt("Material properties have been initialized");
     MessagePrinter::printDashLine();
 
-    if(m_nlsolver.solve(m_fecell,m_dofhandler,m_fe,
-                        m_elmtsystem,m_matesystem,
-                        m_fesystem,
-                        m_bcsystem,
-                        m_solutionsystem,m_equationsystem,
-                        m_fectrlinfo)){
-
-        m_timer.endTimer();
-        m_timer.printElapseTime("Static analysis is done");
-        m_projsystem.executeProjection(m_fecell,m_dofhandler,m_elmtsystem,m_matesystem,m_fe,m_solutionsystem,m_fectrlinfo);
-        m_output.saveResults2File(-1,m_fecell,m_dofhandler,m_solutionsystem,m_projsystem);
+    if(m_NLSolver.solve(m_FECell,m_DofHandler,m_FE,
+                        m_ElmtSystem,m_MateSystem,
+                        m_FESystem,
+                        m_BCSystem,
+                        m_SolnSystem,m_EqSystem,
+                        m_FECtrlInfo)){
+        m_Timer.endTimer();
+        m_Timer.printElapseTime("Static analysis is done");
+        m_ProjSystem.executeProjection(m_FECell,m_DofHandler,m_ElmtSystem,m_MateSystem,m_FE,m_SolnSystem,m_FECtrlInfo);
+        m_Output.saveResults2File(-1,m_FECell,m_DofHandler,m_SolnSystem,m_ProjSystem);
         MessagePrinter::printDashLine(MessageColor::BLUE);
-        MessagePrinter::printNormalTxt("Save result to "+m_output.getOutputFileName(),MessageColor::BLUE);
+        MessagePrinter::printNormalTxt("Save result to "+m_Output.getOutputFileName(),MessageColor::BLUE);
         MessagePrinter::printDashLine(MessageColor::BLUE);
-        if(m_postprocessor.hasPostprocess()){
-            m_postprocessor.prepareCSVFileHeader();
-            m_postprocessor.executePostprocess(m_fecell,m_dofhandler,m_fe,m_matesystem,m_projsystem,m_solutionsystem);
-            m_postprocessor.savePPSResults2CSVFile(0.0);
+        if(m_PostProcessor.hasPostprocess()){
+            m_PostProcessor.prepareCSVFileHeader();
+            m_PostProcessor.executePostprocess(m_FECell,m_DofHandler,m_FE,m_MateSystem,m_ProjSystem,m_SolnSystem);
+            m_PostProcessor.savePPSResults2CSVFile(0.0);
             MessagePrinter::printDashLine(MessageColor::BLUE);
-            MessagePrinter::printNormalTxt("Save postprocess result to "+m_postprocessor.getCSVFileName(),MessageColor::BLUE);
+            MessagePrinter::printNormalTxt("Save postprocess result to "+m_PostProcessor.getCSVFileName(),MessageColor::BLUE);
             MessagePrinter::printDashLine(MessageColor::BLUE);
         }
         MessagePrinter::printStars();

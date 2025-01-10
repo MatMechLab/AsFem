@@ -40,79 +40,79 @@ void StressDiffusionElement::computeResidual(const LocalElmtInfo &elmtinfo,
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(soln.m_gpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
-    if(elmtinfo.m_dim<2){
+    if(soln.m_QpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
+    if(elmtinfo.m_Dim<2){
         MessagePrinter::printErrorTxt("SmallStrainDiffusion element works only for 2d and 3d case");
         MessagePrinter::exitAsFem();
     }
     // The dofs are: 1->c, 2->ux, 3->uy, [4->uz]
     // R_c
-    localR(1)=soln.m_gpV[1]*shp.m_test
-             +mate.ScalarMaterial("D")*(soln.m_gpGradU[1]*shp.m_grad_test)
-             -mate.ScalarMaterial("D")*soln.m_gpU[1]*mate.ScalarMaterial("Omega")*mate.ScalarMaterial("SigmaH")*(soln.m_gpGradU[1]*shp.m_grad_test);
+    localR(1)=soln.m_QpV[1]*shp.m_Test
+             +mate.ScalarMaterial("D")*(soln.m_QpGradU[1]*shp.m_GradTest)
+             -mate.ScalarMaterial("D")*soln.m_QpU[1]*mate.ScalarMaterial("Omega")*mate.ScalarMaterial("SigmaH")*(soln.m_QpGradU[1]*shp.m_GradTest);
     // R_ux
-    localR(2)=mate.Rank2Material("stress").getIthRow(1)*shp.m_grad_test;
+    localR(2)=mate.Rank2Material("stress").getIthRow(1)*shp.m_GradTest;
     // R_uy
-    localR(3)=mate.Rank2Material("stress").getIthRow(2)*shp.m_grad_test;
-    if(elmtinfo.m_dim==3){
-        localR(4)=mate.Rank2Material("stress").getIthRow(3)*shp.m_grad_test;
+    localR(3)=mate.Rank2Material("stress").getIthRow(2)*shp.m_GradTest;
+    if(elmtinfo.m_Dim==3){
+        localR(4)=mate.Rank2Material("stress").getIthRow(3)*shp.m_GradTest;
     }
 
 }
 //*****************************************************************************
-void StressDiffusionElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 MatrixXd &localK) {
+void StressDiffusionElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&Ctan)[3],
+                                             const LocalElmtSolution &soln,
+                                             const LocalShapeFun &shp,
+                                             const MaterialsContainer &mate_old,
+                                             const MaterialsContainer &mate,
+                                             MatrixXd &LocalK) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
     if(mate_old.getScalarMaterialsNum()){}
 
     // K_c,c
-    localK(1,1)=shp.m_trial*shp.m_test*ctan[1]
-               +mate.ScalarMaterial("D")*(shp.m_grad_trial*shp.m_grad_test)*ctan[0]
-               -mate.ScalarMaterial("D")*shp.m_trial*mate.ScalarMaterial("Omega")*mate.ScalarMaterial("SigmaH")*(soln.m_gpGradU[1]*shp.m_grad_test)*ctan[0]
-               -mate.ScalarMaterial("D")*soln.m_gpU[1]*mate.ScalarMaterial("Omega")*mate.ScalarMaterial("SigmaH")*(shp.m_grad_trial*shp.m_grad_test)*ctan[0];
+    LocalK(1,1)=shp.m_Trial*shp.m_Test*Ctan[1]
+               +mate.ScalarMaterial("D")*(shp.m_GradTrial*shp.m_GradTest)*Ctan[0]
+               -mate.ScalarMaterial("D")*shp.m_Trial*mate.ScalarMaterial("Omega")*mate.ScalarMaterial("SigmaH")*(soln.m_QpGradU[1]*shp.m_GradTest)*Ctan[0]
+               -mate.ScalarMaterial("D")*soln.m_QpU[1]*mate.ScalarMaterial("Omega")*mate.ScalarMaterial("SigmaH")*(shp.m_GradTrial*shp.m_GradTest)*Ctan[0];
     // K_c,ux
-    localK(1,2)=0.0;
+    LocalK(1,2)=0.0;
     // K_c,uy
-    localK(1,3)=0.0;
+    LocalK(1,3)=0.0;
 
     // K_ux,c
-    localK(2,1)=mate.Rank2Material("dstressdc").getIthRow(1)*shp.m_trial*shp.m_grad_test*ctan[0];
+    LocalK(2,1)=mate.Rank2Material("dstressdc").getIthRow(1)*shp.m_Trial*shp.m_GradTest*Ctan[0];
     // K_ux,ux
-    localK(2,2)=mate.Rank4Material("jacobian").getIKComponent(1,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(2,2)=mate.Rank4Material("jacobian").getIKComponent(1,1,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
     // K_ux,uy
-    localK(2,3)=mate.Rank4Material("jacobian").getIKComponent(1,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(2,3)=mate.Rank4Material("jacobian").getIKComponent(1,2,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
 
     // K_uy,c
-    localK(3,1)=mate.Rank2Material("dstressdc").getIthRow(2)*shp.m_trial*shp.m_grad_test*ctan[0];
+    LocalK(3,1)=mate.Rank2Material("dstressdc").getIthRow(2)*shp.m_Trial*shp.m_GradTest*Ctan[0];
     // K_uy,ux
-    localK(3,2)=mate.Rank4Material("jacobian").getIKComponent(2,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(3,2)=mate.Rank4Material("jacobian").getIKComponent(2,1,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
     // K_uy,uy
-    localK(3,3)=mate.Rank4Material("jacobian").getIKComponent(2,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(3,3)=mate.Rank4Material("jacobian").getIKComponent(2,2,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
 
-    if(elmtinfo.m_dim==3){
+    if(elmtinfo.m_Dim==3){
         // K_c,uz
-        localK(1,4)=0.0;
+        LocalK(1,4)=0.0;
 
         // K_ux,uz
-        localK(2,4)=mate.Rank4Material("jacobian").getIKComponent(1,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(2,4)=mate.Rank4Material("jacobian").getIKComponent(1,3,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
 
         // K_uy,uz
-        localK(3,4)=mate.Rank4Material("jacobian").getIKComponent(2,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(3,4)=mate.Rank4Material("jacobian").getIKComponent(2,3,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
 
         // K_uz,c
-        localK(4,1)=mate.Rank2Material("dstressdc").getIthRow(3)*shp.m_trial*shp.m_grad_test*ctan[0];
+        LocalK(4,1)=mate.Rank2Material("dstressdc").getIthRow(3)*shp.m_Trial*shp.m_GradTest*Ctan[0];
         // K_uz,ux
-        localK(4,2)=mate.Rank4Material("jacobian").getIKComponent(3,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(4,2)=mate.Rank4Material("jacobian").getIKComponent(3,1,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
         // K_uz,uy
-        localK(4,3)=mate.Rank4Material("jacobian").getIKComponent(3,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(4,3)=mate.Rank4Material("jacobian").getIKComponent(3,2,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
         // K_uz,uz
-        localK(4,4)=mate.Rank4Material("jacobian").getIKComponent(3,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(4,4)=mate.Rank4Material("jacobian").getIKComponent(3,3,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
     }
 
 }

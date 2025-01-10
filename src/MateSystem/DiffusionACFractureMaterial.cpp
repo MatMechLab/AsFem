@@ -36,7 +36,7 @@ void DiffusionACFractureMaterial::initMaterialProperties(const nlohmann::json &i
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]){}
     mate.ScalarMaterial("H")=0.0;
 }
 //********************************************************************
@@ -67,11 +67,11 @@ void DiffusionACFractureMaterial::computeMaterialProperties(const nlohmann::json
     mate.ScalarMaterial("D")=JsonUtils::getValue(inputparams,"D");
     mate.ScalarMaterial("Omega")=JsonUtils::getValue(inputparams,"Omega");
 
-    if(elmtinfo.m_dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
+    if(elmtinfo.m_Dim==2){
+        m_GradU.setFromGradU(elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);// grad(ux), grad(uy)
     }
-    else if(elmtinfo.m_dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4],elmtsoln.m_gpGradU[5]);// grad(ux), grad(uy)
+    else if(elmtinfo.m_Dim==3){
+        m_GradU.setFromGradU(elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4],elmtsoln.m_QpGradU[5]);// grad(ux), grad(uy)
     }
     else{
         MessagePrinter::printErrorTxt("DiffusionACFractureMaterial works only for 2d and 3d case, please check your input file");
@@ -79,18 +79,18 @@ void DiffusionACFractureMaterial::computeMaterialProperties(const nlohmann::json
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_dim,m_GradU,m_strain);
+    computeStrain(elmtinfo.m_Dim,m_GradU,m_strain);
     
-    m_d=elmtsoln.m_gpU[2];
+    m_d=elmtsoln.m_QpU[2];
 
     m_args(1)=m_d;
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
 
-    m_args(1)=elmtsoln.m_gpU[1];// stores the concentration
+    m_args(1)=elmtsoln.m_QpU[1];// stores the concentration
     
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_strain,m_stress,m_jacobian);
+    computeStressAndJacobian(inputparams,elmtinfo.m_Dim,m_strain,m_stress,m_jacobian);
 
-    if(elmtinfo.m_dim==2){
+    if(elmtinfo.m_Dim==2){
         m_strain(3,3)=m_eps_zz;
     }
 

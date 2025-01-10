@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 ###############################################
 ### Set your PETSc/MPI path here or bashrc  ###
-### The only things to modify is the        ###
+### The only things to modify are the       ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
 SET(WINDOWS "False" CACHE STRING "WINDOWS")

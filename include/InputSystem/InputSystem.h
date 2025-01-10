@@ -28,6 +28,7 @@
 
 #include "Utils/MessagePrinter.h"
 #include "Utils/StringUtils.h"
+#include "MPIUtils/MPIDataBus.h"
 
 #include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
@@ -101,12 +102,12 @@ public:
     /**
      * get the name of input file, a string is returned
      */
-    inline string getInputFileName()const{return m_inputfile_name;}
+    inline string getInputFileName()const{return m_InputFileName;}
 
     /**
      * check whether the read-only flag is true
      */
-    bool isReadOnly()const{return m_readonly;}
+    bool isReadOnly()const{return m_ReadOnly;}
 
 private:
     /**
@@ -200,10 +201,10 @@ private:
     bool readJobBlock(nlohmann::json &t_json,FEJobBlock &t_jobblock);
 
 private:
-    bool m_readonly;/**< boolean flag, if readonly=true, it will only read the mesh block */
-    bool m_hasinputfile;/**< boolean flag, if true then the input file is loaded */
-    string m_inputfile_name;/**< string for the name of input file */
-    string m_meshfile_name;/**< string for the name of mesh file(external mesh file)*/
-    nlohmann::json m_json;/**< json file reader */
+    bool m_ReadOnly;/**< boolean flag, if readonly=true, it will only read the mesh block */
+    bool m_HasInputFile;/**< boolean flag, if true then the input file is loaded */
+    string m_InputFileName;/**< string for the name of input file */
+    string m_MeshFileName;/**< string for the name of mesh file(external mesh file)*/
+    nlohmann::json m_Json;/**< json file reader */
     
 };

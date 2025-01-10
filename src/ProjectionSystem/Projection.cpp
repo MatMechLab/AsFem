@@ -15,12 +15,13 @@
 
 #include "ProjectionSystem/ProjectionSystem.h"
 
-void ProjectionSystem::executeProjection(const FECell &t_fecell,const DofHandler &t_dofhandler,
-                           const ElmtSystem &t_elmtsystem,
-                           MateSystem &t_matesystem,
-                           FE &t_fe,
-                           SolutionSystem &t_solution,
-                           const FEControlInfo &t_fectrlinfo){
+void ProjectionSystem::executeProjection(const FECell &t_FECell,
+                                         const DofHandler &t_DofHandler,
+                                         const ElmtSystem &t_ElmtSystem,
+                                         MateSystem &t_MateSystem,
+                                         FE &t_FE,
+                                         SolutionSystem &t_SolnSystem,
+                                         const FEControlInfo &t_FECtrlInfo){
     // if no projection is required, then return back
     if(getScalarMaterialNum()<1 &&
        getVectorMaterialNum()<1 &&
@@ -30,172 +31,159 @@ void ProjectionSystem::executeProjection(const FECell &t_fecell,const DofHandler
     }
     
     // before we do the projection, set all the vector to zeros
-    m_data.m_proj_scalarmate_vec.setToZero();
-    m_data.m_proj_vectormate_vec.setToZero();
-    m_data.m_proj_rank2mate_vec.setToZero();
-    m_data.m_proj_rank4mate_vec.setToZero();
+    m_Data.m_proj_scalarmate_vec.setToZero();
+    m_Data.m_proj_vectormate_vec.setToZero();
+    m_Data.m_proj_rank2mate_vec.setToZero();
+    m_Data.m_proj_rank4mate_vec.setToZero();
 
     // for the current and the previous steps' solution array
-    t_solution.m_u_current.makeGhostCopy();//
-    t_solution.m_u_old.makeGhostCopy();
-    t_solution.m_u_older.makeGhostCopy();
+    t_SolnSystem.m_Ucurrent.makeGhostCopy();//
+    t_SolnSystem.m_Uold.makeGhostCopy();
+    t_SolnSystem.m_Uolder.makeGhostCopy();
 
     // for the velocity and acceleration
-    t_solution.m_v.makeGhostCopy();
-    t_solution.m_a.makeGhostCopy();
+    t_SolnSystem.m_V.makeGhostCopy();
+    t_SolnSystem.m_A.makeGhostCopy();
 
-    MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
-    MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
-
-    int rankne=t_fecell.getFECellBulkElmtsNum()/m_size;
-    int eStart=m_rank*rankne;
-    int eEnd=(m_rank+1)*rankne;
-    if(m_rank==m_size-1) eEnd=t_fecell.getFECellBulkElmtsNum();
-
-    int nDim,e,qpoints_num;
+    int QpointsNum;
     double xi,eta,zeta,w,J,JxW;
-    nDim=t_fecell.getFECellMaxDim();
 
-    int subelmtid;
-    int globaldofid,globalnodeid;
+    int SubElmtBlockID;
+    int GlobalDofID,GlobalNodeID;
 
-    m_local_elmtinfo.m_dim=nDim;
-    m_local_elmtinfo.m_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
-    m_local_elmtinfo.m_t=t_fectrlinfo.t;
-    m_local_elmtinfo.m_dt=t_fectrlinfo.dt;
-    m_local_elmtinfo.m_elmtsnum=t_fecell.getFECellBulkElmtsNum();
+    m_LocalElmtInfo.m_Dim=t_FECell.getFECellMaxDim();
+    m_LocalElmtInfo.m_NodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
-    m_bulkelmt_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
+    vector<SingleMeshCell> MyLocalCellVec;
 
-    for(int ee=eStart;ee<eEnd;ee++){
-        e=ee+1;
-        m_local_elmtinfo.m_elmtid=e;
+    MyLocalCellVec=t_FECell.getLocalBulkFECellVecCopy();
+    m_BulkElmtNodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
-        // t_mesh.getBulkMeshIthBulkElmtNodeCoords0(e,m_nodes0);// for nodal coordinates in reference configuration
-        // t_mesh.getBulkMeshIthBulkElmtNodeCoords(e,m_nodes);// for nodal coordinates in current configuration
+    QpointsNum=t_FE.m_BulkQpoints.getQPointsNum();
+    m_LocalElmtInfo.m_QpointsNum=QpointsNum;
 
-        // t_mesh.getBulkMeshIthBulkElmtConnectivity(e,m_elmtconn);// for current element's connectivity
+    for (int e=1;e<=t_FECell.getLocalFECellBulkElmtsNum();e++) {
+        m_LocalElmtInfo.m_Dim=MyLocalCellVec[e-1].Dim;
+        m_LocalElmtInfo.m_NodesNum=MyLocalCellVec[e-1].NodesNumPerElmt;
+        m_LocalElmtInfo.m_Dt=t_FECtrlInfo.Dt;
+        m_LocalElmtInfo.m_T=t_FECtrlInfo.T;
 
-        qpoints_num=t_fe.m_bulk_qpoints.getQPointsNum();
-        m_local_elmtinfo.m_qpointsnum=qpoints_num;
-        for(int qpInd=1;qpInd<=qpoints_num;qpInd++){
-            w =t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,0);
-            xi=t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,1);
-            if(nDim==1){
+        m_Nodes=MyLocalCellVec[e-1].ElmtNodeCoords;
+        m_Nodes0=MyLocalCellVec[e-1].ElmtNodeCoords0;
+        m_ElmtConn=MyLocalCellVec[e-1].ElmtConn;
+        for (int qp=1;qp<=QpointsNum;qp++) {
+            w=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,0);
+            xi=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,1);
+            if (m_LocalElmtInfo.m_Dim==1) {
                 eta=0.0;zeta=0.0;
             }
-            else if(nDim==2){
-                eta=t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,2);
+            else if (m_LocalElmtInfo.m_Dim==2) {
+                eta=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,2);
                 zeta=0.0;
             }
-            else if(nDim==3){
-                eta =t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,2);
-                zeta=t_fe.m_bulk_qpoints.getIthPointJthCoord(qpInd,3);
+            else if (m_LocalElmtInfo.m_Dim==3) {
+                eta=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,2);
+                zeta=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,3);
             }
-            t_fe.m_bulk_shp.calc(xi,eta,zeta,m_nodes0,true);
-            J=t_fe.m_bulk_shp.getJacDet();
+            t_FE.m_BulkShp.calc(xi,eta,zeta,m_Nodes0,true);
+            J=t_FE.m_BulkShp.getJacDet();
             JxW=J*w;
 
-            m_local_elmtinfo.m_qpointid=qpInd;
-            m_local_elmtinfo.m_gpCoords0=0.0;
-            for(int i=1;i<=m_bulkelmt_nodesnum;i++){
-                m_local_elmtinfo.m_gpCoords0(1)+=t_fe.m_bulk_shp.shape_value(i)*m_nodes0(i,1);
-                m_local_elmtinfo.m_gpCoords0(2)+=t_fe.m_bulk_shp.shape_value(i)*m_nodes0(i,2);
-                m_local_elmtinfo.m_gpCoords0(3)+=t_fe.m_bulk_shp.shape_value(i)*m_nodes0(i,3);
+            m_LocalElmtInfo.m_QpointID=qp;
+            m_LocalElmtInfo.m_QpCoords0=0.0;
+            for (int i=1;i<=m_LocalElmtInfo.m_NodesNum;i++) {
+                m_LocalElmtInfo.m_QpCoords0(1)+=t_FE.m_BulkShp.shape_value(i)*m_Nodes0(i,1);
+                m_LocalElmtInfo.m_QpCoords0(2)+=t_FE.m_BulkShp.shape_value(i)*m_Nodes0(i,2);
+                m_LocalElmtInfo.m_QpCoords0(3)+=t_FE.m_BulkShp.shape_value(i)*m_Nodes0(i,3);
             }
 
-            t_matesystem.m_materialcontainer_old.getScalarMaterialsRef()=t_solution.m_qpoints_scalarmaterials[(e-1)*qpoints_num+qpInd-1];
-            t_matesystem.m_materialcontainer_old.getVectorMaterialsRef()=t_solution.m_qpoints_vectormaterials[(e-1)*qpoints_num+qpInd-1];
-            t_matesystem.m_materialcontainer_old.getRank2MaterialsRef()=t_solution.m_qpoints_rank2materials[(e-1)*qpoints_num+qpInd-1];
-            t_matesystem.m_materialcontainer_old.getRank4MaterialsRef()=t_solution.m_qpoints_rank4materials[(e-1)*qpoints_num+qpInd-1];
+            t_MateSystem.m_MaterialContainerOld.getScalarMaterialsRef()=t_SolnSystem.m_QpointsScalarMaterialsOld_Local[(e-1)*QpointsNum+qp-1];
+            t_MateSystem.m_MaterialContainerOld.getVectorMaterialsRef()=t_SolnSystem.m_QpointsVectorMaterialsOld_Local[(e-1)*QpointsNum+qp-1];
+            t_MateSystem.m_MaterialContainerOld.getRank2MaterialsRef()=t_SolnSystem.m_QpointsRank2MaterialsOld_Local[(e-1)*QpointsNum+qp-1];
+            t_MateSystem.m_MaterialContainerOld.getRank4MaterialsRef()=t_SolnSystem.m_QpointsRank4MaterialsOld_Local[(e-1)*QpointsNum+qp-1];
 
-            for(int subelmt=1;subelmt<=t_elmtsystem.getIthBulkElmtSubElmtsNum(e);subelmt++){
+            for (int SubElmt=1;SubElmt<=t_ElmtSystem.getLocalIthBulkElmtSubElmtsNum(e);SubElmt++) {
+                SubElmtBlockID=t_ElmtSystem.getLocalIthBulkElmtJthSubElmtID(e,SubElmt);
+                m_SubElmtDofs=static_cast<int>(t_ElmtSystem.getIthBulkElmtBlock(SubElmtBlockID).m_DofIDs.size());
+                m_LocalElmtInfo.m_DofsNum=m_SubElmtDofs;
 
-                subelmtid=t_elmtsystem.getIthBulkElmtJthSubElmtID(e,subelmt);
-                m_subelmt_dofs=static_cast<int>(t_elmtsystem.getIthBulkElmtBlock(subelmtid).m_dof_ids.size());
-                m_local_elmtinfo.m_dofsnum=m_subelmt_dofs;
-                
-                for(int i=0;i<m_subelmt_dofs;i++){
-                    m_subelmtdofsid[i]=t_elmtsystem.getIthBulkElmtBlock(subelmtid).m_dof_ids[i];// start from 1
+                //*********************************************************************
+                //*** calculate physical quantities on each integration point
+                //*********************************************************************
+                // here, the U/V/A vector's index should start from 1, to make it consistent with
+                // 1st dof, 2nd dof, 3rd one , and so on. So, please let the index starts from 1 !!!
+                for (int i=1;i<=m_LocalElmtInfo.m_DofsNum;i++){
+                    m_SubElmtDofIDs[i-1]=t_ElmtSystem.getIthBulkElmtBlock(SubElmtBlockID).m_DofIDs[i-1];
 
-                    //*********************************************************************
-                    //*** prepare physical quantities on each integration point
-                    //*********************************************************************
-                    // here, the U/V/A vector's index should start from 1, to make it consistent with
-                    // 1st dof, 2nd dof, 3rd one , and so on. So, please let the index starts from 1 !!!
-                    m_local_elmtsoln.m_gpU[i+1]=0.0;
-                    m_local_elmtsoln.m_gpUold[i+1]=0.0;
-                    m_local_elmtsoln.m_gpUolder[i+1]=0.0;
+                    m_LocalElmtSoln.m_QpU[i]=0.0;
+                    m_LocalElmtSoln.m_QpUold[i]=0.0;
+                    m_LocalElmtSoln.m_QpUolder[i]=0.0;
 
-                    m_local_elmtsoln.m_gpV[i+1]=0.0;
-                    m_local_elmtsoln.m_gpA[i+1]=0.0;
+                    m_LocalElmtSoln.m_QpV[i]=0.0;
+                    m_LocalElmtSoln.m_QpA[i]=0.0;
 
-                    m_local_elmtsoln.m_gpGradU[i+1]=0.0;
-                    m_local_elmtsoln.m_gpGradUold[i+1]=0.0;
-                    m_local_elmtsoln.m_gpGradUolder[i+1]=0.0;
+                    m_LocalElmtSoln.m_QpGradU[i]=0.0;
+                    m_LocalElmtSoln.m_QpGradUold[i]=0.0;
+                    m_LocalElmtSoln.m_QpGradUolder[i]=0.0;
 
-                    m_local_elmtsoln.m_gpGradV[i+1]=0.0;
-                    for(int j=1;j<=m_bulkelmt_nodesnum;j++){
-                        // globalnodeid=t_mesh.getBulkMeshIthBulkElmtJthNodeID(e,j);
-                        globalnodeid=1;
-                        globaldofid=t_dofhandler.getIthNodeJthDofID(globalnodeid,m_subelmtdofsid[i]);
-                        m_local_elmtsoln.m_gpUolder[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_u_older.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpUold[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_u_old.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpU[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_u_current.getIthValueFromGhost(globaldofid);
+                    m_LocalElmtSoln.m_QpGradV[i]=0.0;
+                    for (int j=1;j<=m_BulkElmtNodesNum;j++) {
+                        GlobalNodeID=MyLocalCellVec[e-1].ElmtConn[j-1];
+                        GlobalDofID=t_DofHandler.getIthNodeJthDofID(GlobalNodeID,m_SubElmtDofIDs[i-1]);
 
-                        m_local_elmtsoln.m_gpV[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_v.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpA[i+1]+=t_fe.m_bulk_shp.shape_value(j)*t_solution.m_a.getIthValueFromGhost(globaldofid);
+                        m_LocalElmtSoln.m_QpUolder[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpUold[i]  +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpU[i]     +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
 
-                        m_local_elmtsoln.m_gpGradUolder[i+1](1)+=t_fe.m_bulk_shp.shape_grad(j)(1)*t_solution.m_u_older.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradUolder[i+1](2)+=t_fe.m_bulk_shp.shape_grad(j)(2)*t_solution.m_u_older.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradUolder[i+1](3)+=t_fe.m_bulk_shp.shape_grad(j)(3)*t_solution.m_u_older.getIthValueFromGhost(globaldofid);
-                        
-                        m_local_elmtsoln.m_gpGradUold[i+1](1)+=t_fe.m_bulk_shp.shape_grad(j)(1)*t_solution.m_u_old.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradUold[i+1](2)+=t_fe.m_bulk_shp.shape_grad(j)(2)*t_solution.m_u_old.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradUold[i+1](3)+=t_fe.m_bulk_shp.shape_grad(j)(3)*t_solution.m_u_old.getIthValueFromGhost(globaldofid);
-                        
-                        m_local_elmtsoln.m_gpGradU[i+1](1)+=t_fe.m_bulk_shp.shape_grad(j)(1)*t_solution.m_u_current.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradU[i+1](2)+=t_fe.m_bulk_shp.shape_grad(j)(2)*t_solution.m_u_current.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradU[i+1](3)+=t_fe.m_bulk_shp.shape_grad(j)(3)*t_solution.m_u_current.getIthValueFromGhost(globaldofid);
+                        m_LocalElmtSoln.m_QpV[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpA[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_A.getIthValueFromGhost(GlobalDofID);
 
-                        m_local_elmtsoln.m_gpGradV[i+1](1)+=t_fe.m_bulk_shp.shape_grad(j)(1)*t_solution.m_v.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradV[i+1](2)+=t_fe.m_bulk_shp.shape_grad(j)(2)*t_solution.m_v.getIthValueFromGhost(globaldofid);
-                        m_local_elmtsoln.m_gpGradV[i+1](3)+=t_fe.m_bulk_shp.shape_grad(j)(3)*t_solution.m_v.getIthValueFromGhost(globaldofid);
-                    
+                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        //
+                        m_LocalElmtSoln.m_QpGradUold[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUold[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUold[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        //
+                        m_LocalElmtSoln.m_QpGradU[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradU[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradU[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+
+                        m_LocalElmtSoln.m_QpGradV[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradV[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradV[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
                     }
-
                 }// end-of-sub-element-dofs-loop
+
 
                 //***********************************************************
                 //*** for materials (UMAT) and elements/models (UEL)
                 //***********************************************************
-                t_matesystem.runBulkMateLibs(t_elmtsystem.getIthBulkElmtBlock(subelmtid).m_matetype,
-                                             t_elmtsystem.getIthBulkElmtBlock(subelmtid).m_json_params,
-                                             m_local_elmtinfo,
-                                             m_local_elmtsoln);                        
+                t_MateSystem.runBulkMateLibs(t_ElmtSystem.getIthBulkElmtBlock(SubElmtBlockID).m_MateType,
+                                             t_ElmtSystem.getIthBulkElmtBlock(SubElmtBlockID).m_JsonParams,
+                                             m_LocalElmtInfo,
+                                             m_LocalElmtSoln);
 
-            }// end-of-sub-element-loop
-            // true--> for local projection
-            runProjectionLibs(true,t_fecell,m_bulkelmt_nodesnum,m_elmtconn,JxW,t_fe.m_bulk_shp,t_matesystem.m_materialcontainer,m_data);
-
+            }//end-of-sub-element-loop
+            // true---> for the local projection
+            runProjectionLibs(true,t_FECell,m_BulkElmtNodesNum,m_ElmtConn,JxW,t_FE.m_BulkShp,t_MateSystem.m_MaterialContainer,m_Data);
         }// end-of-qpoints-loop
+    }// end-of-element-loop
 
-    }// end-of-element libs
-
-    t_solution.m_u_current.destroyGhostCopy();//
-    t_solution.m_u_old.destroyGhostCopy();
-    t_solution.m_u_older.destroyGhostCopy();
+    t_SolnSystem.m_Ucurrent.destroyGhostCopy();//
+    t_SolnSystem.m_Uold.destroyGhostCopy();
+    t_SolnSystem.m_Uolder.destroyGhostCopy();
 
     // for the velocity and acceleration
-    t_solution.m_v.destroyGhostCopy();
-    t_solution.m_a.destroyGhostCopy();
-
+    t_SolnSystem.m_V.destroyGhostCopy();
+    t_SolnSystem.m_A.destroyGhostCopy();
 
     //******************************************************
     //*** after the local projection(in the element loop)
     //*** one needs to execute the global projection behavior
     //******************************************************
     // false--> for global projection action
-    runProjectionLibs(false,t_fecell,m_bulkelmt_nodesnum,m_elmtconn,JxW,t_fe.m_bulk_shp,t_matesystem.m_materialcontainer,m_data);
+    runProjectionLibs(false,t_FECell,m_BulkElmtNodesNum,m_ElmtConn,JxW,t_FE.m_BulkShp,t_MateSystem.m_MaterialContainer,m_Data);
 
 }

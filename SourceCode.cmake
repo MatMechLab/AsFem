@@ -112,7 +112,7 @@ set(src ${src} src/FECell/FECellGenerator.cpp)
 ### For FE cell importer class                            ###
 #############################################################
 ### for msh file utils and nodes
-set(inc ${inc} include/FECell/Nodes.h include/FECell/MshFileUtils.h)
+set(inc ${inc} include/FECell/Nodes.h include/FECell/MshFileUtils.h include/FECell/MeshType.h)
 set(src ${src} src/FECell/Nodes.cpp src/FECell/MshFileUtils.cpp)
 set(inc ${inc} include/FECell/MeshFile2FECellImporterBase.h)
 ### for msh2 file importer
@@ -121,6 +121,22 @@ set(src ${src} src/FECell/Msh2File2FECellImporter.cpp)
 ### for msh4 file importer
 set(inc ${inc} include/FECell/Msh4File2FECellImporter.h)
 set(src ${src} src/FECell/Msh4File2FECellImporter.cpp)
+### for gmsh2 file importer
+set(inc ${inc} include/FECell/Gmsh2File2FECellImporter.h)
+set(src ${src} src/FECell/Gmsh2File2FECellImporter.cpp)
+###
+set(inc ${inc} include/FECell/MeshFile2FECellImporter.h)
+set(src ${src} src/FECell/MeshFile2FECellImporter.cpp)
+#############################################################
+### For FE cell importer class                            ###
+#############################################################
+set(inc ${inc} include/FECell/FECellPartitionerBase.h)
+### for built-in partitioner
+set(inc ${inc} include/FECell/FECellDefaultPartitioner.h)
+set(src ${src} src/FECell/FECellDefaultPartitioner.cpp)
+###
+set(inc ${inc} include/FECell/FECellPartioner.h)
+set(src ${src} src/FECell/FECellPartioner.cpp)
 
 
 #############################################################
@@ -250,7 +266,6 @@ set(inc ${inc} include/ElmtSystem/LocalElmtData.h)
 ### for bulk element system
 set(inc ${inc} include/ElmtSystem/BulkElmtSystem.h)
 set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
-set(src ${src} src/ElmtSystem/BulkElmtSystemInit.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
 ### for poisson element

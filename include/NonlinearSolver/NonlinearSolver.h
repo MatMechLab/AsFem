@@ -38,6 +38,6 @@ public:
     void init();
 
 public:
-    NonlinearSolverBlock m_nlsolverblock;/**< the nonlinear solver block defined in json file */
+    NonlinearSolverBlock m_NlSolverBlock;/**< the nonlinear solver block defined in json file */
 
 };

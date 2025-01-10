@@ -22,7 +22,7 @@ double SideIntegralRank2MatePostprocessor::computeSideIntegralValue(const int &d
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||elmtinfo.m_dim){}
+    if(dofid||soln.getDofsNum()||elmtinfo.m_Dim){}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"rank2mate","i-index","j-index"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the SideIntegralRank2MatePostprocessor, "
@@ -47,7 +47,7 @@ double SideIntegralRank2MatePostprocessor::computeSideIntegralValue(const int &d
     
     m_rank2value=projsystem.getIthNodeRank2MateViaMateName(nodeid,m_rank2matename);
     
-    m_ppsvalue=m_rank2value(m_i,m_j)*shp.m_test;
+    m_ppsvalue=m_rank2value(m_i,m_j)*shp.m_Test;
     
     return m_ppsvalue;
 }

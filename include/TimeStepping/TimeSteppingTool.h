@@ -27,66 +27,66 @@
 void computeTimeDerivatives(FEControlInfo &fectrlinfo,
                             const Vec &U,
                             SolutionSystem &soln){
-    if(fectrlinfo.m_timesteppingtype==TimeSteppingType::STATIC){
-        fectrlinfo.ctan[0]=1.0;
-        fectrlinfo.ctan[1]=0.0;
-        fectrlinfo.ctan[2]=0.0;
-        soln.m_u_temp=U;
-        soln.m_v.setToZero();
-        soln.m_a.setToZero();
+    if(fectrlinfo.m_TimesteppingType==TimeSteppingType::STATIC){
+        fectrlinfo.Ctan[0]=1.0;
+        fectrlinfo.Ctan[1]=0.0;
+        fectrlinfo.Ctan[2]=0.0;
+        soln.m_Utemp=U;
+        soln.m_V.setToZero();
+        soln.m_A.setToZero();
     }
-    else if(fectrlinfo.m_timesteppingtype==TimeSteppingType::BACKWARDEULER){
-        fectrlinfo.ctan[0]=1.0;
-        fectrlinfo.ctan[1]=1.0/fectrlinfo.dt;
-        fectrlinfo.ctan[2]=0.0;
+    else if(fectrlinfo.m_TimesteppingType==TimeSteppingType::BACKWARDEULER){
+        fectrlinfo.Ctan[0]=1.0;
+        fectrlinfo.Ctan[1]=1.0/fectrlinfo.Dt;
+        fectrlinfo.Ctan[2]=0.0;
 
-        soln.m_u_temp=U;
-        soln.m_v=soln.m_u_temp;
-        soln.m_v-=soln.m_u_old;
-        soln.m_v*=1.0/fectrlinfo.dt;
+        soln.m_Utemp=U;
+        soln.m_V=soln.m_Utemp;
+        soln.m_V-=soln.m_Uold;
+        soln.m_V*=1.0/fectrlinfo.Dt;
 
-        soln.m_a.setToZero();
+        soln.m_A.setToZero();
     }
-    else if(fectrlinfo.m_timesteppingtype==TimeSteppingType::CRANCKNICOLSON){
-        fectrlinfo.ctan[0]=0.5;
-        fectrlinfo.ctan[1]=1.0/fectrlinfo.dt;
-        fectrlinfo.ctan[2]=0.0;
+    else if(fectrlinfo.m_TimesteppingType==TimeSteppingType::CRANCKNICOLSON){
+        fectrlinfo.Ctan[0]=0.5;
+        fectrlinfo.Ctan[1]=1.0/fectrlinfo.Dt;
+        fectrlinfo.Ctan[2]=0.0;
 
-        soln.m_u_temp=U;
-        soln.m_u_temp+=soln.m_u_old;
-        soln.m_u_temp*=0.5;
+        soln.m_Utemp=U;
+        soln.m_Utemp+=soln.m_Uold;
+        soln.m_Utemp*=0.5;
 
-        soln.m_v=soln.m_u_temp;
-        soln.m_v-=soln.m_u_old;
-        soln.m_v*=1.0/fectrlinfo.dt;
+        soln.m_V=soln.m_Utemp;
+        soln.m_V-=soln.m_Uold;
+        soln.m_V*=1.0/fectrlinfo.Dt;
 
-        soln.m_a.setToZero();
+        soln.m_A.setToZero();
     }
-    else if(fectrlinfo.m_timesteppingtype==TimeSteppingType::BDF2){
+    else if(fectrlinfo.m_TimesteppingType==TimeSteppingType::BDF2){
         // the expression for BDF2 is:
         // [Un+2-(4/3)Un+1+(1/3)Un]/dt=(2/3)f(Un+2)
 
         if(fectrlinfo.CurrentStep<2){
             // for the first step, it is backward euler
-            fectrlinfo.ctan[0]=1.0;
-            fectrlinfo.ctan[1]=1.0/fectrlinfo.dt;
-            fectrlinfo.ctan[2]=0.0;
+            fectrlinfo.Ctan[0]=1.0;
+            fectrlinfo.Ctan[1]=1.0/fectrlinfo.Dt;
+            fectrlinfo.Ctan[2]=0.0;
             // calculate the current velocity
-            soln.m_v =U;
-            soln.m_v-=soln.m_u_old;
-            soln.m_v*=fectrlinfo.ctan[1];
+            soln.m_V =U;
+            soln.m_V-=soln.m_Uold;
+            soln.m_V*=fectrlinfo.Ctan[1];
         }
         else{
-            fectrlinfo.ctan[0]=2.0/3.0;
-            fectrlinfo.ctan[1]=1.0/fectrlinfo.dt;
-            fectrlinfo.ctan[2]=0.0;
+            fectrlinfo.Ctan[0]=2.0/3.0;
+            fectrlinfo.Ctan[1]=1.0/fectrlinfo.Dt;
+            fectrlinfo.Ctan[2]=0.0;
             // calculate the current velocity
-            soln.m_v=U;
-            soln.m_v+=soln.m_u_old*(-4.0/3.0);
-            soln.m_v+=soln.m_u_older*(1.0/3.0);
-            soln.m_v*=fectrlinfo.ctan[1];
+            soln.m_V=U;
+            soln.m_V+=soln.m_Uold*(-4.0/3.0);
+            soln.m_V+=soln.m_Uolder*(1.0/3.0);
+            soln.m_V*=fectrlinfo.Ctan[1];
         }
-        soln.m_a.setToZero();
+        soln.m_A.setToZero();
     }
     else{
         MessagePrinter::printErrorTxt("Unsupported time stepping method for time derivates (TimeSteppingTool)");

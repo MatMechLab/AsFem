@@ -42,7 +42,7 @@ void ICSystem::addICBlock2List(const ICBlock &icblock){
     else{
         bool NotInList=true;
         for(const auto &it:m_icblock_list){
-            if(it.m_icBlockName==icblock.m_icBlockName){
+            if(it.m_ICBlockName==icblock.m_ICBlockName){
                 NotInList=false;break;
             }
         }
@@ -51,7 +51,7 @@ void ICSystem::addICBlock2List(const ICBlock &icblock){
             m_icblocks_num+=1;
         }
         else{
-            MessagePrinter::printErrorTxt("duplicate ["+icblock.m_icBlockName+"] in your [ics] sub block,"
+            MessagePrinter::printErrorTxt("duplicate ["+icblock.m_ICBlockName+"] in your [ics] sub block,"
                                           " please check your input file");
             MessagePrinter::exitAsFem();
         }

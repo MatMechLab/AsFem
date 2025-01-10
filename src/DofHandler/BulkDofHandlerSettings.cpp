@@ -15,16 +15,16 @@
 #include "DofHandler/BulkDofHandler.h"
 
 void BulkDofHandler::init(){
-    m_dof_namelist.clear();
-    m_dof_idlist.clear();
+    m_DofNameList.clear();
+    m_DofIDList.clear();
 
-    m_bulkelmts=0;
-    m_nodes=0;
-    m_maxdofs_pernode=0;
-    m_total_dofs=0;
-    m_active_dofs=0;
-    m_elmt_dofids.clear();
-    m_nodal_dofids.clear();
+    m_BulkElmtsNum=0;
+    m_NodesNum=0;
+    m_MaxDofsPerNode=0;
+    m_TotalDofs=0;
+    m_ActiveDofs=0;
+    m_ElementalDofIDs_Global.clear();
+    m_NodalDofIDs_Global.clear();
 }
 
 void BulkDofHandler::addDofName2List(const string &dofname){
@@ -32,15 +32,15 @@ void BulkDofHandler::addDofName2List(const string &dofname){
         MessagePrinter::printErrorTxt("invalid dof name, it is too short or an empty string, please check your input file");
         MessagePrinter::exitAsFem();
     }
-    if(m_dof_namelist.size()<1){
-        m_dof_namelist.push_back(dofname);
-        m_dof_idlist.clear();
-        m_dof_idlist.push_back(1);
-        m_maxdofs_pernode=1;
+    if(m_DofNameList.size()<1){
+        m_DofNameList.push_back(dofname);
+        m_DofIDList.clear();
+        m_DofIDList.push_back(1);
+        m_MaxDofsPerNode=1;
     }
     else{
         bool IsExist=false;
-        for(const auto &it:m_dof_namelist){
+        for(const auto &it:m_DofNameList){
             if(it==dofname){
                 IsExist=true;break;
             }
@@ -50,9 +50,9 @@ void BulkDofHandler::addDofName2List(const string &dofname){
             MessagePrinter::exitAsFem();
         }
         else{
-            m_dof_namelist.push_back(dofname);
-            m_maxdofs_pernode+=1;
-            m_dof_idlist.push_back(m_maxdofs_pernode);
+            m_DofNameList.push_back(dofname);
+            m_MaxDofsPerNode+=1;
+            m_DofIDList.push_back(m_MaxDofsPerNode);
         }
     }
 }

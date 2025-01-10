@@ -16,6 +16,7 @@
 
 #include "FECell/Msh4File2FECellImporter.h"
 #include "Utils/StringUtils.h"
+#include "MPIUtils/MPIDataBus.h"
 
 int Msh4File2FECellImporter::getMaxMeshDim(const string &filename)const{
     ifstream in;
@@ -87,30 +88,6 @@ int Msh4File2FECellImporter::getPhysicalIDViaEntityTag(const int &entityDim,cons
 }
 
 bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &t_celldata){
-    int mshMaxDim;
-
-    int mshPhyGroupNum;
-    int maxPhyGroupID;
-    int maxPhyGroupDim,minPhyGroupDim;
-    int mshBulkPhyGroupNum;
-
-    vector<int> mshPhyGroupIDVec,mshPhyGroupDimVec;
-    vector<string> mshPhyGroupNameVec;
-
-    vector<int> mshBulkElmtUniquePhyIDVec;
-    vector<int> mshBulkElmtPhyIDs;
-
-    int mshNodalPhyGroupNum;
-    vector<int> mshNodalPhyGroupIDVec;
-    vector<string> mshNodalPhyGroupNameVec;
-
-    map<int,vector<int>> NodeSetPhyID2IndexMap;
-
-    vector<int> ElmtPhyIDVec;
-    vector<int> ElmtDimVec;
-    vector<vector<int>> ElmtConn;
-    vector<int> ElmtIDFlag;
-
     ifstream in;
     in.open(filename.c_str(),ios::in);
     if(!in.is_open()){
@@ -118,58 +95,92 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                                       " or you have the access permission");
         return false;
     }
-    string str;
-    double version;
-    int format,size;
-    vector<double> numbers;
-
-    int numNodes=0;
-    int minNodeTag=0;
-    int maxNodeTag=0;
-    vector<double> NodeCoords;// here the node id may not be contineous case !!!
-    vector<int> NodeIDFlag;
-
-    int numEntityBlocks=0;
-    int numElements=0;
-    int minElementTag=0;
-    int maxElementTag=0;
-    int numElementsInBlock=0;
-
-    mshMaxDim=getMaxMeshDim(filename);
-
-    t_celldata.MaxDim=mshMaxDim;
-    t_celldata.MinDim=10;
-
-    mshBulkPhyGroupNum=0;
-    mshPhyGroupNum=0;
-    mshPhyGroupDimVec.clear();
-    mshPhyGroupNameVec.clear();
-    mshPhyGroupIDVec.clear();
-
-    maxPhyGroupID=-1;
-    maxPhyGroupDim=-1;
-    minPhyGroupDim=100;
-
-    mshNodalPhyGroupNum=0;
-
-    t_celldata.LineElmtsNum=0;
-    t_celldata.SurfElmtsNum=0;
-    t_celldata.BulkElmtsNum=0;
-    t_celldata.ElmtsNum=0;
+    
 
     int rank,size;
 
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     MPI_Comm_size(MPI_COMM_WORLD,&size);
+    
+    t_celldata.MaxDim=getMaxMeshDim(filename);
+    t_celldata.MinDim=0;
+    t_celldata.ActiveDofsNum=0;
+    t_celldata.TotalDofsNum=0;
+    t_celldata.MaxDofsPerNode=0;
 
     if(rank!=0) in.close();// close the ifstream on other ranks
 
     if(rank==0){
+        int mshMaxDim;
+
+        int mshPhyGroupNum;
+        int maxPhyGroupID;
+        int maxPhyGroupDim,minPhyGroupDim;
+        int mshBulkPhyGroupNum;
+
+        vector<int> mshPhyGroupIDVec,mshPhyGroupDimVec;
+        vector<string> mshPhyGroupNameVec;
+
+        vector<int> mshBulkElmtUniquePhyIDVec;
+        vector<int> mshBulkElmtPhyIDs;
+
+        int mshNodalPhyGroupNum;
+        vector<int> mshNodalPhyGroupIDVec;
+        vector<string> mshNodalPhyGroupNameVec;
+
+        map<int,vector<int>> NodeSetPhyID2IndexMap;
+        map<int,string> mshPhyID2NameMap;
+
+        vector<int> ElmtPhyIDVec;
+        vector<int> ElmtDimVec;
+        vector<vector<int>> ElmtConn;
+        vector<int> ElmtIDFlag;
+        vector<SingleMeshCell> TempCellVec,BulkCellVec;
+        int PointElmtsNum;
+        string str;
+        double version;
+        int format;
+        vector<double> numbers;
+        
+        int numNodes=0;
+        int minNodeTag=0;
+        int maxNodeTag=0;
+        vector<double> NodeCoords;// here the node id may not be contineous case !!!
+        vector<int> NodeIDFlag;
+        
+        int numEntityBlocks=0;
+        int numElements=0;
+        int minElementTag=0;
+        int maxElementTag=0;
+        int numElementsInBlock=0;
+        
+        mshMaxDim=getMaxMeshDim(filename);
+        
+        t_celldata.MaxDim=mshMaxDim;
+        t_celldata.MinDim=10;
+        
+        mshBulkPhyGroupNum=0;
+        mshPhyGroupNum=0;
+        mshPhyGroupDimVec.clear();
+        mshPhyGroupNameVec.clear();
+        mshPhyGroupIDVec.clear();
+        
+        maxPhyGroupID=-1;
+        maxPhyGroupDim=-1;
+        minPhyGroupDim=100;
+        
+        mshNodalPhyGroupNum=0;
+        
+        t_celldata.LineElmtsNum=0;
+        t_celldata.SurfElmtsNum=0;
+        t_celldata.BulkElmtsNum=0;
+        t_celldata.ElmtsNum=0;
         while(!in.eof()){
             getline(in,str);
             if(str.find("$MeshFormat")!=string::npos){
                 // read the version, format, size
-                in>>version>>format>>size;
+                int mysize;
+                in>>version>>format>>mysize;
                 if(version<4.0 || version>4.2){
                     MessagePrinter::printErrorTxt("version="+to_string(version)+" is not supported for msh4 file importer, "
                                                   "please check your mesh file");
@@ -205,6 +216,7 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     if(phydim==mshMaxDim){
                         mshBulkPhyGroupNum+=1;
                     }
+                    mshPhyID2NameMap[phyid]=phyname;
                 }
                 getline(in,str);
             }// end-of-physical-group-reading
@@ -253,658 +265,791 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 for(i=0;i<numSurfaces;i++){
                     getline(in,str);
                     numbers=StringUtils::splitStrNum(str);
-                surfaceid=static_cast<int>(numbers[1-1]);
-                j=static_cast<int>(numbers[8-1]);
-                if(j>0){
-                    m_SurfaceEntityPhyIDs[surfaceid-1]=static_cast<int>(numbers[8+j-1]);
+                    surfaceid=static_cast<int>(numbers[1-1]);
+                    j=static_cast<int>(numbers[8-1]);
+                    if(j>0){
+                        m_SurfaceEntityPhyIDs[surfaceid-1]=static_cast<int>(numbers[8+j-1]);
+                    }
+                }
+                //*** read volumes entities
+                for(i=0;i<numVolumes;i++){
+                    getline(in,str);
+                    numbers=StringUtils::splitStrNum(str);
+                    volumeid=static_cast<int>(numbers[1-1]);
+                    j=static_cast<int>(numbers[8-1]);
+                    if(j>0){
+                        m_VolumesEntityPhyIDs[volumeid-1]=static_cast<int>(numbers[8+j-1]);
+                    }
                 }
             }
-            //*** read volumes entities
-            for(i=0;i<numVolumes;i++){
-                getline(in,str);
+            else if(str.find("$Nodes")!=string::npos){
+                // read the nodes' coordinates
+                // node-id, x, y, z
+                vector<int> nodeid;
+                
+                t_celldata.NodesNum=0;
+                getline(in,str); // read the entities
                 numbers=StringUtils::splitStrNum(str);
-                volumeid=static_cast<int>(numbers[1-1]);
-                j=static_cast<int>(numbers[8-1]);
-                if(j>0){
-                    m_VolumesEntityPhyIDs[volumeid-1]=static_cast<int>(numbers[8+j-1]);
-                }
-            }
-        }
-        else if(str.find("$Nodes")!=string::npos){
-            // read the nodes' coordinates
-            // node-id, x, y, z
-            vector<int> nodeid;
+                
+                numEntityBlocks=static_cast<int>(numbers[1-1]);
+                numNodes=static_cast<int>(numbers[2-1]);
+                minNodeTag=static_cast<int>(numbers[3-1]);
+                maxNodeTag=static_cast<int>(numbers[4-1]);
+                
+                NodeCoords.resize(3*maxNodeTag,0.0);// here the node id may not be contineous case !!!
+                NodeIDFlag.resize(maxNodeTag,0);
 
-            meshdata.m_nodes=0;
-            getline(in,str); // read the entities
-            numbers=StringUtils::splitStrNum(str);
+                t_celldata.NodesNum=numNodes;
+                
+                double x,y,z;
+                int i,j,numNodesInBlock;
 
-            numEntityBlocks=static_cast<int>(numbers[1-1]);
-            numNodes=static_cast<int>(numbers[2-1]);
-            minNodeTag=static_cast<int>(numbers[3-1]);
-            maxNodeTag=static_cast<int>(numbers[4-1]);
-
-            NodeCoords.resize(3*maxNodeTag,0.0);// here the node id may not be contineous case !!!
-            NodeIDFlag.resize(maxNodeTag,0);
-
-            meshdata.m_nodes=numNodes;
-
-            double x,y,z;
-            int i,j,numNodesInBlock;
-            
-            meshdata.m_xmin=meshdata.m_ymin=meshdata.m_zmin= 1.0e16;
-            meshdata.m_xmax=meshdata.m_ymax=meshdata.m_zmax=-1.0e16;
-
-            int nNodes=0;
-
-            for(int nBlock=0;nBlock<numEntityBlocks;nBlock++){
-                nodeid.clear();
-                getline(in,str);
-                numbers=StringUtils::splitStrNum(str);
-                if(numbers.size()!=4){
-                    MessagePrinter::printErrorTxt("Invalid node entities in your msh4 file inside the $Nodes block");
-                    MessagePrinter::exitAsFem();
-                }
-                numNodesInBlock=static_cast<int>(numbers[4-1]);
-                for(i=0;i<numNodesInBlock;i++){
-                    getline(in,str); // read the node id
-                    if(str.size()>1){
-                        if(str.at(str.size()-1)<'0' || str.at(str.size()-1)>'9'){
-                            // Remove the last invalid char, this may come from the msh file generated in different platform.
-                            // In some cases, the last char in this line is not '\n' or ' ', but other unrecognized character.
-                            str.pop_back();
+                t_celldata.Xmin=t_celldata.Ymin=t_celldata.Zmin= 1.0e16;
+                t_celldata.Xmax=t_celldata.Ymax=t_celldata.Zmax=-1.0e16;
+                
+                int nNodes=0;
+                for(int nBlock=0;nBlock<numEntityBlocks;nBlock++){
+                    nodeid.clear();
+                    getline(in,str);
+                    numbers=StringUtils::splitStrNum(str);
+                    if(numbers.size()!=4){
+                        MessagePrinter::printErrorTxt("Invalid node entities in your msh4 file inside the $Nodes block");
+                        MessagePrinter::exitAsFem();
+                    }
+                    numNodesInBlock=static_cast<int>(numbers[4-1]);
+                    for(i=0;i<numNodesInBlock;i++){
+                        getline(in,str); // read the node id
+                        if(str.size()>1){
+                            if(str.at(str.size()-1)<'0' || str.at(str.size()-1)>'9'){
+                                // Remove the last invalid char, this may come from the msh file generated in different platform.
+                                // In some cases, the last char in this line is not '\n' or ' ', but other unrecognized character.
+                                str.pop_back();
+                            }
+                        }
+                        numbers=StringUtils::splitStrNum(str);
+                        if(numbers.size()<1){
+                            MessagePrinter::printErrorTxt("Can't find a valid node Tag in your msh4 file inside the $Nodes");
+                            MessagePrinter::exitAsFem();
+                        }
+                        if(static_cast<int>(numbers[0])<minNodeTag||static_cast<int>(numbers[0])>maxNodeTag){
+                            MessagePrinter::printErrorTxt("Invalid node Tag in your msh4 file inside the $Nodes");
+                            MessagePrinter::exitAsFem();
+                        }
+                        else{
+                            nodeid.push_back(static_cast<int>(numbers[0]));// store the node id
                         }
                     }
-                    numbers=StringUtils::splitStrNum(str);
-                    if(numbers.size()<1){
-                        MessagePrinter::printErrorTxt("Can't find a valid node Tag in your msh4 file inside the $Nodes");
-                        MessagePrinter::exitAsFem();
-                    }
-                    if(static_cast<int>(numbers[0])<minNodeTag||static_cast<int>(numbers[0])>maxNodeTag){
-                        MessagePrinter::printErrorTxt("Invalid node Tag in your msh4 file inside the $Nodes");
-                        MessagePrinter::exitAsFem();
-                    }
-                    else{
-                        nodeid.push_back(static_cast<int>(numbers[0]));// store the node id
-                    }
-                }
-                for(i=0;i<numNodesInBlock;i++){
-                    getline(in,str);
-                    numbers=StringUtils::splitStrNum(str);
-                    if(numbers.size()!=3){
-                        MessagePrinter::printErrorTxt("Invalid node coordinates information in your msh4 file inside the $Nodes block");
-                        MessagePrinter::exitAsFem();
-                    }
-                    x=numbers[0];y=numbers[1];z=numbers[2];
-                    j=nodeid[i];
-                    NodeCoords[(j-1)*3+0]=x;
-                    NodeCoords[(j-1)*3+1]=y;
-                    NodeCoords[(j-1)*3+2]=z;
-                    nNodes+=1;
-                    NodeIDFlag[j-1]=1;
+                    for(i=0;i<numNodesInBlock;i++){
+                        getline(in,str);
+                        numbers=StringUtils::splitStrNum(str);
+                        if(numbers.size()!=3){
+                            MessagePrinter::printErrorTxt("Invalid node coordinates information in your msh4 file inside the $Nodes block");
+                            MessagePrinter::exitAsFem();
+                        }
+                        x=numbers[0];y=numbers[1];z=numbers[2];
+                        j=nodeid[i];
+                        NodeCoords[(j-1)*3+0]=x;
+                        NodeCoords[(j-1)*3+1]=y;
+                        NodeCoords[(j-1)*3+2]=z;
+                        nNodes+=1;
+                        NodeIDFlag[j-1]=1;
 
-                    if(x>meshdata.m_xmax) meshdata.m_xmax=x;
-                    if(x<meshdata.m_xmin) meshdata.m_xmin=x;
-                    if(y>meshdata.m_ymax) meshdata.m_ymax=y;
-                    if(y<meshdata.m_ymin) meshdata.m_ymin=y;
-                    if(z>meshdata.m_zmax) meshdata.m_zmax=z;
-                    if(z<meshdata.m_zmin) meshdata.m_zmin=z;
-                } // end-of-nodes-block-reading
-            } // end-of-block-reading
-
-            if(nNodes!=numNodes){
-                MessagePrinter::printErrorTxt("Something is wrong in your msh4 file inside the $Nodes block, nodes numer is not match with the first line");
-                MessagePrinter::exitAsFem();
-            }
-        }// end-of-node-coordinates-reading
-        else if(str.find("$Elements")!=string::npos){
-            vector<int> tempconn;
-            int elmtid,phyid,entityTag,elmttype,vtktype;
-            int nodes,entityDim,elmtorder;
-            string meshtypename;
-            MeshType meshtype;
-
-            numEntityBlocks=0;
-            numElements=0;
-            minElementTag=0;
-            maxElementTag=0;
-            numElementsInBlock=0;
-
-            meshdata.m_pointelmt_connectivity.clear();
-            meshdata.m_lineelmt_connectivity.clear();
-            meshdata.m_surfaceelmt_connectivity.clear();
-            meshdata.m_bulkelmt_connectivity.clear();
-
-            meshdata.m_pointelmts=0;
-            meshdata.m_lineelmts=0;
-            meshdata.m_surfaceelmts=0;
-            meshdata.m_bulkelmts=0;
-            meshdata.m_elements=0;
-
-            meshdata.m_lineelmt_type=MeshType::EDGE2;
-            meshdata.m_surfaceelmt_type=MeshType::TRI3;
-
-            getline(in,str);// read the element total entities
-            numbers=StringUtils::splitStrNum(str);
-            if(numbers.size()!=4){
-                //numEntityBlocks(size_t) numElements(size_t) minElementTag(size_t) maxElementTag(size_t)
-                MessagePrinter::printErrorTxt("Invalid element entities in your msh4 file inside the $Elements");
-                MessagePrinter::exitAsFem();
-            }
-            numEntityBlocks=static_cast<int>(numbers[1-1]);
-            numElements=static_cast<int>(numbers[2-1]);
-            minElementTag=static_cast<int>(numbers[3-1]);
-            maxElementTag=static_cast<int>(numbers[4-1]);
-
-            meshdata.m_elements=numElements;
-
-            ElmtPhyIDVec.resize(maxElementTag,0);
-            ElmtDimVec.resize(maxElementTag,0);
-            ElmtConn.resize(maxElementTag);
-            ElmtIDFlag.resize(maxElementTag,0);
-            mshBulkElmtUniquePhyIDVec.clear();
-
-            meshdata.m_mindim=10;
-
-            for(int block=0;block<numEntityBlocks;block++){
-                getline(in,str);//get current element entities
-                //entityDim(int) entityTag(int) elementType(int; see below) numElementsInBlock(size_t)
-                numbers=StringUtils::splitStrNum(str);
-                if(numbers.size()!=4){
-                    MessagePrinter::printErrorTxt("Invalid element entities for current element in your msh4 file inside the $Elements");
+                        if(x>t_celldata.Xmax) t_celldata.Xmax=x;
+                        if(x<t_celldata.Xmin) t_celldata.Xmin=x;
+                        if(y>t_celldata.Ymax) t_celldata.Ymax=y;
+                        if(y<t_celldata.Ymin) t_celldata.Ymin=y;
+                        if(z>t_celldata.Zmax) t_celldata.Zmax=z;
+                        if(z<t_celldata.Zmin) t_celldata.Zmin=z;
+                    } // end-of-nodes-block-reading
+                } // end-of-block-reading
+                
+                if(nNodes!=numNodes){
+                    MessagePrinter::printErrorTxt("Something is wrong in your msh4 file inside the $Nodes block, nodes numer is not match with the first line");
                     MessagePrinter::exitAsFem();
                 }
+            }// end-of-node-coordinates-reading
+            else if(str.find("$Elements")!=string::npos){
+                vector<int> tempconn;
+                int elmtid,nodeid,phyid,entityTag,elmttype,vtktype;
+                int nodes,entityDim,elmtorder;
+                string meshtypename;
+                MeshType meshtype;
 
-                entityDim=static_cast<int>(numbers[1-1]);
-                entityTag=static_cast<int>(numbers[2-1]);
-                elmttype=static_cast<int>(numbers[3-1]);
-                numElementsInBlock=static_cast<int>(numbers[4-1]);
-                phyid=getPhysicalIDViaEntityTag(entityDim,entityTag);
-                vtktype=MshFileUtils::getElmtVTKCellTypeFromElmtType(elmttype);
-                meshtype=MshFileUtils::getElmtMeshTypeFromElmtType(elmttype);
-                elmtorder=MshFileUtils::getElmtOrderFromElmtType(elmttype);
-                nodes=MshFileUtils::getElmtNodesNumFromElmtType(elmttype);
-                meshtypename=MshFileUtils::getElmtMeshTypeNameFromElmtType(elmttype);
+                SingleMeshCell TempCell;
+                
+                numEntityBlocks=0;
+                numElements=0;
+                minElementTag=0;
+                maxElementTag=0;
+                numElementsInBlock=0;
 
-                for(int i=0;i<numElementsInBlock;i++){
-                    getline(in,str);
+                t_celldata.LineElmtMeshType=MeshType::EDGE2;
+                t_celldata.SurfElmtMeshType=MeshType::TRI3;
+
+                PointElmtsNum=0;
+                t_celldata.LineElmtsNum=0;
+                t_celldata.SurfElmtsNum=0;
+                t_celldata.BulkElmtsNum=0;
+                t_celldata.ElmtsNum=0;
+                
+                getline(in,str);// read the element total entities
+                numbers=StringUtils::splitStrNum(str);
+                if(numbers.size()!=4){
+                    //numEntityBlocks(size_t) numElements(size_t) minElementTag(size_t) maxElementTag(size_t)
+                    MessagePrinter::printErrorTxt("Invalid element entities in your msh4 file inside the $Elements");
+                    MessagePrinter::exitAsFem();
+                }
+                
+                numEntityBlocks=static_cast<int>(numbers[1-1]);
+                numElements=static_cast<int>(numbers[2-1]);
+                minElementTag=static_cast<int>(numbers[3-1]);
+                maxElementTag=static_cast<int>(numbers[4-1]);
+
+                t_celldata.ElmtsNum=numElements;
+                ElmtPhyIDVec.resize(maxElementTag,0);
+                ElmtDimVec.resize(maxElementTag,0);
+                ElmtConn.resize(maxElementTag);
+                ElmtIDFlag.resize(maxElementTag,0);
+                
+                mshBulkElmtUniquePhyIDVec.clear();
+
+                t_celldata.MinDim=10;
+
+                TempCellVec.clear();
+                BulkCellVec.clear();
+                
+                for(int block=0;block<numEntityBlocks;block++){
+                    getline(in,str);//get current element entities
+                    //entityDim(int) entityTag(int) elementType(int; see below) numElementsInBlock(size_t)
                     numbers=StringUtils::splitStrNum(str);
-                    nodes=static_cast<int>(numbers.size()-1);
-                    elmtid=static_cast<int>(numbers[1-1]);
-                    if(elmtid<minElementTag||elmtid>maxElementTag){
-                        MessagePrinter::printErrorTxt("Invalid element Tag in your msh4 file inside the $Elements");
+                    if(numbers.size()!=4){
+                        MessagePrinter::printErrorTxt("Invalid element entities for current element in your msh4 file inside the $Elements");
                         MessagePrinter::exitAsFem();
-                    }
-
-                    ElmtIDFlag[elmtid-1]=1;
-                    ElmtDimVec[elmtid-1]=entityDim;
-                    ElmtPhyIDVec[elmtid-1]=phyid;
-                    tempconn.resize(nodes);
-                    for(int j=1;j<=nodes;j++){
-                        tempconn[j-1]=static_cast<int>(numbers[j]);
                     }
                     
-                    MshFileUtils::reorderNodesIndex(elmttype,tempconn);
-
-                    ElmtConn[elmtid-1]=tempconn;
-                    if(entityDim<meshdata.m_mindim) meshdata.m_mindim=entityDim;
-
-                    if(entityDim==0 && entityDim<mshMaxDim){
-                        meshdata.m_pointelmts+=1;
-                        meshdata.m_pointelmt_connectivity.push_back(tempconn);
-                        meshdata.m_pointelmt_volume.push_back(0.0);
-                    }
-                    if(entityDim==1 && entityDim<mshMaxDim){
-                        meshdata.m_lineelmts+=1;
-                        meshdata.m_lineelmt_connectivity.push_back(tempconn);
-                        meshdata.m_lineelmt_type=meshtype;
-                        meshdata.m_lineelmt_volume.push_back(0.0);
-                        meshdata.m_nodesperlineelmt=nodes;
-                    }
-                    if(entityDim==2 && entityDim<mshMaxDim){
-                        meshdata.m_surfaceelmts+=1;
-                        meshdata.m_surfaceelmt_connectivity.push_back(tempconn);
-                        meshdata.m_surfaceelmt_type=meshtype;
-                        meshdata.m_surfaceelmt_volume.push_back(0.0);
-                        meshdata.m_nodespersurfaceelmt=nodes;
-                    }
-                    if(entityDim==mshMaxDim){
-                        meshdata.m_bulkelmts+=1;
-                        mshBulkElmtUniquePhyIDVec.push_back(phyid);
-                        meshdata.m_bulkelmt_connectivity.push_back(tempconn);
-                        meshdata.m_bulkelmt_type=meshtype;
-                        meshdata.m_bulkelmt_typename=meshtypename;
-                        meshdata.m_bulkelmt_volume.push_back(0.0);
-                        meshdata.m_bulkelmt_vtktype=vtktype;
-                        meshdata.m_order=elmtorder;
-                        meshdata.m_nodesperbulkelmt=nodes;
-                    }
-                } // end-of-element-in-block-reading
-            } // end-of-element-block-loop
-
-            // before we jump out, we check the consistency between different elements
-            if(meshdata.m_pointelmts
-              +meshdata.m_lineelmts
-              +meshdata.m_surfaceelmts
-              +meshdata.m_bulkelmts!=meshdata.m_elements){
-                MessagePrinter::printErrorTxt("The elements number dosen\'t match with the total one, please check your msh(2) file");
-                return false;
-            }
-        } // end-of-element-reading
-    }// end-of-msh-file-reading
-    in.close();
-
-    //**********************************************************************************
-    //*** now we re-arrange the node id and element id, to make them to be continue
-    //**********************************************************************************
-    int count=0;
-    meshdata.m_nodecoords0.resize(numNodes*3,0.0);
-    meshdata.m_nodecoords.resize(numNodes*3,0.0);
-    count=0;
-    for(int i=0;i<maxNodeTag;i++){
-        if(NodeIDFlag[i]>0){
-            count+=1;
-            NodeIDFlag[i]=count;// the active node id
-            meshdata.m_nodecoords0[(count-1)*3+1-1]=NodeCoords[i*3+0];
-            meshdata.m_nodecoords0[(count-1)*3+2-1]=NodeCoords[i*3+1];
-            meshdata.m_nodecoords0[(count-1)*3+3-1]=NodeCoords[i*3+2];
-
-            meshdata.m_nodecoords[(count-1)*3+1-1]=NodeCoords[i*3+0];
-            meshdata.m_nodecoords[(count-1)*3+2-1]=NodeCoords[i*3+1];
-            meshdata.m_nodecoords[(count-1)*3+3-1]=NodeCoords[i*3+2];
-        }
-    }
-    if(count!=numNodes){
-        MessagePrinter::printErrorTxt("Nodes number dose not match with your total nodes in msh file");
-        MessagePrinter::exitAsFem();
-    }
-    NodeCoords.clear();
-
-    int nodeid=0,j,maxnodeid;
-    count=0;maxnodeid=-1;
-    for(int e=0;e<maxElementTag;e++){
-        if(ElmtIDFlag[e]>0){
-            count+=1;
-            ElmtIDFlag[e]=count;// the active element id
-            for(int i=1;i<=static_cast<int>(ElmtConn[e].size());i++){
-                j=ElmtConn[e][i-1];
-                if(NodeIDFlag[j-1]){
-                    nodeid=NodeIDFlag[j-1];
-                    ElmtConn[e][i-1]=nodeid;
-                    if(nodeid>maxnodeid) maxnodeid=nodeid;
-                }
-                else{
-                    MessagePrinter::printErrorTxt("Invalid node id in "+to_string(e+1)+"-th element "+to_string(i)+"-th node, please check your msh4 file");
-                    MessagePrinter::exitAsFem();
-                }
-
-            }
-        }
-    }
-    if(maxnodeid<numNodes){
-        meshdata.m_nodes=maxnodeid;
-    }
-    else if(maxnodeid>numNodes){
-        MessagePrinter::printErrorTxt("The maximum node id used by your msh4 element is larger than your total nodes number,"
-                                      " please check your msh4 file");
-        MessagePrinter::exitAsFem();
-    }
-    
-    vector<int> ElmtDimVecCopy,ElmtPhyIDVecCopy;
-    vector<vector<int>> ElmtConnCopy;
-    ElmtDimVecCopy.resize(numElements,0);
-    ElmtPhyIDVecCopy.resize(numElements,0);
-    ElmtConnCopy.resize(numElements);
-    int elmtid;
-    for(int e=0;e<maxElementTag;e++){
-        if(ElmtIDFlag[e]){
-            // if current element is active
-            elmtid=ElmtIDFlag[e];
-            ElmtDimVecCopy[elmtid-1]=ElmtDimVec[e];
-            ElmtPhyIDVecCopy[elmtid-1]=ElmtPhyIDVec[e];
-            ElmtConnCopy[elmtid-1]=ElmtConn[e];
-        }
-    }
-    ElmtDimVec=ElmtDimVecCopy;
-    ElmtPhyIDVec=ElmtPhyIDVecCopy;
-    ElmtConn=ElmtConnCopy;
-
-    ElmtDimVecCopy.clear();
-    ElmtPhyIDVecCopy.clear();
-    ElmtConnCopy.clear();
-
-    mshPhyGroupNum=static_cast<int>(mshPhyGroupDimVec.size());// remove the nodal phy info
-    if(mshBulkPhyGroupNum==0){
-        // if no any physical volume (for bulk elmt) are given, we manually add them into the physical group
-        sort(mshBulkElmtUniquePhyIDVec.begin(),mshBulkElmtUniquePhyIDVec.end());
-        mshBulkElmtUniquePhyIDVec.erase(unique(mshBulkElmtUniquePhyIDVec.begin(),mshBulkElmtUniquePhyIDVec.end()),mshBulkElmtUniquePhyIDVec.end());
-        if(mshPhyGroupNum==0){
-            // if no any phy group is defined for the lower dimension mesh
-            if(mshBulkElmtUniquePhyIDVec.size()<1){
-                MessagePrinter::printErrorTxt("Invalid msh2 mesh file, no any physical id is assigned to the volume mesh, please check your mesh file");
-                return false;
-            }
-            // now we prepare and create the 'new' physical group info
-            meshdata.m_phygroups=static_cast<int>(mshBulkElmtUniquePhyIDVec.size())+1;
-            meshdata.m_phygroup_dimvec.clear();
-            meshdata.m_phygroup_phyidvec.clear();
-            meshdata.m_phygroup_phynamevec.clear();
-
-            meshdata.m_phygroup_name2dimvec.clear();
-            meshdata.m_phygroup_name2phyidvec.clear();
-            meshdata.m_phygroup_phyid2namevec.clear();
-
-            meshdata.m_phygroup_elmtnumvec.clear();
-
-            meshdata.m_phygroup_name2bulkelmtidvec.clear();
-            meshdata.m_phygroup_name2elmtconnvec.clear();
-
-            meshdata.m_phygroup_nodesnumperelmtvec.clear();
-
-            int phyid,maxphyid,dim;
-            string phyname;
-            maxphyid=-1;
-            for(int i=0;i<meshdata.m_phygroups-1;i++){
-                phyid=mshBulkElmtUniquePhyIDVec[i];
-                if(phyid>maxphyid) maxphyid=phyid;
-                phyname=to_string(phyid);
-                meshdata.m_phygroup_dimvec.push_back(mshMaxDim);
-                meshdata.m_phygroup_phyidvec.push_back(phyid);
-                meshdata.m_phygroup_phynamevec.push_back(phyname);
-
-                meshdata.m_phygroup_name2dimvec.push_back(make_pair(phyname,mshMaxDim));
-                meshdata.m_phygroup_name2phyidvec.push_back(make_pair(phyname,phyid));
-                meshdata.m_phygroup_phyid2namevec.push_back(make_pair(phyid,phyname));
-
-                meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperbulkelmt);
-            }
-            // for all the domain
-            meshdata.m_phygroup_dimvec.push_back(mshMaxDim);
-            meshdata.m_phygroup_phyidvec.push_back(maxphyid+1);
-            meshdata.m_phygroup_phynamevec.push_back("alldomain");
-
-            meshdata.m_phygroup_name2dimvec.push_back(make_pair("alldomain",mshMaxDim));
-            meshdata.m_phygroup_name2phyidvec.push_back(make_pair("alldomain",maxphyid+1));
-            meshdata.m_phygroup_phyid2namevec.push_back(make_pair(maxphyid+1,"alldomain"));
-
-            meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperbulkelmt);// for alldomain
-
-            meshdata.m_phygroup_name2bulkelmtidvec.resize(meshdata.m_phygroups);
-            meshdata.m_phygroup_name2elmtconnvec.resize(meshdata.m_phygroups);
-            meshdata.m_phygroup_elmtnumvec.resize(meshdata.m_phygroups);
-
-            // now we need to loop all the elements and clasify all the element sets
-            // meshdata.m_phygroup_elmtnumvec.clear();
-            // meshdata.m_phygroup_name2bulkelmtidvec.clear();
-            // meshdata.m_phygroup_name2elmtconnvec.clear();
-            int subelmts;
-            subelmts=meshdata.m_pointelmts+meshdata.m_lineelmts+meshdata.m_surfaceelmts;
-            for(int e=subelmts;e<meshdata.m_elements;e++){
-                phyid=ElmtPhyIDVec[e];
-                dim=ElmtDimVec[e];
-                if(dim==mshMaxDim){
-                    // only account for the volume mesh
-                    for(int i=0;i<meshdata.m_phygroups-1;i++){
-                        if(phyid==meshdata.m_phygroup_phyidvec[i]){
-                            meshdata.m_phygroup_elmtnumvec[i]+=1;
-                            phyname=meshdata.m_phygroup_phynamevec[i];
-
-                            meshdata.m_phygroup_name2bulkelmtidvec[i].first=phyname;
-                            meshdata.m_phygroup_name2bulkelmtidvec[i].second.push_back(e+1-subelmts);
-
-                            meshdata.m_phygroup_name2elmtconnvec[i].first=phyname;
-                            meshdata.m_phygroup_name2elmtconnvec[i].second.push_back(meshdata.m_bulkelmt_connectivity[e]);
+                    entityDim=static_cast<int>(numbers[1-1]);
+                    entityTag=static_cast<int>(numbers[2-1]);
+                    elmttype=static_cast<int>(numbers[3-1]);
+                    numElementsInBlock=static_cast<int>(numbers[4-1]);
+                    phyid=getPhysicalIDViaEntityTag(entityDim,entityTag);
+                    vtktype=MshFileUtils::getElmtVTKCellTypeFromElmtType(elmttype);
+                    meshtype=MshFileUtils::getElmtMeshTypeFromElmtType(elmttype);
+                    elmtorder=MshFileUtils::getElmtOrderFromElmtType(elmttype);
+                    nodes=MshFileUtils::getElmtNodesNumFromElmtType(elmttype);
+                    meshtypename=MshFileUtils::getElmtMeshTypeNameFromElmtType(elmttype);
+                    
+                    for(int i=0;i<numElementsInBlock;i++){
+                        getline(in,str);
+                        numbers=StringUtils::splitStrNum(str);
+                        nodes=static_cast<int>(numbers.size()-1);
+                        elmtid=static_cast<int>(numbers[1-1]);
+                        if(elmtid<minElementTag||elmtid>maxElementTag){
+                            MessagePrinter::printErrorTxt("Invalid element Tag in your msh4 file inside the $Elements");
+                            MessagePrinter::exitAsFem();
                         }
-                    }
-                    meshdata.m_phygroup_name2bulkelmtidvec[meshdata.m_phygroups-1].first="alldomain";
-                    meshdata.m_phygroup_name2bulkelmtidvec[meshdata.m_phygroups-1].second.push_back(e+1-subelmts);
-                }
-            }
-            meshdata.m_phygroup_elmtnumvec[meshdata.m_phygroups-1]=meshdata.m_bulkelmts;
-            meshdata.m_phygroup_name2elmtconnvec[meshdata.m_phygroups-1].first="alldomain";
-            meshdata.m_phygroup_name2elmtconnvec[meshdata.m_phygroups-1].second=meshdata.m_bulkelmt_connectivity;
-        }
-        else{
-            // if we have the lower dimension physical group but zero volume mesh physical info, we should 
-            // add them into the group 
-            mshBulkPhyGroupNum=static_cast<int>(mshBulkElmtUniquePhyIDVec.size());
-            meshdata.m_phygroups=mshPhyGroupNum+mshBulkPhyGroupNum+1;
+                        
+                        ElmtIDFlag[elmtid-1]=1;
+                        ElmtDimVec[elmtid-1]=entityDim;
+                        ElmtPhyIDVec[elmtid-1]=phyid;
+                        tempconn.resize(nodes);
+                        for(int j=1;j<=nodes;j++){
+                            tempconn[j-1]=static_cast<int>(numbers[j]);
+                        }
+                        
+                        MshFileUtils::reorderNodesIndex(elmttype,tempconn);
+                        ElmtConn[elmtid-1]=tempconn;
 
-            meshdata.m_phygroup_dimvec.clear();
-            meshdata.m_phygroup_phyidvec.clear();
-            meshdata.m_phygroup_phynamevec.clear();
+                        if(entityDim<t_celldata.MinDim) t_celldata.MinDim=entityDim;
+                        
+                        if(entityDim==0 && entityDim<mshMaxDim){
+                            PointElmtsNum+=1;
 
-            meshdata.m_phygroup_name2dimvec.clear();
-            meshdata.m_phygroup_name2phyidvec.clear();
-            meshdata.m_phygroup_phyid2namevec.clear();
+                            TempCell.Dim=0;
+                            TempCell.NodesNumPerElmt=nodes;
+                            TempCell.VTKCellType=vtktype;
 
-            meshdata.m_phygroup_elmtnumvec.clear();
+                            TempCell.ElmtConn.clear();
+                            TempCell.ElmtNodeCoords0.resize(nodes);
+                            for(int k=0;k<nodes;k++){
+                                nodeid=tempconn[k];
+                                TempCell.ElmtConn.push_back(nodeid);
+                                TempCell.ElmtNodeCoords0(k+1,1)=NodeCoords[(nodeid-1)*3+1-1];
+                                TempCell.ElmtNodeCoords0(k+1,2)=NodeCoords[(nodeid-1)*3+2-1];
+                                TempCell.ElmtNodeCoords0(k+1,3)=NodeCoords[(nodeid-1)*3+3-1];
+                            }
+                            TempCell.ElmtNodeCoords=TempCell.ElmtNodeCoords0;
 
-            meshdata.m_phygroup_name2bulkelmtidvec.clear();
-            meshdata.m_phygroup_name2elmtconnvec.clear();
+                            TempCellVec.push_back(TempCell);
+                        }
+                        if(entityDim==1 && entityDim<mshMaxDim){
+                            t_celldata.LineElmtsNum+=1;
+                            t_celldata.NodesNumPerLineElmt=nodes;
+                            t_celldata.LineElmtMeshType=meshtype;
 
-            meshdata.m_phygroup_nodesnumperelmtvec.clear();
+                            TempCell.Dim=1;
+                            TempCell.NodesNumPerElmt=nodes;
+                            TempCell.VTKCellType=vtktype;
 
-            // for the predefined phy group
-            for(int i=0;i<mshPhyGroupNum;i++){
-                meshdata.m_phygroup_dimvec.push_back(mshPhyGroupDimVec[i]);
-                meshdata.m_phygroup_phyidvec.push_back(mshPhyGroupIDVec[i]);
-                meshdata.m_phygroup_phynamevec.push_back(mshPhyGroupNameVec[i]);
+                            TempCell.ElmtConn.clear();
+                            TempCell.ElmtNodeCoords0.resize(nodes);
+                            for(int k=0;k<nodes;k++){
+                                nodeid=tempconn[k];
+                                TempCell.ElmtConn.push_back(nodeid);
+                                TempCell.ElmtNodeCoords0(k+1,1)=NodeCoords[(nodeid-1)*3+1-1];
+                                TempCell.ElmtNodeCoords0(k+1,2)=NodeCoords[(nodeid-1)*3+2-1];
+                                TempCell.ElmtNodeCoords0(k+1,3)=NodeCoords[(nodeid-1)*3+3-1];
+                            }
+                            TempCell.ElmtNodeCoords=TempCell.ElmtNodeCoords0;
 
-                meshdata.m_phygroup_name2dimvec.push_back(make_pair(mshPhyGroupNameVec[i],mshPhyGroupDimVec[i]));
-                meshdata.m_phygroup_name2phyidvec.push_back(make_pair(mshPhyGroupNameVec[i],mshPhyGroupIDVec[i]));
-                meshdata.m_phygroup_phyid2namevec.push_back(make_pair(mshPhyGroupIDVec[i],mshPhyGroupNameVec[i]));
-                if(mshPhyGroupDimVec[i]==1){
-                    meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperlineelmt);
-                }
-                else if(mshPhyGroupDimVec[i]==2){
-                    meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodespersurfaceelmt);
-                }
-                else if(mshPhyGroupDimVec[i]==3){
-                    MessagePrinter::printErrorTxt("Invalid info, your phy group dim=3(name="+mshPhyGroupNameVec[i]+"), however, it is not a volume mesh, please check your mesh file");
+                            TempCellVec.push_back(TempCell);
+                        }
+                        
+                        if(entityDim==2 && entityDim<mshMaxDim){
+                            t_celldata.SurfElmtsNum+=1;
+                            t_celldata.NodesNumPerSurfElmt=nodes;
+                            t_celldata.SurfElmtMeshType=meshtype;
+                            //
+                            TempCell.Dim=2;
+                            TempCell.NodesNumPerElmt=nodes;
+                            TempCell.VTKCellType=vtktype;
+
+                            TempCell.ElmtConn.clear();
+                            TempCell.ElmtNodeCoords0.resize(nodes);
+                            for(int k=0;k<nodes;k++){
+                                nodeid=tempconn[k];
+                                TempCell.ElmtConn.push_back(nodeid);
+                                TempCell.ElmtNodeCoords0(k+1,1)=NodeCoords[(nodeid-1)*3+1-1];
+                                TempCell.ElmtNodeCoords0(k+1,2)=NodeCoords[(nodeid-1)*3+2-1];
+                                TempCell.ElmtNodeCoords0(k+1,3)=NodeCoords[(nodeid-1)*3+3-1];
+                            }
+                            TempCell.ElmtNodeCoords=TempCell.ElmtNodeCoords0;
+
+                            TempCellVec.push_back(TempCell);
+                        }
+                        if(entityDim==mshMaxDim){
+                            t_celldata.BulkElmtsNum+=1;
+                            t_celldata.MeshOrder=elmtorder;
+                            t_celldata.BulkElmtMeshType=meshtype;
+                            t_celldata.BulkElmtVTKCellType=vtktype;
+                            t_celldata.BulkMeshTypeName=meshtypename;
+                            t_celldata.BulkMeshTypeName=meshtypename;
+                            t_celldata.NodesNumPerBulkElmt=nodes;
+                            
+                            mshBulkElmtUniquePhyIDVec.push_back(phyid);
+
+                            TempCell.Dim=mshMaxDim;
+                            TempCell.NodesNumPerElmt=nodes;
+                            TempCell.VTKCellType=vtktype;
+                            TempCell.CellMeshType=meshtype;
+
+                            TempCell.ElmtConn.clear();
+                            TempCell.ElmtNodeCoords0.resize(nodes);
+                            for(int k=0;k<nodes;k++){
+                                nodeid=tempconn[k];
+                                TempCell.ElmtConn.push_back(nodeid);
+                                TempCell.ElmtNodeCoords0(k+1,1)=NodeCoords[(nodeid-1)*3+1-1];
+                                TempCell.ElmtNodeCoords0(k+1,2)=NodeCoords[(nodeid-1)*3+2-1];
+                                TempCell.ElmtNodeCoords0(k+1,3)=NodeCoords[(nodeid-1)*3+3-1];
+                            }
+                            TempCell.ElmtNodeCoords=TempCell.ElmtNodeCoords0;
+
+                            TempCellVec.push_back(TempCell);
+                            BulkCellVec.push_back(TempCell);
+                        }
+                    } // end-of-element-in-block-reading
+                } // end-of-element-block-loop
+                
+                // before we jump out, we should check the consistency between different elements
+                if(PointElmtsNum
+                  +t_celldata.LineElmtsNum
+                  +t_celldata.SurfElmtsNum
+                  +t_celldata.BulkElmtsNum!=numElements){
+                    MessagePrinter::printErrorTxt("The elements number dosen\'t match with the total one, please check your msh(2) file");
                     return false;
                 }
+            } // end-of-element-reading
+        }// end-of-msh-file-reading
+        in.close();
+
+        //**********************************************************************************
+        //*** now we re-arrange the node id and element id, to make them to be continue
+        //**********************************************************************************
+        int count=0;
+        t_celldata.NodeCoords_Global.resize(numNodes*3,0.0);
+        count=0;
+        for(int i=0;i<maxNodeTag;i++){
+            if(NodeIDFlag[i]>0){
+                count+=1;
+                NodeIDFlag[i]=count;// the active node id
+                t_celldata.NodeCoords_Global[(count-1)*3+1-1]=NodeCoords[i*3+0];
+                t_celldata.NodeCoords_Global[(count-1)*3+2-1]=NodeCoords[i*3+1];
+                t_celldata.NodeCoords_Global[(count-1)*3+3-1]=NodeCoords[i*3+2];
             }
-            // now we add the volume physical info
-            int phyid,maxphyid,dim,subelmts;
-            string phyname;
+        }
+        if(count!=numNodes){
+            MessagePrinter::printErrorTxt("Nodes number dose not match with your total nodes in msh file");
+            MessagePrinter::exitAsFem();
+        }
+        NodeCoords.clear();
+        
+        int nodeid=0,j,maxnodeid;
+        count=0;maxnodeid=-1;
+        for(int e=0;e<maxElementTag;e++){
+            if(ElmtIDFlag[e]>0){
+                count+=1;
+                ElmtIDFlag[e]=count;// the active element id
+                for(int i=1;i<=static_cast<int>(ElmtConn[e].size());i++){
+                    j=ElmtConn[e][i-1];
+                    if(NodeIDFlag[j-1]){
+                        nodeid=NodeIDFlag[j-1];
+                        ElmtConn[e][i-1]=nodeid;
+                        if(nodeid>maxnodeid) maxnodeid=nodeid;
+                    }
+                    else{
+                        MessagePrinter::printErrorTxt("Invalid node id in "+to_string(e+1)+"-th element "+to_string(i)+"-th node, please check your msh4 file");
+                        MessagePrinter::exitAsFem();
+                    }
+                }
+            }
+        }
+        if(maxnodeid<=numNodes){
+            t_celldata.NodesNum=maxnodeid;
+        }
+        else if(maxnodeid>numNodes){
+            MessagePrinter::printErrorTxt("The maximum node id used by your msh4 element is larger than your total nodes number,"
+                                          " please check your msh4 file");
+                                          MessagePrinter::exitAsFem();
+        }
+        
+        vector<int> ElmtDimVecCopy,ElmtPhyIDVecCopy;
+        vector<vector<int>> ElmtConnCopy;
+        ElmtDimVecCopy.resize(numElements,0);
+        ElmtPhyIDVecCopy.resize(numElements,0);
+        ElmtConnCopy.resize(numElements);
+        int elmtid;
+        for(int e=0;e<maxElementTag;e++){
+            if(ElmtIDFlag[e]){
+                // if current element is active
+                elmtid=ElmtIDFlag[e];
+                ElmtDimVecCopy[elmtid-1]=ElmtDimVec[e];
+                ElmtPhyIDVecCopy[elmtid-1]=ElmtPhyIDVec[e];
+                ElmtConnCopy[elmtid-1]=ElmtConn[e];
+            }
+        }
+        ElmtDimVec=ElmtDimVecCopy;
+        ElmtPhyIDVec=ElmtPhyIDVecCopy;
+        ElmtConn=ElmtConnCopy;
+
+        //save mesh conn into global fe cell vector
+        t_celldata.MeshCell_Total.clear();
+        SingleMeshCell TempCell;
+        int elmts,phyid;
+        string phyname;
+        elmts=0;
+        for(int e=0;e<numElements;e++){
+            if(ElmtDimVec[e]==mshMaxDim){
+                TempCell.Dim=mshMaxDim;
+                TempCell.NodesNumPerElmt=BulkCellVec[elmts].NodesNumPerElmt;
+                TempCell.VTKCellType=BulkCellVec[elmts].VTKCellType;
+                TempCell.CellMeshType=BulkCellVec[elmts].CellMeshType;
+
+                TempCell.ElmtConn=ElmtConn[e];
+                TempCell.ElmtNodeCoords0.resize(BulkCellVec[elmts].NodesNumPerElmt);
+                for(int k=0;k<BulkCellVec[elmts].NodesNumPerElmt;k++){
+                    nodeid=TempCell.ElmtConn[k];
+                    TempCell.ElmtNodeCoords0(k+1,1)=t_celldata.NodeCoords_Global[(nodeid-1)*3+1-1];
+                    TempCell.ElmtNodeCoords0(k+1,2)=t_celldata.NodeCoords_Global[(nodeid-1)*3+2-1];
+                    TempCell.ElmtNodeCoords0(k+1,3)=t_celldata.NodeCoords_Global[(nodeid-1)*3+3-1];
+                }
+                TempCell.ElmtNodeCoords=TempCell.ElmtNodeCoords0;
+                t_celldata.MeshCell_Total.push_back(TempCell);
+                phyid=ElmtPhyIDVec[e];phyname=mshPhyID2NameMap[phyid];
+                elmts+=1;
+            }
+        }
+        if(elmts!=t_celldata.BulkElmtsNum){
+            MessagePrinter::printErrorTxt("The bulk mesh num dosent equal to the elements num of the fecell class");
+            MessagePrinter::exitAsFem();
+        }
+        
+        ElmtDimVecCopy.clear();
+        ElmtPhyIDVecCopy.clear();
+        ElmtConnCopy.clear();
+        
+        mshPhyGroupNum=static_cast<int>(mshPhyGroupDimVec.size());// remove the nodal phy info
+        if(mshBulkPhyGroupNum==0){
+            // if no any physical volume (for bulk elmt) are given, we manually add them into the physical group
+            sort(mshBulkElmtUniquePhyIDVec.begin(),mshBulkElmtUniquePhyIDVec.end());
+            mshBulkElmtUniquePhyIDVec.erase(unique(mshBulkElmtUniquePhyIDVec.begin(),mshBulkElmtUniquePhyIDVec.end()),mshBulkElmtUniquePhyIDVec.end());
+            if(mshPhyGroupNum==0){
+                // if no any phy group is defined for the lower dimension mesh
+                if(mshBulkElmtUniquePhyIDVec.size()<1){
+                    MessagePrinter::printErrorTxt("Invalid msh2 mesh file, no any physical id is assigned to the volume mesh, please check your mesh file");
+                    return false;
+                }
+                // now we prepare and create the 'new' physical group info
+                t_celldata.PhyGroupNum_Global=static_cast<int>(mshBulkElmtUniquePhyIDVec.size())+1;
+                
+                t_celldata.PhyDimVector_Global.clear();
+                t_celldata.PhyIDVector_Global.clear();
+                t_celldata.PhyNameVector_Global.clear();
+
+                t_celldata.PhyName2IDMap_Global.clear();
+                t_celldata.PhyID2NameMap_Global.clear();
+                t_celldata.PhyGroupElmtsNumVector_Global.clear();
+                t_celldata.PhyName2MeshCellVectorMap_Global.clear();
+                
+                int maxphyid,dim;
+                maxphyid=-1;
+                for(int i=0;i<t_celldata.PhyGroupNum_Global-1;i++){
+                    phyid=mshBulkElmtUniquePhyIDVec[i];
+                    if(phyid>maxphyid) maxphyid=phyid;
+                    phyname=to_string(phyid);
+
+                    t_celldata.PhyDimVector_Global.push_back(mshMaxDim);
+                    t_celldata.PhyIDVector_Global.push_back(phyid);
+                    t_celldata.PhyNameVector_Global.push_back(phyname);
+
+                    t_celldata.PhyName2IDMap_Global[phyname]=phyid;
+                    t_celldata.PhyID2NameMap_Global[phyid]=phyname;
+                }
+                // for all the domain
+                t_celldata.PhyDimVector_Global.push_back(mshMaxDim);
+                t_celldata.PhyIDVector_Global.push_back(maxphyid+1);
+                t_celldata.PhyNameVector_Global.push_back("alldomain");
+
+                t_celldata.PhyName2IDMap_Global["alldomain"]=maxphyid+1;
+                t_celldata.PhyID2NameMap_Global[maxphyid+1]="alldomain";
+
+                // now we need to loop all the elements and clasify all the element sets
+                t_celldata.PhyName2MeshCellVectorMap_Global.clear();
+                t_celldata.PhyID2MeshCellVectorMap_Global.clear();
+                //
+                t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+                t_celldata.PhyName2BulkFECellIDMap_Global.clear();
+                elmts=0;
+                for(int e=0;e<t_celldata.ElmtsNum;e++){
+                    phyid=ElmtPhyIDVec[e];
+                    dim=ElmtDimVec[e];
+                    if(dim==mshMaxDim){
+                        // only account for the volume mesh
+                        for(int i=0;i<t_celldata.PhyGroupNum_Global-1;i++){
+                            if(phyid==t_celldata.PhyIDVector_Global[i]){
+                                t_celldata.PhyGroupElmtsNumVector_Global[i]+=1;
+                                phyname=t_celldata.PhyNameVector_Global[i];
+
+                                t_celldata.PhyName2MeshCellVectorMap_Global[phyname].push_back(TempCellVec[e]);
+                                t_celldata.PhyID2MeshCellVectorMap_Global[phyid].push_back(TempCellVec[e]);
+
+                            }
+                        }
+                        t_celldata.PhyName2MeshCellVectorMap_Global["alldomain"].push_back(TempCellVec[e]);
+                        t_celldata.PhyID2MeshCellVectorMap_Global[maxphyid+1].push_back(TempCellVec[e]);
+
+                        elmts+=1;
+                        phyname=t_celldata.PhyID2NameMap_Global[phyid];
+                        t_celldata.PhyID2BulkFECellIDMap_Global[phyid].push_back(elmts);
+                        t_celldata.PhyName2BulkFECellIDMap_Global[phyname].push_back(elmts);
+                        //
+                        t_celldata.PhyID2BulkFECellIDMap_Global[maxphyid+1].push_back(elmts);
+                        t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(elmts);
+                    }
+                }
+                if(elmts!=t_celldata.BulkElmtsNum){
+                    MessagePrinter::printErrorTxt("The bulk mesh num dosent equal to the elements num of the fecell class");
+                    MessagePrinter::exitAsFem();
+                }
+                t_celldata.PhyGroupElmtsNumVector_Global[t_celldata.PhyGroupNum_Global-1]=t_celldata.BulkElmtsNum;
+            }
+            else{
+                // if we have the lower dimension physical group but zero volume mesh physical info, we should 
+                // add them into the group 
+                mshBulkPhyGroupNum=static_cast<int>(mshBulkElmtUniquePhyIDVec.size());
+                t_celldata.PhyGroupNum_Global=mshPhyGroupNum+mshBulkPhyGroupNum+1;
+
+                t_celldata.PhyDimVector_Global.clear();
+                t_celldata.PhyIDVector_Global.clear();
+                t_celldata.PhyNameVector_Global.clear();
+
+                t_celldata.PhyName2IDMap_Global.clear();
+                t_celldata.PhyID2NameMap_Global.clear();
+
+                t_celldata.PhyGroupElmtsNumVector_Global.clear();
+
+                t_celldata.PhyName2MeshCellVectorMap_Global.clear();
+                t_celldata.PhyID2MeshCellVectorMap_Global.clear();
+
+                t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+                t_celldata.PhyName2BulkFECellIDMap_Global.clear();
+
+                // for the predefined phy group
+                for(int i=0;i<mshPhyGroupNum;i++){
+                    t_celldata.PhyDimVector_Global.push_back(mshPhyGroupDimVec[i]);
+                    t_celldata.PhyIDVector_Global.push_back(mshPhyGroupIDVec[i]);
+                    t_celldata.PhyNameVector_Global.push_back(mshPhyGroupNameVec[i]);
+
+                    t_celldata.PhyName2IDMap_Global[mshPhyGroupNameVec[i]]=mshPhyGroupIDVec[i];
+                    t_celldata.PhyID2NameMap_Global[mshPhyGroupIDVec[i]]=mshPhyGroupNameVec[i];
+                    
+                    if(mshPhyGroupDimVec[i]==t_celldata.MaxDim){
+                        MessagePrinter::printErrorTxt("Invalid info, your phy group dim="+to_string(t_celldata.MaxDim)+"(name="+mshPhyGroupNameVec[i]+"), however, it is not a volume mesh, please check your mesh file");
+                        return false;
+                    }
+                }
+                // now we add the volume physical info
+                int maxphyid,dim;
+                maxphyid=-1;
+                for(int i=0;i<mshBulkPhyGroupNum;i++){
+                    phyid=mshBulkElmtUniquePhyIDVec[i];
+                    phyname=to_string(phyid);
+                    if(phyid>maxphyid) maxphyid=phyid;
+
+                    t_celldata.PhyDimVector_Global.push_back(mshMaxDim);
+                    t_celldata.PhyIDVector_Global.push_back(phyid);
+                    t_celldata.PhyNameVector_Global.push_back(phyname);
+
+                    t_celldata.PhyID2NameMap_Global[phyid]=phyname;
+                    t_celldata.PhyName2IDMap_Global[phyname]=phyid;
+                }
+                // for all domain
+                phyid=maxphyid+1;
+                phyname="alldomain";
+
+                t_celldata.PhyDimVector_Global.push_back(mshMaxDim);
+                t_celldata.PhyIDVector_Global.push_back(phyid);
+                t_celldata.PhyNameVector_Global.push_back(phyname);
+
+                t_celldata.PhyID2NameMap_Global[phyid]=phyname;
+                t_celldata.PhyName2IDMap_Global[phyname]=phyid;
+
+                t_celldata.PhyGroupElmtsNumVector_Global.resize(t_celldata.PhyGroupNum_Global,0);
+
+                elmts=0;
+                for(int e=0;e<t_celldata.ElmtsNum;e++){
+                    phyid=ElmtPhyIDVec[e];
+                    dim=ElmtDimVec[e];
+                    for(int i=0;i<t_celldata.PhyGroupNum_Global-1;i++){
+                        if(phyid==t_celldata.PhyIDVector_Global[i]){
+                            phyname=t_celldata.PhyNameVector_Global[i];
+                            t_celldata.PhyGroupElmtsNumVector_Global[i]+=1;
+
+                            t_celldata.PhyName2MeshCellVectorMap_Global[phyname].push_back(TempCellVec[e]);
+                            t_celldata.PhyID2MeshCellVectorMap_Global[phyid].push_back(TempCellVec[e]);
+                            if(dim==mshMaxDim){
+                                // for "alldomain"
+                                t_celldata.PhyName2MeshCellVectorMap_Global["alldomain"].push_back(TempCellVec[e]);
+                                t_celldata.PhyID2MeshCellVectorMap_Global[maxphyid+1].push_back(TempCellVec[e]);
+                                //
+                                elmts+=1;
+                                t_celldata.PhyID2BulkFECellIDMap_Global[phyid].push_back(elmts);
+                                t_celldata.PhyName2BulkFECellIDMap_Global[phyname].push_back(elmts);
+                                //
+                                t_celldata.PhyID2BulkFECellIDMap_Global[maxphyid+1].push_back(elmts);
+                                t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(elmts);
+                            }
+                        }
+                    }// end-of-phygroup-loop
+                }// end-of-element-loop
+                if(elmts!=t_celldata.BulkElmtsNum){
+                    MessagePrinter::printErrorTxt("The bulk mesh num dosent equal to the elements num read from gmsh2 file, please check it");
+                    MessagePrinter::exitAsFem();
+                }
+                // add "alldomain" info
+                t_celldata.PhyGroupElmtsNumVector_Global[t_celldata.PhyGroupNum_Global-1]=t_celldata.BulkElmtsNum;
+            }
+        } // end-of-zero-volume-phy-info-case
+        else{
+            // the volume physical info is given, then we directly add them into meshdata
+            t_celldata.PhyGroupNum_Global=mshPhyGroupNum+1;
+
+            t_celldata.PhyDimVector_Global.clear();
+            t_celldata.PhyIDVector_Global.clear();
+            t_celldata.PhyNameVector_Global.clear();
+
+            t_celldata.PhyName2IDMap_Global.clear();
+            t_celldata.PhyID2NameMap_Global.clear();
+
+            t_celldata.PhyName2MeshCellVectorMap_Global.clear();
+            t_celldata.PhyID2MeshCellVectorMap_Global.clear();
+
+            t_celldata.PhyGroupElmtsNumVector_Global.clear();
+
+            t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+            t_celldata.PhyName2BulkFECellIDMap_Global.clear();
+            
+            int dim,maxphyid;
             maxphyid=-1;
-            for(int i=0;i<mshBulkPhyGroupNum;i++){
-                phyid=mshBulkElmtUniquePhyIDVec[i];
-                phyname=to_string(phyid);
+            for(int i=0;i<mshPhyGroupNum;i++){
+                dim=mshPhyGroupDimVec[i];
+                phyid=mshPhyGroupIDVec[i];
+                phyname=mshPhyGroupNameVec[i];
+                
                 if(phyid>maxphyid) maxphyid=phyid;
-                
-                meshdata.m_phygroup_dimvec.push_back(mshMaxDim);
-                meshdata.m_phygroup_phyidvec.push_back(phyid);
-                meshdata.m_phygroup_phynamevec.push_back(phyname);
 
-                meshdata.m_phygroup_name2dimvec.push_back(make_pair(phyname,mshMaxDim));
-                meshdata.m_phygroup_name2phyidvec.push_back(make_pair(phyname,phyid));
-                meshdata.m_phygroup_phyid2namevec.push_back(make_pair(phyid,phyname));
-                meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperbulkelmt);
-                
+                t_celldata.PhyDimVector_Global.push_back(dim);
+                t_celldata.PhyIDVector_Global.push_back(phyid);
+                t_celldata.PhyNameVector_Global.push_back(phyname);
+
+                t_celldata.PhyID2NameMap_Global[phyid]=phyname;
+                t_celldata.PhyName2IDMap_Global[phyname]=phyid;
             }
-            // for all domain
-            phyid=maxphyid+1;
-            phyname="alldomain";
-            meshdata.m_phygroup_dimvec.push_back(mshMaxDim);
-            meshdata.m_phygroup_phyidvec.push_back(phyid);
-            meshdata.m_phygroup_phynamevec.push_back(phyname);
+            t_celldata.PhyGroupElmtsNumVector_Global.resize(t_celldata.PhyGroupNum_Global,0);
 
-            meshdata.m_phygroup_name2dimvec.push_back(make_pair(phyname,mshMaxDim));
-            meshdata.m_phygroup_name2phyidvec.push_back(make_pair(phyname,phyid));
-            meshdata.m_phygroup_phyid2namevec.push_back(make_pair(phyid,phyname));
-            meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperbulkelmt);
-
-            meshdata.m_phygroup_elmtnumvec.resize(meshdata.m_phygroups,0);
-            meshdata.m_phygroup_name2bulkelmtidvec.resize(mshBulkPhyGroupNum+1);
-            meshdata.m_phygroup_name2elmtconnvec.resize(meshdata.m_phygroups);
-
-            subelmts=meshdata.m_pointelmts+meshdata.m_lineelmts+meshdata.m_surfaceelmts;
-            for(int e=0;e<meshdata.m_elements;e++){
+            elmts=0;
+            for(int e=0;e<t_celldata.ElmtsNum;e++){
                 phyid=ElmtPhyIDVec[e];
                 dim=ElmtDimVec[e];
-                for(int i=0;i<meshdata.m_phygroups-1;i++){
-                    if(phyid==meshdata.m_phygroup_phyidvec[i]){
-                        phyname=meshdata.m_phygroup_phynamevec[i];
-                        meshdata.m_phygroup_elmtnumvec[i]+=1;
+                for(int i=0;i<mshPhyGroupNum;i++){
+                    if(phyid==t_celldata.PhyIDVector_Global[i]){
+                        phyname=t_celldata.PhyNameVector_Global[i];
+                        t_celldata.PhyGroupElmtsNumVector_Global[i]+=1;
 
-                        meshdata.m_phygroup_name2elmtconnvec[i].first=phyname;
-                        meshdata.m_phygroup_name2elmtconnvec[i].second.push_back(ElmtConn[e]);
-                        if(dim==mshMaxDim){
-                            // for volume mesh
-                            meshdata.m_phygroup_name2bulkelmtidvec[i-mshPhyGroupNum].first=phyname;
-                            meshdata.m_phygroup_name2bulkelmtidvec[i-mshPhyGroupNum].second.push_back(e-subelmts+1);
+                        t_celldata.PhyName2MeshCellVectorMap_Global[phyname].push_back(TempCellVec[e]);
+                        t_celldata.PhyID2MeshCellVectorMap_Global[phyid].push_back(TempCellVec[e]);
+                        //
+                        if (dim==mshMaxDim) {
+                            elmts+=1;
+                            t_celldata.PhyID2BulkFECellIDMap_Global[phyid].push_back(elmts);
+                            t_celldata.PhyName2BulkFECellIDMap_Global[phyname].push_back(elmts);
+                            t_celldata.PhyID2BulkFECellIDMap_Global[maxphyid+1].push_back(elmts);
+                            t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(elmts);
                         }
                     }
-                }// end-of-phygroup-loop
-                if(dim==mshMaxDim){
-                    // for "alldomain"
-                    meshdata.m_phygroup_name2bulkelmtidvec[mshBulkPhyGroupNum].first=phyname;
-                    meshdata.m_phygroup_name2bulkelmtidvec[mshBulkPhyGroupNum].second.push_back(e-subelmts+1);
-
-                    meshdata.m_phygroup_name2elmtconnvec[meshdata.m_phygroups-1].first="alldomain";
-                    meshdata.m_phygroup_name2elmtconnvec[meshdata.m_phygroups-1].second.push_back(ElmtConn[e]);
                 }
-            }// end-of-element-loop
-            // add "alldomain" info
+            }
+            if (elmts!=t_celldata.BulkElmtsNum) {
+                MessagePrinter::printErrorTxt("Your bulk elements number dosent equal to the one read from gmsh2 file, please check your gmsh2 file");
+                MessagePrinter::exitAsFem();
+            }
+            // now we add "alldomain" info
+            dim=mshMaxDim;
             phyname="alldomain";
-            meshdata.m_phygroup_elmtnumvec[meshdata.m_phygroups-1]=meshdata.m_bulkelmts;
-        }
-    } // end-of-zero-volume-phy-info-case
-    else{
-        // the volume physical info is given, then we directly add them into meshdata
-        meshdata.m_phygroups=mshPhyGroupNum+1;
+            phyid=maxphyid+1;
 
-        meshdata.m_phygroup_dimvec.clear();
-        meshdata.m_phygroup_phyidvec.clear();
-        meshdata.m_phygroup_phynamevec.clear();
+            t_celldata.PhyDimVector_Global.push_back(dim);
+            t_celldata.PhyIDVector_Global.push_back(phyid);
+            t_celldata.PhyNameVector_Global.push_back(phyname);
 
-        meshdata.m_phygroup_name2dimvec.clear();
-        meshdata.m_phygroup_name2phyidvec.clear();
-        meshdata.m_phygroup_phyid2namevec.clear();
+            t_celldata.PhyName2IDMap_Global[phyname]=phyid;
+            t_celldata.PhyID2NameMap_Global[phyid]=phyname;
 
-        meshdata.m_phygroup_elmtnumvec.clear();
+            t_celldata.PhyID2MeshCellVectorMap_Global[phyid]=BulkCellVec;
+            t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=BulkCellVec;
 
-        meshdata.m_phygroup_name2bulkelmtidvec.clear();
-        meshdata.m_phygroup_name2elmtconnvec.clear();
+            t_celldata.PhyGroupElmtsNumVector_Global[t_celldata.PhyGroupNum_Global-1]=t_celldata.BulkElmtsNum;
 
-        meshdata.m_phygroup_nodesnumperelmtvec.clear();
+        }// end-of-the volume physical info is given-if
 
-        int dim,phyid,maxphyid,subelmts;
-        string phyname;
-        maxphyid=-1;
-        subelmts=meshdata.m_pointelmts+meshdata.m_lineelmts+meshdata.m_surfaceelmts;
-        for(int i=0;i<mshPhyGroupNum;i++){
-            dim=mshPhyGroupDimVec[i];
-            phyid=mshPhyGroupIDVec[i];
-            phyname=mshPhyGroupNameVec[i];
+        // for nodal physical group
+        if(mshNodalPhyGroupNum){
+            t_celldata.NodalPhyGroupNum_Global=mshNodalPhyGroupNum;
 
-            if(phyid>maxphyid) maxphyid=phyid;
+            t_celldata.NodalPhyIDVector_Global.resize(t_celldata.NodalPhyGroupNum_Global,0);
+            t_celldata.NodalPhyNameVector_Global.resize(t_celldata.NodalPhyGroupNum_Global);
 
-            meshdata.m_phygroup_dimvec.push_back(dim);
-            meshdata.m_phygroup_phyidvec.push_back(phyid);
-            meshdata.m_phygroup_phynamevec.push_back(phyname);
+            t_celldata.NodalPhyGroupNodesNumVector_Global.resize(t_celldata.NodalPhyGroupNum_Global,0);
 
-            meshdata.m_phygroup_name2dimvec.push_back(make_pair(phyname,dim));
-            meshdata.m_phygroup_name2phyidvec.push_back(make_pair(phyname,phyid));
-            meshdata.m_phygroup_phyid2namevec.push_back(make_pair(phyid,phyname));
-            if(dim==1 && dim<mshMaxDim){
-                meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperlineelmt);
+
+            int dim;
+            for(int i=0;i<mshNodalPhyGroupNum;i++){
+                phyid=mshNodalPhyGroupIDVec[i];
+                phyname=mshNodalPhyGroupNameVec[i];
+
+                t_celldata.NodalPhyIDVector_Global.push_back(phyid);
+                t_celldata.NodalPhyNameVector_Global.push_back(phyname);
+
+                t_celldata.NodalPhyID2NameMap_Global[phyid]=phyname;
+                t_celldata.NodalPhyName2IDMap_Global[phyname]=phyid;
+
             }
-            else if(dim==2 && dim<mshMaxDim){
-                meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodespersurfaceelmt);
-            }
-            if(dim==mshMaxDim){
-                meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperbulkelmt);
-            }
-        }
-        meshdata.m_phygroup_elmtnumvec.resize(meshdata.m_phygroups,0);
-        meshdata.m_phygroup_name2bulkelmtidvec.resize(mshBulkPhyGroupNum+1);
-        meshdata.m_phygroup_name2elmtconnvec.resize(meshdata.m_phygroups);
-        for(int e=0;e<meshdata.m_elements;e++){
-            phyid=ElmtPhyIDVec[e];
-            dim=ElmtDimVec[e];
-            for(int i=0;i<mshPhyGroupNum;i++){
-                if(phyid==meshdata.m_phygroup_phyidvec[i]){
-                    phyname=meshdata.m_phygroup_phynamevec[i];
-                    meshdata.m_phygroup_elmtnumvec[i]+=1;
+            for(int e=0;e<numElements;e++){
+                dim=ElmtDimVec[e];
+                phyid=ElmtPhyIDVec[e];
+                if(dim==0){
+                    for(int i=0;i<mshNodalPhyGroupNum;i++){
+                        if(phyid==mshNodalPhyGroupIDVec[i]){
+                            phyname=mshNodalPhyGroupNameVec[i];
 
-                    meshdata.m_phygroup_name2elmtconnvec[i].first=phyname;
-                    meshdata.m_phygroup_name2elmtconnvec[i].second.push_back(ElmtConn[e]);
-
-                    if(dim==mshMaxDim){
-                        meshdata.m_phygroup_name2bulkelmtidvec[i-(mshPhyGroupNum-mshBulkPhyGroupNum)].first=phyname;
-                        meshdata.m_phygroup_name2bulkelmtidvec[i-(mshPhyGroupNum-mshBulkPhyGroupNum)].second.push_back(e+1-subelmts);
-                    }
-                }
-            }
-            if(dim==mshMaxDim){
-                // for "alldomain"
-                meshdata.m_phygroup_name2bulkelmtidvec[mshBulkPhyGroupNum].first="alldomain";
-                meshdata.m_phygroup_name2bulkelmtidvec[mshBulkPhyGroupNum].second.push_back(e+1-subelmts);
-            }
-        }
-        // now we add "alldomain" info
-        dim=mshMaxDim;
-        phyname="alldomain";
-        phyid=maxphyid+1;
-        meshdata.m_phygroup_dimvec.push_back(dim);
-        meshdata.m_phygroup_phyidvec.push_back(phyid);
-        meshdata.m_phygroup_phynamevec.push_back(phyname);
-
-        meshdata.m_phygroup_name2dimvec.push_back(make_pair(phyname,dim));
-        meshdata.m_phygroup_name2phyidvec.push_back(make_pair(phyname,phyid));
-        meshdata.m_phygroup_phyid2namevec.push_back(make_pair(phyid,phyname));
-
-        meshdata.m_phygroup_nodesnumperelmtvec.push_back(meshdata.m_nodesperbulkelmt);
-
-        meshdata.m_phygroup_elmtnumvec[meshdata.m_phygroups-1]=meshdata.m_bulkelmts;
-
-        meshdata.m_phygroup_name2elmtconnvec[meshdata.m_phygroups-1].first=phyname;
-        meshdata.m_phygroup_name2elmtconnvec[meshdata.m_phygroups-1].second=meshdata.m_bulkelmt_connectivity;
-
-    }
-
-    // for nodal physical group
-    if(mshNodalPhyGroupNum){
-        meshdata.m_nodal_phygroups=mshNodalPhyGroupNum;
-
-        meshdata.m_nodephygroup_name2nodeidvec.resize(meshdata.m_nodal_phygroups);
-
-        string phyname;
-        int phyid,dim;
-        for(int i=0;i<mshNodalPhyGroupNum;i++){
-            phyid=mshNodalPhyGroupIDVec[i];
-            phyname=mshNodalPhyGroupNameVec[i];
-            meshdata.m_nodephygroup_name2phyidvec.push_back(make_pair(phyname,phyid));
-            meshdata.m_nodephygroup_phyid2namevec.push_back(make_pair(phyid,phyname));
-            meshdata.m_nodephygroup_phynamevec.push_back(phyname);
-            meshdata.m_nodephygroup_phyidvec.push_back(phyid);
-        }
-        for(int e=0;e<numElements;e++){
-            dim=ElmtDimVec[e];
-            phyid=ElmtPhyIDVec[e];
-            if(dim==0){
-                for(int i=0;i<mshNodalPhyGroupNum;i++){
-                    if(phyid==mshNodalPhyGroupIDVec[i]){
-                        phyname=mshNodalPhyGroupNameVec[i];
-                        meshdata.m_nodephygroup_name2nodeidvec[i].first=phyname;
-                        meshdata.m_nodephygroup_name2nodeidvec[i].second.push_back(ElmtConn[e][0]);
+                            t_celldata.NodalPhyName2NodeIDVecMap_Global[phyname].push_back(TempCellVec[e].ElmtConn[0]);
+                            t_celldata.NodalPhyGroupNodesNumVector_Global[i]+=1;
+                        }
                     }
                 }
             }
         }
-    }
-    else{
-        meshdata.m_nodal_phygroups=0;
-        meshdata.m_nodephygroup_name2nodeidvec.clear();
-        meshdata.m_nodephygroup_name2phyidvec.clear();
-        meshdata.m_nodephygroup_phyid2namevec.clear();
-        meshdata.m_nodephygroup_phynamevec.clear();
-        meshdata.m_nodephygroup_phyidvec.clear();
-    }
+        else{
+
+            t_celldata.NodalPhyGroupNum_Global=0;
+
+            t_celldata.NodalPhyNameVector_Global.clear();
+            t_celldata.NodalPhyIDVector_Global.clear();
+            t_celldata.NodalPhyGroupNodesNumVector_Global.clear();
+
+            t_celldata.NodalPhyName2IDMap_Global.clear();
+            t_celldata.NodalPhyID2NameMap_Global.clear();
+
+            t_celldata.NodalPhyName2NodeIDVecMap_Global.clear();
+        }
+
+        t_celldata.BulkCellPartionInfo_Global.resize(t_celldata.BulkElmtsNum,0);
+
+        // send basic physical group info to other ranks
+        int tag;
+        for(int cpuid=1;cpuid<size;cpuid++){
+            tag=cpuid*1000+1;
+            MPIDataBus::sendIntegerToOthers(t_celldata.PhyGroupNum_Global,tag,cpuid);
+            tag=cpuid*1000+2;
+            MPIDataBus::sentIntegerVectorToOthers(t_celldata.PhyDimVector_Global,tag,cpuid);
+            tag=cpuid*1000+3;
+            MPIDataBus::sentStringVectorToOthers(t_celldata.PhyNameVector_Global,tag,cpuid);
+            //
+            tag=cpuid*1000+4;
+            MPIDataBus::sendMeshTypeToOthers(t_celldata.BulkElmtMeshType,tag,cpuid);
+            tag=cpuid*1000+5;
+            MPIDataBus::sendMeshTypeToOthers(t_celldata.SurfElmtMeshType,tag,cpuid);
+            tag=cpuid*1000+6;
+            MPIDataBus::sendMeshTypeToOthers(t_celldata.LineElmtMeshType,tag,cpuid);
+        }
 
     } // end-of-rank-0
+    else{
+        // setup the basic physical group info
+        int tag;
+        tag=rank*1000+1;
+        MPIDataBus::receiveIntegerFromMaster(t_celldata.PhyGroupNum_Global,tag);
+        tag=rank*1000+2;
+        MPIDataBus::receiveIntegerVectorFromMaster(t_celldata.PhyDimVector_Global,tag);
+        tag=rank*1000+3;
+        MPIDataBus::receiveStringVectorFromMaster(t_celldata.PhyNameVector_Global,tag);
+        //
+        tag=rank*1000+4;
+        MPIDataBus::receiveMeshTypeFromMater(t_celldata.BulkElmtMeshType,tag);
+        //
+        tag=rank*1000+5;
+        MPIDataBus::receiveMeshTypeFromMater(t_celldata.SurfElmtMeshType,tag);
+        //
+        tag=rank*1000+6;
+        MPIDataBus::receiveMeshTypeFromMater(t_celldata.LineElmtMeshType,tag);
+    }
+
+    /**
+     * Share some common variables among ranks
+     */
+    MPI_Bcast(&t_celldata.MeshOrder,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    MPI_Bcast(&t_celldata.BulkElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.LineElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.SurfElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.ElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    MPI_Bcast(&t_celldata.NodesNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.NodesNumPerBulkElmt,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.NodesNumPerSurfElmt,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.NodesNumPerLineElmt,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    MPI_Bcast(&t_celldata.BulkElmtVTKCellType,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.SurfElmtVTKCellType,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.LineElmtVTKCellType,1,MPI_INT,0,MPI_COMM_WORLD);
+
     return true;
 }

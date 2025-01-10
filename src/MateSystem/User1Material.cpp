@@ -24,7 +24,7 @@ void User1Material::initMaterialProperties(const nlohmann::json &inputparams,
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
@@ -37,7 +37,7 @@ void User1Material::computeMaterialProperties(const nlohmann::json &inputparams,
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||
        mateold.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
     //************************
@@ -47,11 +47,11 @@ void User1Material::computeMaterialProperties(const nlohmann::json &inputparams,
     mate.ScalarMaterial("dsigmadu")=0.0;// dsigma/dphi
     mate.ScalarMaterial("f")=JsonUtils::getValue(inputparams,"f");// F
     mate.ScalarMaterial("dfdu")=0.0;// dF/dphi
-    mate.VectorMaterial("gradu")=elmtsoln.m_gpGradU[1];// the gradient of u
+    mate.VectorMaterial("gradu")=elmtsoln.m_QpGradU[1];// the gradient of u
 
     mate.ScalarMaterial("myx")=1.0*rand()/RAND_MAX;
-    if(elmtinfo.m_elmtid==elmtinfo.m_elmtsnum){
-        if(elmtinfo.m_qpointid==elmtinfo.m_qpointsnum){
+    if(elmtinfo.m_ElmtID==elmtinfo.m_ElmtsNum){
+        if(elmtinfo.m_QpointID==elmtinfo.m_QpointsNum){
             mate.ScalarMaterial("myx")=1000.0;
         }
     }

@@ -38,18 +38,18 @@ SNESSolver::SNESSolver(){
     m_nlsolvertype=NonlinearSolverType::NEWTONLS;
 }
 void SNESSolver::setFromNonlinearSolverBlock(const NonlinearSolverBlock &nlblock){
-    m_maxiters=nlblock.m_maxiters;
-    m_abstol_r=nlblock.m_abstol_r;
-    m_reltol_r=nlblock.m_reltol_r;
+    m_maxiters=nlblock.m_MaxIters;
+    m_abstol_r=nlblock.m_AbsTolR;
+    m_reltol_r=nlblock.m_RelTolR;
 
-    m_nlsolvername=nlblock.m_nlsolvertypename;
-    m_nlsolvertype=nlblock.m_nlsolvertype;
+    m_nlsolvername=nlblock.m_NlSolverTypeName;
+    m_nlsolvertype=nlblock.m_NlSolverType;
 
-    m_linearsolvername=nlblock.m_linearsolvername;
+    m_linearsolvername=nlblock.m_LinearSolverName;
 
-    m_s_tol=nlblock.m_s_tol;
+    m_s_tol=nlblock.m_STol;
 
-    m_pcname=nlblock.m_pctypename;
+    m_pcname=nlblock.m_PCTypeName;
 }
 
 void SNESSolver::initSolver(){

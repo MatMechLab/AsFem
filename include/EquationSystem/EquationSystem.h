@@ -39,7 +39,7 @@ public:
     /**
      * get the dofs number
      */
-    inline int getDofsNum()const{return m_dofs;}
+    inline int getDofsNum()const{return m_Dofs;}
 
     /**
      * create the sparsity pattern for sparse matrix, after this call, 
@@ -53,11 +53,11 @@ public:
     void releaseMemory();
 
 public:
-    Vector m_rhs;/**< vector for system residual */
-    SparseMatrix m_amatrix;/**< sparse matrix for system K matrix */
+    Vector m_RHS;/**< vector for system residual */
+    SparseMatrix m_AMATRIX;/**< sparse matrix for system K matrix */
 
 private:
-    int m_dofs;/**< the dofs or dimension of K matrix */
-    bool m_allocated;/**< boolean flag for the memory allocation status */
+    int m_Dofs;/**< the dofs or dimension of K matrix */
+    bool m_Allocated;/**< boolean flag for the memory allocation status */
 
 };

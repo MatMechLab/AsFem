@@ -14,7 +14,6 @@
 
 #include "FECell/Lagrange3DHex27MeshCellGenerator.h"
 #include "FECell/SingleMeshCell.h"
-#include "MPIUtils/MPIDataBus.h"
 
 Lagrange3DHex27MeshCellGenerator::Lagrange3DHex27MeshCellGenerator(){
     m_mesh_generated=false;
@@ -24,7 +23,7 @@ Lagrange3DHex27MeshCellGenerator::~Lagrange3DHex27MeshCellGenerator(){
 }
 //*********************************************************
 bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
-    int rank,size;
+    int rank;
     t_celldata.MaxDim=3;
     t_celldata.MinDim=2;
 
@@ -33,7 +32,6 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
     t_celldata.MaxDofsPerNode=0;
 
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-    MPI_Comm_size(MPI_COMM_WORLD,&size);
     if(rank==0){
         vector<SingleMeshCell> leftconn,rightconn;
         vector<SingleMeshCell> bottomconn,topconn;
@@ -78,8 +76,7 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
         t_celldata.LineElmtMeshType=MeshType::EDGE3;
             
         // for the coordinates of each node
-        vector<double> nodecoords;
-        nodecoords.resize(t_celldata.NodesNum*3,0.0);
+        t_celldata.NodeCoords_Global.resize(t_celldata.NodesNum*3,0.0);
             
         leftnodes.clear();rightnodes.clear();
         bottomnodes.clear();rightnodes.clear();
@@ -92,18 +89,18 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                 // for bottom line of each element
                 for(i=1;i<=2*_Nx+1;++i){
                     kk=(j-1)*(2*_Nx+1)+i+(k-1)*2*nLayerNodes;
-                    nodecoords[(kk-1)*3+1-1]=t_celldata.Xmin+(i-1)*dx;
-                    nodecoords[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*dy;
-                    nodecoords[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz;
+                    t_celldata.NodeCoords_Global[(kk-1)*3+1-1]=t_celldata.Xmin+(i-1)*dx;
+                    t_celldata.NodeCoords_Global[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*dy;
+                    t_celldata.NodeCoords_Global[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz;
                 }
             }
             // Then for second layer
             for(j=1;j<=2*_Ny+1;++j){
                 for(i=1;i<=2*_Nx+1;++i){
                     kk=(j-1)*(2*_Nx+1)+i+(k-1)*2*nLayerNodes+nLayerNodes;
-                    nodecoords[(kk-1)*3+1-1]=t_celldata.Xmin+(i-1)*dx;
-                    nodecoords[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*dy;
-                    nodecoords[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz+dz;
+                    t_celldata.NodeCoords_Global[(kk-1)*3+1-1]=t_celldata.Xmin+(i-1)*dx;
+                    t_celldata.NodeCoords_Global[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*dy;
+                    t_celldata.NodeCoords_Global[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz+dz;
                 }
             }
         }
@@ -113,13 +110,11 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
             // for bottom line of each element
             for(i=1;i<=2*_Nx+1;++i){
                 kk=(j-1)*(2*_Nx+1)+i+(k-1)*2*nLayerNodes;
-                nodecoords[(kk-1)*3+1-1]=t_celldata.Xmin+(i-1)*dx;
-                nodecoords[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*dy;
-                nodecoords[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz;
+                t_celldata.NodeCoords_Global[(kk-1)*3+1-1]=t_celldata.Xmin+(i-1)*dx;
+                t_celldata.NodeCoords_Global[(kk-1)*3+2-1]=t_celldata.Ymin+(j-1)*dy;
+                t_celldata.NodeCoords_Global[(kk-1)*3+3-1]=t_celldata.Zmin+(k-1)*2*dz;
             }
         }
-        t_celldata.NodeCoords_Global.clear();
-        for(const auto &it:nodecoords) t_celldata.NodeCoords_Global.push_back(it);
             
         // for the connectivity information of bulk elements
         t_celldata.MeshCell_Total.resize(t_celldata.BulkElmtsNum);
@@ -131,6 +126,9 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
         //
         backconn.resize(t_celldata.Nx*t_celldata.Ny);
         frontconn.resize(t_celldata.Nx*t_celldata.Ny);
+
+        t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+        t_celldata.PhyName2BulkFECellIDMap_Global.clear();
           
         for(k=1;k<=_Nz;++k){
             for(j=1;j<=_Ny;++j){
@@ -164,8 +162,8 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                     i21=i17+(2*_Nx+1);
                     i22=i21+2;
 
-                        //i23=i20+1;
-                        //i24=i17+1;
+                    //i23=i20+1;
+                    //i24=i17+1;
 
                     i23=i17+1;
                     i24=i20+1;
@@ -174,6 +172,9 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                     i26=i16+1;
 
                     i27=i21+1;
+
+                    t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(e);
+                    t_celldata.PhyID2BulkFECellIDMap_Global[0].push_back(e);
 
                     t_celldata.MeshCell_Total[e-1].Dim=3;
                     t_celldata.MeshCell_Total[e-1].VTKCellType=t_celldata.BulkElmtVTKCellType;
@@ -212,113 +213,115 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                     t_celldata.MeshCell_Total[e-1].ElmtConn.push_back(i27);
 
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i1-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i1-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i1-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(2,1)=nodecoords[(i2-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(2,2)=nodecoords[(i2-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(2,3)=nodecoords[(i2-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i2-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i2-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i2-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(3,1)=nodecoords[(i3-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(3,2)=nodecoords[(i3-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(3,3)=nodecoords[(i3-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i3-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i3-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i3-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(4,1)=nodecoords[(i4-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(4,2)=nodecoords[(i4-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(4,3)=nodecoords[(i4-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i4-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i4-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i4-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(5,1)=nodecoords[(i5-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(5,2)=nodecoords[(i5-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(5,3)=nodecoords[(i5-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i5-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i5-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i5-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(6,1)=nodecoords[(i6-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(6,2)=nodecoords[(i6-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(6,3)=nodecoords[(i6-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i6-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i6-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i6-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(7,1)=nodecoords[(i7-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(7,2)=nodecoords[(i7-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(7,3)=nodecoords[(i7-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i7-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i7-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i7-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(8,1)=nodecoords[(i8-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(8,2)=nodecoords[(i8-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(8,3)=nodecoords[(i8-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i8-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i8-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i8-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(9,1)=nodecoords[(i9-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(9,2)=nodecoords[(i9-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(9,3)=nodecoords[(i9-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i9-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i9-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i9-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(10,1)=nodecoords[(i10-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(10,2)=nodecoords[(i10-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(10,3)=nodecoords[(i10-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(10,1)=t_celldata.NodeCoords_Global[(i10-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(10,2)=t_celldata.NodeCoords_Global[(i10-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(10,3)=t_celldata.NodeCoords_Global[(i10-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(11,1)=nodecoords[(i11-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(11,2)=nodecoords[(i11-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(11,3)=nodecoords[(i11-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(11,1)=t_celldata.NodeCoords_Global[(i11-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(11,2)=t_celldata.NodeCoords_Global[(i11-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(11,3)=t_celldata.NodeCoords_Global[(i11-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(12,1)=nodecoords[(i12-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(12,2)=nodecoords[(i12-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(12,3)=nodecoords[(i12-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(12,1)=t_celldata.NodeCoords_Global[(i12-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(12,2)=t_celldata.NodeCoords_Global[(i12-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(12,3)=t_celldata.NodeCoords_Global[(i12-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(13,1)=nodecoords[(i13-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(13,2)=nodecoords[(i13-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(13,3)=nodecoords[(i13-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(13,1)=t_celldata.NodeCoords_Global[(i13-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(13,2)=t_celldata.NodeCoords_Global[(i13-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(13,3)=t_celldata.NodeCoords_Global[(i13-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(14,1)=nodecoords[(i14-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(14,2)=nodecoords[(i14-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(14,3)=nodecoords[(i14-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(14,1)=t_celldata.NodeCoords_Global[(i14-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(14,2)=t_celldata.NodeCoords_Global[(i14-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(14,3)=t_celldata.NodeCoords_Global[(i14-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(15,1)=nodecoords[(i15-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(15,2)=nodecoords[(i15-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(15,3)=nodecoords[(i15-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(15,1)=t_celldata.NodeCoords_Global[(i15-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(15,2)=t_celldata.NodeCoords_Global[(i15-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(15,3)=t_celldata.NodeCoords_Global[(i15-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(16,1)=nodecoords[(i16-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(16,2)=nodecoords[(i16-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(16,3)=nodecoords[(i16-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(16,1)=t_celldata.NodeCoords_Global[(i16-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(16,2)=t_celldata.NodeCoords_Global[(i16-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(16,3)=t_celldata.NodeCoords_Global[(i16-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(17,1)=nodecoords[(i17-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(17,2)=nodecoords[(i17-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(17,3)=nodecoords[(i17-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(17,1)=t_celldata.NodeCoords_Global[(i17-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(17,2)=t_celldata.NodeCoords_Global[(i17-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(17,3)=t_celldata.NodeCoords_Global[(i17-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(18,1)=nodecoords[(i18-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(18,2)=nodecoords[(i18-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(18,3)=nodecoords[(i18-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(18,1)=t_celldata.NodeCoords_Global[(i18-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(18,2)=t_celldata.NodeCoords_Global[(i18-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(18,3)=t_celldata.NodeCoords_Global[(i18-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(19,1)=nodecoords[(i19-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(19,2)=nodecoords[(i19-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(19,3)=nodecoords[(i19-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(19,1)=t_celldata.NodeCoords_Global[(i19-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(19,2)=t_celldata.NodeCoords_Global[(i19-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(19,3)=t_celldata.NodeCoords_Global[(i19-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(20,1)=nodecoords[(i20-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(20,2)=nodecoords[(i20-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(20,3)=nodecoords[(i20-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(20,1)=t_celldata.NodeCoords_Global[(i20-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(20,2)=t_celldata.NodeCoords_Global[(i20-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(20,3)=t_celldata.NodeCoords_Global[(i20-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(21,1)=nodecoords[(i21-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(21,2)=nodecoords[(i21-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(21,3)=nodecoords[(i21-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(21,1)=t_celldata.NodeCoords_Global[(i21-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(21,2)=t_celldata.NodeCoords_Global[(i21-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(21,3)=t_celldata.NodeCoords_Global[(i21-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(22,1)=nodecoords[(i22-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(22,2)=nodecoords[(i22-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(22,3)=nodecoords[(i22-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(22,1)=t_celldata.NodeCoords_Global[(i22-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(22,2)=t_celldata.NodeCoords_Global[(i22-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(22,3)=t_celldata.NodeCoords_Global[(i22-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(23,1)=nodecoords[(i23-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(23,2)=nodecoords[(i23-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(23,3)=nodecoords[(i23-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(23,1)=t_celldata.NodeCoords_Global[(i23-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(23,2)=t_celldata.NodeCoords_Global[(i23-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(23,3)=t_celldata.NodeCoords_Global[(i23-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(24,1)=nodecoords[(i24-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(24,2)=nodecoords[(i24-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(24,3)=nodecoords[(i24-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(24,1)=t_celldata.NodeCoords_Global[(i24-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(24,2)=t_celldata.NodeCoords_Global[(i24-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(24,3)=t_celldata.NodeCoords_Global[(i24-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(25,1)=nodecoords[(i25-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(25,2)=nodecoords[(i25-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(25,3)=nodecoords[(i25-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(25,1)=t_celldata.NodeCoords_Global[(i25-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(25,2)=t_celldata.NodeCoords_Global[(i25-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(25,3)=t_celldata.NodeCoords_Global[(i25-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(26,1)=nodecoords[(i26-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(26,2)=nodecoords[(i26-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(26,3)=nodecoords[(i26-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(26,1)=t_celldata.NodeCoords_Global[(i26-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(26,2)=t_celldata.NodeCoords_Global[(i26-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(26,3)=t_celldata.NodeCoords_Global[(i26-1)*3+3-1];
                     //
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(27,1)=nodecoords[(i27-1)*3+1-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(27,2)=nodecoords[(i27-1)*3+2-1];
-                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(27,3)=nodecoords[(i27-1)*3+3-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(27,1)=t_celldata.NodeCoords_Global[(i27-1)*3+1-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(27,2)=t_celldata.NodeCoords_Global[(i27-1)*3+2-1];
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords(27,3)=t_celldata.NodeCoords_Global[(i27-1)*3+3-1];
+
+                    t_celldata.MeshCell_Total[e-1].ElmtNodeCoords0=t_celldata.MeshCell_Total[e-1].ElmtNodeCoords;
 
                         
                     if(i==1){
@@ -347,41 +350,43 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                         leftconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i21);
 
                         leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(9);
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i1-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i1-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i1-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i5-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i5-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i5-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i5-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i5-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i5-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i8-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i8-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i8-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i8-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i8-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i8-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i4-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i4-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i4-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i4-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i4-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i4-1)*3+3-1];
                         ////
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i17-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i17-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i17-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i17-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i17-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i17-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i16-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i16-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i16-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i16-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i16-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i16-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i20-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i20-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i20-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i20-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i20-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i20-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i12-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i12-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i12-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i12-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i12-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i12-1)*3+3-1];
                         //
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,1)=nodecoords[(i21-1)*3+1-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,2)=nodecoords[(i21-1)*3+2-1];
-                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,3)=nodecoords[(i21-1)*3+3-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i21-1)*3+1-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i21-1)*3+2-1];
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i21-1)*3+3-1];
+                        //
+                        leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords0=leftconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords;
 
                         leftnodes.push_back(i1);
                         leftnodes.push_back(i5);
@@ -419,41 +424,43 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                         rightconn[(k-1)*t_celldata.Ny+j-1].ElmtConn.push_back(i22);
 
                         rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords.resize(9);
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=nodecoords[(i2-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=nodecoords[(i2-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=nodecoords[(i2-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i2-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i2-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i2-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=nodecoords[(i3-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=nodecoords[(i3-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=nodecoords[(i3-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i3-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i3-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i3-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i7-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i7-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i7-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=nodecoords[(i6-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=nodecoords[(i6-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=nodecoords[(i6-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i6-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i6-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i6-1)*3+3-1];
                         ////
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=nodecoords[(i10-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=nodecoords[(i10-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=nodecoords[(i10-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i10-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i10-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i10-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=nodecoords[(i19-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=nodecoords[(i19-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=nodecoords[(i19-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i19-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i19-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i19-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=nodecoords[(i14-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=nodecoords[(i14-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=nodecoords[(i14-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i14-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i14-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i14-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=nodecoords[(i18-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=nodecoords[(i18-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=nodecoords[(i18-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i18-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i18-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i18-1)*3+3-1];
                         //
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,1)=nodecoords[(i22-1)*3+1-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,2)=nodecoords[(i22-1)*3+2-1];
-                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,3)=nodecoords[(i22-1)*3+3-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i22-1)*3+1-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i22-1)*3+2-1];
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i22-1)*3+3-1];
+                        //
+                        rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords0=rightconn[(k-1)*t_celldata.Ny+j-1].ElmtNodeCoords;
 
                         rightnodes.push_back(i2);
                         rightnodes.push_back(i3);
@@ -491,41 +498,43 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                         bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i23);
 
                         bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i1-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i1-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i1-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i2-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i2-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i2-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i2-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i2-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i2-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i6-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i6-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i6-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i6-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i6-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i6-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i5-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i5-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i5-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i5-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i5-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i5-1)*3+3-1];
                         ////
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i9-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i9-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i9-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i9-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i9-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i9-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i18-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i18-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i18-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i18-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i18-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i18-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i13-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i13-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i13-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i13-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i13-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i13-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i17-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i17-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i17-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i17-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i17-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i17-1)*3+3-1];
                         //
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i23-1)*3+1-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i23-1)*3+2-1];
-                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i23-1)*3+3-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i23-1)*3+1-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i23-1)*3+2-1];
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i23-1)*3+3-1];
+                        //
+                        bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords0=bottomconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords;
 
                         bottomnodes.push_back(i1);
                         bottomnodes.push_back(i2);
@@ -563,41 +572,43 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                         topconn[(k-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i24);
 
                         topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i4-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i4-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i4-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i4-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i4-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i4-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i8-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i8-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i8-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i8-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i8-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i8-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i7-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i7-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i7-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i3-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i3-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i3-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i3-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i3-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i3-1)*3+3-1];
                         ////
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i20-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i20-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i20-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i20-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i20-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i20-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i15-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i15-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i15-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i15-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i15-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i15-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i19-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i19-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i19-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i19-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i19-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i19-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i11-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i11-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i11-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i11-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i11-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i11-1)*3+3-1];
                         //
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i24-1)*3+1-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i24-1)*3+2-1];
-                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i24-1)*3+3-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i24-1)*3+1-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i24-1)*3+2-1];
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i24-1)*3+3-1];
+                        //
+                        topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords0=topconn[(k-1)*t_celldata.Nx+i-1].ElmtNodeCoords;
 
                         topnodes.push_back(i4);
                         topnodes.push_back(i8);
@@ -635,41 +646,43 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                         backconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i25);
 
                         backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i1-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i1-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i1-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i1-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i1-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i1-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i4-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i4-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i4-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i4-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i4-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i4-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i3-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i3-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i3-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i3-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i3-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i3-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i2-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i2-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i2-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i2-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i2-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i2-1)*3+3-1];
                         ////
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i12-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i12-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i12-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i12-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i12-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i12-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i11-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i11-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i11-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i11-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i11-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i11-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i10-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i10-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i10-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i10-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i10-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i10-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i9-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i9-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i9-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i9-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i9-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i9-1)*3+3-1];
                         //
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i25-1)*3+1-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i25-1)*3+2-1];
-                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i25-1)*3+3-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i25-1)*3+1-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i25-1)*3+2-1];
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i25-1)*3+3-1];
+                        //
+                        backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords0=backconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords;
 
                         backnodes.push_back(i1);
                         backnodes.push_back(i4);
@@ -707,41 +720,43 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                         frontconn[(j-1)*t_celldata.Nx+i-1].ElmtConn.push_back(i26);
 
                         frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords.resize(9);
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=nodecoords[(i5-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=nodecoords[(i5-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=nodecoords[(i5-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,1)=t_celldata.NodeCoords_Global[(i5-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,2)=t_celldata.NodeCoords_Global[(i5-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(1,3)=t_celldata.NodeCoords_Global[(i5-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=nodecoords[(i6-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=nodecoords[(i6-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=nodecoords[(i6-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,1)=t_celldata.NodeCoords_Global[(i6-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,2)=t_celldata.NodeCoords_Global[(i6-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(2,3)=t_celldata.NodeCoords_Global[(i6-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=nodecoords[(i7-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=nodecoords[(i7-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=nodecoords[(i7-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,1)=t_celldata.NodeCoords_Global[(i7-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i7-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i7-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=nodecoords[(i8-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=nodecoords[(i8-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=nodecoords[(i8-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,1)=t_celldata.NodeCoords_Global[(i8-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,2)=t_celldata.NodeCoords_Global[(i8-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(4,3)=t_celldata.NodeCoords_Global[(i8-1)*3+3-1];
                         ////
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=nodecoords[(i13-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=nodecoords[(i13-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=nodecoords[(i13-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,1)=t_celldata.NodeCoords_Global[(i13-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,2)=t_celldata.NodeCoords_Global[(i13-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(5,3)=t_celldata.NodeCoords_Global[(i13-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=nodecoords[(i14-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=nodecoords[(i14-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=nodecoords[(i14-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,1)=t_celldata.NodeCoords_Global[(i14-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,2)=t_celldata.NodeCoords_Global[(i14-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(6,3)=t_celldata.NodeCoords_Global[(i14-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=nodecoords[(i15-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=nodecoords[(i15-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=nodecoords[(i15-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,1)=t_celldata.NodeCoords_Global[(i15-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,2)=t_celldata.NodeCoords_Global[(i15-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(7,3)=t_celldata.NodeCoords_Global[(i15-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=nodecoords[(i16-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=nodecoords[(i16-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=nodecoords[(i16-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,1)=t_celldata.NodeCoords_Global[(i16-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,2)=t_celldata.NodeCoords_Global[(i16-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(8,3)=t_celldata.NodeCoords_Global[(i16-1)*3+3-1];
                         //
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=nodecoords[(i26-1)*3+1-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=nodecoords[(i26-1)*3+2-1];
-                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=nodecoords[(i26-1)*3+3-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,1)=t_celldata.NodeCoords_Global[(i26-1)*3+1-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,2)=t_celldata.NodeCoords_Global[(i26-1)*3+2-1];
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords(9,3)=t_celldata.NodeCoords_Global[(i26-1)*3+3-1];
+                        //
+                        frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords0=frontconn[(j-1)*t_celldata.Nx+i-1].ElmtNodeCoords;
 
                         frontnodes.push_back(i5);
                         frontnodes.push_back(i6);
@@ -908,244 +923,35 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
         t_celldata.NodalPhyName2NodeIDVecMap_Global["backnodes"]=backnodes;
         t_celldata.NodalPhyName2NodeIDVecMap_Global["frontnodes"]=frontnodes;
 
-        /**
-         * Now we start to distribute the gloabl mesh into different ranks
-        */
-        // send out the physical group info
-        int cpuid;
-
-        // send out the total mesh cell
-        int iStart,iEnd,ranksize;
-        vector<SingleMeshCell> LocalCellVector;
-        vector<int> nodeids;
-
-        t_celldata.PhyID2MeshCellVectorMap_Local.clear();
-        t_celldata.PhyName2MeshCellVectorMap_Local.clear();
-
-        for(cpuid=0;cpuid<size;cpuid++){
-            ranksize=t_celldata.BulkElmtsNum/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=t_celldata.BulkElmtsNum;
-
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(t_celldata.MeshCell_Total[e]);
-            }
-            if(cpuid==0){
-                t_celldata.MeshCell_Local=LocalCellVector;
-                t_celldata.PhyID2MeshCellVectorMap_Local[0]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["alldomain"]=t_celldata.MeshCell_Local;// each local rank share the same phy name as the master rank!!!
-            }
-            else{
-                MPIDataBus::sendMeshCellToOthers(LocalCellVector,1000*cpuid,cpuid);
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(0,LocalCellVector,1000*cpuid+20,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("alldomain",LocalCellVector,1000*cpuid+40,cpuid);
-            }
-
-            // for left conn
-            ranksize=static_cast<int>(leftconn.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(leftconn.size());
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(leftconn[e]);
-            }
-            if(cpuid==0){
-                t_celldata.PhyID2MeshCellVectorMap_Local[1]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["left"]=LocalCellVector;
-            }
-            else{
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(1,LocalCellVector,1000*cpuid+60,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("left",LocalCellVector,1000*cpuid+80,cpuid);
-            }
-            // for right conn
-            ranksize=static_cast<int>(rightconn.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(rightconn.size());
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(rightconn[e]);
-            }
-            if(cpuid==0){
-                t_celldata.PhyID2MeshCellVectorMap_Local[2]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["right"]=LocalCellVector;
-            }
-            else{
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(2,LocalCellVector,1000*cpuid+100,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("right",LocalCellVector,1000*cpuid+120,cpuid);
-            }
-
-            // for bottom conn
-            ranksize=static_cast<int>(bottomconn.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(bottomconn.size());
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(bottomconn[e]);
-            }
-            if(cpuid==0){
-                t_celldata.PhyID2MeshCellVectorMap_Local[3]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["bottom"]=LocalCellVector;
-            }
-            else{
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(3,LocalCellVector,1000*cpuid+140,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("bottom",LocalCellVector,1000*cpuid+160,cpuid);
-            }
-            // for top conn
-            ranksize=static_cast<int>(topconn.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(topconn.size());
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(topconn[e]);
-            }
-            if(cpuid==0){
-                t_celldata.PhyID2MeshCellVectorMap_Local[4]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["top"]=LocalCellVector;
-            }
-            else{
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(4,LocalCellVector,1000*cpuid+180,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("top",LocalCellVector,1000*cpuid+200,cpuid);
-            }
-
-            // for back conn
-            ranksize=static_cast<int>(backconn.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(backconn.size());
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(backconn[e]);
-            }
-            if(cpuid==0){
-                t_celldata.PhyID2MeshCellVectorMap_Local[5]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["back"]=LocalCellVector;
-            }
-            else{
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(5,LocalCellVector,1000*cpuid+220,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("back",LocalCellVector,1000*cpuid+240,cpuid);
-            }
-            // for front conn
-            ranksize=static_cast<int>(frontconn.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(frontconn.size());
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(frontconn[e]);
-            }
-            if(cpuid==0){
-                t_celldata.PhyID2MeshCellVectorMap_Local[6]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["front"]=LocalCellVector;
-            }
-            else{
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(6,LocalCellVector,1000*cpuid+260,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("front",LocalCellVector,1000*cpuid+280,cpuid);
-            }
-
-            //***************************************************
-            // for nodal physical groups
-            //***************************************************
-            // for leftnodes
-            ranksize=static_cast<int>(leftnodes.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(leftnodes.size());
-            nodeids.clear();
-            for(int e=iStart;e<iEnd;e++){
-                nodeids.push_back(leftnodes[e]);
-            }
-            if(cpuid==0){
-                t_celldata.NodalPhyName2NodeIDVecMap_Local["leftnodes"]=nodeids;
-            }
-            else{
-                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("leftnodes",nodeids,1000*cpuid+300,cpuid);
-            }
-            // for rightnodes
-            ranksize=static_cast<int>(rightnodes.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(rightnodes.size());
-            nodeids.clear();
-            for(int e=iStart;e<iEnd;e++){
-                nodeids.push_back(rightnodes[e]);
-            }
-            if(cpuid==0){
-                t_celldata.NodalPhyName2NodeIDVecMap_Local["rightnodes"]=nodeids;
-            }
-            else{
-                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("rightnodes",nodeids,1000*cpuid+320,cpuid);
-            }
-            // for bottomnodes
-            ranksize=static_cast<int>(bottomnodes.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(bottomnodes.size());
-            nodeids.clear();
-            for(int e=iStart;e<iEnd;e++){
-                nodeids.push_back(bottomnodes[e]);
-            }
-            if(cpuid==0){
-                t_celldata.NodalPhyName2NodeIDVecMap_Local["bottomnodes"]=nodeids;
-            }
-            else{
-                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("bottomnodes",nodeids,1000*cpuid+340,cpuid);
-            }
-            // for topnodes
-            ranksize=static_cast<int>(topnodes.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(topnodes.size());
-            nodeids.clear();
-            for(int e=iStart;e<iEnd;e++){
-                nodeids.push_back(topnodes[e]);
-            }
-            if(cpuid==0){
-                t_celldata.NodalPhyName2NodeIDVecMap_Local["topnodes"]=nodeids;
-            }
-            else{
-                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("topnodes",nodeids,1000*cpuid+360,cpuid);
-            }
-            // for backnodes
-            ranksize=static_cast<int>(backnodes.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(backnodes.size());
-            nodeids.clear();
-            for(int e=iStart;e<iEnd;e++){
-                nodeids.push_back(backnodes[e]);
-            }
-            if(cpuid==0){
-                t_celldata.NodalPhyName2NodeIDVecMap_Local["backnodes"]=nodeids;
-            }
-            else{
-                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("backnodes",nodeids,1000*cpuid+380,cpuid);
-            }
-            // for frontnodes
-            ranksize=static_cast<int>(frontnodes.size())/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=static_cast<int>(frontnodes.size());
-            nodeids.clear();
-            for(int e=iStart;e<iEnd;e++){
-                nodeids.push_back(frontnodes[e]);
-            }
-            if(cpuid==0){
-                t_celldata.NodalPhyName2NodeIDVecMap_Local["frontnodes"]=nodeids;
-            }
-            else{
-                MPIDataBus::sendPhyName2NodeIDVecMapToOthers("frontnodes",nodeids,1000*cpuid+400,cpuid);
-            }
-        }// end-of-cpuid-loop
+        // for mesh cell partition info
+        t_celldata.BulkCellPartionInfo_Global.resize(t_celldata.BulkElmtsNum,0);
 
     }// end-of-if(rank==0)
     else{
-        // now we distribute the global mesh into different ranks
+        t_celldata.MeshOrder=2;
+        t_celldata.BulkMeshTypeName="hex27";
+
+        t_celldata.BulkElmtsNum=t_celldata.Nx*t_celldata.Ny*t_celldata.Nz;
+        t_celldata.LineElmtsNum=0;
+        t_celldata.SurfElmtsNum=2*(t_celldata.Nx*t_celldata.Ny
+                                  +t_celldata.Nx*t_celldata.Nz
+                                  +t_celldata.Ny*t_celldata.Nz);
+
+        t_celldata.ElmtsNum=t_celldata.BulkElmtsNum
+                           +t_celldata.SurfElmtsNum
+                           +t_celldata.LineElmtsNum;
+        int nLayerNodes=(2*t_celldata.Nx+1)*(2*t_celldata.Ny+1);// for norm layer
+
+        t_celldata.NodesNum=(2*t_celldata.Nz+1)*nLayerNodes;
+        t_celldata.NodesNumPerBulkElmt=27;
+        t_celldata.BulkElmtVTKCellType=29;
+            
+        t_celldata.NodesNumPerSurfElmt=9;
+        t_celldata.SurfElmtVTKCellType=28;
+        t_celldata.SurfElmtMeshType=MeshType::QUAD9;
+            
+        t_celldata.LineElmtVTKCellType=4;
+        t_celldata.LineElmtMeshType=MeshType::EDGE3;
         // setup the physical group information
         t_celldata.PhyGroupNum_Global=1+6;
         t_celldata.PhyDimVector_Global.resize(1+6,0);
@@ -1179,102 +985,6 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
         t_celldata.PhyNameVector_Global[4]="top";
         t_celldata.PhyNameVector_Global[5]="back";
         t_celldata.PhyNameVector_Global[6]="front";
-
-        /**
-         * setup id<---->name map
-        */
-        // id--->name map
-        t_celldata.PhyID2NameMap_Global[0]="alldomain";
-        t_celldata.PhyID2NameMap_Global[1]="left";
-        t_celldata.PhyID2NameMap_Global[2]="right";
-        t_celldata.PhyID2NameMap_Global[3]="bottom";
-        t_celldata.PhyID2NameMap_Global[4]="top";
-        t_celldata.PhyID2NameMap_Global[5]="back";
-        t_celldata.PhyID2NameMap_Global[6]="front";
-        // name--->id map
-        t_celldata.PhyName2IDMap_Global["alldomain"]=0;
-        t_celldata.PhyName2IDMap_Global["left"]=1;
-        t_celldata.PhyName2IDMap_Global["right"]=2;
-        t_celldata.PhyName2IDMap_Global["bottom"]=3;
-        t_celldata.PhyName2IDMap_Global["top"]=4;
-        t_celldata.PhyName2IDMap_Global["back"]=5;
-        t_celldata.PhyName2IDMap_Global["front"]=6;
-
-        /**
-         * Setup the nodal physical info group
-        */
-        t_celldata.NodalPhyGroupNum_Global=6;
-        t_celldata.NodalPhyIDVector_Global.resize(6);
-        t_celldata.NodalPhyNameVector_Global.resize(6);
-        t_celldata.NodalPhyGroupNodesNumVector_Global.resize(6);
-
-        t_celldata.NodalPhyIDVector_Global[0]=10001;
-        t_celldata.NodalPhyIDVector_Global[1]=10002;
-        t_celldata.NodalPhyIDVector_Global[2]=10003;
-        t_celldata.NodalPhyIDVector_Global[3]=10004;
-        t_celldata.NodalPhyIDVector_Global[4]=10005;
-        t_celldata.NodalPhyIDVector_Global[5]=10006;
-
-        t_celldata.NodalPhyNameVector_Global[0]="leftnodes";
-        t_celldata.NodalPhyNameVector_Global[1]="rightnodes";
-        t_celldata.NodalPhyNameVector_Global[2]="bottomnodes";
-        t_celldata.NodalPhyNameVector_Global[3]="topnodes";
-        t_celldata.NodalPhyNameVector_Global[4]="backnodes";
-        t_celldata.NodalPhyNameVector_Global[5]="frontnodes";
-        
-        t_celldata.NodalPhyID2NameMap_Global[10001]="leftnodes";
-        t_celldata.NodalPhyID2NameMap_Global[10002]="rightnodes";
-        t_celldata.NodalPhyID2NameMap_Global[10003]="bottomnodes";
-        t_celldata.NodalPhyID2NameMap_Global[10004]="topnodes";
-        t_celldata.NodalPhyID2NameMap_Global[10005]="backnodes";
-        t_celldata.NodalPhyID2NameMap_Global[10006]="frontnodes";
-        
-        t_celldata.NodalPhyName2IDMap_Global["leftnodes"]=10001;
-        t_celldata.NodalPhyName2IDMap_Global["rightnodes"]=10002;
-        t_celldata.NodalPhyName2IDMap_Global["bottomnodes"]=10003;
-        t_celldata.NodalPhyName2IDMap_Global["topnodes"]=10004;
-        t_celldata.NodalPhyName2IDMap_Global["backnodes"]=10005;
-        t_celldata.NodalPhyName2IDMap_Global["frontnodes"]=10006;
-        
-        /**
-         * Receive message from master rank
-        */
-        MPIDataBus::receiveMeshCellFromMaster(t_celldata.MeshCell_Local,1000*rank);
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+20);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+40);
-
-        // for leftconn
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+60);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+80);
-        // for rightconn
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+100);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+120);
-        // for bottomconn
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+140);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+160);
-        // for topconn
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+180);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+200);
-        // for backconn
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+220);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+240);
-        // for frontconn
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,1000*rank+260);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,1000*rank+280);
-
-        //*** for nodal physical group
-        // for leftnodes
-        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+300);
-        // for rightnodes
-        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+320);
-        // for bottomnodes
-        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+340);
-        // for topnodes
-        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+360);
-        // for backnodes
-        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+380);
-        // for frontnodes
-        MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_celldata.NodalPhyName2NodeIDVecMap_Local,1000*rank+400);
     }
 
     return true;

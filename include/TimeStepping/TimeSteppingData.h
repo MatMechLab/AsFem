@@ -18,16 +18,16 @@
  * time stepping data
  */
 struct TimeSteppingData{
-    int m_totalstep;/**< the total time step */
-    double m_dt0=1.0e-6;/**< the initial delta t */
-    double m_dt=1.0e-6;/**< the current delta t */
-    double m_dtmax=1.0e1;/**< the maximum time increment */
-    double m_dtmin=1.0e-13;/**< the minimum time increment */
-    double m_finaltime;/**< the final simulation time */
-    double m_cutfactor;/**< the cut back factor time time adaptive */
-    double m_growthfactor;/**< the growth factor for time adaptive */
-    bool m_isadaptive;/**< boolean flag for adaptive */
-    int m_optimize_iters=3;/**< optimize nonlinear iterations for time adaptive */
+    int m_TotalStep;/**< the total time step */
+    double m_Dt0=1.0e-6;/**< the initial delta t */
+    double m_Dt=1.0e-6;/**< the current delta t */
+    double m_DtMax=1.0e1;/**< the maximum time increment */
+    double m_DtMin=1.0e-13;/**< the minimum time increment */
+    double m_FinalTime;/**< the final simulation time */
+    double m_CutFactor;/**< the cut back factor time time adaptive */
+    double m_GrowthFactor;/**< the growth factor for time adaptive */
+    bool m_IsAdaptive;/**< boolean flag for adaptive */
+    int m_OptimizeIters=3;/**< optimize nonlinear iterations for time adaptive */
 
-    TimeSteppingType m_stepping_type;/**< the time stepping type */
+    TimeSteppingType m_SteppingType;/**< the time stepping type */
 };

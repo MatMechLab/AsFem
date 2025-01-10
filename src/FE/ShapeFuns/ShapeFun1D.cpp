@@ -33,6 +33,7 @@ void ShapeFun1D::calc1DShapeFun(const MeshType &t_meshtype,const double &xi,
         ShapeFun1DEdge4::calc1DShapeValsAndDerivatives(xi,t_vals,t_ders);
         m_nodes=4;
     }
+    jacdet=0.0;
     if(flag){
         // calculate the derivatives on global coordinates
         m_dxdxi=0.0;m_dydxi=0.0;m_dzdxi=0.0;
@@ -42,8 +43,7 @@ void ShapeFun1D::calc1DShapeFun(const MeshType &t_meshtype,const double &xi,
             m_dzdxi+=t_ders[i-1](1)*t_nodes(i,3);
         }
         jacdet=sqrt(m_dxdxi*m_dxdxi+m_dydxi*m_dydxi+m_dzdxi*m_dzdxi);
-
-        if(abs(jacdet)<1.0e-15){
+        if(jacdet<1.0e-15){
             MessagePrinter::printErrorTxt("singular element in 1d case, error detected in ShapeFun1D");
             MessagePrinter::exitAsFem();
         }

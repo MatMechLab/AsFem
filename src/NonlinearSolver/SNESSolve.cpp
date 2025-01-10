@@ -25,12 +25,9 @@ PetscErrorCode myMonitor(SNES snes,PetscInt iters,PetscReal rnorm,void* ctx){
     MonitorCtx *user=(MonitorCtx*)ctx;
     user->iters=iters;
     user->rnorm=rnorm;
-    if(iters==0){
-        SNESGetSolutionNorm(snes,&user->dunorm);
-    }
-    else{
-        SNESGetUpdateNorm(snes,&user->dunorm);
-    }
+    SNESGetUpdateNorm(snes,&user->dunorm);
+    if(iters==0) user->dunorm=1.0;
+
     user->enorm=rnorm*user->dunorm;
     if(iters==0){
         user->rnorm0=rnorm;
@@ -52,39 +49,39 @@ PetscErrorCode computeResidual(SNES snes,Vec U,Vec RHS,void *ctx){
     int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);// just to get rid of unused snes warning
 
-    computeTimeDerivatives(*user->_fectrlinfo,U,*user->_solutionSystem);
+    computeTimeDerivatives(*user->_fectrlinfo,U,*user->_solutionSystem);// copy U vec to Vector of AsFem
 
     user->_feSystem->formBulkFE(FECalcType::COMPUTERESIDUAL,
-                                user->_fectrlinfo->t+user->_fectrlinfo->dt,
-                                user->_fectrlinfo->dt,
-                                user->_fectrlinfo->ctan,
+                                user->_fectrlinfo->T+user->_fectrlinfo->Dt,
+                                user->_fectrlinfo->Dt,
+                                user->_fectrlinfo->Ctan,
                                 *user->_fecell,
                                 *user->_dofHandler,
                                 *user->_fe,
                                 *user->_elmtSystem,
                                 *user->_mateSystem,
                                 *user->_solutionSystem,
-                                user->_equationSystem->m_amatrix,
-                                user->_equationSystem->m_rhs);
+                                user->_equationSystem->m_AMATRIX,
+                                user->_equationSystem->m_RHS);
     
     user->_bcSystem->setDirichletPenalty(user->_feSystem->getMaxCoefOfKMatrix()*1.0e10);
 
-    user->_solutionSystem->m_u_copy.copyFrom(U);
+    user->_solutionSystem->m_Ucopy.copyFrom(U);
     user->_bcSystem->applyBoundaryConditions(FECalcType::COMPUTERESIDUAL,
-                                             user->_fectrlinfo->t+user->_fectrlinfo->dt,
-                                             user->_fectrlinfo->ctan,
+                                             user->_fectrlinfo->T+user->_fectrlinfo->Dt,
+                                             user->_fectrlinfo->Ctan,
                                              *user->_fecell,
                                              *user->_dofHandler,
                                              *user->_fe,
-                                             user->_solutionSystem->m_u_temp,
-                                             user->_solutionSystem->m_u_copy,
-                                             user->_solutionSystem->m_u_old,
-                                             user->_solutionSystem->m_u_older,
-                                             user->_solutionSystem->m_v,
-                                             user->_equationSystem->m_amatrix,
-                                             user->_equationSystem->m_rhs);
+                                             user->_solutionSystem->m_Utemp,
+                                             user->_solutionSystem->m_Ucopy,
+                                             user->_solutionSystem->m_Uold,
+                                             user->_solutionSystem->m_Uolder,
+                                             user->_solutionSystem->m_V,
+                                             user->_equationSystem->m_AMATRIX,
+                                             user->_equationSystem->m_RHS);
 
-    user->_equationSystem->m_rhs.copy2Vec(RHS);// please overwrite RHS to make sure it is the correct one !
+    user->_equationSystem->m_RHS.copy2Vec(RHS);// please overwrite RHS to make sure it is the correct one !
 
     return 0;
 }
@@ -97,37 +94,37 @@ PetscErrorCode computeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
     
     user->_feSystem->resetMaxKMatrixCoeff();
     
-    computeTimeDerivatives(*user->_fectrlinfo,U,*user->_solutionSystem);
+    computeTimeDerivatives(*user->_fectrlinfo,U,*user->_solutionSystem);// compute the Utemp vector, and other derivatives
     
     user->_feSystem->formBulkFE(FECalcType::COMPUTEJACOBIAN,
-                                user->_fectrlinfo->t+user->_fectrlinfo->dt,
-                                user->_fectrlinfo->dt,
-                                user->_fectrlinfo->ctan,
+                                user->_fectrlinfo->T+user->_fectrlinfo->Dt,
+                                user->_fectrlinfo->Dt,
+                                user->_fectrlinfo->Ctan,
                                 *user->_fecell,
                                 *user->_dofHandler,
                                 *user->_fe,
                                 *user->_elmtSystem,
                                 *user->_mateSystem,
                                 *user->_solutionSystem,
-                                user->_equationSystem->m_amatrix,
-                                user->_equationSystem->m_rhs);
+                                user->_equationSystem->m_AMATRIX,
+                                user->_equationSystem->m_RHS);
     
     user->_bcSystem->setDirichletPenalty(user->_feSystem->getMaxCoefOfKMatrix()*1.0e10);
 
-    user->_solutionSystem->m_u_copy.copyFrom(U);
+    user->_solutionSystem->m_Ucopy.copyFrom(U);
     user->_bcSystem->applyBoundaryConditions(FECalcType::COMPUTEJACOBIAN,
-                                             user->_fectrlinfo->t+user->_fectrlinfo->dt,
-                                             user->_fectrlinfo->ctan,
+                                             user->_fectrlinfo->T+user->_fectrlinfo->Dt,
+                                             user->_fectrlinfo->Ctan,
                                              *user->_fecell,
                                              *user->_dofHandler,
                                              *user->_fe,
-                                             user->_solutionSystem->m_u_temp,
-                                             user->_solutionSystem->m_u_copy,
-                                             user->_solutionSystem->m_u_old,
-                                             user->_solutionSystem->m_u_older,
-                                             user->_solutionSystem->m_v,
-                                             user->_equationSystem->m_amatrix,
-                                             user->_equationSystem->m_rhs);
+                                             user->_solutionSystem->m_Utemp,
+                                             user->_solutionSystem->m_Ucopy,
+                                             user->_solutionSystem->m_Uold,
+                                             user->_solutionSystem->m_Uolder,
+                                             user->_solutionSystem->m_V,
+                                             user->_equationSystem->m_AMATRIX,
+                                             user->_equationSystem->m_RHS);
 
     int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);
@@ -149,8 +146,8 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
                        SolutionSystem &solutionsystem,
                        EquationSystem &equationsystem,
                        FEControlInfo &fectrlinfo){
-    
-    solutionsystem.m_u_copy.copyFrom(solutionsystem.m_u_current);
+
+    solutionsystem.m_Ucopy.copyFrom(solutionsystem.m_Ucurrent);
     
     m_appctx=AppCtx{&fecell,&dofhandler,
                    &bcsystem,
@@ -164,29 +161,29 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
                 0.0,1.0,
                 0,
                 fectrlinfo.IsDepDebug};
-    
+
+
     m_appctx._bcSystem->applyPresetBoundaryConditions(FECalcType::UPDATEU,
-                                             m_appctx._fectrlinfo->t+m_appctx._fectrlinfo->dt,
+                                             m_appctx._fectrlinfo->T+m_appctx._fectrlinfo->Dt,
                                              *m_appctx._fecell,
                                              *m_appctx._dofHandler,
-                                             m_appctx._solutionSystem->m_u_current,
-                                             m_appctx._solutionSystem->m_u_copy,
-                                             m_appctx._solutionSystem->m_u_old,
-                                             m_appctx._solutionSystem->m_u_older,
-                                             m_appctx._solutionSystem->m_v,
-                                             m_appctx._equationSystem->m_amatrix,
-                                             m_appctx._equationSystem->m_rhs);
-                               
-    SNESSetFunction(m_snes,m_appctx._equationSystem->m_rhs.getVectorCopy(),computeResidual,&m_appctx);
-    SNESSetJacobian(m_snes,m_appctx._equationSystem->m_amatrix.getCopy(),m_appctx._equationSystem->m_amatrix.getCopy(),computeJacobian,&m_appctx);
+                                             m_appctx._solutionSystem->m_Ucurrent,
+                                             m_appctx._solutionSystem->m_Ucopy,
+                                             m_appctx._solutionSystem->m_Uold,
+                                             m_appctx._solutionSystem->m_Uolder,
+                                             m_appctx._solutionSystem->m_V,
+                                             m_appctx._equationSystem->m_AMATRIX,
+                                             m_appctx._equationSystem->m_RHS);
+
+    SNESSetFunction(m_snes,m_appctx._equationSystem->m_RHS.getVectorCopy(),computeResidual,&m_appctx);
+    SNESSetJacobian(m_snes,m_appctx._equationSystem->m_AMATRIX.getCopy(),m_appctx._equationSystem->m_AMATRIX.getCopy(),computeJacobian,&m_appctx);
         
     SNESMonitorSet(m_snes,myMonitor,&m_monctx,0);
     SNESSetForceIteration(m_snes,PETSC_TRUE);
     SNESSetFromOptions(m_snes);
-    SNESSolve(m_snes,NULL,m_appctx._solutionSystem->m_u_current.getVectorRef());
+    SNESSolve(m_snes,NULL,m_appctx._solutionSystem->m_Ucurrent.getVectorRef());
     SNESGetConvergedReason(m_snes,&m_snesconvergereason);
-    
-    
+
     m_iterations=m_monctx.iters;
     m_rnorm=m_monctx.rnorm;
     m_abstol_du=m_monctx.dunorm;

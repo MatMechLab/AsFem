@@ -27,7 +27,7 @@ void Poisson2DBenchmarkMaterial::initMaterialProperties(const nlohmann::json &in
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
@@ -40,7 +40,7 @@ void Poisson2DBenchmarkMaterial::computeMaterialProperties(const nlohmann::json 
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||
        mateold.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
     double sigma,f,x,y;
@@ -48,8 +48,8 @@ void Poisson2DBenchmarkMaterial::computeMaterialProperties(const nlohmann::json 
     sigma=JsonUtils::getValue(inputparams,"sigma");
     f=JsonUtils::getValue(inputparams,"f");
 
-    x=elmtinfo.m_gpCoords0(1);
-    y=elmtinfo.m_gpCoords0(2);
+    x=elmtinfo.m_QpCoords0(1);
+    y=elmtinfo.m_QpCoords0(2);
 
     //************************
     //*** here the poisson equation is:
@@ -58,7 +58,7 @@ void Poisson2DBenchmarkMaterial::computeMaterialProperties(const nlohmann::json 
     mate.ScalarMaterial("dsigmadu")=0.0;// dsigma/dphi
     mate.ScalarMaterial("f")=f;// F
     mate.ScalarMaterial("dfdu")=0.0;// dF/dphi
-    mate.VectorMaterial("gradu")=elmtsoln.m_gpGradU[1];// the gradient of u
+    mate.VectorMaterial("gradu")=elmtsoln.m_QpGradU[1];// the gradient of u
     mate.ScalarMaterial("exactsolution")=1.0+x*x+2*y*y;
 
 }

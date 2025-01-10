@@ -24,7 +24,7 @@
 #include "BCSystem/BCType.h"
 #include "BCSystem/BCBlock.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "FE/FE.h"
 #include "FESystem/FECalcType.h"
@@ -78,13 +78,13 @@ public:
     BCSystem();
     /**
      * add bcblock to the list, the bc block must be unique
-     * @param t_bcblock the bc block to be added
+     * @param t_BCBlock the bc block to be added
      */
-    void addBCBlock2List(const BCBlock &t_bcblock);
+    void addBCBlock2List(const BCBlock &t_BCBlock);
     /**
      * set the dirichlet penalty coefficient
      */
-    inline void setDirichletPenalty(const double &val){m_dirichlet_penalty=val;}
+    inline void setDirichletPenalty(const double &val){m_DirichletPenalty=val;}
 
     /**
      * initialize the bc system
@@ -98,34 +98,34 @@ public:
     /**
      * get the total number of bc blocks defined in the input file
      */
-    inline int getBCBlocksNum()const{return m_bcblocks_num;}
+    inline int getBCBlocksNum()const{return m_BCBlocksNum;}
     /**
      * get the i-th bc block
      * @param i the integer index for bc block
      */
     inline BCBlock getIthBCBlock(const int &i)const{
-        if(i<1||i>m_bcblocks_num){
+        if(i<1||i>m_BCBlocksNum){
             MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range for bcblocks");
             MessagePrinter::exitAsFem();
         }
-        return m_bclock_list[i-1];
+        return m_BCBlockList[i-1];
     }
     /**
      * get the penalty coefficient for dirichlet bc
      */
-    inline double getDirichletPenalty()const{return m_dirichlet_penalty;}
+    inline double getDirichletPenalty()const{return m_DirichletPenalty;}
 
     //*******************************************************
     //*** for different boundary conditions
     //*******************************************************
     /**
      * apply the boundary conditions
-     * @param t_calctype the calculation type
+     * @param CalcType the calculation type
      * @param t current time
-     * @param ctan the time derivative vector
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dofhandler class
-     * @param t_fe the fe space class
+     * @param Ctan the time derivative vector
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dofhandler class
+     * @param t_FE the fe space class
      * @param U the solution vector
      * @param Ucopy the solution vector's copy
      * @param Uold the solution vector of previous step
@@ -134,11 +134,11 @@ public:
      * @param AMATRIX the system K matrix
      * @param RHS the system residual vector
      */
-    void applyBoundaryConditions(const FECalcType &t_calctype,
-                                 const double &t,const double (&ctan)[3],
-                                 const FECell &t_fecell,
-                                 const DofHandler &t_dofhandler,
-                                 FE &t_fe,
+    void applyBoundaryConditions(const FECalcType &CalcType,
+                                 const double &t,const double (&Ctan)[3],
+                                 const FECell &t_FECell,
+                                 const DofHandler &t_DofHandler,
+                                 FE &t_FE,
                                  Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                                  Vector &V,
                                  SparseMatrix &AMATRIX,
@@ -146,10 +146,10 @@ public:
 
     /**
      * apply the preset boundary condition, this will only modify the U vector, K and R will not be touched.
-     * @param t_calctype the calculation type
+     * @param CalcType the calculation type
      * @param t current time
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dofhandler class
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dofhandler class
      * @param U the solution vector
      * @param Ucopy the solution vector's copy
      * @param Uold the solution vector of previous step
@@ -158,10 +158,10 @@ public:
      * @param AMATRIX the system K matrix
      * @param RHS the system residual vector
      */
-    void applyPresetBoundaryConditions(const FECalcType &t_calctype,
+    void applyPresetBoundaryConditions(const FECalcType &CalcType,
                                  const double &t,
-                                 const FECell &t_fecell,
-                                 const DofHandler &t_dofhandler,
+                                 const FECell &t_FECell,
+                                 const DofHandler &t_DofHandler,
                                  Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                                  Vector &V,
                                  SparseMatrix &AMATRIX,
@@ -180,40 +180,40 @@ public:
 private:
     /**
      * apply different boundary conditions
-     * @param t_calctype the calculation type
-     * @param t_bctype the boundary condition type
-     * @param t_bcvalue the boundary value
-     * @param ctan the time derivative vector
-     * @param t_json the json content for bc block
-     * @param t_normal the normal vector of current bc element (on qpoint)
-     * @param t_elmtinfo the local element info 
-     * @param t_elmtsoln the local element solution
-     * @param t_shp the shape function class
-     * @param localK the local K matrix
-     * @param localR the local residual vector
+     * @param CalcType the calculation type
+     * @param t_BCType the boundary condition type
+     * @param BCValue the boundary value
+     * @param Ctan the time derivative vector
+     * @param Params the json content for bc block
+     * @param Normal the normal vector of current bc element (on qpoint)
+     * @param ElmtInfo the local element info 
+     * @param ElmtSoln the local element solution
+     * @param Shp the shape function class
+     * @param LocalK the local K matrix
+     * @param LocalR the local residual vector
      */
-    void runBCLibs(const FECalcType &t_calctype,
-                   const BCType &t_bctype,
-                   const double &t_bcvalue,
-                   const double (&ctan)[3],
-                   const nlohmann::json &t_json,
-                   const Vector3d &t_normal,
-                   const LocalElmtInfo &t_elmtinfo,
-                   const LocalElmtSolution &t_elmtsoln,
-                   const LocalShapeFun &t_shp,
-                   MatrixXd &localK,
-                   VectorXd &localR);
+    void runBCLibs(const FECalcType &CalcType,
+                   const BCType &t_BCType,
+                   const double &BCValue,
+                   const double (&Ctan)[3],
+                   const nlohmann::json &Params,
+                   const Vector3d &Normal,
+                   const LocalElmtInfo &ElmtInfo,
+                   const LocalElmtSolution &ElmtSoln,
+                   const LocalShapeFun &Shp,
+                   MatrixXd &LocalK,
+                   VectorXd &LocalR);
 
     /**
      * for dirichlet boundary condition
-     * @param t_calctype the calculation type
-     * @param t_bcvalue the boundary value
-     * @param t_bctype the boundary condition type
-     * @param t_json the json content for bc block
-     * @param t_dofids the local dofs id of current bc block
-     * @param t_bcnamelist the boundary name list
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dofhandler class
+     * @param CalcType the calculation type
+     * @param BCValue the boundary value
+     * @param t_BCType the boundary condition type
+     * @param Params the json content of parameters for bc block
+     * @param DofIDs the local dofs id of current bc block
+     * @param BCNameList the boundary name list
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dofhandler class
      * @param U the solution vector
      * @param Ucopy the solution vector's copy
      * @param Uold the solution vector of previous step
@@ -222,13 +222,13 @@ private:
      * @param AMATRIX the system K matrix
      * @param RHS the system residual vector
      */
-    void applyDirichletBC(const FECalcType &t_calctype,
-                          const double &t_bcvalue,
-                          const BCType &t_bctype,
-                          const nlohmann::json &t_json,
-                          const vector<int> &t_dofids,
-                          const vector<string> &t_bcnamelist,
-                          const FECell &t_fecell,const DofHandler &t_dofhandler,
+    void applyDirichletBC(const FECalcType &CalcType,
+                          const double &BCValue,
+                          const BCType &t_BCType,
+                          const nlohmann::json &Params,
+                          const vector<int> &DofIDs,
+                          const vector<string> &BCNameList,
+                          const FECell &t_FECell,const DofHandler &t_DofHandler,
                           Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
                           Vector &V,
                           SparseMatrix &AMATRIX,
@@ -236,16 +236,16 @@ private:
 
     /**
      * for integrated boundary condition
-     * @param t_calctype the calculation type
-     * @param t_bcvalue the boundary value
-     * @param t_bctype the boundary condition type
-     * @param ctan the time integration array
-     * @param t_parameters the json parameter content for bc block
-     * @param t_dofids the local dofs id of current bc block
-     * @param t_bcnamelist the boundary name list
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dofhandler class
-     * @param t_fe the FE space class
+     * @param CalcType the calculation type
+     * @param BCValue the boundary value
+     * @param t_BCType the boundary condition type
+     * @param Ctan the time integration array
+     * @param Parameters the json parameter content for bc block
+     * @param DofIDs the local dofs id of current bc block
+     * @param BCNameList the boundary name list
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dofhandler class
+     * @param t_FE the FE space class
      * @param U the solution vector
      * @param Uold the solution vector of previous step
      * @param Uolder the solution vector of pre-previous step
@@ -253,15 +253,15 @@ private:
      * @param AMATRIX the system K matrix
      * @param RHS the system residual vector
      */
-    void applyIntegratedBC(const FECalcType &t_calctype,
-                           const double &t_bcvalue,
-                           const BCType &t_bctype,
-                           const double (&ctan)[3],
-                           const nlohmann::json &t_parameters,
-                           const vector<int> &t_dofids,
-                           const vector<string> &t_bcnamelist,
-                           const FECell &t_fecell,const DofHandler &t_dofhandler,
-                           FE &t_fe,
+    void applyIntegratedBC(const FECalcType &CalcType,
+                           const double &BCValue,
+                           const BCType &t_BCType,
+                           const double (&Ctan)[3],
+                           const nlohmann::json &Parameters,
+                           const vector<int> &DofIDs,
+                           const vector<string> &BCNameList,
+                           const FECell &t_FECell,const DofHandler &t_DofHandler,
+                           FE &t_FE,
                            Vector &U,Vector &Uold,Vector &Uolder,
                            Vector &V,
                            SparseMatrix &AMATRIX,
@@ -270,61 +270,61 @@ private:
 private:
     /**
      * assemble local residual to the global RHS
-     * @param t_dofs the number of dofs for current bc element
-     * @param t_dofids the local dof ids
+     * @param Dofs the number of dofs for current bc element
+     * @param DofIDs the local dof ids
      * @param I the node index, global one
-     * @param jxw the jacobian*weight value
-     * @param t_dofhandler the dofhandler class
-     * @param t_localR the local residual vector
+     * @param JxW the jacobian*weight value
+     * @param t_DofHandler the dofhandler class
+     * @param LocalR the local residual vector
      * @param RHS the system residual vector
      */
-    void assembleLocalResidual2Global(const int &t_dofs,const vector<int> &t_dofids,
-                                      const int &I,const double &jxw,
-                                      const DofHandler &t_dofhandler,
-                                      const VectorXd &t_localR,Vector &RHS);
+    void assembleLocalResidual2Global(const int &Dofs,const vector<int> &DofIDs,
+                                      const int &I,const double &JxW,
+                                      const DofHandler &t_DofHandler,
+                                      const VectorXd &LocalR,Vector &RHS);
     
     /**
      * assemble local residual to the global RHS
-     * @param t_dofs the number of dofs for current bc element
-     * @param t_dofids the local dof ids
+     * @param Dofs the number of dofs for current bc element
+     * @param DofIDs the local dof ids
      * @param I the node i-index, global one
      * @param J the node j-index, global one
-     * @param jxw the jacobian*weight value
-     * @param t_dofhandler the dofhandler class
-     * @param t_localK the local K matrix
+     * @param JxW the jacobian*weight value
+     * @param t_DofHandler the dofhandler class
+     * @param LocalK the local K matrix
      * @param AMATRIX the system K matrix
      */
-    void assembleLocalJacobian2Global(const int &t_dofs,const vector<int> &t_dofids,
+    void assembleLocalJacobian2Global(const int &Dofs,const vector<int> &DofIDs,
                                       const int &I,const int &J,
-                                      const double &jxw,
-                                      const DofHandler &t_dofhandler,
-                                      const MatrixXd &t_localK,
+                                      const double &JxW,
+                                      const DofHandler &t_DofHandler,
+                                      const MatrixXd &LocalK,
                                       SparseMatrix &AMATRIX);
 
 
 
 private:
-    vector<BCBlock> m_bclock_list;/**< vector for bc blocks */
-    int m_bcblocks_num; /**< number of bc blocks */
-    double m_dirichlet_penalty;/**< the penalty coefficient for dirichlet bc */
+    vector<BCBlock> m_BCBlockList;/**< vector for bc blocks */
+    int m_BCBlocksNum; /**< number of bc blocks */
+    double m_DirichletPenalty;/**< the penalty coefficient for dirichlet bc */
 
 private:
-    PetscMPIInt m_rank;/**< for the rank id of current cpu */
-    PetscMPIInt m_size;/**< for the size of total cpus */
+    PetscMPIInt m_Rank;/**< for the rank id of current cpu */
+    PetscMPIInt m_Size;/**< for the size of total cpus */
 
 private:
-    VectorXd m_localR;/**< for the local 'element's vector, used for one single element/model */
-    MatrixXd m_localK;/**< for the local 'element's matrix, used for one single element/model */
+    VectorXd m_LocalR;/**< for the local 'element's vector, used for one single element/model */
+    MatrixXd m_LocalK;/**< for the local 'element's matrix, used for one single element/model */
 
-    int m_bcelmt_nodesnum;/**< the nodes number of the bc element */
-    Nodes m_nodes;/**< for the nodal coordinates of current bc element (current configuration) */
-    Nodes m_nodes0;/**< for the nodal coordinates of current bc element (reference configuration) */
+    int m_BCElmtNodesNum;/**< the nodes number of the bc element */
+    Nodes m_Nodes;/**< for the nodal coordinates of current bc element (current configuration) */
+    Nodes m_Nodes0;/**< for the nodal coordinates of current bc element (reference configuration) */
 
-    LocalElmtInfo m_local_elmtinfo;/**< for the local element information */
-    LocalElmtSolution m_local_elmtsoln;/**< for the local element solution */
-    LocalShapeFun m_local_shp;/**< for the local shape function */
+    LocalElmtInfo m_LocalElmtInfo;/**< for the local element information */
+    LocalElmtSolution m_LocalElmtSoln;/**< for the local element solution */
+    LocalShapeFun m_LocalShp;/**< for the local shape function */
 
-    Vector3d m_normal;/**< the normal vector */
-    Rank2Tensor m_xs;/**< for the derivative in norm vector calculation */
+    Vector3d m_Normal;/**< the normal vector */
+    Rank2Tensor m_XS;/**< for the derivative in norm vector calculation */
 
 };

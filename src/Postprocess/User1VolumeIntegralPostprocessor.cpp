@@ -22,14 +22,14 @@ double User1VolumeIntegralPostprocessor::computeVolumeIntegralValue(const int &d
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(nodeid||parameters.size()||projsystem.getNodesNum()||shp.m_test) {}
+    if(nodeid||parameters.size()||projsystem.getNodesNum()||shp.m_Test) {}
     
     if(dofid<1||dofid>soln.getDofsNum()){
         MessagePrinter::printErrorTxt("dof id="+to_string(dofid)+" is out of range for User1VolumeIntegralPostprocessor");
         MessagePrinter::exitAsFem();
     }
     
-    m_ppsvalue=std::cos(elmtinfo.m_gpCoords0(1)*elmtinfo.m_gpCoords0(2))/elmtinfo.m_nodesnum;// int(cos(xy))dV
+    m_ppsvalue=std::cos(elmtinfo.m_QpCoords0(1)*elmtinfo.m_QpCoords0(2))/elmtinfo.m_NodesNum;// int(cos(xy))dV
     
     return m_ppsvalue;
 }

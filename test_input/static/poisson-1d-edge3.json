@@ -2,7 +2,7 @@
 	"mesh":{
 		"type":"asfem",
 		"dim":1,
-		"nx":50,
+		"nx":100,
 		"meshtype":"edge3",
 		"savemesh":true
 	},

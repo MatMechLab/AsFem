@@ -19,15 +19,19 @@
 
 #include "ElmtSystem/AllenCahnFractureElement.h"
 
-void AllenCahnFractureElement::computeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
-            const LocalElmtSolution &soln,const LocalShapeFun &shp,
-            const MaterialsContainer &mate_old,const MaterialsContainer &mate,
-            MatrixXd &localK,VectorXd &localR) {
-    if(calctype==FECalcType::COMPUTERESIDUAL){
-        computeResidual(elmtinfo,soln,shp,mate_old,mate,localR);
+void AllenCahnFractureElement::computeAll(const FECalcType &CalcType,
+                                          const LocalElmtInfo &ElmtInfo,
+                                          const double (&Ctan)[3],
+                                          const LocalElmtSolution &ElmtSoln,
+                                          const LocalShapeFun &Shp,
+                                          const MaterialsContainer &MateOld,
+                                          const MaterialsContainer &Mate,
+                                          MatrixXd &LocalK,VectorXd &LocalR) {
+    if(CalcType==FECalcType::COMPUTERESIDUAL){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
     }
-    else if(calctype==FECalcType::COMPUTEJACOBIAN){
-        computeJacobian(elmtinfo,ctan,soln,shp,mate_old,mate,localK);
+    else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
     }
     else{
         MessagePrinter::printErrorTxt("unsupported calculation type in AllenCahnFractureElmt, please check your related code");
@@ -35,124 +39,125 @@ void AllenCahnFractureElement::computeAll(const FECalcType &calctype,const Local
     }
 }
 //***************************************************************************
-void AllenCahnFractureElement::computeResidual(const LocalElmtInfo &elmtinfo,
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 VectorXd &localR) {
+void AllenCahnFractureElement::computeResidual(const LocalElmtInfo &ElmtInfo,
+                                               const LocalElmtSolution &ElmtSoln,
+                                               const LocalShapeFun &Shp,
+                                               const MaterialsContainer &MateOld,
+                                               const MaterialsContainer &Mate,
+                                               VectorXd &LocalR) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(mate_old.getScalarMaterialsNum()) {}
+    if(MateOld.getScalarMaterialsNum()) {}
 
-    if(elmtinfo.m_dim<2){
-        MessagePrinter::printErrorTxt("AllenCahnFractureElmt works only for 2d and 3d case");
+    if(ElmtInfo.m_Dim<2){
+        MessagePrinter::printErrorTxt("AllenCahnFractureElmt only works for 2d and 3d case");
         MessagePrinter::exitAsFem();
     }
-    double L=mate.ScalarMaterial("L");
-    double Gc=mate.ScalarMaterial("Gc");
-    double eps=mate.ScalarMaterial("eps");
-    double Hist=mate.ScalarMaterial("H");
-    double dFdD=mate.ScalarMaterial("dFdD");
-    Rank2Tensor Stress=mate.Rank2Material("stress");
+    double L=Mate.ScalarMaterial("L");
+    double Gc=Mate.ScalarMaterial("Gc");
+    double eps=Mate.ScalarMaterial("eps");
+    double Hist=Mate.ScalarMaterial("H");
+    double dFdD=Mate.ScalarMaterial("dFdD");
+    Rank2Tensor Stress=Mate.Rank2Material("stress");
     // R_d
-    localR(1)=soln.m_gpV[1]*shp.m_test
-             +L*dg(soln.m_gpU[1])*Hist*shp.m_test
-             +L*dFdD*shp.m_test
-             +L*Gc*eps*(soln.m_gpGradU[1]*shp.m_grad_test);
+    LocalR(1)=ElmtSoln.m_QpV[1]*Shp.m_Test
+             +L*dg(ElmtSoln.m_QpU[1])*Hist*Shp.m_Test
+             +L*dFdD*Shp.m_Test
+             +L*Gc*eps*(ElmtSoln.m_QpGradU[1]*Shp.m_GradTest);
     // R_ux
-    localR(2)=Stress.getIthRow(1)*shp.m_grad_test;
+    LocalR(2)=Stress.getIthRow(1)*Shp.m_GradTest;
     // R_uy
-    localR(3)=Stress.getIthRow(2)*shp.m_grad_test;
-    if(elmtinfo.m_dim==3){
+    LocalR(3)=Stress.getIthRow(2)*Shp.m_GradTest;
+    if(ElmtInfo.m_Dim==3){
         // R_uz
-        localR(4)=Stress.getIthRow(3)*shp.m_grad_test;
+        LocalR(4)=Stress.getIthRow(3)*Shp.m_GradTest;
     }
 
 }
 //*****************************************************************************
-void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 MatrixXd &localK) {
+void AllenCahnFractureElement::computeJacobian(const LocalElmtInfo &ElmtInfo,
+                                               const double (&Ctan)[3],
+                                               const LocalElmtSolution &ElmtSoln,
+                                               const LocalShapeFun &Shp,
+                                               const MaterialsContainer &MateOld,
+                                               const MaterialsContainer &Mate,
+                                               MatrixXd &LocalK) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(mate_old.getScalarMaterialsNum()){}
+    if(MateOld.getScalarMaterialsNum()){}
 
     int k;
     double valx,valy,valz;
-    double L=mate.ScalarMaterial("L");
-    double Gc=mate.ScalarMaterial("Gc");
-    double eps=mate.ScalarMaterial("eps");
-    double Hist=mate.ScalarMaterial("H");
-    double d2FdD2=mate.ScalarMaterial("d2FdD2");
-    Rank2Tensor dStressdD=mate.Rank2Material("dstressdD");
-    Rank2Tensor dHdstrain=mate.Rank2Material("dHdstrain");
+    double L=Mate.ScalarMaterial("L");
+    double Gc=Mate.ScalarMaterial("Gc");
+    double eps=Mate.ScalarMaterial("eps");
+    double Hist=Mate.ScalarMaterial("H");
+    double d2FdD2=Mate.ScalarMaterial("d2FdD2");
+    Rank2Tensor dStressdD=Mate.Rank2Material("dstressdD");
+    Rank2Tensor dHdstrain=Mate.Rank2Material("dHdstrain");
 
     // K_d,d
-    localK(1,1)=shp.m_trial*shp.m_test*ctan[1]
-               +L*d2g(soln.m_gpU[1])*shp.m_trial*Hist*shp.m_test*ctan[0]
-               +L*d2FdD2*shp.m_trial*shp.m_test*ctan[0]
-               +L*Gc*eps*(shp.m_grad_trial*shp.m_grad_test)*ctan[0];
+    LocalK(1,1)=Shp.m_Trial*Shp.m_Test*Ctan[1]
+               +L*d2g(ElmtSoln.m_QpU[1])*Shp.m_Trial*Hist*Shp.m_Test*Ctan[0]
+               +L*d2FdD2*Shp.m_Trial*Shp.m_Test*Ctan[0]
+               +L*Gc*eps*(Shp.m_GradTrial*Shp.m_GradTest)*Ctan[0];
     //*******************************
     valx=0.0;valy=0.0;valz=0.0;
-    if(mate.BooleanMaterial("finite-strain")){
+    if(Mate.BooleanMaterial("finite-strain")){
         // for finite strain case
         for(k=1;k<=3;k++){
-            valx+=dHdstrain(1,k)*shp.m_grad_trial(k);
-            valy+=dHdstrain(2,k)*shp.m_grad_trial(k);
-            valz+=dHdstrain(3,k)*shp.m_grad_trial(k);
+            valx+=dHdstrain(1,k)*Shp.m_GradTrial(k);
+            valy+=dHdstrain(2,k)*Shp.m_GradTrial(k);
+            valz+=dHdstrain(3,k)*Shp.m_GradTrial(k);
         }
     }
     else{
         // for small strain case
         for(k=1;k<=3;k++){
-            valx+=0.5*(dHdstrain(1,k)+dHdstrain(k,1))*shp.m_grad_trial(k);
-            valy+=0.5*(dHdstrain(2,k)+dHdstrain(k,2))*shp.m_grad_trial(k);
-            valz+=0.5*(dHdstrain(3,k)+dHdstrain(k,3))*shp.m_grad_trial(k);
+            valx+=0.5*(dHdstrain(1,k)+dHdstrain(k,1))*Shp.m_GradTrial(k);
+            valy+=0.5*(dHdstrain(2,k)+dHdstrain(k,2))*Shp.m_GradTrial(k);
+            valz+=0.5*(dHdstrain(3,k)+dHdstrain(k,3))*Shp.m_GradTrial(k);
         }
     }
     // K_d,ux
-    localK(1,2)=L*dg(soln.m_gpU[1])*valx*shp.m_test*ctan[0];
+    LocalK(1,2)=L*dg(ElmtSoln.m_QpU[1])*valx*Shp.m_Test*Ctan[0];
     // K_d,uy
-    localK(1,3)=L*dg(soln.m_gpU[1])*valy*shp.m_test*ctan[0];
+    LocalK(1,3)=L*dg(ElmtSoln.m_QpU[1])*valy*Shp.m_Test*Ctan[0];
 
     // K_ux,d
-    localK(2,1)=dStressdD.getIthRow(1)*shp.m_trial*shp.m_grad_test*ctan[0];
+    LocalK(2,1)=dStressdD.getIthRow(1)*Shp.m_Trial*Shp.m_GradTest*Ctan[0];
     // K_ux,ux
-    localK(2,2)=mate.Rank4Material("jacobian").getIKComponent(1,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(2,2)=Mate.Rank4Material("jacobian").getIKComponent(1,1,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
     // K_ux,uy
-    localK(2,3)=mate.Rank4Material("jacobian").getIKComponent(1,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(2,3)=Mate.Rank4Material("jacobian").getIKComponent(1,2,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
 
     // K_uy,d
-    localK(3,1)=dStressdD.getIthRow(2)*shp.m_trial*shp.m_grad_test*ctan[0];
+    LocalK(3,1)=dStressdD.getIthRow(2)*Shp.m_Trial*Shp.m_GradTest*Ctan[0];
     // K_uy,ux
-    localK(3,2)=mate.Rank4Material("jacobian").getIKComponent(2,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(3,2)=Mate.Rank4Material("jacobian").getIKComponent(2,1,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
     // K_uy,uy
-    localK(3,3)=mate.Rank4Material("jacobian").getIKComponent(2,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+    LocalK(3,3)=Mate.Rank4Material("jacobian").getIKComponent(2,2,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
 
-    if(elmtinfo.m_dim==3){
+    if(ElmtInfo.m_Dim==3){
         // K_d,uz
-        localK(1,4)=L*dg(soln.m_gpU[1])*valz*shp.m_test*ctan[0];
+        LocalK(1,4)=L*dg(ElmtSoln.m_QpU[1])*valz*Shp.m_Test*Ctan[0];
 
         // K_ux,uz
-        localK(2,4)=mate.Rank4Material("jacobian").getIKComponent(1,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(2,4)=Mate.Rank4Material("jacobian").getIKComponent(1,3,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
 
         // K_uy,uz
-        localK(3,4)=mate.Rank4Material("jacobian").getIKComponent(2,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(3,4)=Mate.Rank4Material("jacobian").getIKComponent(2,3,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
 
         // K_uz,d
-        localK(4,1)=dStressdD.getIthRow(3)*shp.m_trial*shp.m_grad_test*ctan[0];
+        LocalK(4,1)=dStressdD.getIthRow(3)*Shp.m_Trial*Shp.m_GradTest*Ctan[0];
         // K_uz,ux
-        localK(4,2)=mate.Rank4Material("jacobian").getIKComponent(3,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(4,2)=Mate.Rank4Material("jacobian").getIKComponent(3,1,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
         // K_uz,uy
-        localK(4,3)=mate.Rank4Material("jacobian").getIKComponent(3,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(4,3)=Mate.Rank4Material("jacobian").getIKComponent(3,2,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
         // K_uz,uz
-        localK(4,4)=mate.Rank4Material("jacobian").getIKComponent(3,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        LocalK(4,4)=Mate.Rank4Material("jacobian").getIKComponent(3,3,Shp.m_GradTest,Shp.m_GradTrial)*Ctan[0];
 
     }
 }

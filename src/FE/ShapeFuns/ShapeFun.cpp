@@ -21,57 +21,57 @@ ShapeFun::ShapeFun(){
 
 void ShapeFun::init(){
     if(m_shp_type==ShapeFunType::DEFAULT){
-        switch (m_mesh_type)
-        {
-        // for 1d case
-        case MeshType::EDGE2:
-            m_dim=1;m_funs=2;
+        switch (m_mesh_type) {
+            // for 1d case
+            case MeshType::EDGE2:
+                m_dim=1;m_funs=2;
             break;
-        case MeshType::EDGE3:
-            m_dim=1;m_funs=3;
+            case MeshType::EDGE3:
+                m_dim=1;m_funs=3;
             break;
-        case MeshType::EDGE4:
-            m_dim=1;m_funs=4;
+            case MeshType::EDGE4:
+                m_dim=1;m_funs=4;
             break;
-        // for 2d case
-        case MeshType::TRI3:
-            m_dim=2;m_funs=3;
+            // for 2d case
+            case MeshType::TRI3:
+                m_dim=2;m_funs=3;
             break;
-        case MeshType::TRI6:
-            m_dim=2;m_funs=6;
+            case MeshType::TRI6:
+                m_dim=2;m_funs=6;
             break;
-        case MeshType::QUAD4:
-            m_dim=2;m_funs=4;
+            case MeshType::QUAD4:
+                m_dim=2;m_funs=4;
             break;
-        case MeshType::QUAD8:
-            m_dim=2;m_funs=8;
+            case MeshType::QUAD8:
+                m_dim=2;m_funs=8;
             break;
-        case MeshType::QUAD9:
-            m_dim=2;m_funs=9;
+            case MeshType::QUAD9:
+                m_dim=2;m_funs=9;
             break;
-        // for 3d case
-        case MeshType::TET4:
-            m_dim=3;m_funs=4;
+            // for 3d case
+            case MeshType::TET4:
+                m_dim=3;m_funs=4;
             break;
-        case MeshType::TET10:
-            m_dim=3;m_funs=10;
+            case MeshType::TET10:
+                m_dim=3;m_funs=10;
             break;
-        case MeshType::HEX8:
-            m_dim=3;m_funs=8;
+            case MeshType::HEX8:
+                m_dim=3;m_funs=8;
             break;
-        case MeshType::HEX20:
-            m_dim=3;m_funs=20;
+            case MeshType::HEX20:
+                m_dim=3;m_funs=20;
             break;
-        case MeshType::HEX27:
-            m_dim=3;m_funs=27;
+            case MeshType::HEX27:
+                m_dim=3;m_funs=27;
             break;
-        default:
+            default:{
             MessagePrinter::printErrorTxt("unsupported mesh type in AsFem, currently we only support "
                                         "1D: edge2, edge3, edge4 shape function, "
                                         "2D: quad4, quad8, quad9 and tri3, tri6 shape function, "
                                         "3D: hex8, hex20, hex27 and tet4, tet10 shape function");
             MessagePrinter::exitAsFem();
             break;
+            }
         }
     }
     else{

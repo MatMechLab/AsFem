@@ -24,36 +24,36 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
         }
         string solvertypename=t_json.at("type");
         if(solvertypename=="newton"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="newton with line search";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::NEWTONLS;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with line search";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONLS;
         }
         else if(solvertypename=="newton-ls"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="newton with line search";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::NEWTONLS;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with line search";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONLS;
         }
         else if(solvertypename=="newton-tr"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="newton with trust region";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::NEWTONTR;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with trust region";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONTR;
         }
         else if(solvertypename=="newton-secant"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="newton secant";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::NEWTONSECANT;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton secant";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONSECANT;
         }
         else if(solvertypename=="newton-cg"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="newton cg";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::NEWTONCG;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton cg";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONCG;
         }
         else if(solvertypename=="newton-gmres"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="newton gmres";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::NEWTONGMRES;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton gmres";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONGMRES;
         }
         else if(solvertypename=="richardson"){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="richardson";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::RICHARDSON;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="richardson";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::RICHARDSON;
         }
         else if(solvertypename.find("bfgs")!=string::npos){
-            t_nlsolver.m_nlsolverblock.m_nlsolvertypename="BFGS";
-            t_nlsolver.m_nlsolverblock.m_nlsolvertype=NonlinearSolverType::BFGS;
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="BFGS";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::BFGS;
         }
         else{
             MessagePrinter::printErrorTxt("type="+solvertypename+" is invalid in [nlsolver] block, please check your input file");
@@ -73,30 +73,30 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
         }
         string solvername=t_json.at("solver");
         if(solvername=="gmres" || solvername=="default"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="gmres";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="gmres";
         }
         else if(solvername=="fgmres"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="fgmres";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="fgmres";
         }
         else if(solvername=="cg"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="cg";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="cg";
         }
         else if(solvername=="bicg"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="bicg";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="bicg";
         }
         else if(solvername=="richardson"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="richardson";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="richardson";
         }
         else if(solvername=="mumps"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="mumps";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="mumps";
         }
         else if(solvername=="superlu"){
-            t_nlsolver.m_nlsolverblock.m_linearsolvername="superlu";
+            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="superlu";
         }
     }
     else{
         MessagePrinter::printWarningTxt("can\'t find 'solver' in your nlsolver block, then the default linear solver (gmres) will be used");
-        t_nlsolver.m_nlsolverblock.m_linearsolvername="gmres";
+        t_nlsolver.m_NlSolverBlock.m_LinearSolverName="gmres";
     }
 
     if(t_json.contains("maxiters")){
@@ -105,10 +105,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
                                           "please check your input file");
             return false;
         }
-        t_nlsolver.m_nlsolverblock.m_maxiters=t_json.at("maxiters");
+        t_nlsolver.m_NlSolverBlock.m_MaxIters=t_json.at("maxiters");
     }
     else{
-        t_nlsolver.m_nlsolverblock.m_maxiters=25;
+        t_nlsolver.m_NlSolverBlock.m_MaxIters=25;
     }
     //****************************************
     if(t_json.contains("abs-tolerance")){
@@ -117,10 +117,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
                                           "please check your input file");
             return false;
         }
-        t_nlsolver.m_nlsolverblock.m_abstol_r=t_json.at("abs-tolerance");
+        t_nlsolver.m_NlSolverBlock.m_AbsTolR=t_json.at("abs-tolerance");
     }
     else{
-        t_nlsolver.m_nlsolverblock.m_abstol_r=7.0e-7;
+        t_nlsolver.m_NlSolverBlock.m_AbsTolR=7.0e-7;
     }
     //**********************************************
     if(t_json.contains("rel-tolerance")){
@@ -129,10 +129,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
                                           "please check your input file");
             return false;
         }
-        t_nlsolver.m_nlsolverblock.m_reltol_r=t_json.at("rel-tolerance");
+        t_nlsolver.m_NlSolverBlock.m_RelTolR=t_json.at("rel-tolerance");
     }
     else{
-        t_nlsolver.m_nlsolverblock.m_reltol_r=1.0e-9;
+        t_nlsolver.m_NlSolverBlock.m_RelTolR=1.0e-9;
     }
     //**********************************************
     if(t_json.contains("s-tolerance")){
@@ -141,10 +141,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
                                           "please check your input file");
             return false;
         }
-        t_nlsolver.m_nlsolverblock.m_s_tol=t_json.at("s-tolerance");
+        t_nlsolver.m_NlSolverBlock.m_STol=t_json.at("s-tolerance");
     }
     else{
-        t_nlsolver.m_nlsolverblock.m_s_tol=0.0;
+        t_nlsolver.m_NlSolverBlock.m_STol=0.0;
     }
     //**********************************************
     if(t_json.contains("preconditioner")){
@@ -153,10 +153,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
                                           "please check your input file");
             return false;
         }
-        t_nlsolver.m_nlsolverblock.m_pctypename=t_json.at("preconditioner");
+        t_nlsolver.m_NlSolverBlock.m_PCTypeName=t_json.at("preconditioner");
     }
     else{
-        t_nlsolver.m_nlsolverblock.m_pctypename="lu";
+        t_nlsolver.m_NlSolverBlock.m_PCTypeName="lu";
     }
 
 

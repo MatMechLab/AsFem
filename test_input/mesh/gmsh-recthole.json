@@ -1,0 +1,7 @@
+{
+	"mesh":{
+		"type":"msh4",
+		"file":"recthole.msh",
+		"savemesh":true
+	}
+}

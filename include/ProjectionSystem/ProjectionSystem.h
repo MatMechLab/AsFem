@@ -17,7 +17,7 @@
 
 #include "MathUtils/Vector.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "MateSystem/MateSystem.h"
@@ -43,44 +43,44 @@ public:
 
     /**
      * initialize the projection system
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dof handler class
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dof handler class
      */
-    void init(const FECell &t_fecell,const DofHandler &t_dofhandler);
+    void init(const FECell &t_FECell,const DofHandler &t_DofHandler);
 
     //********************************************************
     //*** general settings
     //********************************************************
     /**
      * set the projection status
-     * @param flag boolean flag for projection status
+     * @param Flag boolean flag for projection status
      */
-    void setProjectionStatus(const bool &flag){m_isprojection=flag;}
+    void setProjectionStatus(const bool &Flag){m_IsProjection=Flag;}
     /**
      * set the number of scalar materials to be projected
      * @param num integer
      */
-    void setScalarMaterialNum(const int &num){m_data.m_scalarmate_num=num;}
+    void setScalarMaterialNum(const int &num){m_Data.m_scalarmate_num=num;}
     /**
      * set the number of vector materials to be projected
      * @param num integer
      */
-    void setVectorMaterialNum(const int &num){m_data.m_vectormate_num=num;}
+    void setVectorMaterialNum(const int &num){m_Data.m_vectormate_num=num;}
     /**
      * set the number of rank-2 tensor materials to be projected
      * @param num integer
      */
-    void setRank2TensorMaterialNum(const int &num){m_data.m_rank2mate_num=num;}
+    void setRank2TensorMaterialNum(const int &num){m_Data.m_rank2mate_num=num;}
     /**
      * set the number of rank-4 tensor materials to be projected
      * @param num integer
      */
-    void setRank4TensorMaterialNum(const int &num){m_data.m_rank4mate_num=num;}
+    void setRank4TensorMaterialNum(const int &num){m_Data.m_rank4mate_num=num;}
     /**
      * set the projection type from input file
      * @param projtype the projection type
      */
-    void setProjectionType(const ProjectionType &projtype){m_proj_type=projtype;}
+    void setProjectionType(const ProjectionType &projtype){m_ProjType=projtype;}
     /**
      * add scalar material name to list
      * @param matename string name for scalar material
@@ -108,88 +108,88 @@ public:
     /**
      * get the active status of projection
      */
-    inline bool isProjectionActive()const{return m_isprojection;}
+    inline bool isProjectionActive()const{return m_IsProjection;}
     /**
      * get the nodes number
      */
-    inline int getNodesNum()const{return m_nodesnum;}
+    inline int getNodesNum()const{return m_NodesNum;}
 
     /**
      * get the number of scalar materials
      */
-    inline int getScalarMaterialNum()const{return m_data.m_scalarmate_num;}
+    inline int getScalarMaterialNum()const{return m_Data.m_scalarmate_num;}
     /**
      * get the i-th scalar material name
      * @param i i index for scalar material name list
      */
     inline string getIthScalarMateName(const int &i)const{
-        if(i<1||i>m_data.m_scalarmate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_data.m_scalarmate_num)+") for scalar material,"
+        if(i<1||i>m_Data.m_scalarmate_num){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_scalarmate_num)+") for scalar material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_data.m_scalarmate_namelist[i-1];
+        return m_Data.m_scalarmate_namelist[i-1];
     }
 
     /**
      * get the number of vector materials
      */
-    inline int getVectorMaterialNum()const{return m_data.m_vectormate_num;}
+    inline int getVectorMaterialNum()const{return m_Data.m_vectormate_num;}
     /**
      * get the i-th vector material name
      * @param i i index for vector material name list
      */
     inline string getIthVectorMateName(const int &i)const{
-        if(i<1||i>m_data.m_vectormate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_data.m_vectormate_num)+") for vector material,"
+        if(i<1||i>m_Data.m_vectormate_num){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_vectormate_num)+") for vector material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_data.m_vectormate_namelist[i-1];
+        return m_Data.m_vectormate_namelist[i-1];
     }
 
     /**
      * get the number of rank-2 tensor materials
      */
-    inline int getRank2MaterialNum()const{return m_data.m_rank2mate_num;}
+    inline int getRank2MaterialNum()const{return m_Data.m_rank2mate_num;}
     /**
      * get the i-th rank-2 material name
      * @param i i index for rank-2 material name list
      */
     inline string getIthRank2MateName(const int &i)const{
-        if(i<1||i>m_data.m_rank2mate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_data.m_rank2mate_num)+") for rank-2 material,"
+        if(i<1||i>m_Data.m_rank2mate_num){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_rank2mate_num)+") for rank-2 material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_data.m_rank2mate_namelist[i-1];
+        return m_Data.m_rank2mate_namelist[i-1];
     }
 
     /**
      * get the number of rank-4 materials
      */
-    inline int getRank4MaterialNum()const{return m_data.m_rank4mate_num;}
+    inline int getRank4MaterialNum()const{return m_Data.m_rank4mate_num;}
     /**
      * get the i-th rank-4 material name
      * @param i i index for rank-4 material name list
      */
     inline string getIthRank4MateName(const int &i)const{
-        if(i<1||i>m_data.m_rank4mate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_data.m_rank4mate_num)+") for rank-2 material,"
+        if(i<1||i>m_Data.m_rank4mate_num){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_rank4mate_num)+") for rank-2 material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_data.m_rank4mate_namelist[i-1];
+        return m_Data.m_rank4mate_namelist[i-1];
     }
 
     /**
      * get the reference of projection data
      */
-    inline ProjectionData& getProjectionDataRef(){return m_data;}
+    inline ProjectionData& getProjectionDataRef(){return m_Data;}
     /**
      * get the copy of projection data
      */
-    inline ProjectionData getProjectionDataCopy()const{return m_data;}
+    inline ProjectionData getProjectionDataCopy()const{return m_Data;}
 
     //*********************************************
     //*** for general gettings
@@ -224,21 +224,21 @@ public:
 
     /**
      * execute the projection process
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dofhandler class
-     * @param t_elmtsystem the element system class
-     * @param t_matesystem the material system class
-     * @param t_fe the fe space class
-     * @param t_solution the solution system class
-     * @param t_fectrlinfo the fe control info 
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dofhandler class
+     * @param t_ElmtSystem the element system class
+     * @param t_MateSystem the material system class
+     * @param t_FE the fe space class
+     * @param t_SolnSystem the solution system class
+     * @param t_FECtrlInfo the fe control info
      */
-    void executeProjection(const FECell &t_fecell,
-                           const DofHandler &t_dofhandler,
-                           const ElmtSystem &t_elmtsystem,
-                           MateSystem &t_matesystem,
-                           FE &t_fe,
-                           SolutionSystem &t_solution,
-                           const FEControlInfo &t_fectrlinfo);
+    void executeProjection(const FECell &t_FECell,
+                           const DofHandler &t_DofHandler,
+                           const ElmtSystem &t_ElmtSystem,
+                           MateSystem &t_MateSystem,
+                           FE &t_FE,
+                           SolutionSystem &t_SolnSystem,
+                           const FEControlInfo &t_FECtrlInfo);
 
     /**
      * make the ghost copy for all the projection data vector
@@ -263,45 +263,45 @@ public:
 private:
     /**
      * for different projection methods
-     * @param flag true for local, false for global
-     * @param t_fecell the fe cell class
-     * @param nodesnum nodes number of current element
-     * @param t_elconn the local element's connectivity
-     * @param detjac the jacobian determinte
-     * @param t_shp the shape function
-     * @param t_mate the material container
-     * @param t_data the projection data
+     * @param Flag true for local, false for global
+     * @param t_FECell the fe cell class
+     * @param NodesNum nodes number of current element
+     * @param ElConn the local element's connectivity
+     * @param DetJac the jacobian determinte
+     * @param Shp the shape function
+     * @param Mate the material container
+     * @param Data the projection data
      */
-    void runProjectionLibs(const bool &flag,
-                           const FECell &t_fecell,
-                           const int &nodesnum,
-                           const vector<int> &t_elconn,
-                           const double &detjac,
-                           const ShapeFun &t_shp,
-                           const MaterialsContainer &t_mate,
-                           ProjectionData &t_data);
+    void runProjectionLibs(const bool &Flag,
+                           const FECell &t_FECell,
+                           const int &NodesNum,
+                           const vector<int> &ElConn,
+                           const double &DetJac,
+                           const ShapeFun &Shp,
+                           const MaterialsContainer &Mate,
+                           ProjectionData &Data);
     
 
 private:
-    bool m_isallocated;/**< boolean flag for memory allocation status */
-    bool m_isprojection;/**< boolean flag for the projection status */
-    int m_nodesnum;/** total nodes of bulk mesh */
+    bool m_IsAllocated;/**< boolean flag for memory allocation status */
+    bool m_IsProjection;/**< boolean flag for the projection status */
+    int m_NodesNum;/** total nodes of bulk mesh */
 
-    ProjectionType m_proj_type;/**< the type of projection method */
-    ProjectionData m_data;/**< the projection data */
+    ProjectionType m_ProjType;/**< the type of projection method */
+    ProjectionData m_Data;/**< the projection data */
 
-    int m_bulkelmt_nodesnum;/**< the nodes number of the bulk element */
-    vector<int> m_elmtconn;/**< for local element's connectivity */
-    int         m_subelmt_dofs;/**< for the dofs number of each sub element */
-    vector<int> m_subelmtdofsid;/**< for local sub-elemental nodes' gloabl ids, start from 0 */
+    int m_BulkElmtNodesNum;/**< the nodes number of the bulk element */
+    vector<int> m_ElmtConn;/**< for local element's connectivity */
+    int         m_SubElmtDofs;/**< for the dofs number of each sub element */
+    vector<int> m_SubElmtDofIDs;/**< for local sub-elemental nodes' gloabl ids, start from 0 */
 
-    Nodes m_nodes;/**< for the nodal coordinates of current bulk element (current configuration) */
-    Nodes m_nodes0;/**< for the nodal coordinates of current bulk element (reference configuration) */
+    Nodes m_Nodes;/**< for the nodal coordinates of current bulk element (current configuration) */
+    Nodes m_Nodes0;/**< for the nodal coordinates of current bulk element (reference configuration) */
 
-    LocalElmtInfo m_local_elmtinfo;/**< for the local element information */
-    LocalElmtSolution m_local_elmtsoln;/**< for the local element solution */
+    LocalElmtInfo m_LocalElmtInfo;/**< for the local element information */
+    LocalElmtSolution m_LocalElmtSoln;/**< for the local element solution */
 
-    PetscMPIInt m_rank;/**< for the rank id of current cpu */
-    PetscMPIInt m_size;/**< for the size of total cpus */
+    PetscMPIInt m_Rank;/**< for the rank id of current cpu */
+    PetscMPIInt m_Size;/**< for the size of total cpus */
 
 };

@@ -16,31 +16,31 @@
 #include "TimeStepping/TimeStepping.h"
 
 TimeStepping::TimeStepping(){
-    m_data.m_totalstep=1;/**< the total time step */
-    m_data.m_dt0=1.0e-6;/**< the initial delta t */
-    m_data.m_dtmax=1.0e-3;/**< the maximum time increment */
-    m_data.m_dtmin=1.0e-13;/**< the minimum time increment */
-    m_data.m_finaltime=1.0e-2;/**< the final simulation time */
-    m_data.m_cutfactor=0.85;/**< the cut back factor time time adaptive */
-    m_data.m_growthfactor=1.1;/**< the growth factor for time adaptive */
-    m_data.m_isadaptive=false;/**< boolean flag for adaptive */
-    m_data.m_optimize_iters=4;/**< optimize nonlinear iterations for time adaptive */
+    m_Data.m_TotalStep=1;/**< the total time step */
+    m_Data.m_Dt0=1.0e-6;/**< the initial delta t */
+    m_Data.m_DtMax=1.0e-3;/**< the maximum time increment */
+    m_Data.m_DtMin=1.0e-13;/**< the minimum time increment */
+    m_Data.m_FinalTime=1.0e-2;/**< the final simulation time */
+    m_Data.m_CutFactor=0.85;/**< the cut back factor time time adaptive */
+    m_Data.m_GrowthFactor=1.1;/**< the growth factor for time adaptive */
+    m_Data.m_IsAdaptive=false;/**< boolean flag for adaptive */
+    m_Data.m_OptimizeIters=4;/**< optimize nonlinear iterations for time adaptive */
 
-    m_data.m_stepping_type=TimeSteppingType::BACKWARDEULER;/**< the time stepping type */
+    m_Data.m_SteppingType=TimeSteppingType::BACKWARDEULER;/**< the time stepping type */
 }
 
 void TimeStepping::applyDefaultSettings(){
-    m_data.m_totalstep=1;/**< the total time step */
-    m_data.m_dt0=1.0e-6;/**< the initial delta t */
-    m_data.m_dtmax=1.0e-3;/**< the maximum time increment */
-    m_data.m_dtmin=1.0e-13;/**< the minimum time increment */
-    m_data.m_finaltime=1.0e-2;/**< the final simulation time */
-    m_data.m_cutfactor=0.85;/**< the cut back factor time time adaptive */
-    m_data.m_growthfactor=1.1;/**< the growth factor for time adaptive */
-    m_data.m_isadaptive=false;/**< boolean flag for adaptive */
-    m_data.m_optimize_iters=4;/**< optimize nonlinear iterations for time adaptive */
+    m_Data.m_TotalStep=1;/**< the total time step */
+    m_Data.m_Dt0=1.0e-6;/**< the initial delta t */
+    m_Data.m_DtMax=1.0e-3;/**< the maximum time increment */
+    m_Data.m_DtMin=1.0e-13;/**< the minimum time increment */
+    m_Data.m_FinalTime=1.0e-2;/**< the final simulation time */
+    m_Data.m_CutFactor=0.85;/**< the cut back factor time time adaptive */
+    m_Data.m_GrowthFactor=1.1;/**< the growth factor for time adaptive */
+    m_Data.m_IsAdaptive=false;/**< boolean flag for adaptive */
+    m_Data.m_OptimizeIters=4;/**< optimize nonlinear iterations for time adaptive */
 
-    m_data.m_stepping_type=TimeSteppingType::BACKWARDEULER;/**< the time stepping type */
+    m_Data.m_SteppingType=TimeSteppingType::BACKWARDEULER;/**< the time stepping type */
 }
 
 void TimeStepping::printInfo()const{

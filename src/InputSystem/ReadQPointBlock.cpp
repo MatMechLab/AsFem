@@ -18,20 +18,20 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
     // here json already contains "qpoints"
 
     // once user defines the "qpoints" block, we init all the sub-block with default options
-    t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-    t_fe.m_bulk_qpoints.setDim(t_fecell.getFECellMaxDim());
-    t_fe.m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
-    t_fe.m_bulk_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
+    t_fe.m_BulkQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+    t_fe.m_BulkQpoints.setDim(t_fecell.getFECellMaxDim());
+    t_fe.m_BulkQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+    t_fe.m_BulkQpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
 
-    t_fe.m_surface_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-    t_fe.m_surface_qpoints.setDim(2);
-    t_fe.m_surface_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
-    t_fe.m_surface_qpoints.setMeshType(t_fecell.getFECellSurfElmtMeshType());
+    t_fe.m_SurfaceQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+    t_fe.m_SurfaceQpoints.setDim(2);
+    t_fe.m_SurfaceQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+    t_fe.m_SurfaceQpoints.setMeshType(t_fecell.getFECellSurfElmtMeshType());
 
-    t_fe.m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-    t_fe.m_line_qpoints.setDim(1);
-    t_fe.m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
-    t_fe.m_line_qpoints.setMeshType(t_fecell.getFECellLineElmtMeshType());
+    t_fe.m_LineQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+    t_fe.m_LineQpoints.setDim(1);
+    t_fe.m_LineQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+    t_fe.m_LineQpoints.setMeshType(t_fecell.getFECellLineElmtMeshType());
 
     if(t_json.contains("bulk")){
         auto json_bulk=t_json.at("bulk");
@@ -42,25 +42,25 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
 
         string qtype=json_bulk.at("type");
         if(qtype.find("gauss-legendre")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         }
         else if(qtype.find("gauss-lobatto")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLOBATTO);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::GAUSSLOBATTO);
         }
         else if(qtype.find("user1")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER1);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER1);
         }
         else if(qtype.find("user2")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER2);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER2);
         }
         else if(qtype.find("user3")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER3);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER3);
         }
         else if(qtype.find("user4")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER4);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER4);
         }
         else if(qtype.find("user5")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER5);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER5);
         }
         else{
             MessagePrinter::printErrorTxt("unsupported gauss point type(="+qtype+") for bulk mesh, please check your input file");
@@ -77,10 +77,10 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
                 MessagePrinter::printErrorTxt("order="+to_string(order)+" is invalid for gauss point order of bulk mesh, please check your input file");
                 MessagePrinter::exitAsFem();
             }
-            t_fe.m_bulk_qpoints.setOrder(order);
+            t_fe.m_BulkQpoints.setOrder(order);
         }
         else{
-            t_fe.m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
+            t_fe.m_BulkQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         }
     }
 
@@ -99,25 +99,25 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
 
         string qtype=json_surface.at("type");
         if(qtype.find("gauss-legendre")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         }
         else if(qtype.find("gauss-lobatto")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLOBATTO);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::GAUSSLOBATTO);
         }
         else if(qtype.find("user1")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER1);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER1);
         }
         else if(qtype.find("user2")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER2);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER2);
         }
         else if(qtype.find("user3")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER3);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER3);
         }
         else if(qtype.find("user4")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER4);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER4);
         }
         else if(qtype.find("user5")!=string::npos){
-            t_fe.m_bulk_qpoints.setQPointType(QPointType::USER5);
+            t_fe.m_BulkQpoints.setQPointType(QPointType::USER5);
         }
         else{
             MessagePrinter::printErrorTxt("unsupported gauss point type(="+qtype+") for surface mesh, please check your input file");
@@ -134,10 +134,10 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
                 MessagePrinter::printErrorTxt("order="+to_string(order)+" is invalid for gauss point order of surface mesh, please check your input file");
                 MessagePrinter::exitAsFem();
             }
-            t_fe.m_surface_qpoints.setOrder(order);
+            t_fe.m_SurfaceQpoints.setOrder(order);
         }
         else{
-            t_fe.m_surface_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
+            t_fe.m_SurfaceQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         }
 
     }
@@ -157,25 +157,25 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
 
         string qtype=json_line.at("type");
         if(qtype.find("gauss-legendre")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+            t_fe.m_LineQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
         }
         else if(qtype.find("gauss-lobatto")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::GAUSSLOBATTO);
+            t_fe.m_LineQpoints.setQPointType(QPointType::GAUSSLOBATTO);
         }
         else if(qtype.find("user1")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::USER1);
+            t_fe.m_LineQpoints.setQPointType(QPointType::USER1);
         }
         else if(qtype.find("user2")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::USER2);
+            t_fe.m_LineQpoints.setQPointType(QPointType::USER2);
         }
         else if(qtype.find("user3")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::USER3);
+            t_fe.m_LineQpoints.setQPointType(QPointType::USER3);
         }
         else if(qtype.find("user4")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::USER4);
+            t_fe.m_LineQpoints.setQPointType(QPointType::USER4);
         }
         else if(qtype.find("user5")!=string::npos){
-            t_fe.m_line_qpoints.setQPointType(QPointType::USER5);
+            t_fe.m_LineQpoints.setQPointType(QPointType::USER5);
         }
         else{
             MessagePrinter::printErrorTxt("unsupported gauss point type(="+qtype+") for line mesh, please check your input file");
@@ -192,10 +192,10 @@ bool InputSystem::readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,
                 MessagePrinter::printErrorTxt("order="+to_string(order)+" is invalid for gauss point order of line mesh, please check your input file");
                 MessagePrinter::exitAsFem();
             }
-            t_fe.m_line_qpoints.setOrder(order);
+            t_fe.m_LineQpoints.setOrder(order);
         }
         else{
-            t_fe.m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
+            t_fe.m_LineQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+1);
         }
 
     }

@@ -13,6 +13,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "InputSystem/InputSystem.h"
+#include "MPIUtils/MPIDataBus.h"
 
 bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
                                 ElmtSystem &t_elmtSystem,
@@ -26,33 +27,34 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
                                 Postprocessor &t_postprocess,
                                 FEJobBlock &t_jobblock){
     ifstream in;
-    if(m_hasinputfile){
-        in.open(m_inputfile_name.c_str(),ios::in);
+    if(m_HasInputFile){
+        in.open(m_InputFileName.c_str(),ios::in);
         while(!in.is_open()){
-            MessagePrinter::printWarningTxt("can\'t open the input file(name="+m_inputfile_name+")");
+            MessagePrinter::printWarningTxt("can\'t open the input file(name="+m_InputFileName+")");
             PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the correct input file name:");
-            cin>>m_inputfile_name;
-            in.open(m_inputfile_name.c_str(),ios::in);
+            cin>>m_InputFileName;
+            in.open(m_InputFileName.c_str(),ios::in);
         }
     }
     else{
         PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the correct input file name:");
-        cin>>m_inputfile_name;
-        in.open(m_inputfile_name.c_str(),ios::in);
+        cin>>m_InputFileName;
+        in.open(m_InputFileName.c_str(),ios::in);
         while(!in.is_open()){
             MessagePrinter::printWarningTxt("can\'t open the input file");
             PetscPrintf(PETSC_COMM_WORLD,"*** Please enter the input file name:");
-            cin>>m_inputfile_name;
+            cin>>m_InputFileName;
         }
-        m_hasinputfile=true;
+        m_HasInputFile=true;
     }
+
 
     string str;
     stringstream strStream;
     strStream<<in.rdbuf();
     str=strStream.str();
     in.close();
-    m_json=nlohmann::json::parse(str);
+    m_Json=nlohmann::json::parse(str);
 
     bool HasMeshBlock=false;
     bool HasDofsBlock=false;
@@ -69,7 +71,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
     bool HasTimeSteppingBlock=false;
 
     // check whether all the blocks name are valid
-    for(auto it=m_json.begin();it!=m_json.end();it++){
+    for(auto it=m_Json.begin();it!=m_Json.end();it++){
         if(it.key()=="mesh"||
            it.key()=="dofs"||
            it.key()=="elements"||
@@ -93,9 +95,9 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
     }
 
 
-    if(m_json.contains("mesh")){
+    if(m_Json.contains("mesh")){
         // read the mesh block
-        if(readMeshBlock(m_json.at("mesh"),t_fecell)){
+        if(readMeshBlock(m_Json.at("mesh"),t_fecell)){
             HasMeshBlock=true;
         }
         else{
@@ -104,9 +106,9 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("dofs")){
+    if(m_Json.contains("dofs")){
         // read the dofs block
-        if(readDofsBlock(m_json.at("dofs"),t_dofhandler)){
+        if(readDofsBlock(m_Json.at("dofs"),t_dofhandler)){
             HasDofsBlock=true;
         }
         else{
@@ -115,7 +117,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("elements")){
+    if(m_Json.contains("elements")){
         // read the elements block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'elements' block, "
@@ -127,8 +129,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
                                           "please check your input file");
             MessagePrinter::exitAsFem();
         }
-
-        if(readElmtsBlock(m_json.at("elements"),t_fecell,t_dofhandler,t_elmtSystem)){
+        if(readElmtsBlock(m_Json.at("elements"),t_fecell,t_dofhandler,t_elmtSystem)){
             HasElmtsBlock=true;
         }
         else{
@@ -137,14 +138,14 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("qpoints")){
+    if(m_Json.contains("qpoints")){
         // read the qpoints block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'qpoints' block, "
                                           "please check your input file");
             MessagePrinter::exitAsFem();
         }
-        if(readQPointBlock(m_json.at("qpoints"),t_fecell,t_fe)){
+        if(readQPointBlock(m_Json.at("qpoints"),t_fecell,t_fe)){
             HasQPointBlock=true;
         }
         else{
@@ -153,14 +154,14 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("shapefuns")){
+    if(m_Json.contains("shapefuns")){
         // read the shapefuns block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'shapefuns' block, "
                                           "please check your input file");
             MessagePrinter::exitAsFem();
         }
-        if(readShapeFunBlock(m_json.at("shapefuns"),t_fecell,t_fe)){
+        if(readShapeFunBlock(m_Json.at("shapefuns"),t_fecell,t_fe)){
             HasShapeFunBlock=true;
         }
         else{
@@ -169,7 +170,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("bcs")){
+    if(m_Json.contains("bcs")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'bcs' block, "
@@ -182,7 +183,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readBCsBlock(m_json.at("bcs"),t_fecell,t_dofhandler,t_bcsystem)){
+        if(readBCsBlock(m_Json.at("bcs"),t_fecell,t_dofhandler,t_bcsystem)){
             HasBCBlock=true;
         }
         else{
@@ -192,7 +193,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("ics")){
+    if(m_Json.contains("ics")){
         // read the ics block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'ics' block, "
@@ -205,7 +206,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readICsBlock(m_json.at("ics"),t_fecell,t_dofhandler,t_icsystem)){
+        if(readICsBlock(m_Json.at("ics"),t_fecell,t_dofhandler,t_icsystem)){
             HasICBlock=true;
         }
         else{
@@ -215,7 +216,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("projection")){
+    if(m_Json.contains("projection")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'projection' block, "
@@ -228,7 +229,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readProjectionBlock(m_json.at("projection"),t_dofhandler,t_projsystem)){
+        if(readProjectionBlock(m_Json.at("projection"),t_dofhandler,t_projsystem)){
             HasProjectionBlock=true;
         }
         else{
@@ -238,7 +239,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("nlsolver")){
+    if(m_Json.contains("nlsolver")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'nlsolver' block, "
@@ -251,7 +252,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readNLSolverBlock(m_json.at("nlsolver"),t_nlsolver)){
+        if(readNLSolverBlock(m_Json.at("nlsolver"),t_nlsolver)){
             HasNLSolverBlock=true;
         }
         else{
@@ -261,8 +262,8 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
 
-    t_postprocess.setInputFileName(m_inputfile_name);
-    if(m_json.contains("postprocess")){
+    t_postprocess.setInputFileName(m_InputFileName);
+    if(m_Json.contains("postprocess")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'postprocess' block, "
@@ -275,7 +276,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readPostprocessBlock(m_json.at("postprocess"),t_fecell,t_dofhandler,t_postprocess)){
+        if(readPostprocessBlock(m_Json.at("postprocess"),t_fecell,t_dofhandler,t_postprocess)){
             HasPPSBlock=true;
         }
         else{
@@ -285,7 +286,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("timestepping")){
+    if(m_Json.contains("timestepping")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'timestepping' block, "
@@ -298,7 +299,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readTimeSteppingBlock(m_json.at("timestepping"),t_timestepping)){
+        if(readTimeSteppingBlock(m_Json.at("timestepping"),t_timestepping)){
             HasTimeSteppingBlock=true;
         }
         else{
@@ -308,7 +309,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("output")){
+    if(m_Json.contains("output")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'output' block, "
@@ -327,7 +328,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readOutputBlock(m_json.at("output"),t_output)){
+        if(readOutputBlock(m_Json.at("output"),t_output)){
             HasOutputBlock=true;
         }
         else{
@@ -337,7 +338,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         }
     }
     
-    if(m_json.contains("job")){
+    if(m_Json.contains("job")){
         // read the bcs block
         if(!HasMeshBlock){
             MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'job' block, "
@@ -356,7 +357,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
             MessagePrinter::exitAsFem();
         }
 
-        if(readJobBlock(m_json.at("job"),t_jobblock)){
+        if(readJobBlock(m_Json.at("job"),t_jobblock)){
             HasJobBlock=true;
         }
         else{
@@ -371,35 +372,35 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
 
     if(!HasQPointBlock){
         // use default options for qpoints
-        t_fe.m_bulk_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        t_fe.m_bulk_qpoints.setDim(t_fecell.getFECellMaxDim());
-        t_fe.m_bulk_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
-        t_fe.m_bulk_qpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
+        t_fe.m_BulkQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        t_fe.m_BulkQpoints.setDim(t_fecell.getFECellMaxDim());
+        t_fe.m_BulkQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+        t_fe.m_BulkQpoints.setMeshType(t_fecell.getFECellBulkElmtMeshType());
 
-        t_fe.m_surface_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        t_fe.m_surface_qpoints.setDim(2);
-        t_fe.m_surface_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
-        t_fe.m_surface_qpoints.setMeshType(t_fecell.getFECellSurfElmtMeshType());
+        t_fe.m_SurfaceQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        t_fe.m_SurfaceQpoints.setDim(2);
+        t_fe.m_SurfaceQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+        t_fe.m_SurfaceQpoints.setMeshType(t_fecell.getFECellSurfElmtMeshType());
 
-        t_fe.m_line_qpoints.setQPointType(QPointType::GAUSSLEGENDRE);
-        t_fe.m_line_qpoints.setDim(1);
-        t_fe.m_line_qpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
-        t_fe.m_line_qpoints.setMeshType(t_fecell.getFECellLineElmtMeshType());
+        t_fe.m_LineQpoints.setQPointType(QPointType::GAUSSLEGENDRE);
+        t_fe.m_LineQpoints.setDim(1);
+        t_fe.m_LineQpoints.setOrder(t_fecell.getFECellBulkMeshOrder()+2);
+        t_fe.m_LineQpoints.setMeshType(t_fecell.getFECellLineElmtMeshType());
     }
     if(!HasShapeFunBlock){
         // use default value for shapefuns
-        t_fe.m_bulk_shp.setMeshType(t_fecell.getFECellBulkElmtMeshType());
-        t_fe.m_bulk_shp.setShapeFunType(ShapeFunType::DEFAULT);
+        t_fe.m_BulkShp.setMeshType(t_fecell.getFECellBulkElmtMeshType());
+        t_fe.m_BulkShp.setShapeFunType(ShapeFunType::DEFAULT);
 
-        t_fe.m_surface_shp.setMeshType(t_fecell.getFECellSurfElmtMeshType());
-        t_fe.m_surface_shp.setShapeFunType(ShapeFunType::DEFAULT);
+        t_fe.m_SurfaceShp.setMeshType(t_fecell.getFECellSurfElmtMeshType());
+        t_fe.m_SurfaceShp.setShapeFunType(ShapeFunType::DEFAULT);
 
-        t_fe.m_line_shp.setMeshType(t_fecell.getFECellLineElmtMeshType());
-        t_fe.m_line_shp.setShapeFunType(ShapeFunType::DEFAULT);
+        t_fe.m_LineShp.setMeshType(t_fecell.getFECellLineElmtMeshType());
+        t_fe.m_LineShp.setShapeFunType(ShapeFunType::DEFAULT);
     }
 
     if(!HasBCBlock){
-        MessagePrinter::printWarningTxt("no 'bcs' block found in your input file, then the 'zero' neumann bc is assumed");
+        MessagePrinter::printWarningTxt("no 'bcs' block found in your input file, then the 'zero' neumann bc will be applied");
     }
 
     if(!HasICBlock){
@@ -416,7 +417,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
 
     if(!HasNLSolverBlock){
         MessagePrinter::printWarningTxt("no 'nlsolver' block found in your input file, then the default options will be used");
-        t_nlsolver.m_nlsolverblock.init();
+        t_nlsolver.m_NlSolverBlock.init();
     }
 
     if(!HasOutputBlock){
@@ -424,19 +425,19 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         t_output.setFileFormat(ResultFileFormat::VTU);
         t_output.setIntervalNum(1);
     }
-    t_output.setInputFileName(m_inputfile_name);
+    t_output.setInputFileName(m_InputFileName);
 
-    if(t_jobblock.m_jobtype==FEJobType::TRANSIENT&&!HasTimeSteppingBlock){
+    if(t_jobblock.m_JobType==FEJobType::TRANSIENT&&!HasTimeSteppingBlock){
         MessagePrinter::printErrorTxt("no 'timestepping' block found in your input file, one can\'t do transient analysis without a timestepping block");
         MessagePrinter::exitAsFem();
     }
 
-    if(t_jobblock.m_jobtype==FEJobType::STATIC&&HasTimeSteppingBlock){
+    if(t_jobblock.m_JobType==FEJobType::STATIC&&HasTimeSteppingBlock){
         MessagePrinter::printErrorTxt("'timestepping' block is found in your input file for a static job, this dosen\'t make sense");
         MessagePrinter::exitAsFem();
     }
 
-    if(!HasJobBlock && !m_readonly){
+    if(!HasJobBlock && !m_ReadOnly){
         MessagePrinter::printErrorTxt("no 'job' block found in your input file, one can\'t do FEM analysis without a job");
         MessagePrinter::exitAsFem();
     }

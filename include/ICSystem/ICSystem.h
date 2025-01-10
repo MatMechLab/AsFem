@@ -24,7 +24,7 @@
 //******************************************
 #include "Utils/MessagePrinter.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 
 #include "MathUtils/Vector.h"

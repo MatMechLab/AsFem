@@ -18,20 +18,11 @@ Application::Application(){}
 
 PetscErrorCode Application::init(int args,char *argv[]){
     PetscCall(PetscInitialize(&args,&argv,NULL,NULL));
-    /**
-     * setup the necessary petsc options
-    */
-    PetscCall(PetscOptionsCreate(&m_Options));
-    PetscCall(PetscOptionsInsertString(m_Options,"-options_left no"));
-    PetscCall(PetscOptionsPush(m_Options));
-    PetscCall(PetscOptionsLeft(m_Options));
+    PetscCall(PetscOptionsSetValue(NULL, "-options_left", "no"));// disable the options left warning
     return 0;
 }
 //*****************************************
 PetscErrorCode Application::finalize(){
-    // uncomment following two lines will raise the PETSc warning !
-    // PetscCall(PetscOptionsPop());
-    // PetscCall(PetscOptionsDestroy(&m_Options));
     PetscCall(PetscFinalize());
     return 0;
 }
@@ -43,7 +34,14 @@ void Application::printAppInfo(const int &year,const int &month,const int &day,c
     string str;
     
     MessagePrinter::printStars(MessageColor::BLUE);
-    MessagePrinter::printWelcomeTxt("Welcome to use AsFem                                            AAA");
+    MessagePrinter::printSingleTxt("*** Welcome to use AsFem",MessageColor::BLUE);
+    MessagePrinter::printSingleTxt("                                            ");
+    MessagePrinter::printSingleTxt("A",MessageColor::RED);
+    MessagePrinter::printSingleTxt("A",MessageColor::GREEN);
+    MessagePrinter::printSingleTxt("A",MessageColor::MAGENTA);
+    MessagePrinter::printSingleTxt("           ***",MessageColor::BLUE);
+    MessagePrinter::printNewLine();
+    
     
     MessagePrinter::printSingleTxt("*** ",MessageColor::BLUE);
     MessagePrinter::printSingleTxt("A",MessageColor::BLUE);

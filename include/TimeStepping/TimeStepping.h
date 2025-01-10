@@ -51,47 +51,47 @@ public:
      * set up the time stepping method
      * @param method the time stepping method
      */
-    void setTimeSteppingMethod(const TimeSteppingType &method){m_data.m_stepping_type=method;}
+    void setTimeSteppingMethod(const TimeSteppingType &method){m_Data.m_SteppingType=method;}
     /**
      * set up the initial delta t
      * @param dt0 the initial delta t
      */
-    void setInitialDt(const double &dt0){m_data.m_dt0=dt0;}
+    void setInitialDt(const double &dt0){m_Data.m_Dt0=dt0;}
     /**
      * setup the maximum delta t
      * @param dtmax the maximum delta t
      */
-    void setMaxDt(const double &dtmax){m_data.m_dtmax=dtmax;}
+    void setMaxDt(const double &dtmax){m_Data.m_DtMax=dtmax;}
     /**
      * setup the minimum delta t
      * @param dtmin the minimum delta t
      */
-    void setMinDt(const double &dtmin){m_data.m_dtmin=dtmin;}
+    void setMinDt(const double &dtmin){m_Data.m_DtMin=dtmin;}
     /**
      * setup the final time
      * @param t the final t
      */
-    void setFinalTime(const double &t){m_data.m_finaltime=t;}
+    void setFinalTime(const double &t){m_Data.m_FinalTime=t;}
     /**
      * setup the optimize nonlinear iterations
      * @param iters the optimize iteration
      */
-    void setOptimizeIters(const int &iters){m_data.m_optimize_iters=iters;}
+    void setOptimizeIters(const int &iters){m_Data.m_OptimizeIters=iters;}
     /**
      * setup the cut back factor
      * @param factor the cut back factor value
      */
-    void setCutbackFactor(const double &factor){m_data.m_cutfactor=factor;}
+    void setCutbackFactor(const double &factor){m_Data.m_CutFactor=factor;}
     /**
      * setup the growth factor
      * @param factor the cut back factor value
      */
-    void setGrowthFactor(const double &factor){m_data.m_growthfactor=factor;}
+    void setGrowthFactor(const double &factor){m_Data.m_GrowthFactor=factor;}
     /**
      * setup the adaptive status
      * @param flag true to enable the adaptive time stepping
      */
-    void setAdaptiveFlag(const bool &flag){m_data.m_isadaptive=flag;}
+    void setAdaptiveFlag(const bool &flag){m_Data.m_IsAdaptive=flag;}
 
     /**
      * apply the default time stepping settings
@@ -106,43 +106,43 @@ public:
     /**
      * get the current delta t
      */
-    inline double getDt()const{return m_data.m_dt;}
+    inline double getDt()const{return m_Data.m_Dt;}
     /**
      * get the inital delta t
      */
-    inline double getDt0()const{return m_data.m_dt0;}
+    inline double getDt0()const{return m_Data.m_Dt0;}
     /**
      * get max delta t
      */
-    inline double getMaxDt()const{return m_data.m_dtmax;}
+    inline double getMaxDt()const{return m_Data.m_DtMax;}
     /**
      * get min delta t
      */
-    inline double getMinDt()const{return m_data.m_dtmin;}
+    inline double getMinDt()const{return m_Data.m_DtMin;}
     /**
      * get final time
      */
-    inline double getFinalTime()const{return m_data.m_finaltime;}
+    inline double getFinalTime()const{return m_Data.m_FinalTime;}
     /**
      * get the cut back factor
      */
-    inline double getCutbackFactor()const{return m_data.m_cutfactor;}
+    inline double getCutbackFactor()const{return m_Data.m_CutFactor;}
     /**
      * get the growth factor
      */
-    inline double getGrowthFactor()const{return m_data.m_growthfactor;}
+    inline double getGrowthFactor()const{return m_Data.m_GrowthFactor;}
     /**
      * get the optimal iterations
      */
-    inline int getOptimizeIters()const{return m_data.m_optimize_iters;}
+    inline int getOptimizeIters()const{return m_Data.m_OptimizeIters;}
     /**
      * get the adaptive status
      */
-    inline bool isAdaptive()const{return m_data.m_isadaptive;}
+    inline bool isAdaptive()const{return m_Data.m_IsAdaptive;}
     /**
      * get the time integration method
      */
-    inline TimeSteppingType getTimeSteppingType()const{return m_data.m_stepping_type;}
+    inline TimeSteppingType getTimeSteppingType()const{return m_Data.m_SteppingType;}
 
     /**
      * solve the transient equation
@@ -178,6 +178,6 @@ public:
 
 
 private:
-    TimeSteppingData m_data;/**< the time stepping data */
+    TimeSteppingData m_Data;/**< the time stepping data */
 
 };

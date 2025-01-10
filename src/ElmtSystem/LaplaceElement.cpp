@@ -31,32 +31,32 @@ void LaplaceElement::computeAll(const FECalcType &calctype,const LocalElmtInfo &
 }
 //***************************************************************************
 void LaplaceElement::computeResidual(const LocalElmtInfo &elmtinfo,
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 VectorXd &localR) {
+                                     const LocalElmtSolution &soln,
+                                     const LocalShapeFun &shp,
+                                     const MaterialsContainer &mate_old,
+                                     const MaterialsContainer &mate,
+                                     VectorXd &LocalR) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.m_dt||soln.m_gpU[0]||shp.m_test||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
+    if(elmtinfo.m_Dt||soln.m_QpU[0]||shp.m_Test||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
 
-    localR(1)=mate.ScalarMaterial("sigma")*(soln.m_gpGradU[1]*shp.m_grad_test);
+    LocalR(1)=mate.ScalarMaterial("sigma")*(soln.m_QpGradU[1]*shp.m_GradTest);
 
 }
 //*****************************************************************************
-void LaplaceElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 MatrixXd &localK) {
+void LaplaceElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&Ctan)[3],
+                                     const LocalElmtSolution &soln,
+                                     const LocalShapeFun &shp,
+                                     const MaterialsContainer &mate_old,
+                                     const MaterialsContainer &mate,
+                                     MatrixXd &LocalK) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.m_dt||ctan[0]||soln.m_gpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
+    if(elmtinfo.m_Dt||Ctan[0]||soln.m_QpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
-    localK(1,1)=mate.ScalarMaterial("dsigmadu")*shp.m_trial*(soln.m_gpGradU[1]*shp.m_grad_test)*ctan[0]
-               +mate.ScalarMaterial("sigma")*(shp.m_grad_trial*shp.m_grad_test)*ctan[0];
+    LocalK(1,1)=mate.ScalarMaterial("dsigmadu")*shp.m_Trial*(soln.m_QpGradU[1]*shp.m_GradTest)*Ctan[0]
+               +mate.ScalarMaterial("sigma")*(shp.m_GradTrial*shp.m_GradTest)*Ctan[0];
 
 }

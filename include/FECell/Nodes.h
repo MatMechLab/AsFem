@@ -51,23 +51,23 @@ public:
      * set the number of total nodes to store, this will resize the whole vector
      * @param n integer for the number of ndoes
      */
-    void setNodesNum(const int &n){m_size=n;m_coordinates.resize(n*3,0.0);}
+    void setNodesNum(const int &n){m_Size=n;m_Coordinates.resize(n*3,0.0);}
     /**
      * resize the coordinates vector, this will resize the whole vector
      * @param n integer for the number of ndoes
      */
-    void resize(const int &n){m_size=n;m_coordinates.resize(n*3,0.0);}
+    void resize(const int &n){m_Size=n;m_Coordinates.resize(n*3,0.0);}
     /**
      * set all the coordinates to be zero, but keep its capacity/size
      */
-    void zeroEntities(){
-        fill(m_coordinates.begin(),m_coordinates.end(),0.0);
+    void setToZeros(){
+        fill(m_Coordinates.begin(),m_Coordinates.end(),0.0);
     }
     /**
      * clean the vector and memory
      */
     inline void clear(){
-        m_coordinates.clear();m_size=0;
+        m_Coordinates.clear();m_Size=0;
     }
 
     //************************************************
@@ -79,7 +79,7 @@ public:
      * @param j j-th coordinate
      */
     double& operator()(const int &i,const int &j){
-        if(i<1||i>m_size){
+        if(i<1||i>m_Size){
             MessagePrinter::printErrorTxt("your i index is out of your nodes class's range");
             MessagePrinter::exitAsFem();
         }
@@ -87,7 +87,7 @@ public:
             MessagePrinter::printErrorTxt("your j index is out of your nodes class's range");
             MessagePrinter::exitAsFem();
         }
-        return m_coordinates[(i-1)*3+j-1];
+        return m_Coordinates[(i-1)*3+j-1];
     }
     /**
      * const () operator for the I-th node's J-th coordinate
@@ -95,7 +95,7 @@ public:
      * @param j j-th coordinate
      */
     double operator()(const int &i,const int &j)const{
-        if(i<1||i>m_size){
+        if(i<1||i>m_Size){
             MessagePrinter::printErrorTxt("your i index is out of your nodes class's range");
             MessagePrinter::exitAsFem();
         }
@@ -103,22 +103,24 @@ public:
             MessagePrinter::printErrorTxt("your j index is out of your nodes class's range");
             MessagePrinter::exitAsFem();
         }
-        return m_coordinates[(i-1)*3+j-1];
+        return m_Coordinates[(i-1)*3+j-1];
     }
     /**
      * = operator for the assignment with a scalar value
      */
     Nodes& operator=(const double &val){
-        fill(m_coordinates.begin(),m_coordinates.end(),val);
+        fill(m_Coordinates.begin(),m_Coordinates.end(),val);
         return *this;
     }
     /**
      * = operator for the assignment with another nodes class
      */
     Nodes& operator=(const Nodes &a){
-        m_size=a.m_size;
-        m_coordinates.resize(m_size*3,0.0);
-        for(int i=1;i<=a.m_size*3;i++) m_coordinates[i-1]=a.m_coordinates[i-1];
+        if (m_Size!=a.m_Size) {
+            m_Size=a.m_Size;
+            m_Coordinates.resize(m_Size*3,0.0);
+        }
+        for(int i=1;i<=a.m_Size*3;i++) m_Coordinates[i-1]=a.m_Coordinates[i-1];
         return *this;
     }
     //************************************************
@@ -127,18 +129,18 @@ public:
     /**
      * get the size/number of total nodes
      */
-    inline int getSize()const{return m_size;}
+    inline int getSize()const{return m_Size;}
     /**
      * get the length of coordinate vector
      */
-    inline int getLength()const{return m_size*3;}
+    inline int getLength()const{return m_Size*3;}
     /**
      * get the i-th node's j-th coordinate
      * @param i i-th node
      * @param j j-th coordinate
      */
     inline double getIthNodeJthCoord(const int &i,const int &j)const{
-        if(i<1||i>m_size){
+        if(i<1||i>m_Size){
             MessagePrinter::printErrorTxt("your i index is out of your nodes class's range");
             MessagePrinter::exitAsFem();
         }
@@ -146,25 +148,25 @@ public:
             MessagePrinter::printErrorTxt("your j index is out of your nodes class's range");
             MessagePrinter::exitAsFem();
         }
-        return m_coordinates[(i-1)*3+j-1];
+        return m_Coordinates[(i-1)*3+j-1];
     }
 
     /**
      * get the data of the coordinates vector
     */
-    inline double* getData(){return m_coordinates.data();}
+    inline double* getData(){return m_Coordinates.data();}
     /**
      * get the reference of coordinate vector
     */
-    inline vector<double>& getDataRef(){return m_coordinates;}
+    inline vector<double>& getDataRef(){return m_Coordinates;}
     /**
      * get the copy of coordinate vector
     */
-    inline vector<double> getCopy()const{return m_coordinates;}
+    inline vector<double> getCopy()const{return m_Coordinates;}
     
 
 private:
-    int m_size;/**< the size/number of total nodes */
-    vector<double> m_coordinates;/**< vector for the coordinates of each node */
+    int m_Size;/**< the size/number of total nodes */
+    vector<double> m_Coordinates;/**< vector for the coordinates of each node */
 
 };

@@ -30,20 +30,20 @@ bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
     char buff[68];//77-12=65
     string str;
     int lastiters=1000;
-    fectrlinfo.dt=m_data.m_dt0;
+    fectrlinfo.Dt=m_Data.m_Dt0;
     fectrlinfo.CurrentStep=0;
 
-    solutionsystem.m_u_current.setToZero();
-    icsystem.applyInitialConditions(fecell,dofhandler,solutionsystem.m_u_current);
-    solutionsystem.m_u_old.copyFrom(solutionsystem.m_u_current);
-    solutionsystem.m_u_older.copyFrom(solutionsystem.m_u_current);
+    solutionsystem.m_Ucurrent.setToZero();
+    icsystem.applyInitialConditions(fecell,dofhandler,solutionsystem.m_Ucurrent);
+    solutionsystem.m_Uold.copyFrom(solutionsystem.m_Ucurrent);
+    solutionsystem.m_Uolder.copyFrom(solutionsystem.m_Ucurrent);
 
     // initialize the material
-    fesystem.formBulkFE(FECalcType::INITMATERIAL,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,
+    fesystem.formBulkFE(FECalcType::INITMATERIAL,fectrlinfo.T,fectrlinfo.Dt,fectrlinfo.Ctan,
                         fecell,dofhandler,fe,
                         elmtsystem,matesystem,
                         solutionsystem,
-                        equationsystem.m_amatrix,equationsystem.m_rhs);
+                        equationsystem.m_AMATRIX,equationsystem.m_RHS);
     projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
     MessagePrinter::printDashLine();
     MessagePrinter::printNormalTxt("Material properties have been initialized");
@@ -66,8 +66,8 @@ bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
     }
     MessagePrinter::printStars();
 
-    for(fectrlinfo.t=0.0;fectrlinfo.t<=m_data.m_finaltime;){
-        snprintf(buff,68,"Time=%13.5e, step=%8d, dt=%13.5e",fectrlinfo.t+fectrlinfo.dt,fectrlinfo.CurrentStep+1,fectrlinfo.dt);
+    for(fectrlinfo.T=0.0;fectrlinfo.T<=m_Data.m_FinalTime;){
+        snprintf(buff,68,"Time=%13.5e, step=%8d, dt=%13.5e",fectrlinfo.T+fectrlinfo.Dt,fectrlinfo.CurrentStep+1,fectrlinfo.Dt);
         str=buff;
         MessagePrinter::printNormalTxt(str);
         if(nlsolver.solve(fecell,dofhandler,fe,
@@ -75,23 +75,23 @@ bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
                           bcsystem,solutionsystem,equationsystem,
                           fectrlinfo)){
             // if the current nonlinear process success
-            fectrlinfo.t+=fectrlinfo.dt;
+            fectrlinfo.T+=fectrlinfo.Dt;
             fectrlinfo.CurrentStep+=1;
 
             // update the material properties
             // update the solution
-            solutionsystem.m_u_temp.copyFrom(solutionsystem.m_u_current);
-            fesystem.formBulkFE(FECalcType::UPDATEMATERIAL,fectrlinfo.t,fectrlinfo.dt,fectrlinfo.ctan,
+            solutionsystem.m_Utemp.copyFrom(solutionsystem.m_Ucurrent);
+            fesystem.formBulkFE(FECalcType::UPDATEMATERIAL,fectrlinfo.T,fectrlinfo.Dt,fectrlinfo.Ctan,
                                 fecell,dofhandler,fe,
                                 elmtsystem,matesystem,
                                 solutionsystem,
-                                equationsystem.m_amatrix,equationsystem.m_rhs);
+                                equationsystem.m_AMATRIX,equationsystem.m_RHS);
 
 
             if(fectrlinfo.CurrentStep%output.getIntervalNum()==0){
                 projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
                 output.saveResults2File(fectrlinfo.CurrentStep,fecell,dofhandler,solutionsystem,projection);
-                output.savePVDResults(fectrlinfo.t);
+                output.savePVDResults(fectrlinfo.T);
                 MessagePrinter::printDashLine(MessageColor::BLUE);
                 MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);
                 MessagePrinter::printDashLine(MessageColor::BLUE);
@@ -102,7 +102,7 @@ bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
                         projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
                     }
                     postprocess.executePostprocess(fecell,dofhandler,fe,matesystem,projection,solutionsystem);
-                    postprocess.savePPSResults2CSVFile(fectrlinfo.t);
+                    postprocess.savePPSResults2CSVFile(fectrlinfo.T);
                     MessagePrinter::printDashLine(MessageColor::BLUE);
                     MessagePrinter::printNormalTxt("Save postprocess result to "+postprocess.getCSVFileName(),MessageColor::BLUE);
                     MessagePrinter::printDashLine(MessageColor::BLUE);
@@ -111,32 +111,32 @@ bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
             MessagePrinter::printStars();
             if(isAdaptive()){
                 if(nlsolver.getIterationNum()<=getOptimizeIters() && lastiters<=getOptimizeIters()){
-                    fectrlinfo.dt*=getGrowthFactor();
-                    if(fectrlinfo.dt>getMaxDt()) fectrlinfo.dt=getMaxDt();
+                    fectrlinfo.Dt*=getGrowthFactor();
+                    if(fectrlinfo.Dt>getMaxDt()) fectrlinfo.Dt=getMaxDt();
                 }
                 else if(nlsolver.getIterationNum()<=getOptimizeIters() && lastiters>getOptimizeIters()){
                     // do not change current dt
-                    fectrlinfo.dt*=1.0;
+                    fectrlinfo.Dt*=1.0;
                 }
                 else if(nlsolver.getIterationNum()>getOptimizeIters()){
-                    fectrlinfo.dt*=getCutbackFactor();
-                    if(fectrlinfo.dt<getMinDt()) fectrlinfo.dt=getMinDt();
+                    fectrlinfo.Dt*=getCutbackFactor();
+                    if(fectrlinfo.Dt<getMinDt()) fectrlinfo.Dt=getMinDt();
                 }
             }
             // update the solution
-            solutionsystem.m_u_older.copyFrom(solutionsystem.m_u_old);
-            solutionsystem.m_u_old.copyFrom(solutionsystem.m_u_current);
-            solutionsystem.m_v.setToZero();
+            solutionsystem.m_Uolder.copyFrom(solutionsystem.m_Uold);
+            solutionsystem.m_Uold.copyFrom(solutionsystem.m_Ucurrent);
+            solutionsystem.m_V.setToZero();
             // store the previous step's iteration numbers
             lastiters=nlsolver.getIterationNum();
         }
         else{
             //  if the nonlinear solver failed we will try to reduce the dt
-            fectrlinfo.dt*=getCutbackFactor();
-            snprintf(buff,68," Transient solver failed, reduce dt to %13.5e",fectrlinfo.dt);
+            fectrlinfo.Dt*=getCutbackFactor();
+            snprintf(buff,68," Transient solver failed, reduce dt to %13.5e",fectrlinfo.Dt);
             str=buff;
             MessagePrinter::printWarningTxt(str);
-            if(fectrlinfo.dt<getMinDt()){
+            if(fectrlinfo.Dt<getMinDt()){
                 MessagePrinter::printErrorTxt("The minimum detal t is reached, however, your solver still fails. Please check either your code or your boundary conditions");
                 return false;
             }
@@ -145,7 +145,7 @@ bool TimeStepping::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
     if(fectrlinfo.CurrentStep%output.getIntervalNum()!=0){
         projection.executeProjection(fecell,dofhandler,elmtsystem,matesystem,fe,solutionsystem,fectrlinfo);
         output.saveResults2File(fectrlinfo.CurrentStep,fecell,dofhandler,solutionsystem,projection);
-        output.savePVDResults(fectrlinfo.t);
+        output.savePVDResults(fectrlinfo.T);
         MessagePrinter::printDashLine(MessageColor::BLUE);
         MessagePrinter::printNormalTxt("Save results to "+output.getOutputFileName(),MessageColor::BLUE);
         MessagePrinter::printDashLine(MessageColor::BLUE);

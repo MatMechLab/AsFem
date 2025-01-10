@@ -22,13 +22,13 @@ double User1SideIntegralPostprocessor::computeSideIntegralValue(const int &dofid
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(nodeid||parameters.size()||projsystem.getNodesNum()||shp.m_test) {}
+    if(nodeid||parameters.size()||projsystem.getNodesNum()||shp.m_Test) {}
     if(dofid<1||dofid>soln.getDofsNum()){
         MessagePrinter::printErrorTxt("dof id="+to_string(dofid)+" is out of range for User1SideIntegralPostprocessor");
         MessagePrinter::exitAsFem();
     }
     
-    m_ppsvalue=std::cos(elmtinfo.m_gpCoords0(1))/elmtinfo.m_nodesnum;// return cos(x) for int(cos(x))dx integration
+    m_ppsvalue=std::cos(elmtinfo.m_QpCoords0(1))/elmtinfo.m_NodesNum;// return cos(x) for int(cos(x))dx integration
     
     return m_ppsvalue;
 }

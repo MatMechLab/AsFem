@@ -7,20 +7,19 @@
 //* https://www.gnu.org/licenses/gpl-3.0.en.html
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-//+++ Author : Yang Bai
-//+++ Date   : 2022.05.06
-//+++ Purpose: the final mesh class of AsFem
+//+++ Author  : Yang Bai
+//+++ Date    : 2024.08.04
+//+++ Function: the fe cell partitioner used by AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#pragma once
+#include "FECell/FECellPartioner.h"
 
-#include "Mesh/BulkMesh.h"
-
-
-/**
- * the mesh class of AsFem, which is responsible for the management of bulk and interface mesh
- */
-class Mesh:public BulkMesh{
-public:
-    Mesh(){}
-};
+void FECellPartioner::partFECell(const string &PartTypeName,FECellData &t_CellData){
+    if(PartTypeName.find("asfem")!=string::npos){
+        FECellDefaultPartitioner::partitionFECell(t_CellData);
+    }
+    else{
+        MessagePrinter::printErrorTxt("Unsupported partition type name("+PartTypeName+"), please check you input file");
+        MessagePrinter::exitAsFem();
+    }
+}

@@ -2,9 +2,9 @@
 	"mesh":{
 		"type":"asfem",
 		"dim":3,
-		"nx":20,
-		"ny":20,
-		"nz":20,
+		"nx":10,
+		"ny":10,
+		"nz":10,
 		"meshtype":"hex27",
 		"savemesh":true
 	},

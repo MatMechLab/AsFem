@@ -49,6 +49,4 @@ public:
     */
     void printAppInfo(const int &year,const int &month,const int &day,const double &version)const;
 
-private:
-    PetscOptions m_Options;/**< the petsc options structure */
 };

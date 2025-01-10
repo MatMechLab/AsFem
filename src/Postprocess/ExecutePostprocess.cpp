@@ -23,7 +23,7 @@ void Postprocessor::executePostprocess(const FECell &t_fecell,
     if(t_fecell.getFECellElmtsNum()||
        t_dofhandler.getActiveDofs()||
        t_fe.getMaxDim()||
-       t_matesystem.m_materialcontainer.getRank2MaterialsNum()||
+       t_matesystem.m_MaterialContainer.getRank2MaterialsNum()||
        t_projsystem.getNodesNum()||
        t_solution.getDofsNum()){}
     // if(t_mesh.getBulkMeshBulkElmtOrder()||t_fe.getMaxDim()||t_matesystem.m_materialcontainer.getRank2MaterialsNum()){}

@@ -14,23 +14,23 @@
 
 #include "ProjectionSystem/ProjectionSystem.h"
 
-void ProjectionSystem::runProjectionLibs(const bool &flag,
-                                         const FECell &t_fecell,
-                                         const int &nodesnum,
-                                         const vector<int> &t_elconn,
-                                         const double &detjac,
-                                         const ShapeFun &t_shp,
-                                         const MaterialsContainer &t_mate,
-                                         ProjectionData &t_data){
-    switch (m_proj_type)
+void ProjectionSystem::runProjectionLibs(const bool &Flag,
+                                         const FECell &t_FECell,
+                                         const int &NodesNum,
+                                         const vector<int> &ElConn,
+                                         const double &DetJac,
+                                         const ShapeFun &Shp,
+                                         const MaterialsContainer &Mate,
+                                         ProjectionData &Data){
+    switch (m_ProjType)
     {
     case ProjectionType::DEFAULT:
     case ProjectionType::LEASTSQUARE:{
-        if(flag){
-            LeastSquareProjection::localProjectionAction(nodesnum,t_elconn,detjac,t_shp,t_mate,t_data);
+        if(Flag){
+            LeastSquareProjection::localProjectionAction(NodesNum,ElConn,DetJac,Shp,Mate,Data);
         }
         else{
-            LeastSquareProjection::globalProjectionAction(t_fecell,t_data);
+            LeastSquareProjection::globalProjectionAction(t_FECell,Data);
         }
         break;
     }

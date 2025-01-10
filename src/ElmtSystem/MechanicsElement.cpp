@@ -41,19 +41,19 @@ void MechanicsElement::computeResidual(const LocalElmtInfo &elmtinfo,
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(soln.m_gpU[0]||shp.m_test||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
+    if(soln.m_QpU[0]||shp.m_Test||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
 
-    localR(1)=mate.Rank2Material("stress").getIthRow(1)*shp.m_grad_test;
-    if(elmtinfo.m_dim>=2){
-        localR(2)=mate.Rank2Material("stress").getIthRow(2)*shp.m_grad_test;
-        if(elmtinfo.m_dim==3){
-            localR(3)=mate.Rank2Material("stress").getIthRow(3)*shp.m_grad_test;
+    localR(1)=mate.Rank2Material("stress").getIthRow(1)*shp.m_GradTest;
+    if(elmtinfo.m_Dim>=2){
+        localR(2)=mate.Rank2Material("stress").getIthRow(2)*shp.m_GradTest;
+        if(elmtinfo.m_Dim==3){
+            localR(3)=mate.Rank2Material("stress").getIthRow(3)*shp.m_GradTest;
         }
     }
 
 }
 //*****************************************************************************
-void MechanicsElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
+void MechanicsElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&Ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const MaterialsContainer &mate_old,
@@ -62,31 +62,31 @@ void MechanicsElement::computeJacobian(const LocalElmtInfo &elmtinfo,const doubl
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.m_dt||ctan[0]||soln.m_gpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
+    if(elmtinfo.m_Dt||Ctan[0]||soln.m_QpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
     // for K_ux,ux
-    localK(1,1)=mate.Rank4Material("jacobian").getIKComponent(1,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
-    if(elmtinfo.m_dim>=2){
+    localK(1,1)=mate.Rank4Material("jacobian").getIKComponent(1,1,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
+    if(elmtinfo.m_Dim>=2){
         // K_ux,uy
-        localK(1,2)=mate.Rank4Material("jacobian").getIKComponent(1,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        localK(1,2)=mate.Rank4Material("jacobian").getIKComponent(1,2,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
         
         // K_uy,ux
-        localK(2,1)=mate.Rank4Material("jacobian").getIKComponent(2,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        localK(2,1)=mate.Rank4Material("jacobian").getIKComponent(2,1,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
         // K_uy,uy
-        localK(2,2)=mate.Rank4Material("jacobian").getIKComponent(2,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+        localK(2,2)=mate.Rank4Material("jacobian").getIKComponent(2,2,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
         
-        if(elmtinfo.m_dim==3){
+        if(elmtinfo.m_Dim==3){
             // K_ux,uz
-            localK(1,3)=mate.Rank4Material("jacobian").getIKComponent(1,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+            localK(1,3)=mate.Rank4Material("jacobian").getIKComponent(1,3,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
             
             // K_uy,uz
-            localK(2,3)=mate.Rank4Material("jacobian").getIKComponent(2,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+            localK(2,3)=mate.Rank4Material("jacobian").getIKComponent(2,3,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
 
             // K_uz,ux
-            localK(3,1)=mate.Rank4Material("jacobian").getIKComponent(3,1,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+            localK(3,1)=mate.Rank4Material("jacobian").getIKComponent(3,1,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
             // K_uz,uy
-            localK(3,2)=mate.Rank4Material("jacobian").getIKComponent(3,2,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+            localK(3,2)=mate.Rank4Material("jacobian").getIKComponent(3,2,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
             // K_uz,uz
-            localK(3,3)=mate.Rank4Material("jacobian").getIKComponent(3,3,shp.m_grad_test,shp.m_grad_trial)*ctan[0];
+            localK(3,3)=mate.Rank4Material("jacobian").getIKComponent(3,3,shp.m_GradTest,shp.m_GradTrial)*Ctan[0];
         }
     }
 

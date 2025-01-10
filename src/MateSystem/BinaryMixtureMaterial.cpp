@@ -34,7 +34,7 @@ void BinaryMixtureMaterial::initMaterialProperties(const nlohmann::json &inputpa
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 }
 
 void BinaryMixtureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
@@ -42,8 +42,8 @@ void BinaryMixtureMaterial::computeMaterialProperties(const nlohmann::json &inpu
                                            const LocalElmtSolution &elmtsoln,
                                            const MaterialsContainer &mateold,
                                            MaterialsContainer &mate){
-    if(elmtinfo.m_dim||mateold.getScalarMaterialsNum()) {}
-    m_args(1)=elmtsoln.m_gpU[1];// 1st dof must be concentration
+    if(elmtinfo.m_Dim||mateold.getScalarMaterialsNum()) {}
+    m_args(1)=elmtsoln.m_QpU[1];// 1st dof must be concentration
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
     if(!JsonUtils::hasOnlyGivenValues(inputparams,vector<string>{"D","kappa","chi"})){
         MessagePrinter::printErrorTxt("for IdealSolutionFreeEnergyMaterial, only D, kappa, and chi are required, "
@@ -59,8 +59,8 @@ void BinaryMixtureMaterial::computeMaterialProperties(const nlohmann::json &inpu
     mate.ScalarMaterial("M")=JsonUtils::getValue(inputparams,"D")*m_args(1)*(1.0-m_args(1));
     mate.ScalarMaterial("dMdC")=JsonUtils::getValue(inputparams,"D")*(1.0-2.0*m_args(1));
 
-    mate.VectorMaterial("gradc")=elmtsoln.m_gpGradU[1];// the gradient of concentration
-    mate.VectorMaterial("gradmu")=elmtsoln.m_gpGradU[2];// the gradient of chemical potential
+    mate.VectorMaterial("gradc")=elmtsoln.m_QpGradU[1];// the gradient of concentration
+    mate.VectorMaterial("gradmu")=elmtsoln.m_QpGradU[2];// the gradient of chemical potential
     
 }
 //**************************************************************

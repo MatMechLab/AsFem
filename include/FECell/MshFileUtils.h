@@ -15,7 +15,7 @@
 #pragma once
 
 #include "Utils/MessagePrinter.h"
-#include "Mesh/MeshType.h"
+#include "FECell/MeshType.h"
 
 /**
  * This class offers the utils function for msh file reading.

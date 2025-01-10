@@ -15,20 +15,20 @@
 
 #include "BCSystem/TractionBC.h"
 
-void TractionBC::computeBCValue(const FECalcType &calctype,const double &bcvalue,
-                               const nlohmann::json parameters,
-                               const LocalElmtInfo &elmtinfo,
-                               const LocalElmtSolution &elmtsoln,
-                               const Vector3d &normal,
-                               const LocalShapeFun &shp,
-                               const double (&ctan)[3],
-                               MatrixXd &localK,
-                               VectorXd &localR){
-    if(calctype==FECalcType::COMPUTERESIDUAL){
-        computeResidual(bcvalue,parameters,elmtinfo,elmtsoln,normal,shp,localR);
+void TractionBC::computeBCValue(const FECalcType &CalcType,const double &BCValue,
+                                const nlohmann::json Params,
+                                const LocalElmtInfo &ElmtInfo,
+                                const LocalElmtSolution &ElmtSoln,
+                                const Vector3d &Normal,
+                                const LocalShapeFun &Shp,
+                                const double (&Ctan)[3],
+                                MatrixXd &LocalK,
+                                VectorXd &LocalR){
+    if(CalcType==FECalcType::COMPUTERESIDUAL){
+        computeResidual(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,LocalR);
     }
-    else if(calctype==FECalcType::COMPUTEJACOBIAN){
-        computeJacobian(bcvalue,parameters,elmtinfo,elmtsoln,normal,shp,ctan,localK);
+    else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        computeJacobian(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK);
     }
     else{
         MessagePrinter::printErrorTxt("Unsupported calculation type in TractionBC class, please check your code");
@@ -37,35 +37,35 @@ void TractionBC::computeBCValue(const FECalcType &calctype,const double &bcvalue
 }
 
 
-void TractionBC::computeResidual(const double &bcvalue,
-                                const nlohmann::json parameters,
-                                const LocalElmtInfo &elmtinfo,
-                                const LocalElmtSolution &elmtsoln,
-                                const Vector3d &normal,
-                                const LocalShapeFun &shp,
-                                VectorXd &localR){
+void TractionBC::computeResidual(const double &BCValue,
+                                 const nlohmann::json Params,
+                                 const LocalElmtInfo &ElmtInfo,
+                                 const LocalElmtSolution &ElmtSoln,
+                                 const Vector3d &Normal,
+                                 const LocalShapeFun &Shp,
+                                 VectorXd &LocalR){
     // get rid of unused warnings
-    if(bcvalue||elmtinfo.m_dim||normal(1)||elmtsoln.m_gpU[0]){}
+    if(BCValue||ElmtInfo.m_Dim||Normal(1)||ElmtSoln.m_QpU[0]){}
 
-    m_traction=JsonUtils::getVector(parameters,"traction");
-    m_component=static_cast<int>(JsonUtils::getValue(parameters,"component"));
+    m_traction=JsonUtils::getVector(Params,"traction");
+    m_component=static_cast<int>(JsonUtils::getValue(Params,"component"));
     if(m_component<1||m_component>3){
         MessagePrinter::printErrorTxt("Invalid component(="+to_string(m_component)+") for TractionBC, please check your input file");
         MessagePrinter::exitAsFem();
     }
-    localR(1)=m_traction(m_component)*-1.0*shp.m_test;
+    LocalR(1)=m_traction(m_component)*-1.0*Shp.m_Test;
 }
 
-void TractionBC::computeJacobian(const double &bcvalue,
-                                const nlohmann::json &parameters,
-                                const LocalElmtInfo &elmtinfo,
-                                const LocalElmtSolution &elmtsoln,
-                                const Vector3d &normal,
-                                const LocalShapeFun &shp,
-                                const double (&ctan)[3],
-                                MatrixXd &localK){
+void TractionBC::computeJacobian(const double &BCValue,
+                                 const nlohmann::json &Params,
+                                 const LocalElmtInfo &ElmtInfo,
+                                 const LocalElmtSolution &ElmtSoln,
+                                 const Vector3d &Normal,
+                                 const LocalShapeFun &Shp,
+                                 const double (&Ctan)[3],
+                                 MatrixXd &LocalK){
     // get rid of unused warnings
-    if(bcvalue||parameters.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||normal(1)||shp.m_test||ctan[0]){}
-    localK(1,1)=0.0; // since bcvalue is a constant, its derivative should be zero!
+    if(BCValue||Params.size()||ElmtInfo.m_Dt||ElmtSoln.m_QpU[0]||Normal(1)||Shp.m_Test||Ctan[0]){}
+    LocalK(1,1)=0.0; // since bcvalue is a constant, its derivative should be zero!
 
 }

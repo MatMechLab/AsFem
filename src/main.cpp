@@ -23,15 +23,16 @@ int main(int args,char *argv[]){
 
     if(myapp.init(args,argv)) return 1;
 
-    const int Year=2022;
+    const int Year=2024;
     const int Month=10;
     const int Day=19;
     const double Version=0.8;
     myapp.printAppInfo(Year,Month,Day,Version);
 
+
     FEProblem feProblem;
     feProblem.initFEProblem(args,argv);
-    // feProblem.run();
+    feProblem.run();
     feProblem.finalize();
 
     return myapp.finalize();

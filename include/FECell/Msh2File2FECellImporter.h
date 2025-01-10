@@ -17,7 +17,7 @@
 #pragma once
 
 #include "FECell/MeshFile2FECellImporterBase.h"
-#include "Mesh/MshFileUtils.h"
+#include "FECell/MshFileUtils.h"
 
 /**
  * This class implements the msh file (version-2) import function.

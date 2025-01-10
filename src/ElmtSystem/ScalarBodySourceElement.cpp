@@ -40,13 +40,13 @@ void ScalarBodySourceElement::computeResidual(const LocalElmtInfo &elmtinfo,
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.m_dt||soln.m_gpU[0]||shp.m_test||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
+    if(elmtinfo.m_Dt||soln.m_QpU[0]||shp.m_Test||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()) {}
 
-    localR(1)=mate.ScalarMaterial("f")*shp.m_test;
+    localR(1)=mate.ScalarMaterial("f")*shp.m_Test;
 
 }
 //*****************************************************************************
-void ScalarBodySourceElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
+void ScalarBodySourceElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&Ctan)[3],
                                  const LocalElmtSolution &soln,
                                  const LocalShapeFun &shp,
                                  const MaterialsContainer &mate_old,
@@ -55,8 +55,8 @@ void ScalarBodySourceElement::computeJacobian(const LocalElmtInfo &elmtinfo,cons
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.m_dt||ctan[0]||soln.m_gpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
+    if(elmtinfo.m_Dt||Ctan[0]||soln.m_QpU[0]||mate_old.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
-    localK(1,1)=mate.ScalarMaterial("dfdu")*shp.m_trial*shp.m_test*ctan[0];
+    localK(1,1)=mate.ScalarMaterial("dfdu")*shp.m_Trial*shp.m_Test*Ctan[0];
 
 }

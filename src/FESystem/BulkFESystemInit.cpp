@@ -15,54 +15,52 @@
 #include "FESystem/BulkFESystem.h"
 
 void BulkFESystem::init(const FECell &t_fecell,const DofHandler &t_dofhandler){
-    m_max_elmt_dofs=t_dofhandler.getMaxDofsPerElmt();
-    m_max_nodal_dofs=t_dofhandler.getMaxDofsPerNode();
-    m_bulkelmt_nodesnum=t_fecell.getFECellNodesNumPerBulkElmt();
+    m_MaxElmtDofs=t_dofhandler.getMaxDofsPerElmt();
+    m_MaxNodalDofs=t_dofhandler.getMaxDofsPerNode();
+    m_BulkElmtNodesNum=t_fecell.getFECellNodesNumPerBulkElmt();
 
-    m_local_elmtinfo.m_dim=t_fecell.getFECellMaxDim();
-    m_local_elmtinfo.m_nodesnum=m_bulkelmt_nodesnum;
+    m_LocalElmtInfo.m_Dim=t_fecell.getFECellMaxDim();
+    m_LocalElmtInfo.m_NodesNum=m_BulkElmtNodesNum;
 
-    m_max_k_coeff=-1.0e16;
+    m_MaxKmatCoeff=-1.0e16;
 
-    m_localR.resize(m_max_elmt_dofs+1,0.0);
-    m_localK.resize(m_max_elmt_dofs+1,m_max_elmt_dofs+1,0.0);
+    m_LocalR.resize(m_MaxElmtDofs+1,0.0);
+    m_LocalK.resize(m_MaxElmtDofs+1,m_MaxElmtDofs+1,0.0);
 
-    m_subR.resize(m_max_nodal_dofs+1,0.0);
-    m_subK.resize(m_max_nodal_dofs+1,m_max_nodal_dofs+1,0.0);
+    m_SubR.resize(m_MaxNodalDofs+1,0.0);
+    m_SubK.resize(m_MaxNodalDofs+1,m_MaxNodalDofs+1,0.0);
 
-    m_elmtconn.resize(m_bulkelmt_nodesnum,0);
-    m_elmtdofsid.resize(m_max_elmt_dofs+1,0);
-    m_subelmtdofsid.resize(m_max_nodal_dofs+1,0);
+    m_ElmtConn.resize(m_BulkElmtNodesNum,0);
+    m_ElmtDofIDs.resize(m_MaxElmtDofs+1,0);
+    m_SubElmtDofIDs.resize(m_MaxElmtDofs+1,0);
 
     // for elemental solution
-    m_elmtU.resize(m_max_elmt_dofs,0.0);
-    m_elmtUold.resize(m_max_elmt_dofs,0.0);
-    m_elmtUolder.resize(m_max_elmt_dofs,0.0);
+    m_ElmtU.resize(m_MaxElmtDofs,0.0);
+    m_ElmtUold.resize(m_MaxElmtDofs,0.0);
+    m_ElmtUolder.resize(m_MaxElmtDofs,0.0);
 
-    m_elmtV.resize(m_max_elmt_dofs,0.0);
-    m_elmtA.resize(m_max_elmt_dofs,0.0);
+    m_ElmtV.resize(m_MaxElmtDofs,0.0);
+    m_ElmtA.resize(m_MaxElmtDofs,0.0);
 
     // for sub elemental solution
-    m_local_elmtsoln.m_gpU.resize(m_max_nodal_dofs+1,0.0);
-    m_local_elmtsoln.m_gpUold.resize(m_max_nodal_dofs+1,0.0);
-    m_local_elmtsoln.m_gpUolder.resize(m_max_nodal_dofs+1,0.0);
+    m_LocalElmtSoln.m_QpU.resize(m_MaxNodalDofs+1,0.0);
+    m_LocalElmtSoln.m_QpUold.resize(m_MaxNodalDofs+1,0.0);
+    m_LocalElmtSoln.m_QpUolder.resize(m_MaxNodalDofs+1,0.0);
 
-    m_local_elmtsoln.m_gpV.resize(m_max_nodal_dofs+1,0.0);
-    m_local_elmtsoln.m_gpA.resize(m_max_nodal_dofs+1,0.0);
+    m_LocalElmtSoln.m_QpV.resize(m_MaxNodalDofs+1,0.0);
+    m_LocalElmtSoln.m_QpA.resize(m_MaxNodalDofs+1,0.0);
 
-    m_local_elmtsoln.m_gpGradU.resize(m_max_nodal_dofs+1,Vector3d(0.0));
-    m_local_elmtsoln.m_gpGradUold.resize(m_max_nodal_dofs+1,Vector3d(0.0));
-    m_local_elmtsoln.m_gpGradUolder.resize(m_max_nodal_dofs+1,Vector3d(0.0));
+    m_LocalElmtSoln.m_QpGradU.resize(m_MaxNodalDofs+1,Vector3d(0.0));
+    m_LocalElmtSoln.m_QpGradUold.resize(m_MaxNodalDofs+1,Vector3d(0.0));
+    m_LocalElmtSoln.m_QpGradUolder.resize(m_MaxNodalDofs+1,Vector3d(0.0));
 
-    m_local_elmtsoln.m_gpGradV.resize(m_max_nodal_dofs+1,Vector3d(0.0));
+    m_LocalElmtSoln.m_QpGradV.resize(m_MaxNodalDofs+1,Vector3d(0.0));
 
-    m_local_elmtsoln.m_gpgradu.resize(m_max_nodal_dofs+1,Vector3d(0.0));
-    m_local_elmtsoln.m_gpgradv.resize(m_max_nodal_dofs+1,Vector3d(0.0));
+    m_LocalElmtSoln.m_Qpgradu.resize(m_MaxNodalDofs+1,Vector3d(0.0));
+    m_LocalElmtSoln.m_Qpgradv.resize(m_MaxNodalDofs+1,Vector3d(0.0));
 
-    m_local_elmtinfo.m_gpCoords=0.0;
-    m_local_elmtinfo.m_gpCoords0=0.0;
 
-    m_nodes.resize(m_bulkelmt_nodesnum);
-    m_nodes0.resize(m_bulkelmt_nodesnum);
+    m_Nodes.resize(m_BulkElmtNodesNum);
+    m_Nodes0.resize(m_BulkElmtNodesNum);
 
 }

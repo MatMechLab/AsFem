@@ -21,7 +21,7 @@
 #include "MathUtils/Rank4Tensor.h"
 #include "MathUtils/Vector.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "ProjectionSystem/ProjectionSystem.h"
 #include "MateSystem/MateSystem.h"

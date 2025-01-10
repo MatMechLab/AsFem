@@ -18,10 +18,10 @@
 #include "NonlinearSolver/NonlinearSolver.h"
 
 NonlinearSolver::NonlinearSolver(){
-    m_nlsolverblock.init();
+    m_NlSolverBlock.init();
 }
 
 void NonlinearSolver::init(){
-    setFromNonlinearSolverBlock(m_nlsolverblock);
+    setFromNonlinearSolverBlock(m_NlSolverBlock);
     initSolver();
 }

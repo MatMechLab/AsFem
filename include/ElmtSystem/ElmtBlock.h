@@ -29,69 +29,69 @@ public:
      * constructor
      */
     ElmtBlock(){
-        m_elmtblock_index=0;
+        m_ElmtBlockIndex=0;
 
-        m_elmt_blockname.clear();
-        m_elmt_typename.clear();
-        m_elmttype=ElmtType::NULLELMT;
+        m_ElmtBlockName.clear();
+        m_ElmtTypeName.clear();
+        m_ElmtType=ElmtType::NULLELMT;
 
-        m_dof_names.clear();
-        m_dof_ids.clear();
+        m_DofNames.clear();
+        m_DofIDs.clear();
 
-        m_domain_namelist.clear();
+        m_DomainNameList.clear();
 
-        m_mate_typename.clear();
-        m_matetype=MateType::NULLMATE;
+        m_MateTypeName.clear();
+        m_MateType=MateType::NULLMATE;
 
-        m_json_params.clear();
+        m_JsonParams.clear();
     }
     /**
      * reset the content of current element block
      */
     void reset(){
-        m_elmtblock_index=0;
+        m_ElmtBlockIndex=0;
 
-        m_elmt_blockname.clear();
-        m_elmt_typename.clear();
-        m_elmttype=ElmtType::NULLELMT;
+        m_ElmtBlockName.clear();
+        m_ElmtTypeName.clear();
+        m_ElmtType=ElmtType::NULLELMT;
 
-        m_dof_names.clear();
-        m_dof_ids.clear();
+        m_DofNames.clear();
+        m_DofIDs.clear();
 
-        m_domain_namelist.clear();
+        m_DomainNameList.clear();
 
-        m_mate_typename.clear();
-        m_matetype=MateType::NULLMATE;
+        m_MateTypeName.clear();
+        m_MateType=MateType::NULLMATE;
 
-        m_json_params.clear();
+        m_JsonParams.clear();
     }
     /**
      * print out the information of current element block
      */
     void printElmtBlockInfo()const{
         MessagePrinter::printDashLine();
-        MessagePrinter::printNormalTxt(" bulk element block-"+to_string(m_elmtblock_index)+" info");
-        MessagePrinter::printNormalTxt("  block name = "+m_elmt_blockname+", type name = "+m_elmt_typename);
+        MessagePrinter::printNormalTxt(" bulk element block-"+to_string(m_ElmtBlockIndex)+" info");
+        MessagePrinter::printNormalTxt("  block name = "+m_ElmtBlockName+", type name = "+m_ElmtTypeName);
         string str;
 
         str="";
-        for(const auto &it:m_dof_names) str+=it+" ";
+        for(const auto &it:m_DofNames) str+=it+" ";
         MessagePrinter::printNormalTxt("  dofs name = "+str);
 
         str="";
-        for(const auto &it:m_dof_ids) str+=to_string(it)+" ";
+        for(const auto &it:m_DofIDs) str+=to_string(it)+" ";
         MessagePrinter::printNormalTxt("  dofs id = "+str);
 
-        MessagePrinter::printNormalTxt("  material type name = "+m_mate_typename);
+        MessagePrinter::printNormalTxt("  material type name = "+m_MateTypeName);
 
         str="";
-        for(const auto &it:m_domain_namelist) str+=it+" ";
+        for(const auto &it:m_DomainNameList) str+=it+" ";
         MessagePrinter::printNormalTxt("  domain = "+str);
 
-        if(m_json_params.size()>0){
+        if(m_JsonParams.size()>0){
             MessagePrinter::printNormalTxt("  parameters are:");
             char buff[69];
-            for(auto it=m_json_params.begin();it!=m_json_params.end();it++){
+            for(auto it=m_JsonParams.begin();it!=m_JsonParams.end();it++){
                 if(it.value().is_boolean()){
                     if(it.value()==true){
                         snprintf(buff,69,"    %16s =    true",it.key().c_str());
@@ -106,7 +106,7 @@ public:
                 }
                 else if(it.value().is_array()){
                     if(it.value().size()<3){
-                        MessagePrinter::printErrorTxt("Invalid vector size in "+it.key()+" of your parameters in "+m_elmt_blockname+", please check your input file");
+                        MessagePrinter::printErrorTxt("Invalid vector size in "+it.key()+" of your parameters in "+m_ElmtBlockName+", please check your input file");
                         MessagePrinter::exitAsFem();
                     }
                     snprintf(buff,69,"    %15s = %13.5e %13.5e %13.5e",it.key().c_str(),static_cast<double>(it.value().at(0)),
@@ -122,16 +122,16 @@ public:
         }
     }
 public:
-    int m_elmtblock_index;/**< the index for the order of current element block in the input file, start from 1 */
-    string m_elmt_blockname;/**< the string name of current element block(single block) */
-    string m_elmt_typename;/**< the string name of current element block */
-    ElmtType m_elmttype;/**< the type of current element */
-    vector<string> m_dof_names;/**< the string name list of the dofs used in current element */
-    vector<int> m_dof_ids;/**< the dof ids related to the dof names */
-    vector<string> m_domain_namelist;/**< the physical name vector of the domain for current element */
+    int m_ElmtBlockIndex;/**< the index for the order of current element block in the input file, start from 1 */
+    string m_ElmtBlockName;/**< the string name of current element block(single block) */
+    string m_ElmtTypeName;/**< the string name of current element block */
+    ElmtType m_ElmtType;/**< the type of current element */
+    vector<string> m_DofNames;/**< the string name list of the dofs used in current element */
+    vector<int> m_DofIDs;/**< the dof ids related to the dof names */
+    vector<string> m_DomainNameList;/**< the physical name vector of the domain for current element */
     //*** for materials
-    string m_mate_typename;/**< string name for material type of current element */
-    MateType m_matetype;/**< the type of material used in current element */
-    nlohmann::json m_json_params;/**< json class for material paramters of current element */
+    string m_MateTypeName;/**< string name for material type of current element */
+    MateType m_MateType;/**< the type of material used in current element */
+    nlohmann::json m_JsonParams;/**< json class for material paramters of current element */
 
 };

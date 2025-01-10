@@ -20,26 +20,26 @@
 #include "MateSystem/ConstPoissonMaterial.h"
 
 void ConstPoissonMaterial::initMaterialProperties(const nlohmann::json &inputparams,
-                                        const LocalElmtInfo &elmtinfo,
-                                        const LocalElmtSolution &elmtsoln,
-                                        MaterialsContainer &mate){
+                                                  const LocalElmtInfo &elmtinfo,
+                                                  const LocalElmtSolution &elmtsoln,
+                                                  MaterialsContainer &mate){
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
 //********************************************************************
 void ConstPoissonMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
-                                           const LocalElmtInfo &elmtinfo,
-                                           const LocalElmtSolution &elmtsoln,
-                                           const MaterialsContainer &mateold,
-                                           MaterialsContainer &mate){
+                                                     const LocalElmtInfo &elmtinfo,
+                                                     const LocalElmtSolution &elmtsoln,
+                                                     const MaterialsContainer &mateold,
+                                                     MaterialsContainer &mate){
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||
        mateold.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
     //************************
@@ -49,6 +49,6 @@ void ConstPoissonMaterial::computeMaterialProperties(const nlohmann::json &input
     mate.ScalarMaterial("dsigmadu")=0.0;// dsigma/dphi
     mate.ScalarMaterial("f")=JsonUtils::getValue(inputparams,"f");// F
     mate.ScalarMaterial("dfdu")=0.0;// dF/dphi
-    mate.VectorMaterial("gradu")=elmtsoln.m_gpGradU[1];// the gradient of u
+    mate.VectorMaterial("gradu")=elmtsoln.m_QpGradU[1];// the gradient of u
 
 }

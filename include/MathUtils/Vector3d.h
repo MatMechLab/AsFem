@@ -51,10 +51,10 @@ public:
      */
     inline double& operator()(const int &i){
         if(i<1||i>3){
-            MessagePrinter::printErrorTxt(to_string(i)+" is out of range for Vector3");
+            MessagePrinter::printErrorTxt(to_string(i)+" is out of range for Vector3d");
             MessagePrinter::exitAsFem();
         }
-        return m_vals[i-1];
+        return m_Vals[i-1];
     }
     /**
      * const () operator
@@ -62,17 +62,17 @@ public:
      */
     inline double operator()(const int &i)const{
         if(i<1||i>3){
-            MessagePrinter::printErrorTxt(to_string(i)+" is out of range for Vector3");
+            MessagePrinter::printErrorTxt(to_string(i)+" is out of range for Vector3d");
             MessagePrinter::exitAsFem();
         }
-        return m_vals[i-1];
+        return m_Vals[i-1];
     }
     /**
      * = operator
      * @param val right hand side double value
      */
     inline Vector3d& operator=(const double &val){
-        m_vals[0]=val;m_vals[1]=val;m_vals[2]=val;
+        m_Vals[0]=val;m_Vals[1]=val;m_Vals[2]=val;
         return *this;
     }
     /**
@@ -80,7 +80,7 @@ public:
      * @param val right hand side Vector3 value
      */
     inline Vector3d& operator=(const Vector3d &a){
-        m_vals[0]=a.m_vals[0];m_vals[1]=a.m_vals[1];m_vals[2]=a.m_vals[2];
+        m_Vals[0]=a.m_Vals[0];m_Vals[1]=a.m_Vals[1];m_Vals[2]=a.m_Vals[2];
         return *this;
     }
     //***********************************************
@@ -90,7 +90,7 @@ public:
      */
     inline Vector3d operator+(const double &val)const{
         Vector3d temp=*this;
-        temp.m_vals[0]+=val;temp.m_vals[1]+=val;temp.m_vals[2]+=val;
+        temp.m_Vals[0]+=val;temp.m_Vals[1]+=val;temp.m_Vals[2]+=val;
         return temp;
     }
     /**
@@ -99,7 +99,7 @@ public:
      */
     inline Vector3d operator+(const Vector3d &a)const{
         Vector3d temp=*this;
-        temp.m_vals[0]+=a.m_vals[0];temp.m_vals[1]+=a.m_vals[1];temp.m_vals[2]+=a.m_vals[2];
+        temp.m_Vals[0]+=a.m_Vals[0];temp.m_Vals[1]+=a.m_Vals[1];temp.m_Vals[2]+=a.m_Vals[2];
         return temp;
     }
     //*************************************************
@@ -108,7 +108,7 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d& operator+=(const double &val){
-        m_vals[0]+=val;m_vals[1]+=val;m_vals[2]+=val;
+        m_Vals[0]+=val;m_Vals[1]+=val;m_Vals[2]+=val;
         return *this;
     }
     /**
@@ -116,7 +116,7 @@ public:
      * @param val right hand side Vector3 value
      */
     inline Vector3d& operator+=(const Vector3d &a){
-        m_vals[0]+=a.m_vals[0];m_vals[1]+=a.m_vals[1];m_vals[2]+=a.m_vals[2];
+        m_Vals[0]+=a.m_Vals[0];m_Vals[1]+=a.m_Vals[1];m_Vals[2]+=a.m_Vals[2];
         return *this;
     }
     //***********************************************
@@ -126,7 +126,7 @@ public:
      */
     inline Vector3d operator-(const double &val)const{
         Vector3d temp=*this;
-        temp.m_vals[0]-=val;temp.m_vals[1]-=val;temp.m_vals[2]-=val;
+        temp.m_Vals[0]-=val;temp.m_Vals[1]-=val;temp.m_Vals[2]-=val;
         return temp;
     }
     /**
@@ -135,7 +135,7 @@ public:
      */
     inline Vector3d operator-(const Vector3d &a)const{
         Vector3d temp=*this;
-        temp.m_vals[0]-=a.m_vals[0];temp.m_vals[1]-=a.m_vals[1];temp.m_vals[2]-=a.m_vals[2];
+        temp.m_Vals[0]-=a.m_Vals[0];temp.m_Vals[1]-=a.m_Vals[1];temp.m_Vals[2]-=a.m_Vals[2];
         return temp;
     }
     //*************************************************
@@ -144,7 +144,7 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d& operator-=(const double &val){
-        m_vals[0]-=val;m_vals[1]-=val;m_vals[2]-=val;
+        m_Vals[0]-=val;m_Vals[1]-=val;m_Vals[2]-=val;
         return *this;
     }
     /**
@@ -152,7 +152,7 @@ public:
      * @param val right hand side Vector3 value
      */
     inline Vector3d& operator-=(const Vector3d &a){
-        m_vals[0]-=a.m_vals[0];m_vals[1]-=a.m_vals[1];m_vals[2]-=a.m_vals[2];
+        m_Vals[0]-=a.m_Vals[0];m_Vals[1]-=a.m_Vals[1];m_Vals[2]-=a.m_Vals[2];
         return *this;
     }
     //***********************************************
@@ -162,7 +162,7 @@ public:
      */
     inline Vector3d operator*(const double &val)const{
         Vector3d temp=*this;
-        temp.m_vals[0]*=val;temp.m_vals[1]*=val;temp.m_vals[2]*=val;
+        temp.m_Vals[0]*=val;temp.m_Vals[1]*=val;temp.m_Vals[2]*=val;
         return temp;
     }
     /**
@@ -170,9 +170,9 @@ public:
      * @param val right hand side Vector3 value
      */
     inline double operator*(const Vector3d &a)const{
-        double sum=static_cast<double>(m_vals[0]*a.m_vals[0]
-                                      +m_vals[1]*a.m_vals[1]
-                                      +m_vals[2]*a.m_vals[2]);
+        double sum=static_cast<double>(m_Vals[0]*a.m_Vals[0]
+                                      +m_Vals[1]*a.m_Vals[1]
+                                      +m_Vals[2]*a.m_Vals[2]);
         return sum;
     }
     /**
@@ -187,17 +187,17 @@ public:
         // Thanks Qingchen&Jie for pointing out the Floating-point underflow issue
         // Generally using double is enough.
         double sum = 0.0;
-        if(m_vals[0] >= std::numeric_limits<double>::epsilon()/a.m_vals[0]||
-           a.m_vals[0] >= std::numeric_limits<double>::epsilon()/m_vals[0]) {
-            sum += m_vals[0] * a.m_vals[0];
+        if(m_Vals[0] >= std::numeric_limits<double>::epsilon()/a.m_Vals[0]||
+           a.m_Vals[0] >= std::numeric_limits<double>::epsilon()/m_Vals[0]) {
+            sum += m_Vals[0] * a.m_Vals[0];
         }
-        if(m_vals[1] >= std::numeric_limits<double>::epsilon()/a.m_vals[1] ||
-           a.m_vals[1] >= std::numeric_limits<double>::epsilon()/m_vals[1]){
-            sum += m_vals[1] * a.m_vals[1];
+        if(m_Vals[1] >= std::numeric_limits<double>::epsilon()/a.m_Vals[1] ||
+           a.m_Vals[1] >= std::numeric_limits<double>::epsilon()/m_Vals[1]){
+            sum += m_Vals[1] * a.m_Vals[1];
         } 
-        if(m_vals[2] >= std::numeric_limits<double>::epsilon()/a.m_vals[2]||
-           a.m_vals[2] >= std::numeric_limits<double>::epsilon()/m_vals[2]){
-            sum += m_vals[2] * a.m_vals[2];
+        if(m_Vals[2] >= std::numeric_limits<double>::epsilon()/a.m_Vals[2]||
+           a.m_Vals[2] >= std::numeric_limits<double>::epsilon()/m_Vals[2]){
+            sum += m_Vals[2] * a.m_Vals[2];
         } 
         return sum;
     }
@@ -207,7 +207,7 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d& operator*=(const double &val){
-        m_vals[0]*=val;m_vals[1]*=val;m_vals[2]*=val;
+        m_Vals[0]*=val;m_Vals[1]*=val;m_Vals[2]*=val;
         return *this;
     }
     //***********************************************
@@ -221,7 +221,7 @@ public:
             MessagePrinter::printErrorTxt("val= "+to_string(val)+" is singular for / operator in Vector3");
             MessagePrinter::exitAsFem();
         }
-        temp.m_vals[0]/=val;temp.m_vals[1]/=val;temp.m_vals[2]/=val;
+        temp.m_Vals[0]/=val;temp.m_Vals[1]/=val;temp.m_Vals[2]/=val;
         return temp;
     }
     //*****************************************************
@@ -231,18 +231,18 @@ public:
      * return the L2 norm of current vector3 array
      */
     inline double norm()const{
-        double sum=static_cast<double>(m_vals[0]*m_vals[0]+m_vals[1]*m_vals[1]+m_vals[2]*m_vals[2]);
+        double sum=static_cast<double>(m_Vals[0]*m_Vals[0]+m_Vals[1]*m_Vals[1]+m_Vals[2]*m_Vals[2]);
         return sqrt(sum);
     }
     /**
      * return the squared norm of current vector3 array
      */
     inline double normsq()const{
-        double sum=static_cast<double>(m_vals[0]*m_vals[0]+m_vals[1]*m_vals[1]+m_vals[2]*m_vals[2]);
+        double sum=static_cast<double>(m_Vals[0]*m_Vals[0]+m_Vals[1]*m_Vals[1]+m_Vals[2]*m_Vals[2]);
         return sum;
     }
 
 
 private:
-    double m_vals[3];/**< components vector, its size is always 3! */
+    double m_Vals[3];/**< components vector, its size is always 3! */
 };

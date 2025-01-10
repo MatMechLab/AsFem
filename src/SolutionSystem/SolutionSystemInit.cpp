@@ -15,34 +15,52 @@
 #include "SolutionSystem/SolutionSystem.h"
 
 void SolutionSystem::init(const DofHandler &t_dofhandler,const FE &t_fe){
-    m_dofs=t_dofhandler.getActiveDofs();
-    m_bulkelmts_num=t_dofhandler.getBulkElmtsNum();
-    m_qpoints_num=t_fe.m_bulk_qpoints.getQPointsNum();
+    m_Dofs=t_dofhandler.getActiveDofs();
+    m_BulkElmtsNum=t_dofhandler.getBulkElmtsNum();
+    m_BulkElmtsNum_Local=t_dofhandler.getLocalBulkElmtsNum();
+    m_QpointsNum=t_fe.m_BulkQpoints.getQPointsNum();
 
     //******************************************************
     //*** initialize each vector
     //******************************************************
-    m_u_current.resize(m_dofs,0.0);
-    m_u_old.resize(m_dofs,0.0);
-    m_u_older.resize(m_dofs,0.0);
-    m_u_temp.resize(m_dofs,0.0);
-    m_u_copy.resize(m_dofs,0.0);
+    m_Ucurrent.resize(m_Dofs,0.0);
+    m_Uold.resize(m_Dofs,0.0);
+    m_Uolder.resize(m_Dofs,0.0);
+    m_Utemp.resize(m_Dofs,0.0);
+    m_Ucopy.resize(m_Dofs,0.0);
 
     // for velocity and acceleration
-    m_v.resize(m_dofs,0.0);
-    m_a.resize(m_dofs,0.0);
+    m_V.resize(m_Dofs,0.0);
+    m_A.resize(m_Dofs,0.0);
 
-    // for the material properties on each gauss point
-    m_qpoints_scalarmaterials.resize(m_bulkelmts_num*m_qpoints_num);
-    m_qpoints_vectormaterials.resize(m_bulkelmts_num*m_qpoints_num);
-    m_qpoints_rank2materials.resize(m_bulkelmts_num*m_qpoints_num);
-    m_qpoints_rank4materials.resize(m_bulkelmts_num*m_qpoints_num);
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    
 
-    m_qpoints_scalarmaterials_old.resize(m_bulkelmts_num*m_qpoints_num);
-    m_qpoints_vectormaterials_old.resize(m_bulkelmts_num*m_qpoints_num);
-    m_qpoints_rank2materials_old.resize(m_bulkelmts_num*m_qpoints_num);
-    m_qpoints_rank4materials_old.resize(m_bulkelmts_num*m_qpoints_num);
+    if(rank==0){
+        // for the material properties on each gauss point
+        m_QpointsScalarMaterials_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        m_QpointsVectorMaterials_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        m_QpointsRank2Materials_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        m_QpointsRank4Materials_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        // for the old materials
+        m_QpointsScalarMaterialsOld_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        m_QpointsVectorMaterialsOld_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        m_QpointsRank2MaterialsOld_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+        m_QpointsRank4MaterialsOld_Total.resize(m_BulkElmtsNum*m_QpointsNum);
+    }
 
-    m_allocated=true;
+    // for the material properties on each gauss point owned by each rank
+    m_QpointsScalarMaterials_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    m_QpointsVectorMaterials_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    m_QpointsRank2Materials_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    m_QpointsRank4Materials_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    // for the old materials
+    m_QpointsScalarMaterialsOld_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    m_QpointsVectorMaterialsOld_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    m_QpointsRank2MaterialsOld_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+    m_QpointsRank4MaterialsOld_Local.resize(m_BulkElmtsNum_Local*m_QpointsNum);
+
+    m_Allocated=true;
 
 }

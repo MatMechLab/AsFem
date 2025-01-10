@@ -22,8 +22,8 @@
 #include <map>
 #include <utility>
 
-#include "Mesh/MeshType.h"
-#include "Mesh/Nodes.h"
+#include "FECell/MeshType.h"
+#include "FECell/Nodes.h"
 
 using std::vector;
 using std::map;

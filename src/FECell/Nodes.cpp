@@ -16,18 +16,18 @@
 #include "FECell/Nodes.h"
 
 Nodes::Nodes(){
-    m_coordinates.clear();m_size=0;
+    m_Coordinates.clear();m_Size=0;
 }
 Nodes::Nodes(const int &n){
-    m_size=n;m_coordinates.resize(n*3,0.0);
+    m_Size=n;m_Coordinates.resize(n*3,0.0);
 }
 Nodes::Nodes(const Nodes &nodes){
-    m_size=nodes.m_size;
-    m_coordinates.clear();
-    for(const auto &it:nodes.m_coordinates) m_coordinates.push_back(it);
+    m_Size=nodes.m_Size;
+    m_Coordinates.clear();
+    for(const auto &it:nodes.m_Coordinates) m_Coordinates.push_back(it);
 }
    
 Nodes::~Nodes(){
-    m_size=0;
-    m_coordinates.clear();
+    m_Size=0;
+    m_Coordinates.clear();
 }

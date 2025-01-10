@@ -29,7 +29,7 @@
 #include "Utils/MessagePrinter.h"
 
 #include "FECell/FECellData.h"
-#include "Mesh/MeshType.h"
+#include "FECell/MeshType.h"
 
 using std::transform;
 using std::remove;

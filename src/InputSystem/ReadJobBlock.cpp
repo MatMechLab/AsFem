@@ -24,12 +24,12 @@ bool InputSystem::readJobBlock(nlohmann::json &t_json,FEJobBlock &t_jobblock){
         }
         string jobtypename=t_json.at("type");
         if(jobtypename=="static"){
-            t_jobblock.m_jobtypename="static";
-            t_jobblock.m_jobtype=FEJobType::STATIC;
+            t_jobblock.m_JobTypeName="static";
+            t_jobblock.m_JobType=FEJobType::STATIC;
         }
         else if(jobtypename=="transient"){
-            t_jobblock.m_jobtypename="transient";
-            t_jobblock.m_jobtype=FEJobType::TRANSIENT;
+            t_jobblock.m_JobTypeName="transient";
+            t_jobblock.m_JobType=FEJobType::TRANSIENT;
         }
         else{
             MessagePrinter::printErrorTxt("type="+jobtypename+" is invalid in [job] block, please check your input file");
@@ -49,16 +49,16 @@ bool InputSystem::readJobBlock(nlohmann::json &t_json,FEJobBlock &t_jobblock){
         }
         string print=t_json.at("print");
         if(print=="on"){
-            t_jobblock.m_isdebug=true;
-            t_jobblock.m_isdepdebug=false;
+            t_jobblock.m_IsDebug=true;
+            t_jobblock.m_IsDepDebug=false;
         }
         else if(print=="dep"){
-            t_jobblock.m_isdebug=true;
-            t_jobblock.m_isdepdebug=true;
+            t_jobblock.m_IsDebug=true;
+            t_jobblock.m_IsDepDebug=true;
         }
         else if(print=="off"){
-            t_jobblock.m_isdebug=false;
-            t_jobblock.m_isdepdebug=false;
+            t_jobblock.m_IsDebug=false;
+            t_jobblock.m_IsDepDebug=false;
         }
         else{
             MessagePrinter::printErrorTxt("unsupported option for 'print' in your job block, please check your input file" );
@@ -67,8 +67,8 @@ bool InputSystem::readJobBlock(nlohmann::json &t_json,FEJobBlock &t_jobblock){
     }
     else{
         MessagePrinter::printWarningTxt("can\'t find 'print' in your job block, then the default linear solver (gmres) will be used");
-        t_jobblock.m_isdebug=true;
-        t_jobblock.m_isdepdebug=false;
+        t_jobblock.m_IsDebug=true;
+        t_jobblock.m_IsDepDebug=false;
     }
 
 

@@ -17,42 +17,42 @@
 #include "MateSystem/MaterialsContainer.h"
 
 MaterialsContainer::MaterialsContainer(){
-    m_boolean_materials.clear();
-    m_scalar_materials.clear();
-    m_vector_materials.clear();
-    m_rank2_materials.clear();
-    m_rank4_materials.clear();
+    m_BooleanMaterials.clear();
+    m_ScalarMaterials.clear();
+    m_VectorMaterials.clear();
+    m_Rank2Materials.clear();
+    m_Rank4Materials.clear();
 }
 void MaterialsContainer::clean(){
-    m_boolean_materials.clear();
-    m_scalar_materials.clear();
-    m_vector_materials.clear();
-    m_rank2_materials.clear();
-    m_rank4_materials.clear();
+    m_BooleanMaterials.clear();
+    m_ScalarMaterials.clear();
+    m_VectorMaterials.clear();
+    m_Rank2Materials.clear();
+    m_Rank4Materials.clear();
 }
 MaterialsContainer::MaterialsContainer(const MaterialsContainer &a){
     clean();
-    for(const auto &it:a.m_boolean_materials){
-        m_boolean_materials[it.first]=it.second;
+    for(const auto &it:a.m_BooleanMaterials){
+        m_BooleanMaterials[it.first]=it.second;
     }
-    for(const auto &it:a.m_scalar_materials){
-        m_scalar_materials[it.first]=it.second;
+    for(const auto &it:a.m_ScalarMaterials){
+        m_ScalarMaterials[it.first]=it.second;
     }
-    for(const auto &it:a.m_vector_materials){
-        m_vector_materials[it.first]=it.second;
+    for(const auto &it:a.m_VectorMaterials){
+        m_VectorMaterials[it.first]=it.second;
     }
-    for(const auto &it:a.m_rank2_materials){
-        m_rank2_materials[it.first]=it.second;
+    for(const auto &it:a.m_Rank2Materials){
+        m_Rank2Materials[it.first]=it.second;
     }
-    for(const auto &it:a.m_rank4_materials){
-        m_rank4_materials[it.first]=it.second;
+    for(const auto &it:a.m_Rank4Materials){
+        m_Rank4Materials[it.first]=it.second;
     }
 }
 //*******************************************************
 //*** for the access to each material
 //*******************************************************
 bool MaterialsContainer::BooleanMaterial(const string &matename)const{
-    for(const auto &it:m_boolean_materials){
+    for(const auto &it:m_BooleanMaterials){
         if(it.first==matename){
             return it.second;
         }
@@ -62,7 +62,7 @@ bool MaterialsContainer::BooleanMaterial(const string &matename)const{
     return false;
 }
 double MaterialsContainer::ScalarMaterial(const string &matename)const{
-    for(const auto &it:m_scalar_materials){
+    for(const auto &it:m_ScalarMaterials){
         if(it.first==matename){
             return it.second;
         }
@@ -72,7 +72,7 @@ double MaterialsContainer::ScalarMaterial(const string &matename)const{
     return 0;
 }
 Vector3d MaterialsContainer::VectorMaterial(const string &matename)const{
-    for(const auto &it:m_vector_materials){
+    for(const auto &it:m_VectorMaterials){
         if(it.first==matename){
             return it.second;
         }
@@ -82,7 +82,7 @@ Vector3d MaterialsContainer::VectorMaterial(const string &matename)const{
     return Vector3d(0);
 }
 Rank2Tensor MaterialsContainer::Rank2Material(const string &matename)const{
-    for(const auto &it:m_rank2_materials){
+    for(const auto &it:m_Rank2Materials){
         if(it.first==matename){
             return it.second;
         }
@@ -92,7 +92,7 @@ Rank2Tensor MaterialsContainer::Rank2Material(const string &matename)const{
     return Rank2Tensor(0.0);
 }
 Rank4Tensor MaterialsContainer::Rank4Material(const string &matename)const{
-    for(const auto &it:m_rank4_materials){
+    for(const auto &it:m_Rank4Materials){
         if(it.first==matename){
             return it.second;
         }

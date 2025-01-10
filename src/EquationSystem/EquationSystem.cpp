@@ -15,15 +15,15 @@
 #include "EquationSystem/EquationSystem.h"
 
 EquationSystem::EquationSystem(){
-    m_dofs=0;
-    m_allocated=false;
+    m_Dofs=0;
+    m_Allocated=false;
 }
 
 void EquationSystem::init(const DofHandler &t_dofHandler){
-    m_dofs=t_dofHandler.getActiveDofs();
-    m_rhs.resize(m_dofs,0.0);
-    m_amatrix.resize(m_dofs,m_dofs,t_dofHandler.getMaxNNZ());
-    m_allocated=true;
+    m_Dofs=t_dofHandler.getActiveDofs();
+    m_RHS.resize(m_Dofs,0.0);
+    m_AMATRIX.resize(m_Dofs,m_Dofs,t_dofHandler.getMaxRowNNZ());
+    m_Allocated=true;
 }
 
 void EquationSystem::createSparsityPattern(const DofHandler &t_dofHandler){
@@ -31,36 +31,28 @@ void EquationSystem::createSparsityPattern(const DofHandler &t_dofHandler){
     vector<double> elvals;
     int n;
 
-    PetscMPIInt rank,size;
-    MPI_Comm_rank(PETSC_COMM_WORLD,&rank);
-    MPI_Comm_size(PETSC_COMM_WORLD,&size);
-
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     eldofs.resize(t_dofHandler.getMaxDofsPerElmt()+1,0);
     elvals.resize(t_dofHandler.getMaxDofsPerElmt()+1,0.0);
 
-    int rankne=t_dofHandler.getBulkElmtsNum()/size;
-    int eStart=rank*rankne;
-    int eEnd=(rank+1)*rankne;
-    if(rank==size-1) eEnd=t_dofHandler.getBulkElmtsNum();
-    int e;
-    for(int ee=eStart;ee<eEnd;++ee){
-        e=ee+1;
-        t_dofHandler.getIthBulkElmtDofIDs0(e,eldofs);// index start from 0
-        n=t_dofHandler.getIthBulkElmtDofsNum(e);
+    n=t_dofHandler.getMaxDofsPerElmt();
+    for(int e=1;e<=t_dofHandler.getLocalBulkElmtsNum();e++){
+        t_dofHandler.getIthLocalBulkElmtDofIDs(e,eldofs);
         for(int i=0;i<n;i++){
             for(int j=0;j<n;j++){
-                m_amatrix.addValue(eldofs[i]+1,eldofs[j]+1,elvals[i]);
+                m_AMATRIX.addValue(eldofs[i],eldofs[j],elvals[i]);
             }
         }
     }
-    m_amatrix.assemble();
-    m_amatrix.disableReallocation();// the following operation can not modify the sparsity pattern anymore!!!
+    m_AMATRIX.assemble();
+    m_AMATRIX.disableReallocation();// the following operation can not modify the sparsity pattern anymore!!!
 
     eldofs.clear();
     elvals.clear();
 }
 
 void EquationSystem::releaseMemory(){
-    m_rhs.releaseMemory();
-    m_amatrix.releaseMemory();
+    m_RHS.releaseMemory();
+    m_AMATRIX.releaseMemory();
 }

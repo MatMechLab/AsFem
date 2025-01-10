@@ -22,7 +22,7 @@ double VolumeIntegralRank4MatePostprocessor::computeVolumeIntegralValue(const in
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()||elmtinfo.m_dim) {}
+    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()||elmtinfo.m_Dim) {}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"nodeid","rank4mate","i-index","j-index","k-index","l-index"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the VolumeIntegralRank4MatePostprocessor, "
@@ -57,7 +57,7 @@ double VolumeIntegralRank4MatePostprocessor::computeVolumeIntegralValue(const in
 
     m_rank4matename=JsonUtils::getString(parameters,"rank4mate");
     m_rank4value=projsystem.getIthNodeRank4MateViaMateName(nodeid,m_rank4matename);
-    m_ppsvalue=m_rank4value(m_i,m_j,m_k,m_l)*shp.m_test;
+    m_ppsvalue=m_rank4value(m_i,m_j,m_k,m_l)*shp.m_Test;
     
     return m_ppsvalue;
 }

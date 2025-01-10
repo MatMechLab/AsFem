@@ -94,26 +94,30 @@ public:
 
     /**
      * initialize the material libs for different material model calculation
-     * @param t_matetype the type of material calculation
-     * @param t_params the parameters read from json file
-     * @param t_elmtinfo the local element information
-     * @param t_elmtsoln the local element solution
+     * @param t_MateType the type of material calculation
+     * @param Params the parameters read from json file
+     * @param ElmtInfo the local element information
+     * @param ElmtSoln the local element solution
      */
-    void initBulkMateLibs(const MateType &t_matetype,const nlohmann::json &t_params,
-                          const LocalElmtInfo &t_elmtinfo,const LocalElmtSolution &t_elmtsoln);
+    void initBulkMateLibs(const MateType &t_MateType,
+                          const nlohmann::json &Params,
+                          const LocalElmtInfo &ElmtInfo,
+                          const LocalElmtSolution &ElmtSoln);
 
     /**
      * run the material libs for different material model calculation
-     * @param t_matetype the type of material calculation
-     * @param t_params the parameters read from json file
-     * @param t_elmtinfo the local element information
-     * @param t_elmtsoln the local element solution
+     * @param t_MateType the type of material calculation
+     * @param Params the parameters read from json file
+     * @param ElmtInfo the local element information
+     * @param ElmtSoln the local element solution
      */
-    void runBulkMateLibs(const MateType &t_matetype,const nlohmann::json &t_params,
-                         const LocalElmtInfo &t_elmtinfo,const LocalElmtSolution &t_elmtsoln);
+    void runBulkMateLibs(const MateType &t_MateType,
+                         const nlohmann::json &Params,
+                         const LocalElmtInfo &ElmtInfo,
+                         const LocalElmtSolution &ElmtSoln);
 
 public:
-    MaterialsContainer m_materialcontainer_old;/**< the materials container of previous step */
-    MaterialsContainer m_materialcontainer;/**< the material container of current step */
+    MaterialsContainer m_MaterialContainerOld;/**< the materials container of previous step */
+    MaterialsContainer m_MaterialContainer;/**< the material container of current step */
     
 };

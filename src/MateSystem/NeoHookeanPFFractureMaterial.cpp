@@ -30,21 +30,21 @@ NeoHookeanPFFractureMaterial::~NeoHookeanPFFractureMaterial(){
 }
 //******************************************************
 void NeoHookeanPFFractureMaterial::initMaterialProperties(const nlohmann::json &inputparams,
-                                        const LocalElmtInfo &elmtinfo,
-                                        const LocalElmtSolution &elmtsoln,
-                                        MaterialsContainer &mate){
+                                                          const LocalElmtInfo &elmtinfo,
+                                                          const LocalElmtSolution &elmtsoln,
+                                                          MaterialsContainer &mate){
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]){}
     mate.ScalarMaterial("H")=0.0;
 }
 //********************************************************************
 void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
-                                           const LocalElmtInfo &elmtinfo,
-                                           const LocalElmtSolution &elmtsoln,
-                                           const MaterialsContainer &mateold,
-                                           MaterialsContainer &mate){
+                                                             const LocalElmtInfo &elmtinfo,
+                                                             const LocalElmtSolution &elmtsoln,
+                                                             const MaterialsContainer &mateold,
+                                                             MaterialsContainer &mate){
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
@@ -65,11 +65,11 @@ void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::jso
     mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
     mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
 
-    if(elmtinfo.m_dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);// grad(ux), grad(uy)
+    if(elmtinfo.m_Dim==2){
+        m_GradU.setFromGradU(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);// grad(ux), grad(uy)
     }
-    else if(elmtinfo.m_dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
+    else if(elmtinfo.m_Dim==3){
+        m_GradU.setFromGradU(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);// grad(ux), grad(uy)
     }
     else{
         MessagePrinter::printErrorTxt("NeoHookeanPFFractureMaterial works only for 2d and 3d case, please check your input file");
@@ -77,14 +77,14 @@ void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::jso
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_dim,m_GradU,m_Estrain);
+    computeStrain(elmtinfo.m_Dim,m_GradU,m_Estrain);
     
-    m_d=elmtsoln.m_gpU[1];
+    m_d=elmtsoln.m_QpU[1];
 
     m_args(1)=m_d;
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
     
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_Estrain,m_PK1stress,m_jacobian);
+    computeStressAndJacobian(inputparams,elmtinfo.m_Dim,m_Estrain,m_PK1stress,m_jacobian);
 
     m_devstress=m_PK1stress.dev();
 
@@ -114,10 +114,10 @@ void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::jso
 }
 //**************************************************************************
 void NeoHookeanPFFractureMaterial::computeFreeEnergyAndDerivatives(const nlohmann::json &parameters,
-                                                 const VectorXd &args,
-                                                 VectorXd       &F,
-                                                 VectorXd       &dFdargs,
-                                                 MatrixXd       &d2Fdargs2){
+                                                                   const VectorXd       &args,
+                                                                   VectorXd             &F,
+                                                                   VectorXd             &dFdargs,
+                                                                   MatrixXd             &d2Fdargs2){
     double d,Gc,eps;
     d=args(1);
     Gc=JsonUtils::getValue(parameters,"Gc");
@@ -136,10 +136,10 @@ void NeoHookeanPFFractureMaterial::computeStrain(const int &dim,const Rank2Tenso
 }
 //**************************************************************************
 void NeoHookeanPFFractureMaterial::computeStressAndJacobian(const nlohmann::json &params,
-                                          const int &dim,
-                                          const Rank2Tensor &strain,
-                                          Rank2Tensor &stress,
-                                          Rank4Tensor &jacobian){
+                                                            const int            &dim,
+                                                            const Rank2Tensor    &strain,
+                                                            Rank2Tensor          &stress,
+                                                            Rank4Tensor          &jacobian){
     if(dim||strain(1,1)){}
 
     m_stabilizer=JsonUtils::getValue(params,"stabilizer");

@@ -38,7 +38,7 @@ void KobayashiDendriteMaterial::initMaterialProperties(const nlohmann::json &inp
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
@@ -53,7 +53,7 @@ void KobayashiDendriteMaterial::computeMaterialProperties(const nlohmann::json &
     //**************************************************************
     if(mateold.getScalarMaterialsNum()){}
 
-    if(elmtinfo.m_dim!=2){
+    if(elmtinfo.m_Dim!=2){
         MessagePrinter::printErrorTxt("KobayashiDendrite material only works for 2d case");
         MessagePrinter::exitAsFem();
     }
@@ -67,8 +67,8 @@ void KobayashiDendriteMaterial::computeMaterialProperties(const nlohmann::json &
     mate.ScalarMaterial("L")=JsonUtils::getValue(inputparams,"L");
     mate.ScalarMaterial("Latent-heat")=JsonUtils::getValue(inputparams,"Latent-heat");
     
-    m_args(1)=elmtsoln.m_gpU[1];// for order parameter
-    m_args(2)=elmtsoln.m_gpU[2];// for temperature
+    m_args(1)=elmtsoln.m_QpU[1];// for order parameter
+    m_args(2)=elmtsoln.m_QpU[2];// for temperature
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
 
     mate.ScalarMaterial("F")=m_F(1);
@@ -88,7 +88,7 @@ void KobayashiDendriteMaterial::computeMaterialProperties(const nlohmann::json &
     N=JsonUtils::getValue(inputparams,"N");
     delta=JsonUtils::getValue(inputparams,"delta");
 
-    GradEta=elmtsoln.m_gpGradU[1];
+    GradEta=elmtsoln.m_QpGradU[1];
     threshold=1.0-tol;
     normsq=GradEta(1)*GradEta(1)+GradEta(2)*GradEta(2);
     norm=sqrt(normsq);
@@ -127,8 +127,8 @@ void KobayashiDendriteMaterial::computeMaterialProperties(const nlohmann::json &
     mate.VectorMaterial("dKdGradEta")=dKdGradEta;
     mate.VectorMaterial("ddKdGradEta")=ddKdGradEta;
     
-    mate.VectorMaterial("gradeta")=elmtsoln.m_gpGradU[1];// the gradient of eta
-    mate.VectorMaterial("gradT")  =elmtsoln.m_gpGradU[2];// the gradient of T
+    mate.VectorMaterial("gradeta")=elmtsoln.m_QpGradU[1];// the gradient of eta
+    mate.VectorMaterial("gradT")  =elmtsoln.m_QpGradU[2];// the gradient of T
 
 }
 //**************************************************************

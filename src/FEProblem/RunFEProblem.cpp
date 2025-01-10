@@ -27,17 +27,17 @@ void FEProblem::run(){
     }
     MessagePrinter::printDashLine(MessageColor::BLUE);
 
-    if(!m_inputSystem.isReadOnly()){
-        if(m_jobblock.m_jobtype==FEJobType::STATIC){
+    if(!m_InputSystem.isReadOnly()){
+        if(m_JobBlock.m_JobType==FEJobType::STATIC){
             runStaticAnalysis();
         }
-        else if(m_jobblock.m_jobtype==FEJobType::TRANSIENT){
+        else if(m_JobBlock.m_JobType==FEJobType::TRANSIENT){
             runTransientAnalysis();
         }
     }
     else{
         MessagePrinter::printNormalTxt("AsFem has been executed in 'read-only' mode");
-        m_timer.endTimer();
-        m_timer.printElapseTime("'Simulation' is done");
+        m_Timer.endTimer();
+        m_Timer.printElapseTime("'Simulation' is done");
     }
 }

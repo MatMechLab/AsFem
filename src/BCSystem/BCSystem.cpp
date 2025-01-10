@@ -19,27 +19,27 @@
 #include "BCSystem/BCSystem.h"
 
 BCSystem::BCSystem(){
-    m_bclock_list.clear();
-    m_bcblocks_num=0;
-    m_dirichlet_penalty=1.0e16;
+    m_BCBlockList.clear();
+    m_BCBlocksNum=0;
+    m_DirichletPenalty=1.0e16;
 }
 
 void BCSystem::init(const int &dofs){
-    m_localK.resize(dofs+1,dofs+1,0.0);
-    m_localR.resize(dofs+1,0.0);
-    m_nodes0.resize(27+1);
-    m_nodes.resize(27+1);
+    m_LocalK.resize(dofs+1,dofs+1,0.0);
+    m_LocalR.resize(dofs+1,0.0);
+    m_Nodes0.resize(27+1);
+    m_Nodes.resize(27+1);
 
-    m_local_elmtsoln.m_gpU.resize(dofs+1,0.0);
-    m_local_elmtsoln.m_gpUold.resize(dofs+1,0.0);
-    m_local_elmtsoln.m_gpUolder.resize(dofs+1,0.0);
-    m_local_elmtsoln.m_gpV.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpU.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpUold.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpUolder.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpV.resize(dofs+1,0.0);
 
-    m_local_elmtsoln.m_gpGradU.resize(dofs+1,0.0);
-    m_local_elmtsoln.m_gpGradUold.resize(dofs+1,0.0);
-    m_local_elmtsoln.m_gpGradUolder.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpGradU.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpGradUold.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpGradUolder.resize(dofs+1,0.0);
 
-    m_local_elmtsoln.m_gpGradV.resize(dofs+1,0.0);
+    m_LocalElmtSoln.m_QpGradV.resize(dofs+1,0.0);
 
     // m_Utemp.resize(468,0.0);
 
@@ -47,44 +47,44 @@ void BCSystem::init(const int &dofs){
 
 void BCSystem::releaseMemory(){
 
-    m_bclock_list.clear();
-    m_bcblocks_num=0;
+    m_BCBlockList.clear();
+    m_BCBlocksNum=0;
 
-    m_localK.clean();
-    m_localR.clean();
-    m_nodes0.clear();
-    m_nodes.clear();
+    m_LocalK.clean();
+    m_LocalR.clean();
+    m_Nodes0.clear();
+    m_Nodes.clear();
 
-    m_local_elmtsoln.m_gpU.clear();
-    m_local_elmtsoln.m_gpUold.clear();
-    m_local_elmtsoln.m_gpUolder.clear();
-    m_local_elmtsoln.m_gpV.clear();
+    m_LocalElmtSoln.m_QpU.clear();
+    m_LocalElmtSoln.m_QpUold.clear();
+    m_LocalElmtSoln.m_QpUolder.clear();
+    m_LocalElmtSoln.m_QpV.clear();
 
-    m_local_elmtsoln.m_gpGradU.clear();
-    m_local_elmtsoln.m_gpGradUold.clear();
-    m_local_elmtsoln.m_gpGradUolder.clear();
+    m_LocalElmtSoln.m_QpGradU.clear();
+    m_LocalElmtSoln.m_QpGradUold.clear();
+    m_LocalElmtSoln.m_QpGradUolder.clear();
 
-    m_local_elmtsoln.m_gpGradV.clear();
+    m_LocalElmtSoln.m_QpGradV.clear();
 }
 
-void BCSystem::addBCBlock2List(const BCBlock &t_bcblock){
-    if(m_bclock_list.size()<1){
-        m_bclock_list.push_back(t_bcblock);
-        m_bcblocks_num=1;
+void BCSystem::addBCBlock2List(const BCBlock &t_BCBlock){
+    if(m_BCBlockList.size()<1){
+        m_BCBlockList.push_back(t_BCBlock);
+        m_BCBlocksNum=1;
     }
     else{
         bool NotInList=true;
-        for(const auto &it:m_bclock_list){
-            if(it.m_bcBlockName==t_bcblock.m_bcBlockName){
+        for(const auto &it:m_BCBlockList){
+            if(it.m_BCBlockName==t_BCBlock.m_BCBlockName){
                 NotInList=false;break;
             }
         }
         if(NotInList){
-            m_bclock_list.push_back(t_bcblock);
-            m_bcblocks_num+=1;
+            m_BCBlockList.push_back(t_BCBlock);
+            m_BCBlocksNum+=1;
         }
         else{
-            MessagePrinter::printErrorTxt("duplicate ["+t_bcblock.m_bcBlockName+"] in your [bcs] sub block,"
+            MessagePrinter::printErrorTxt("duplicate ["+t_BCBlock.m_BCBlockName+"] in your [bcs] sub block,"
                                           " please check your input file");
             MessagePrinter::exitAsFem();
         }
@@ -93,7 +93,7 @@ void BCSystem::addBCBlock2List(const BCBlock &t_bcblock){
 
 void BCSystem::printBCSystemInfo()const{
     MessagePrinter::printNormalTxt("Boundary condition system information summary");
-    for(const auto &it:m_bclock_list){
+    for(const auto &it:m_BCBlockList){
         it.printBCBlockInfo();
     }
     MessagePrinter::printStars();

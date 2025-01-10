@@ -18,102 +18,99 @@
 #include "FESystem/BulkFESystem.h"
 
 BulkFESystem::BulkFESystem(){
-    m_max_nodal_dofs=0;
-    m_max_elmt_dofs=0;
-    m_bulkelmt_nodesnum=0;
+    m_MaxNodalDofs=0;
+    m_MaxElmtDofs=0;
+    m_BulkElmtNodesNum=0;
 
-    m_local_elmtinfo.m_dim=0;
-    m_local_elmtinfo.m_dofsnum=0;
-    m_local_elmtinfo.m_nodesnum=0;
-    m_local_elmtinfo.m_t=0.0;
-    m_local_elmtinfo.m_dt=0.0;
+    m_LocalElmtInfo.m_Dim=0;
+    m_LocalElmtInfo.m_DofsNum=0;
+    m_LocalElmtInfo.m_NodesNum=0;
+    m_LocalElmtInfo.m_T=0.0;
+    m_LocalElmtInfo.m_Dt=0.0;
 
-    m_localR.clean();
-    m_localK.clean();
-    m_subR.clean();
-    m_subK.clean();
+    m_LocalR.clean();
+    m_LocalK.clean();
+    m_SubR.clean();
+    m_SubK.clean();
 
-    m_elmtconn.clear();
-    m_elmtdofsid.clear();
-    m_subelmtdofsid.clear();
+    m_ElmtConn.clear();
+    m_ElmtDofIDs.clear();
+    m_SubElmtDofIDs.clear();
 
-    m_max_k_coeff=-1.0e16;
+    m_MaxKmatCoeff=-1.0e16;
 
-    m_elmtU.clear();
-    m_elmtUold.clear();
-    m_elmtUolder.clear();
-    m_elmtV.clear();
-    m_elmtA.clear();
+    m_ElmtU.clear();
+    m_ElmtUold.clear();
+    m_ElmtUolder.clear();
+    m_ElmtV.clear();
+    m_ElmtA.clear();
 
-    m_local_elmtsoln.m_gpU.clear();
-    m_local_elmtsoln.m_gpUold.clear();
-    m_local_elmtsoln.m_gpUolder.clear();
-    m_local_elmtsoln.m_gpV.clear();
-    m_local_elmtsoln.m_gpA.clear();
+    m_LocalElmtSoln.m_QpU.clear();
+    m_LocalElmtSoln.m_QpUold.clear();
+    m_LocalElmtSoln.m_QpUolder.clear();
+    m_LocalElmtSoln.m_QpV.clear();
+    m_LocalElmtSoln.m_QpA.clear();
 
-    m_local_elmtsoln.m_gpGradU.clear();
-    m_local_elmtsoln.m_gpGradUold.clear();
-    m_local_elmtsoln.m_gpGradUolder.clear();
+    m_LocalElmtSoln.m_QpGradU.clear();
+    m_LocalElmtSoln.m_QpGradUold.clear();
+    m_LocalElmtSoln.m_QpGradUolder.clear();
 
-    m_local_elmtsoln.m_gpGradV.clear();
+    m_LocalElmtSoln.m_QpGradV.clear();
 
-    m_local_elmtsoln.m_gpgradu.clear();
-    m_local_elmtsoln.m_gpgradv.clear();
+    m_LocalElmtSoln.m_Qpgradu.clear();
+    m_LocalElmtSoln.m_Qpgradv.clear();
 
-    m_local_elmtinfo.m_gpCoords0=0.0;
-    m_local_elmtinfo.m_gpCoords =0.0;
+    m_LocalElmtInfo.m_QpCoords0=0.0;
+    m_LocalElmtInfo.m_QpCoords =0.0;
 
-    m_nodes.clear();
-    m_nodes0.clear();
+    m_Nodes.clear();
+    m_Nodes0.clear();
 
 }
 
 void BulkFESystem::releaseMemory(){
-    m_max_nodal_dofs=0;
-    m_max_elmt_dofs=0;
-    m_bulkelmt_nodesnum=0;
+    m_MaxNodalDofs=0;
+    m_MaxElmtDofs=0;
+    m_BulkElmtNodesNum=0;
 
-    m_local_elmtinfo.m_dim=0;
-    m_local_elmtinfo.m_dofsnum=0;
-    m_local_elmtinfo.m_nodesnum=0;
-    m_local_elmtinfo.m_t=0.0;
-    m_local_elmtinfo.m_dt=0.0;
+    m_LocalElmtInfo.m_Dim=0;
+    m_LocalElmtInfo.m_DofsNum=0;
+    m_LocalElmtInfo.m_NodesNum=0;
+    m_LocalElmtInfo.m_T=0.0;
+    m_LocalElmtInfo.m_Dt=0.0;
 
-    m_localR.clean();
-    m_localK.clean();
-    m_subR.clean();
-    m_subK.clean();
+    m_LocalR.clean();
+    m_LocalK.clean();
+    m_SubR.clean();
+    m_SubK.clean();
 
-    m_elmtconn.clear();
-    m_elmtdofsid.clear();
-    m_subelmtdofsid.clear();
+    m_ElmtConn.clear();
+    m_ElmtDofIDs.clear();
+    m_SubElmtDofIDs.clear();
 
-    m_max_k_coeff=-1.0e16;
+    m_MaxKmatCoeff=-1.0e16;
 
-    m_elmtU.clear();
-    m_elmtUold.clear();
-    m_elmtUolder.clear();
-    m_elmtV.clear();
-    m_elmtA.clear();
+    m_ElmtU.clear();
+    m_ElmtUold.clear();
+    m_ElmtUolder.clear();
+    m_ElmtV.clear();
+    m_ElmtA.clear();
 
-    m_local_elmtsoln.m_gpU.clear();
-    m_local_elmtsoln.m_gpUold.clear();
-    m_local_elmtsoln.m_gpUolder.clear();
-    m_local_elmtsoln.m_gpV.clear();
-    m_local_elmtsoln.m_gpA.clear();
+    m_LocalElmtSoln.m_QpU.clear();
+    m_LocalElmtSoln.m_QpUold.clear();
+    m_LocalElmtSoln.m_QpUolder.clear();
+    m_LocalElmtSoln.m_QpV.clear();
+    m_LocalElmtSoln.m_QpA.clear();
 
-    m_local_elmtsoln.m_gpGradU.clear();
-    m_local_elmtsoln.m_gpGradUold.clear();
-    m_local_elmtsoln.m_gpGradUolder.clear();
+    m_LocalElmtSoln.m_QpGradU.clear();
+    m_LocalElmtSoln.m_QpGradUold.clear();
+    m_LocalElmtSoln.m_QpGradUolder.clear();
 
-    m_local_elmtsoln.m_gpGradV.clear();
+    m_LocalElmtSoln.m_QpGradV.clear();
 
-    m_local_elmtsoln.m_gpgradu.clear();
-    m_local_elmtsoln.m_gpgradv.clear();
+    m_LocalElmtSoln.m_Qpgradu.clear();
+    m_LocalElmtSoln.m_Qpgradv.clear();
 
-    m_local_elmtinfo.m_gpCoords0=0.0;
-    m_local_elmtinfo.m_gpCoords =0.0;
-
-    m_nodes.clear();
-    m_nodes0.clear();
+    m_Nodes.clear();
+    m_Nodes0.clear();
 }

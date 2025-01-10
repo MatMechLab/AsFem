@@ -57,7 +57,7 @@
 	"nlsolver":{
 		"type":"newton",
 		"solver":"gmres",
-		"maxiters":50,
+		"maxiters":15,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
 		"s-tolerance":0.0,

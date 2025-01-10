@@ -14,7 +14,9 @@
 
 #include "FE/QPoint2DGenerator.h"
 
-void QPoint2DGenerator::generateQPoints(const int &t_order,const MeshType &t_meshtype,int &t_ngp,vector<double> &t_qpoints){ 
+void QPoint2DGenerator::generateQPoints(const int &t_order,const MeshType &t_meshtype,int &t_ngp,vector<double> &t_qpoints){
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     switch (t_meshtype)
     {
     case MeshType::QUAD4:

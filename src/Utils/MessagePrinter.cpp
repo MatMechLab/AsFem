@@ -299,12 +299,12 @@ vector<string> MessagePrinter::splitStr2Vec(const string &headtxt,const string &
             if(static_cast<int>(substr.size())==nWords){
                 strvec.push_back(substr);
                 substr.clear();
-                if(count==static_cast<int>(str.length())-1){
+                if(count==static_cast<int>(str.length())){
                     break;
                 }
             }
             else{
-                if(count==static_cast<int>(str.length())-1){
+                if(count==static_cast<int>(str.length())){
                     strvec.push_back(substr);
                     break;
                 }

@@ -63,8 +63,14 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
 
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
     MPI_Comm_size(MPI_COMM_WORLD,&size);
-
+    
+    t_celldata.MaxDim=getMaxMeshDim(filename);
+    t_celldata.MinDim=0;
     if(rank!=0) in.close();// close the ifstream on other ranks
+
+    t_celldata.ActiveDofsNum=0;
+    t_celldata.TotalDofsNum=0;
+    t_celldata.MaxDofsPerNode=0;
 
     if(rank==0){
         int mshMaxDim,mshMinDim;
@@ -72,6 +78,8 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
         int maxPhyGroupID;
         int maxPhyGroupDim,minPhyGroupDim;
         int mshBulkPhyGroupNum;
+
+        int PointsNum;
         
         vector<int> mshPhyGroupIDVec,mshPhyGroupDimVec;
         vector<string> mshPhyGroupNameVec;
@@ -94,6 +102,8 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
 
         map<string,vector<SingleMeshCell>> mshPhyName2CellVecMap;
         map<int,vector<SingleMeshCell>>    mshPhyID2CellVecMap;
+
+        vector<int> LineCellPhyID,SurfCellPhyID,BulkCellPhyID;
         
         string str;
         double version;
@@ -214,15 +224,12 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 vector<int> tempconn;
                 int elmtid,phyid,geoid,ntags,elmttype,vtktype;
                 int nodes,dim,elmtorder,nodeid;
-                int PointsNum;
                 string meshtypename,phyname;
-                // MeshType meshtype;
+                MeshType meshtype;
 
                 vector<SingleMeshCell> LineCell;
                 vector<SingleMeshCell> SurfCell;
                 vector<SingleMeshCell> BulkCell;
-
-                vector<int> LineCellPhyID,SurfCellPhyID,BulkCellPhyID;
 
                 SingleMeshCell TempCell;
 
@@ -257,7 +264,7 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     nodes=MshFileUtils::getElmtNodesNumFromElmtType(elmttype);
                     dim=MshFileUtils::getElmtDimFromElmtType(elmttype);
                     vtktype=MshFileUtils::getElmtVTKCellTypeFromElmtType(elmttype);
-                    // meshtype=MshFileUtils::getElmtMeshTypeFromElmtType(elmttype);
+                    meshtype=MshFileUtils::getElmtMeshTypeFromElmtType(elmttype);
                     meshtypename=MshFileUtils::getElmtMeshTypeNameFromElmtType(elmttype);
                     elmtorder=MshFileUtils::getElmtOrderFromElmtType(elmttype);
                     
@@ -280,14 +287,30 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                         }
                         NodeSetPhyID2IndexMap[phyid].push_back(tempconn[0]);
                         PointsNum+=1;
+                        TempCell.Dim=0;
+                        TempCell.NodesNumPerElmt=nodes;
+                        TempCell.VTKCellType=vtktype;
+                        TempCell.ElmtConn=tempconn;
+                        TempCell.ElmtNodeCoords0.resize(nodes);
+                        for(int i=0;i<nodes;i++){
+                            nodeid=tempconn[i];
+                            TempCell.ElmtConn.push_back(nodeid);
+                            TempCell.ElmtNodeCoords0(i+1,1)=t_celldata.NodeCoords_Global[(nodeid-1)*3+1-1];
+                            TempCell.ElmtNodeCoords0(i+1,2)=t_celldata.NodeCoords_Global[(nodeid-1)*3+2-1];
+                            TempCell.ElmtNodeCoords0(i+1,3)=t_celldata.NodeCoords_Global[(nodeid-1)*3+3-1];
+                        }
+                        TempCell.ElmtNodeCoords=TempCell.ElmtNodeCoords0;
                     }
                     
                     if(dim==1 && dim<mshMaxDim){
+                        t_celldata.NodesNumPerLineElmt=nodes;
+                        t_celldata.LineElmtMeshType=meshtype;
                         TempCell.Dim=1;
                         TempCell.NodesNumPerElmt=nodes;
                         TempCell.VTKCellType=vtktype;
                         TempCell.ElmtConn.clear();
                         TempCell.ElmtNodeCoords0.resize(nodes);
+                        TempCell.CellMeshType=meshtype;
                         for(int i=0;i<nodes;i++){
                             nodeid=tempconn[i];
                             TempCell.ElmtConn.push_back(nodeid);
@@ -301,11 +324,14 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                         t_celldata.LineElmtsNum+=1;
                     }
                     if(dim==2 && dim<mshMaxDim){
+                        t_celldata.NodesNumPerSurfElmt=nodes;
+                        t_celldata.SurfElmtMeshType=meshtype;
                         TempCell.Dim=2;
                         TempCell.NodesNumPerElmt=nodes;
                         TempCell.VTKCellType=vtktype;
                         TempCell.ElmtConn.clear();
                         TempCell.ElmtNodeCoords0.resize(nodes);
+                        TempCell.CellMeshType=meshtype;
                         for(int i=0;i<nodes;i++){
                             nodeid=tempconn[i];
                             TempCell.ElmtConn.push_back(nodeid);
@@ -320,12 +346,19 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     }
                     if(dim==mshMaxDim){
                         mshBulkElmtUniquePhyIDVec.push_back(phyid);
-                        TempCell.Dim=dim;
+
                         t_celldata.MeshOrder=elmtorder;
+                        t_celldata.BulkElmtMeshType=meshtype;
+                        t_celldata.BulkElmtVTKCellType=vtktype;
+                        t_celldata.BulkElmtMeshType=meshtype;
+                        t_celldata.BulkMeshTypeName=meshtypename;
+                        t_celldata.NodesNumPerBulkElmt=nodes;
+
+                        TempCell.Dim=dim;
                         TempCell.NodesNumPerElmt=nodes;
                         TempCell.VTKCellType=vtktype;
                         TempCell.ElmtConn.clear();
-                        TempCell.ElmtNodeCoords.resize(nodes);
+                        TempCell.ElmtNodeCoords0.resize(nodes);
                         for(int i=0;i<nodes;i++){
                             nodeid=tempconn[i];
                             TempCell.ElmtConn.push_back(nodeid);
@@ -360,6 +393,9 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
         }// end-of-in-reading
         in.close();
 
+        int phyid;
+        string phyname;
+
         // setup the phyname<--->cell mapping
         mshPhyGroupNum=static_cast<int>(mshPhyGroupDimVec.size());// remove the nodal phy info
         if(mshBulkPhyGroupNum==0){
@@ -386,8 +422,7 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 t_celldata.PhyName2MeshCellVectorMap_Global.clear();
                 t_celldata.PhyID2MeshCellVectorMap_Global.clear();
                 
-                int phyid,maxphyid;
-                string phyname;
+                int maxphyid;
                 maxphyid=-1;
                 t_celldata.PhyGroupElmtsNumVector_Global.resize(t_celldata.PhyGroupNum_Global,0);
                 for(int i=0;i<t_celldata.PhyGroupNum_Global-1;i++){
@@ -403,7 +438,7 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     t_celldata.PhyName2IDMap_Global[phyname]=phyid;
 
                     if(mshPhyID2CellVecMap.count(phyid)){
-                        t_celldata.PhyGroupElmtsNumVector_Global[i]+=1;
+                        t_celldata.PhyGroupElmtsNumVector_Global[i]+=static_cast<int>(mshPhyID2CellVecMap.at(phyid).size());
                         t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=mshPhyID2CellVecMap[phyid];
                         t_celldata.PhyID2MeshCellVectorMap_Global[phyid]=mshPhyID2CellVecMap[phyid];
                     }
@@ -421,6 +456,28 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
 
                 t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=t_celldata.MeshCell_Total;
                 t_celldata.PhyID2MeshCellVectorMap_Global[phyid]=t_celldata.MeshCell_Total;
+
+                int elmts,dim;
+                elmts=0;
+                t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+                t_celldata.PhyName2BulkFECellIDMap_Global.clear();
+                for (int e=1;e<=t_celldata.ElmtsNum;e++) {
+                    phyid=ElmtPhyIDVec[e-1];
+                    dim=ElmtDimVec[e-1];
+                    phyname=t_celldata.PhyID2NameMap_Global[phyid];
+                    if (dim==mshMaxDim) {
+                        elmts+=1;
+                        t_celldata.PhyID2BulkFECellIDMap_Global[phyid].push_back(elmts);
+                        t_celldata.PhyName2BulkFECellIDMap_Global[phyname].push_back(elmts);
+                        //
+                        t_celldata.PhyID2BulkFECellIDMap_Global[maxphyid+1].push_back(elmts);
+                        t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(elmts);
+                    }
+                }
+                if (elmts!=t_celldata.BulkElmtsNum) {
+                    MessagePrinter::printErrorTxt("Your bulk elements number dosent equal to the one read from gmsh2 file, please check your gmsh2 file");
+                    MessagePrinter::exitAsFem();
+                }
             }
             else{
                 // if we have the lower dimension physical group but zero volume mesh physical info, we should 
@@ -440,8 +497,7 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
 
                 t_celldata.PhyGroupElmtsNumVector_Global.resize(t_celldata.PhyGroupNum_Global,0);
 
-                int phyid,maxphyid,dim;
-                string phyname;
+                int maxphyid,dim;
                 // for the predefined sub-dimensional phy group
                 for(int i=0;i<mshPhyGroupNum;i++){
                     dim=mshPhyGroupDimVec[i];
@@ -486,7 +542,6 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                             t_celldata.PhyID2MeshCellVectorMap_Global[phyid]=mshPhyID2CellVecMap[phyid];
                             t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=mshPhyID2CellVecMap[phyid];
                         }
-
                     }
                 }
                 // for all domain
@@ -503,6 +558,28 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 t_celldata.PhyGroupElmtsNumVector_Global[t_celldata.PhyGroupNum_Global-1]=t_celldata.BulkElmtsNum;
                 t_celldata.PhyID2MeshCellVectorMap_Global[phyid]=t_celldata.MeshCell_Total;
                 t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=t_celldata.MeshCell_Total;
+
+                int elmts;
+                elmts=0;
+                t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+                t_celldata.PhyName2BulkFECellIDMap_Global.clear();
+                for (int e=1;e<=t_celldata.ElmtsNum;e++) {
+                    phyid=ElmtPhyIDVec[e-1];
+                    dim=ElmtDimVec[e-1];
+                    phyname=t_celldata.PhyID2NameMap_Global[phyid];
+                    if (dim==mshMaxDim) {
+                        elmts+=1;
+                        t_celldata.PhyID2BulkFECellIDMap_Global[phyid].push_back(elmts);
+                        t_celldata.PhyName2BulkFECellIDMap_Global[phyname].push_back(elmts);
+                        //
+                        t_celldata.PhyID2BulkFECellIDMap_Global[maxphyid+1].push_back(elmts);
+                        t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(elmts);
+                    }
+                }
+                if (elmts!=t_celldata.BulkElmtsNum) {
+                    MessagePrinter::printErrorTxt("Your bulk elements number dosent equal to the one read from gmsh2 file, please check your gmsh2 file");
+                    MessagePrinter::exitAsFem();
+                }
             }// end-of-zero-volume-phy-but-nonzero-subdim-phygroup
         }
         else{
@@ -521,8 +598,7 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
 
             t_celldata.PhyGroupElmtsNumVector_Global.resize(t_celldata.PhyGroupNum_Global,0);
 
-            int phyid,maxphyid,dim;
-            string phyname;
+            int maxphyid,dim;
 
             maxphyid=-1;
             for(int i=0;i<mshPhyGroupNum;i++){
@@ -559,103 +635,89 @@ bool Msh2File2FECellImporter::importMeshFile(const string &filename,FECellData &
             t_celldata.PhyGroupElmtsNumVector_Global[t_celldata.PhyGroupNum_Global-1]=t_celldata.BulkElmtsNum;
             t_celldata.PhyID2MeshCellVectorMap_Global[phyid]=t_celldata.MeshCell_Total;
             t_celldata.PhyName2MeshCellVectorMap_Global[phyname]=t_celldata.MeshCell_Total;
+
+            int elmts;
+            elmts=0;
+            t_celldata.PhyID2BulkFECellIDMap_Global.clear();
+            t_celldata.PhyName2BulkFECellIDMap_Global.clear();
+            for (int e=1;e<=t_celldata.ElmtsNum;e++) {
+                phyid=ElmtPhyIDVec[e-1];
+                dim=ElmtDimVec[e-1];
+                phyname=t_celldata.PhyID2NameMap_Global[phyid];
+                if (dim==mshMaxDim) {
+                    elmts+=1;
+                    t_celldata.PhyID2BulkFECellIDMap_Global[phyid].push_back(elmts);
+                    t_celldata.PhyName2BulkFECellIDMap_Global[phyname].push_back(elmts);
+                    //
+                    t_celldata.PhyID2BulkFECellIDMap_Global[maxphyid+1].push_back(elmts);
+                    t_celldata.PhyName2BulkFECellIDMap_Global["alldomain"].push_back(elmts);
+                }
+            }
+            if (elmts!=t_celldata.BulkElmtsNum) {
+                MessagePrinter::printErrorTxt("Your bulk elements number dosent equal to the one read from gmsh2 file, please check your gmsh2 file");
+                MessagePrinter::exitAsFem();
+            }
         } // end-of-nonzero-volume-phy-info-case
 
-        /**
-         * distribute the total physical group info to each local rank
-        */
-        int iStart,iEnd,ranksize;
-        vector<SingleMeshCell> LocalCellVector;
-        vector<int> nodeids;
-        int phyid,dim,k;
-        string phyname;
-        for(int cpuid=0;cpuid<size;cpuid++){
-            // send out the phynum, phyname, phyid info (except the "alldomain" group !!!)
-            MPIDataBus::sendIntegerToOthers(t_celldata.PhyGroupNum_Global,cpuid*10000+0,cpuid);
-            for(k=0;k<t_celldata.PhyGroupNum_Global-1;k++){
-                phyid=t_celldata.PhyIDVector_Global[k];
-                dim=t_celldata.PhyDimVector_Global[k];
-                phyname=t_celldata.PhyNameVector_Global[k];
+        t_celldata.BulkCellPartionInfo_Global.resize(t_celldata.BulkElmtsNum,0);
 
-                MPIDataBus::sendIntegerToOthers( phyid,cpuid*10000+k*1000+1,cpuid);
-                MPIDataBus::sendIntegerToOthers(   dim,cpuid*10000+k*1000+2,cpuid);
-                MPIDataBus::sendStringToOthers(phyname,cpuid*10000+k*1000+3,cpuid);
-
-                ranksize=static_cast<int>(t_celldata.PhyID2MeshCellVectorMap_Global[phyid].size())/size;
-                iStart=cpuid*ranksize;
-                iEnd=(cpuid+1)*ranksize;
-                if(cpuid==size-1) iEnd=static_cast<int>(t_celldata.PhyID2MeshCellVectorMap_Global[phyid].size());
-                
-                LocalCellVector.clear();
-                for(int e=iStart;e<iEnd;e++){
-                    LocalCellVector.push_back(t_celldata.MeshCell_Total[e]);
-                }
-                if(cpuid==0){
-                    t_celldata.PhyID2MeshCellVectorMap_Local[phyid]=LocalCellVector;
-                    t_celldata.PhyName2MeshCellVectorMap_Local[phyname]=LocalCellVector;// each local rank share the same phy name as the master rank!!!
-                }
-                else{
-                    MPIDataBus::sendPhyID2MeshCellMapToOthers(    phyid,LocalCellVector,10000*cpuid+k*1000+4   ,cpuid);
-                    MPIDataBus::sendPhyName2MeshCellMapToOthers(phyname,LocalCellVector,10000*cpuid+k*1000+4+20,cpuid);
-                }
-            }
-            // send out the "alldomain" mesh cell
-            k=t_celldata.PhyGroupNum_Global-1;
-            ranksize=t_celldata.BulkElmtsNum/size;
-            iStart=cpuid*ranksize;
-            iEnd=(cpuid+1)*ranksize;
-            if(cpuid==size-1) iEnd=t_celldata.BulkElmtsNum;
-
-            LocalCellVector.clear();
-            for(int e=iStart;e<iEnd;e++){
-                LocalCellVector.push_back(t_celldata.MeshCell_Total[e]);
-            }
-            if(cpuid==0){
-                t_celldata.MeshCell_Local=LocalCellVector;
-                t_celldata.PhyID2MeshCellVectorMap_Local[0]=LocalCellVector;
-                t_celldata.PhyName2MeshCellVectorMap_Local["alldomain"]=t_celldata.MeshCell_Local;// each local rank share the same phy name as the master rank!!!
-            }
-            else{
-                MPIDataBus::sendMeshCellToOthers(                       LocalCellVector,10000*cpuid+k*1000+4+40,cpuid);
-                MPIDataBus::sendPhyID2MeshCellMapToOthers(            0,LocalCellVector,10000*cpuid+k*1000+4+60,cpuid);
-                MPIDataBus::sendPhyName2MeshCellMapToOthers("alldomain",LocalCellVector,10000*cpuid+k*1000+4+80,cpuid);
-            }
-        } 
-
-    }// end-of-master-rank-process
-    else{
-        // each local rank receive info from master rank
-        int phyid,k,dim,maxdim;
-        string phyname;
-        MPIDataBus::receiveIntegerFromMaster(k,rank*10000+0);
-        t_celldata.PhyGroupNum_Global=k;
-        t_celldata.PhyDimVector_Global.resize(k,0);
-        t_celldata.PhyIDVector_Global.resize(k,0);
-        t_celldata.PhyNameVector_Global.resize(k);
-        maxdim=-1;
-        for(k=0;k<t_celldata.PhyGroupNum_Global-1;k++){
-            MPIDataBus::receiveIntegerFromMaster( phyid,rank*10000+k*1000+1);
-            MPIDataBus::receiveIntegerFromMaster(   dim,rank*10000+k*1000+2);
-            MPIDataBus::receiveStringFromMaster(phyname,rank*10000+k*1000+3);
-
-            t_celldata.PhyIDVector_Global[k]=phyid;
-            t_celldata.PhyDimVector_Global[k]=dim;
-            t_celldata.PhyNameVector_Global[k]=phyname;
-
-            if(dim>maxdim) maxdim=dim;
-
-            MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,10000*rank+k*1000+4);
-            MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,10000*rank+k*1000+4+20);
+        // send basic physical group info to other ranks
+        int tag;
+        for(int cpuid=1;cpuid<size;cpuid++){
+            tag=cpuid*1000+1;
+            MPIDataBus::sendIntegerToOthers(t_celldata.PhyGroupNum_Global,tag,cpuid);
+            tag=cpuid*1000+2;
+            MPIDataBus::sentIntegerVectorToOthers(t_celldata.PhyDimVector_Global,tag,cpuid);
+            tag=cpuid*1000+3;
+            MPIDataBus::sentStringVectorToOthers(t_celldata.PhyNameVector_Global,tag,cpuid);
+            //
+            tag=cpuid*1000+4;
+            MPIDataBus::sendMeshTypeToOthers(t_celldata.BulkElmtMeshType,tag,cpuid);
+            tag=cpuid*1000+5;
+            MPIDataBus::sendMeshTypeToOthers(t_celldata.SurfElmtMeshType,tag,cpuid);
+            tag=cpuid*1000+6;
+            MPIDataBus::sendMeshTypeToOthers(t_celldata.LineElmtMeshType,tag,cpuid);
         }
-        k=t_celldata.PhyGroupNum_Global-1;
-        t_celldata.PhyIDVector_Global[k]=0;
-        t_celldata.PhyDimVector_Global[k]=maxdim;
-        t_celldata.PhyNameVector_Global[k]="alldomain";
 
-        MPIDataBus::receiveMeshCellFromMaster(t_celldata.MeshCell_Local,10000*rank+k*1000+4+40);
-        MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_celldata.PhyID2MeshCellVectorMap_Local,10000*rank+k*1000+4+60);
-        MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_celldata.PhyName2MeshCellVectorMap_Local,10000*rank+k*1000+4+80);
+    }//end-of-rank0-if
+    else{
+        // setup the basic physical group info
+        int tag;
+        tag=rank*1000+1;
+        MPIDataBus::receiveIntegerFromMaster(t_celldata.PhyGroupNum_Global,tag);
+        tag=rank*1000+2;
+        MPIDataBus::receiveIntegerVectorFromMaster(t_celldata.PhyDimVector_Global,tag);
+        tag=rank*1000+3;
+        MPIDataBus::receiveStringVectorFromMaster(t_celldata.PhyNameVector_Global,tag);
+        //
+        tag=rank*1000+4;
+        MPIDataBus::receiveMeshTypeFromMater(t_celldata.BulkElmtMeshType,tag);
+        //
+        tag=rank*1000+5;
+        MPIDataBus::receiveMeshTypeFromMater(t_celldata.SurfElmtMeshType,tag);
+        //
+        tag=rank*1000+6;
+        MPIDataBus::receiveMeshTypeFromMater(t_celldata.LineElmtMeshType,tag);
     }
+
+    /**
+     * Share some common variables among ranks
+     */
+    MPI_Bcast(&t_celldata.MeshOrder,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    MPI_Bcast(&t_celldata.BulkElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.LineElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.SurfElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.ElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    MPI_Bcast(&t_celldata.NodesNum,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.NodesNumPerBulkElmt,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.NodesNumPerSurfElmt,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.NodesNumPerLineElmt,1,MPI_INT,0,MPI_COMM_WORLD);
+
+    MPI_Bcast(&t_celldata.BulkElmtVTKCellType,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.SurfElmtVTKCellType,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.LineElmtVTKCellType,1,MPI_INT,0,MPI_COMM_WORLD);
 
     return true;
 }

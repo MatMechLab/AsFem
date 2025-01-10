@@ -18,31 +18,34 @@
 //********************************************************
 //*** for local to global assemble
 //********************************************************
-void BulkFESystem::assembleLocalResidual2GlobalR(const int &t_dofs,const vector<int> &t_dofsid,
-                                       const int &t_globalnodeid,
-                                       const DofHandler &t_dofhandler,
-                                       const double &jxw,
-                                       const VectorXd &t_subR,
-                                       Vector &RHS){
+void BulkFESystem::assembleLocalResidual2GlobalR(const int &Dofs,
+                                                 const vector<int> &DofIDs,
+                                                 const int &GlobalNodeID,
+                                                 const DofHandler &t_DofHandler,
+                                                 const double &JxW,
+                                                 const VectorXd &SubR,
+                                                 Vector &RHS){
     int iInd;
-    for(int i=0;i<t_dofs;i++){
-        iInd=t_dofhandler.getIthNodeJthDofID(t_globalnodeid,t_dofsid[i]);
-        RHS.addValue(iInd,t_subR(i+1)*jxw);
+    for(int i=0;i<Dofs;i++){
+        iInd=t_DofHandler.getIthNodeJthDofID(GlobalNodeID,DofIDs[i]);
+        RHS.addValue(iInd,SubR(i+1)*JxW);
     }
 }
-void BulkFESystem::assembleLocalJacobian2GlobalK(const int &t_dofs,const vector<int> &t_dofsid,
-                                       const int &t_globalnodeidI,const int &t_globalnodeidJ,
-                                       const double &jxw,
-                                       const DofHandler &t_dofhandler,
-                                       const MatrixXd &t_subK,
-                                       SparseMatrix &AMATRIX){
+void BulkFESystem::assembleLocalJacobian2GlobalK(const int &Dofs,
+                                                 const vector<int> &DofIDs,
+                                                 const int &GlobalNodeIDI,
+                                                 const int &GlobalNodeIDJ,
+                                                 const double &JxW,
+                                                 const DofHandler &t_DofHandler,
+                                                 const MatrixXd &SubK,
+                                                 SparseMatrix &AMATRIX){
     int iInd,jInd;
-    for(int i=0;i<t_dofs;i++){
-        iInd=t_dofhandler.getIthNodeJthDofID(t_globalnodeidI,t_dofsid[i]);
-        for(int j=0;j<t_dofs;j++){
-            jInd=t_dofhandler.getIthNodeJthDofID(t_globalnodeidJ,t_dofsid[j]);
-            AMATRIX.addValue(iInd,jInd,t_subK(i+1,j+1)*jxw*1.0);
-            if(abs(t_subK(i+1,j+1))>m_max_k_coeff) m_max_k_coeff=abs(t_subK(i+1,j+1));
+    for(int i=0;i<Dofs;i++){
+        iInd=t_DofHandler.getIthNodeJthDofID(GlobalNodeIDI,DofIDs[i]);
+        for(int j=0;j<Dofs;j++){
+            jInd=t_DofHandler.getIthNodeJthDofID(GlobalNodeIDJ,DofIDs[j]);
+            AMATRIX.addValue(iInd,jInd,SubK(i+1,j+1)*JxW*1.0);
+            if(abs(SubK(i+1,j+1))>m_MaxKmatCoeff) m_MaxKmatCoeff=abs(SubK(i+1,j+1));
         }
     }
 }
