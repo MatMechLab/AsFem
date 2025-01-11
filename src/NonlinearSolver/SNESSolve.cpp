@@ -177,7 +177,9 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
 
     SNESSetFunction(m_snes,m_appctx._equationSystem->m_RHS.getVectorCopy(),computeResidual,&m_appctx);
     SNESSetJacobian(m_snes,m_appctx._equationSystem->m_AMATRIX.getCopy(),m_appctx._equationSystem->m_AMATRIX.getCopy(),computeJacobian,&m_appctx);
-        
+    if (m_nlsolvertype==NonlinearSolverType::NEWTONAL) {
+        SNESNewtonALSetFunction(m_snes,computeResidual,NULL);
+    }
     SNESMonitorSet(m_snes,myMonitor,&m_monctx,0);
     SNESSetForceIteration(m_snes,PETSC_TRUE);
     SNESSetFromOptions(m_snes);

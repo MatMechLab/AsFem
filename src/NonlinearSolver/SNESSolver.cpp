@@ -59,9 +59,8 @@ void SNESSolver::initSolver(){
     //*** init KSP
     //**************************************************
     SNESGetKSP(m_snes,&m_ksp);
-    KSPGMRESSetRestart(m_ksp,2500);
+    KSPGMRESSetRestart(m_ksp,3200);
     KSPGetPC(m_ksp,&m_pc);
-
 
     //**************************************************
     //*** setup the preconditioner
@@ -162,6 +161,9 @@ void SNESSolver::initSolver(){
         SNESGetLineSearch(m_snes,&m_sneslinesearch);
         SNESLineSearchSetType(m_sneslinesearch,SNESLINESEARCHBT);
         SNESLineSearchSetOrder(m_sneslinesearch,3);
+    }
+    else if(m_nlsolvertype==NonlinearSolverType::NEWTONAL){
+        SNESSetType(m_snes,SNESNEWTONAL);
     }
     else if(m_nlsolvertype==NonlinearSolverType::NEWTONSECANT){
         SNESSetType(m_snes,SNESNEWTONLS);

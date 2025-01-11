@@ -584,6 +584,11 @@ set(src ${src} src/SolutionSystem/SolutionSystemInit.cpp)
 set(src ${src} src/SolutionSystem/SolutionUpdate.cpp)
 
 #############################################################
+### For Linear solver class                               ###
+#############################################################
+set(inc ${inc} include/LinearSolver/LinearSolverBase.h)
+
+#############################################################
 ### For Nonlinear solver class                            ###
 #############################################################
 set(inc ${inc} include/NonlinearSolver/NonlinearSolverBase.h)

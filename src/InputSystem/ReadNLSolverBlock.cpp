@@ -31,6 +31,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
             t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with line search";
             t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONLS;
         }
+        else if(solvertypename=="newton-al"){
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with arc length method";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONAL;
+        }
         else if(solvertypename=="newton-tr"){
             t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with trust region";
             t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONTR;
