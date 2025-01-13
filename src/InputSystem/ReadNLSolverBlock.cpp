@@ -70,39 +70,6 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
         HasType=true;
     }
 
-    if(t_json.contains("solver")){
-        if(!t_json.at("solver").is_string()){
-            MessagePrinter::printErrorTxt("the solver name of your nlsolver block is not a valid string");
-            return false;
-        }
-        string solvername=t_json.at("solver");
-        if(solvername=="gmres" || solvername=="default"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="gmres";
-        }
-        else if(solvername=="fgmres"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="fgmres";
-        }
-        else if(solvername=="cg"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="cg";
-        }
-        else if(solvername=="bicg"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="bicg";
-        }
-        else if(solvername=="richardson"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="richardson";
-        }
-        else if(solvername=="mumps"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="mumps";
-        }
-        else if(solvername=="superlu"){
-            t_nlsolver.m_NlSolverBlock.m_LinearSolverName="superlu";
-        }
-    }
-    else{
-        MessagePrinter::printWarningTxt("can\'t find 'solver' in your nlsolver block, then the default linear solver (gmres) will be used");
-        t_nlsolver.m_NlSolverBlock.m_LinearSolverName="gmres";
-    }
-
     if(t_json.contains("maxiters")){
         if(!t_json.at("maxiters").is_number_integer()){
             MessagePrinter::printErrorTxt("the maxiters in your nlsolver block is not a valid integer,"
@@ -150,21 +117,6 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
     else{
         t_nlsolver.m_NlSolverBlock.m_STol=0.0;
     }
-    //**********************************************
-    if(t_json.contains("preconditioner")){
-        if(!t_json.at("preconditioner").is_string()){
-            MessagePrinter::printErrorTxt("the preconditioner in your nlsolver block is not a valid string,"
-                                          "please check your input file");
-            return false;
-        }
-        t_nlsolver.m_NlSolverBlock.m_PCTypeName=t_json.at("preconditioner");
-    }
-    else{
-        t_nlsolver.m_NlSolverBlock.m_PCTypeName="lu";
-    }
-
-
-
 
     return HasType;
 }

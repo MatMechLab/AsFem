@@ -32,9 +32,7 @@ SNESSolver::SNESSolver(){
 
     m_s_tol=0.0;
 
-    m_linearsolvername="gmres";/**< the string name of the linear solver in SNES*/
     m_nlsolvername="newton with line search";/**< the nonlinear solver name in SNES */
-    m_pcname="lu";/**< the preconditioner name of current SNES solver */
     m_nlsolvertype=NonlinearSolverType::NEWTONLS;
 }
 void SNESSolver::setFromNonlinearSolverBlock(const NonlinearSolverBlock &nlblock){
@@ -45,106 +43,16 @@ void SNESSolver::setFromNonlinearSolverBlock(const NonlinearSolverBlock &nlblock
     m_nlsolvername=nlblock.m_NlSolverTypeName;
     m_nlsolvertype=nlblock.m_NlSolverType;
 
-    m_linearsolvername=nlblock.m_LinearSolverName;
-
     m_s_tol=nlblock.m_STol;
-
-    m_pcname=nlblock.m_PCTypeName;
 }
 
-void SNESSolver::initSolver(){
+void SNESSolver::initSolver(LinearSolver &lsolver){
     SNESCreate(PETSC_COMM_WORLD,&m_snes);
 
     //**************************************************
-    //*** init KSP
+    //*** setup KSP
     //**************************************************
-    SNESGetKSP(m_snes,&m_ksp);
-    KSPGMRESSetRestart(m_ksp,3200);
-    KSPGetPC(m_ksp,&m_pc);
-
-    //**************************************************
-    //*** setup the preconditioner
-    //**************************************************
-    if(m_pcname=="lu"){
-        PCSetType(m_pc,PCLU);
-    }
-    else if(m_pcname=="ilu"){
-        PCSetType(m_pc,PCILU);
-    }
-    else if(m_pcname=="jacobi"){
-        PCSetType(m_pc,PCJACOBI);
-    }
-    else if(m_pcname=="bjacobi"){
-        PCSetType(m_pc,PCBJACOBI);
-    }
-    else if(m_pcname=="sor"){
-        PCSetType(m_pc,PCSOR);
-    }
-    else if(m_pcname=="icc"){
-        PCSetType(m_pc,PCICC);
-    }
-    else if(m_pcname=="asm"){
-        PCSetType(m_pc,PCASM);
-    }
-    else if(m_pcname=="gasm"){
-        PCSetType(m_pc,PCGASM);
-    }
-    else if(m_pcname=="gamg"){
-        PCSetType(m_pc,PCGAMG);
-    }
-    else if(m_pcname=="ksp"){
-        PCSetType(m_pc,PCKSP);
-    }
-    else if(m_pcname=="cholesky"){
-        PCSetType(m_pc,PCCHOLESKY);
-    }
-    else if(m_pcname=="none"){
-        PCSetType(m_pc,PCNONE);// no preconditioner
-    }
-    else{
-        MessagePrinter::printErrorTxt("unsupported preconditioner("+m_pcname+") in SNESSolver");
-        MessagePrinter::exitAsFem();
-    }
-
-    //**************************************************
-    //*** setup the linear solver
-    //**************************************************
-    if(m_linearsolvername=="default"){
-        PCSetType(m_pc,PCLU);
-    }
-    else if(m_linearsolvername=="gmres"){
-        KSPSetType(m_ksp,KSPGMRES);
-    }
-    else if(m_linearsolvername=="fgmres"){
-        KSPSetType(m_ksp,KSPFGMRES);
-    }
-    else if(m_linearsolvername=="cg"){
-        KSPSetType(m_ksp,KSPCG);
-    }
-    else if(m_linearsolvername=="bicg"){
-        KSPSetType(m_ksp,KSPBICG);
-    }
-    else if(m_linearsolvername=="richardson"){
-        KSPSetType(m_ksp,KSPRICHARDSON);
-    }
-    else if(m_linearsolvername=="mumps"){
-        KSPSetType(m_ksp,KSPPREONLY);
-        PCSetType(m_pc,PCLU);
-        PCFactorSetMatSolverType(m_pc,MATSOLVERMUMPS);
-    }
-    else if(m_linearsolvername=="superlu"){
-        KSPSetType(m_ksp,KSPPREONLY);
-        PCSetType(m_pc,PCLU);
-        PCFactorSetMatSolverType(m_pc,MATSOLVERSUPERLU_DIST);
-    }
-
-
-    PCFactorSetReuseOrdering(m_pc,PETSC_TRUE);
-
-    //*** allow user setting ksp from command line
-    //**************************************************
-    KSPSetFromOptions(m_ksp);
-    PCSetFromOptions(m_pc);
+    SNESSetKSP(m_snes,lsolver.getKSPRef());
 
     //**************************************************
     //*** basic settings for SNES
@@ -196,7 +104,7 @@ void SNESSolver::initSolver(){
     else if(m_nlsolvertype==NonlinearSolverType::NMS){
         SNESSetType(m_snes,SNESMS);
         SNESMSSetType(m_snes,SNESMSEULER);
-        PCSetType(m_pc,PCMG);
+        PCSetType(lsolver.getPCRef(),PCMG);
     }
     else if(m_nlsolvertype==NonlinearSolverType::FAS){
         SNESSetType(m_snes,SNESFAS);
@@ -221,34 +129,36 @@ void SNESSolver::printSolverInfo()const{
 
     if(m_nlsolvertype==NonlinearSolverType::NEWTON||
        m_nlsolvertype==NonlinearSolverType::NEWTONLS){
-        str="  solver type= newton with line search";
+        str="  Solver type= newton with line search";
     }
     else if(m_nlsolvertype==NonlinearSolverType::NEWTONTR){
-        str="  solver type= newton trust region";
+        str="  Solver type= newton trust region";
     }
     else if(m_nlsolvertype==NonlinearSolverType::BFGS){
-        str="  solver type= BFGS";
+        str="  Solver type= BFGS";
     }
     else if(m_nlsolvertype==NonlinearSolverType::BROYDEN){
-        str="  solver type= Broyden";
+        str="  Solver type= Broyden";
     }
     else if(m_nlsolvertype==NonlinearSolverType::BADBROYDEN){
-        str="  solver type= Bad Broyden";
+        str="  Solver type= Bad Broyden";
     }
     else if(m_nlsolvertype==NonlinearSolverType::NEWTONCG){
-        str="  solver type= newton CG";
+        str="  Solver type= newton CG";
     }
     else if(m_nlsolvertype==NonlinearSolverType::NEWTONGMRES){
-        str="  solver type= newton GMRES";
+        str="  Solver type= newton GMRES";
     }
     MessagePrinter::printNormalTxt(str);
 
-    snprintf(buff,70,"  max iters=%3d, abs R tol=%13.5e, rel R tol=%13.5e",m_maxiters,m_abstol_r,m_reltol_r);
+    snprintf(buff,70,"  Max iterations=%3d,",m_maxiters);
     str=buff;
     MessagePrinter::printNormalTxt(str);
-
-    str="  linear solver is: "+m_linearsolvername;
-    str+=", preconditioner= "+m_pcname;
+    snprintf(buff,70,"  Abusolute |R| tolerance=%14.5e",m_abstol_r);
+    str=buff;
+    MessagePrinter::printNormalTxt(str);
+    snprintf(buff,70,"  Relative |R| tolerance=%14.5e",m_reltol_r);
+    str=buff;
     MessagePrinter::printNormalTxt(str);
     MessagePrinter::printStars();
     

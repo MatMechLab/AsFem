@@ -37,6 +37,7 @@
 #include "BCSystem/BCSystem.h"
 #include "ICSystem/ICSystem.h"
 #include "ProjectionSystem/ProjectionSystem.h"
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
@@ -81,6 +82,7 @@ public:
      * @param t_bcsystem the boundary condition system class
      * @param t_icsystem the initial condition system class
      * @param t_projsystem the projection system class
+     * @param t_linearsolver the linear solver system
      * @param t_nlsolver the nonlinear solver system
      * @param t_timestepping the time stepping system
      * @param t_output the output system
@@ -91,6 +93,7 @@ public:
                        FE &t_fe,
                        BCSystem &t_bcsystem,ICSystem &t_icsystem,
                        ProjectionSystem &t_projsystem,
+                       LinearSolver &t_linearsolver,
                        NonlinearSolver &t_nlsolver,
                        TimeStepping &t_timestepping,
                        OutputSystem &t_output,
@@ -167,6 +170,14 @@ private:
      * @param t_projsystem the projection system class
      */
     bool readProjectionBlock(nlohmann::json &t_json,const DofHandler &t_dofhandler,ProjectionSystem &t_projsystem);
+
+    /**
+     * read the linear solver block
+     * @param t_json
+     * @param t_solver
+     * @return true if everthing is ok, otherwise false
+     */
+    bool readLinearSolverBlock(nlohmann::json &t_json,LinearSolver &t_solver);
     /**
      * read the nonlinear solver blocks
      * @param t_json the json parse which contains 'elements'

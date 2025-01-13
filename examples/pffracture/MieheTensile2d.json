@@ -51,14 +51,19 @@
 			"side":["top"]
 		}
 	},
+	"linearsolver":{
+		"type":"superlu",
+		"preconditioner":"ilu",
+		"maxiters":10000,
+		"restarts":2500,
+		"tolerance":1.0e-25
+	},
 	"nlsolver":{
-		"type":"newton-ls",
-		"solver":"mumps",
-		"maxiters":14,
+		"type":"newton",
+		"maxiters":12,
 		"abs-tolerance":8.5e-7,
 		"rel-tolerance":1.0e-12,
-		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"s-tolerance":0.0
 	},
 	"timestepping":{
 		"type":"be",

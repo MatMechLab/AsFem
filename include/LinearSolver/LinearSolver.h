@@ -8,20 +8,19 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.08.20
-//+++ Purpose: the nonlinear solver class in AsFem, users should
-//+++          offer the details by inheriting the nlsolver base class.
-//+++          this class should inherit all the built-in and 
-//+++          user-defined nonlinear solvers for R(x)->0 problem
+//+++ Date   : 2025.01.13
+//+++ Purpose: The linear solver class, which will solve the linear
+//+++          equation Ax=b
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "NonlinearSolver/NonlinearSolver.h"
+#pragma once
 
-NonlinearSolver::NonlinearSolver(){
-    m_NlSolverBlock.init();
-}
+#include "LinearSolver/KSPSolver.h"
 
-void NonlinearSolver::init(LinearSolver &lsolver){
-    setFromNonlinearSolverBlock(m_NlSolverBlock);
-    initSolver(lsolver);
-}
+class LinearSolver:public KSPSolver {
+public:
+    /**
+     * constructor
+     */
+    LinearSolver();
+};

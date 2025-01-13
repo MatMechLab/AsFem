@@ -14,6 +14,7 @@
 
 #pragma once
 
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolverBase.h"
 #include "NonlinearSolver/NonlinearSolverBlock.h"
 
@@ -99,8 +100,9 @@ public:
 
     /**
      * initialize the SNES solver
+     * @param lsolver the linear solver class
      */
-    void initSolver();
+    void initSolver(LinearSolver &lsolver);
     /**
      * release the allocated memory in SNES solver
      */
@@ -126,11 +128,6 @@ public:
                        SolutionSystem &t_solutionsystem,
                        EquationSystem &t_equationsystem,
                        FEControlInfo &t_fectrlinfo) override;
-    
-    /**
-     * get the linear solver name in current SNES solver
-     */
-    inline string getLinearSolverName()const{return m_linearsolvername;}
 
     /**
      * get the nonlinear solver name
@@ -176,15 +173,11 @@ private:
     double m_rnorm;/**< the intermediate or final norm of reisudal */
 
 private:
-    string m_linearsolvername;/**< the string name of the linear solver in SNES*/
     string m_nlsolvername;/**< the nonlinear solver name in SNES */
-    string m_pcname;/**< the preconditioner name of current SNES solver */
     NonlinearSolverType m_nlsolvertype;/**< the nonlinear solver type */
 
 private:
     SNES m_snes;/**< the SNES solver from PETSc */
-    KSP  m_ksp;/**< the KSP linear solver from PETSc */
-    PC   m_pc;/**< the preconditioner from PETSc */
     SNESLineSearch m_sneslinesearch;/**< for the line search ctx */
     SNESConvergedReason m_snesconvergereason;/**< for the converged reason ctx */
 

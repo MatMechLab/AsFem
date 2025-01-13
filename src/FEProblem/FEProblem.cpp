@@ -32,6 +32,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     m_InputSystem.readInputFile(m_FECell,m_DofHandler,m_ElmtSystem,m_FE,
                                 m_BCSystem,m_ICSystem,
                                 m_ProjSystem,
+                                m_LinearSolver,
                                 m_NLSolver,
                                 m_TimeStepping,
                                 m_Output,
@@ -152,8 +153,17 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     // for Nonlinear solver system init
     //***************************************
     m_Timer.startTimer();
+    MessagePrinter::printNormalTxt("Start to initialize the linear solver ...");
+    m_LinearSolver.init();
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Linear solver is initialized",false);
+
+    //***************************************
+    // for Nonlinear solver system init
+    //***************************************
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the NL solver ...");
-    m_NLSolver.init();
+    m_NLSolver.init(m_LinearSolver);
     m_Timer.endTimer();
     m_Timer.printElapseTime("NL solver is initialized",false);
 
@@ -184,6 +194,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     m_ICSystem.printICSystemInfo();
     m_ProjSystem.printProjectionInfo();
     m_FE.printFEInfo();
+    m_LinearSolver.printKSPSolverInfo();
     m_NLSolver.printSolverInfo();
     m_Output.printInfo();
     m_PostProcessor.printInfo();

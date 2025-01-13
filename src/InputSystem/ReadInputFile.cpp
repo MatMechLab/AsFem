@@ -21,6 +21,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
                                 BCSystem &t_bcsystem,
                                 ICSystem &t_icsystem,
                                 ProjectionSystem &t_projsystem,
+                                LinearSolver &t_linearsolver,
                                 NonlinearSolver &t_nlsolver,
                                 TimeStepping &t_timestepping,
                                 OutputSystem &t_output,
@@ -64,6 +65,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
     bool HasBCBlock=false;
     bool HasICBlock=false;
     bool HasProjectionBlock=false;
+    bool HasLinearSolverBlock=false;
     bool HasNLSolverBlock=false;
     bool HasJobBlock=false;
     bool HasOutputBlock=false;
@@ -80,6 +82,7 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
            it.key()=="bcs"||
            it.key()=="ics"||
            it.key()=="projection"||
+           it.key()=="linearsolver"||
            it.key()=="nlsolver"||
            it.key()=="timestepping"||
            it.key()=="output"||
@@ -235,6 +238,29 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
         else{
             HasProjectionBlock=false;
             MessagePrinter::printErrorTxt("something is incorrect in your 'projection' block, please check your input file");
+            MessagePrinter::exitAsFem();
+        }
+    }
+
+    if(m_Json.contains("linearsolver")){
+        // read the bcs block
+        if(!HasMeshBlock){
+            MessagePrinter::printErrorTxt("you must define the 'mesh' block before your 'linearsolver' block, "
+                                          "please check your input file");
+            MessagePrinter::exitAsFem();
+        }
+        if(!HasDofsBlock){
+            MessagePrinter::printErrorTxt("you must define the 'dofs' block before your 'linearsolver' block, "
+                                          "please check your input file");
+            MessagePrinter::exitAsFem();
+        }
+
+        if(readLinearSolverBlock(m_Json.at("linearsolver"),t_linearsolver)){
+            HasLinearSolverBlock=true;
+        }
+        else{
+            HasLinearSolverBlock=false;
+            MessagePrinter::printErrorTxt("something is incorrect in your 'linearsolver' block, please check your input file");
             MessagePrinter::exitAsFem();
         }
     }
@@ -413,6 +439,12 @@ bool InputSystem::readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,
 
     if(!HasPPSBlock){
         MessagePrinter::printWarningTxt("no 'postprocess' block found in your input file, then no postprocess will be executed");
+    }
+
+
+    if (!HasLinearSolverBlock) {
+        MessagePrinter::printWarningTxt("no 'linearsolver' block found in your input file, then the default options will be used");
+        t_linearsolver.setDefaultParams();
     }
 
     if(!HasNLSolverBlock){

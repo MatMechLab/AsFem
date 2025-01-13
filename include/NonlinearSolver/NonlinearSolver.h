@@ -17,7 +17,7 @@
 
 #pragma once
 
-
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/SNESSolver.h"
 
 
@@ -34,8 +34,9 @@ public:
 
     /**
      * init the nonlinear solver
+     * @param lsolver the linear solver class
      */
-    void init();
+    void init(LinearSolver &lsolver);
 
 public:
     NonlinearSolverBlock m_NlSolverBlock;/**< the nonlinear solver block defined in json file */

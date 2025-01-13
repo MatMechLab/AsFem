@@ -161,6 +161,8 @@ set(src ${src} src/InputSystem/ReadBCsBlock.cpp)
 set(src ${src} src/InputSystem/ReadICsBlock.cpp)
 ### for projection condition block
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
+### for linear solver block
+set(src ${src} src/InputSystem/ReadLinearSolverBlock.cpp)
 ### for nonlinear solver block
 set(src ${src} src/InputSystem/ReadNLSolverBlock.cpp)
 ### for nonlinear solver block
@@ -587,6 +589,12 @@ set(src ${src} src/SolutionSystem/SolutionUpdate.cpp)
 ### For Linear solver class                               ###
 #############################################################
 set(inc ${inc} include/LinearSolver/LinearSolverBase.h)
+### for ksp linear solver
+set(inc ${inc} include/LinearSolver/KSPSolver.h)
+set(src ${src} src/LinearSolver/KSPSolver.cpp)
+### for linear solver
+set(inc ${inc} include/LinearSolver/LinearSolver.h)
+set(src ${src} src/LinearSolver/LinearSolver.cpp)
 
 #############################################################
 ### For Nonlinear solver class                            ###

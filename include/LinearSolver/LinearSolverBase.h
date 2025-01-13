@@ -15,9 +15,15 @@
 
 #pragma once
 
+#include <iostream>
+#include <string>
+
 #include "MathUtils/SparseMatrix.h"
 #include "MathUtils/Vector.h"
 
+#include "Utils/MessagePrinter.h"
+
+using std::string;
 
 class LinearSolverBase {
 public:
@@ -28,11 +34,11 @@ public:
      * @param x the solution vector
      * @return if success then return true, otherwise return false
      */
-    bool solve(SparseMatrix &A,Vector &b,Vector &x)=0;
+    virtual bool solve(SparseMatrix &A,Vector &b,Vector &x)=0;
 
     /**
      * Get the iterations of the current linear equation solver
      * @return return the iteration number of the current linear equation solver
      */
-    int getIterationNumber()const=0;
+    virtual int getIterationNumber()const=0;
 };

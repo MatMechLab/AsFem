@@ -36,8 +36,6 @@ public:
         m_AbsTolR=7.5e-7;
         m_RelTolR=5.0e-10;
         m_STol=0.0; // |dx|<|x|*stol
-        m_PCTypeName="lu";
-        m_LinearSolverName="default(gmres)";
         m_CheckJacobian=false;
     }
 
@@ -47,9 +45,6 @@ public:
     double m_AbsTolR;/**< the absolute tolerance for residual */
     double m_RelTolR;/**< the relative tolerance for residual */
     double m_STol;/**< the tolerance for line search */
-    string m_LinearSolverName;/**< the linear solver name */
-
-    string m_PCTypeName;/**< the string name of preconditioner */
     bool m_CheckJacobian=false;/**< if this is true, then SNES will compare your jacobian with the finite difference one */
 
     /**
@@ -62,8 +57,6 @@ public:
         m_AbsTolR=7.5e-7;
         m_RelTolR=5.0e-10;
         m_STol=0.0; // |dx|<|x|*stol
-        m_PCTypeName="lu";
-        m_LinearSolverName="default(gmres)";
         m_CheckJacobian=false;
     }
 };

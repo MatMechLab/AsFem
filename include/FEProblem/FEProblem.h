@@ -27,6 +27,7 @@
 #include "ProjectionSystem/ProjectionSystem.h"
 #include "EquationSystem/EquationSystem.h"
 #include "SolutionSystem/SolutionSystem.h"
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
@@ -88,6 +89,7 @@ private:
     ProjectionSystem m_ProjSystem;/**< projection system */
     EquationSystem m_EqSystem;/**< equation system */
     SolutionSystem m_SolnSystem;/**< solution system */
+    LinearSolver m_LinearSolver;/**< the linear solver system */
     NonlinearSolver m_NLSolver;/**< the nonlinear solver system */
     TimeStepping m_TimeStepping;/**< the time stepping system */
     OutputSystem m_Output;/**< the output system */
