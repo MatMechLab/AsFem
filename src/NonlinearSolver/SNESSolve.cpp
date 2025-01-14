@@ -149,92 +149,92 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
 
     solutionsystem.m_Ucopy.copyFrom(solutionsystem.m_Ucurrent);
     
-    m_appctx=AppCtx{&fecell,&dofhandler,
+    m_AppCtx=AppCtx{&fecell,&dofhandler,
                    &bcsystem,
                    &elmtsystem,&matesystem,
                    &solutionsystem,&equationsystem,
                    &fe,&fesystem,
                    &fectrlinfo
                    };
-    m_monctx=MonitorCtx{0.0,1.0,
+    m_MonCtx=MonitorCtx{0.0,1.0,
                 0.0,1.0,
                 0.0,1.0,
                 0,
                 fectrlinfo.IsDepDebug};
 
 
-    m_appctx._bcSystem->applyPresetBoundaryConditions(FECalcType::UPDATEU,
-                                             m_appctx._fectrlinfo->T+m_appctx._fectrlinfo->Dt,
-                                             *m_appctx._fecell,
-                                             *m_appctx._dofHandler,
-                                             m_appctx._solutionSystem->m_Ucurrent,
-                                             m_appctx._solutionSystem->m_Ucopy,
-                                             m_appctx._solutionSystem->m_Uold,
-                                             m_appctx._solutionSystem->m_Uolder,
-                                             m_appctx._solutionSystem->m_V,
-                                             m_appctx._equationSystem->m_AMATRIX,
-                                             m_appctx._equationSystem->m_RHS);
+    m_AppCtx._bcSystem->applyPresetBoundaryConditions(FECalcType::UPDATEU,
+                                             m_AppCtx._fectrlinfo->T+m_AppCtx._fectrlinfo->Dt,
+                                             *m_AppCtx._fecell,
+                                             *m_AppCtx._dofHandler,
+                                             m_AppCtx._solutionSystem->m_Ucurrent,
+                                             m_AppCtx._solutionSystem->m_Ucopy,
+                                             m_AppCtx._solutionSystem->m_Uold,
+                                             m_AppCtx._solutionSystem->m_Uolder,
+                                             m_AppCtx._solutionSystem->m_V,
+                                             m_AppCtx._equationSystem->m_AMATRIX,
+                                             m_AppCtx._equationSystem->m_RHS);
 
-    SNESSetFunction(m_snes,m_appctx._equationSystem->m_RHS.getVectorCopy(),computeResidual,&m_appctx);
-    SNESSetJacobian(m_snes,m_appctx._equationSystem->m_AMATRIX.getCopy(),m_appctx._equationSystem->m_AMATRIX.getCopy(),computeJacobian,&m_appctx);
-    if (m_nlsolvertype==NonlinearSolverType::NEWTONAL) {
-        SNESNewtonALSetFunction(m_snes,computeResidual,NULL);
+    SNESSetFunction(m_SNES,m_AppCtx._equationSystem->m_RHS.getVectorCopy(),computeResidual,&m_AppCtx);
+    SNESSetJacobian(m_SNES,m_AppCtx._equationSystem->m_AMATRIX.getCopy(),m_AppCtx._equationSystem->m_AMATRIX.getCopy(),computeJacobian,&m_AppCtx);
+    if (m_NLSolverType==NonlinearSolverType::NEWTONAL) {
+        SNESNewtonALSetFunction(m_SNES,computeResidual,NULL);
     }
-    SNESMonitorSet(m_snes,myMonitor,&m_monctx,0);
-    SNESSetForceIteration(m_snes,PETSC_TRUE);
-    SNESSetFromOptions(m_snes);
-    SNESSolve(m_snes,NULL,m_appctx._solutionSystem->m_Ucurrent.getVectorRef());
-    SNESGetConvergedReason(m_snes,&m_snesconvergereason);
+    SNESMonitorSet(m_SNES,myMonitor,&m_MonCtx,0);
+    SNESSetForceIteration(m_SNES,PETSC_TRUE);
+    SNESSetFromOptions(m_SNES);
+    SNESSolve(m_SNES,NULL,m_AppCtx._solutionSystem->m_Ucurrent.getVectorRef());
+    SNESGetConvergedReason(m_SNES,&m_SNESConvergeReason);
 
-    m_iterations=m_monctx.iters;
-    m_rnorm=m_monctx.rnorm;
-    m_abstol_du=m_monctx.dunorm;
-    m_abstol_e=m_monctx.enorm;
+    m_Iterations=m_MonCtx.iters;
+    m_RNorm=m_MonCtx.rnorm;
+    m_AbsTolDu=m_MonCtx.dunorm;
+    m_AbsTolE=m_MonCtx.enorm;
 
     char buff[68];//77-12=65
     string str;
 
-    if(m_snesconvergereason==SNES_CONVERGED_FNORM_ABS){
+    if(m_SNESConvergeReason==SNES_CONVERGED_FNORM_ABS){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,68,"  Converged for |R|<atol, final iters=%3d",m_monctx.iters);
+            snprintf(buff,68,"  Converged for |R|<atol, final iters=%3d",m_MonCtx.iters);
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
         else{
-            snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_iterations,m_monctx.rnorm0,m_rnorm);
+            snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_Iterations,m_MonCtx.rnorm0,m_RNorm);
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
         return true;
     }
-    else if(m_snesconvergereason==SNES_CONVERGED_FNORM_RELATIVE){
+    else if(m_SNESConvergeReason==SNES_CONVERGED_FNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,68,"  Converged for |R|<rtol*|R0|, final iters=%3d",m_monctx.iters);
+            snprintf(buff,68,"  Converged for |R|<rtol*|R0|, final iters=%3d",m_MonCtx.iters);
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
         else{
-            snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_iterations,m_monctx.rnorm0,m_rnorm);
+            snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_Iterations,m_MonCtx.rnorm0,m_RNorm);
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
         return true;
     }
-    else if(m_snesconvergereason==SNES_CONVERGED_SNORM_RELATIVE){
+    else if(m_SNESConvergeReason==SNES_CONVERGED_SNORM_RELATIVE){
         if(fectrlinfo.IsDepDebug){
-            snprintf(buff,68,"  Converged for |delta x|<stol|x|, final iters=%3d",m_monctx.iters);
+            snprintf(buff,68,"  Converged for |delta x|<stol|x|, final iters=%3d",m_MonCtx.iters);
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
         else{
-            snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_iterations,m_monctx.rnorm0,m_rnorm);
+            snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_Iterations,m_MonCtx.rnorm0,m_RNorm);
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
         return true;
     }
     else{
-        snprintf(buff,68,"  Divergent, SNES nonlinear solver failed, iters=%3d",m_monctx.iters);
+        snprintf(buff,68,"  Divergent, SNES nonlinear solver failed, iters=%3d",m_MonCtx.iters);
         str=buff;
         MessagePrinter::printNormalTxt(str);
         return false;

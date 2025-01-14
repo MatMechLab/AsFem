@@ -132,21 +132,21 @@ public:
     /**
      * get the nonlinear solver name
      */
-    inline string getNonLinearSolverName()const{return m_nlsolvername;}
+    inline string getNonLinearSolverName()const{return m_NLSolverName;}
 
     /**
      * get the iteration number
      */
-    inline int getIterationNum()const{return m_iterations;}
+    inline int getIterationNum()const{return m_Iterations;}
 
     /**
      * get the initial norm of residual
      */
-    inline double getInitResidualNorm()const{return m_rnorm0;}
+    inline double getInitResidualNorm()const{return m_RNorm0;}
     /**
      * get the residual norm
      */
-    inline double getResidualNorm()const{return m_rnorm;}
+    inline double getResidualNorm()const{return m_RNorm;}
 
     /**
      * print out the SNES solver information
@@ -154,34 +154,34 @@ public:
     void printSolverInfo()const;
 
 private:
-    bool m_initialized;/**< boolean flag for the status of initializing */
-    int m_maxiters;/**< the maximum iterations */
-    int m_iterations;/**< the iteration number */
+    bool m_Initialized;/**< boolean flag for the status of initializing */
+    int m_MaxIters;/**< the maximum iterations */
+    int m_Iterations;/**< the iteration number */
 
-    double m_s_tol;/**< the tolerance for delta U */
+    double m_STol;/**< the tolerance for delta U */
 
-    double m_abstol_r;/**< the absolute tolerance for residual */
-    double m_reltol_r;/**< the relative tolerance for residual */
+    double m_AbsTolR;/**< the absolute tolerance for residual */
+    double m_RelTolR;/**< the relative tolerance for residual */
 
-    double m_abstol_du;/**< the absolute tolerance for delta u */
-    double m_reltol_du;/**< the relative tolerance for delta u */
+    double m_AbsTolDu;/**< the absolute tolerance for delta u */
+    double m_RelTolDu;/**< the relative tolerance for delta u */
 
-    double m_abstol_e;/**< the absolute tolerance for energy */
-    double m_reltol_e;/**< the relative tolerance for energy */
+    double m_AbsTolE;/**< the absolute tolerance for energy */
+    double m_RelTolE;/**< the relative tolerance for energy */
 
-    double m_rnorm0;/**< the initial norm of residual */
-    double m_rnorm;/**< the intermediate or final norm of reisudal */
-
-private:
-    string m_nlsolvername;/**< the nonlinear solver name in SNES */
-    NonlinearSolverType m_nlsolvertype;/**< the nonlinear solver type */
+    double m_RNorm0;/**< the initial norm of residual */
+    double m_RNorm;/**< the intermediate or final norm of reisudal */
 
 private:
-    SNES m_snes;/**< the SNES solver from PETSc */
-    SNESLineSearch m_sneslinesearch;/**< for the line search ctx */
-    SNESConvergedReason m_snesconvergereason;/**< for the converged reason ctx */
+    string m_NLSolverName;/**< the nonlinear solver name in SNES */
+    NonlinearSolverType m_NLSolverType;/**< the nonlinear solver type */
 
-    AppCtx m_appctx;
-    MonitorCtx m_monctx;
+private:
+    SNES m_SNES;/**< the SNES solver from PETSc */
+    SNESLineSearch m_SNESLineSearch;/**< for the line search ctx */
+    SNESConvergedReason m_SNESConvergeReason;/**< for the converged reason ctx */
+
+    AppCtx m_AppCtx;
+    MonitorCtx m_MonCtx;
 
 };

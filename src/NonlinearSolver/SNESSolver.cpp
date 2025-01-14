@@ -15,110 +15,110 @@
 #include "NonlinearSolver/SNESSolver.h"
 
 SNESSolver::SNESSolver(){
-    m_initialized=false;/**< boolean flag for the status of initializing */
-    m_maxiters=50;/**< the maximum iterations */
-    m_iterations=0;/**< the iteration number */
-    m_abstol_r=1.0e-7;/**< the absolute tolerance for residual */
-    m_reltol_r=1.0e-9;/**< the relative tolerance for residual */
+    m_Initialized=false;/**< boolean flag for the status of initializing */
+    m_MaxIters=50;/**< the maximum iterations */
+    m_Iterations=0;/**< the iteration number */
+    m_AbsTolR=1.0e-7;/**< the absolute tolerance for residual */
+    m_RelTolR=1.0e-9;/**< the relative tolerance for residual */
 
-    m_abstol_du=1.0e-4;/**< the absolute tolerance for delta u */
-    m_reltol_du=1.0e-7;/**< the relative tolerance for delta u */
+    m_AbsTolDu=1.0e-4;/**< the absolute tolerance for delta u */
+    m_RelTolDu=1.0e-7;/**< the relative tolerance for delta u */
 
-    m_abstol_e=1.0e-10;/**< the absolute tolerance for energy */
-    m_reltol_e=1.0e-15;/**< the relative tolerance for energy */
+    m_AbsTolE=1.0e-10;/**< the absolute tolerance for energy */
+    m_RelTolE=1.0e-15;/**< the relative tolerance for energy */
 
-    m_rnorm0=1.0;/**< the initial norm of residual */
-    m_rnorm =1.0;/**< the intermediate or final norm of reisudal */
+    m_RNorm0=1.0;/**< the initial norm of residual */
+    m_RNorm =1.0;/**< the intermediate or final norm of reisudal */
 
-    m_s_tol=0.0;
+    m_STol=0.0;
 
-    m_nlsolvername="newton with line search";/**< the nonlinear solver name in SNES */
-    m_nlsolvertype=NonlinearSolverType::NEWTONLS;
+    m_NLSolverName="newton with line search";/**< the nonlinear solver name in SNES */
+    m_NLSolverType=NonlinearSolverType::NEWTONLS;
 }
 void SNESSolver::setFromNonlinearSolverBlock(const NonlinearSolverBlock &nlblock){
-    m_maxiters=nlblock.m_MaxIters;
-    m_abstol_r=nlblock.m_AbsTolR;
-    m_reltol_r=nlblock.m_RelTolR;
+    m_MaxIters=nlblock.m_MaxIters;
+    m_AbsTolR=nlblock.m_AbsTolR;
+    m_RelTolR=nlblock.m_RelTolR;
 
-    m_nlsolvername=nlblock.m_NlSolverTypeName;
-    m_nlsolvertype=nlblock.m_NlSolverType;
+    m_NLSolverName=nlblock.m_NlSolverTypeName;
+    m_NLSolverType=nlblock.m_NlSolverType;
 
-    m_s_tol=nlblock.m_STol;
+    m_STol=nlblock.m_STol;
 }
 
 void SNESSolver::initSolver(LinearSolver &lsolver){
-    SNESCreate(PETSC_COMM_WORLD,&m_snes);
+    SNESCreate(PETSC_COMM_WORLD,&m_SNES);
 
     //**************************************************
     //*** setup KSP
     //**************************************************
-    SNESSetKSP(m_snes,lsolver.getKSPRef());
+    SNESSetKSP(m_SNES,lsolver.getKSPRef());
 
     //**************************************************
     //*** basic settings for SNES
     //**************************************************
-    SNESSetTolerances(m_snes,m_abstol_r,m_reltol_r,m_s_tol,m_maxiters,-1);
-    SNESSetDivergenceTolerance(m_snes,-1);
+    SNESSetTolerances(m_SNES,m_AbsTolR,m_RelTolR,m_STol,m_MaxIters,-1);
+    SNESSetDivergenceTolerance(m_SNES,-1);
 
     //**************************************************
     //*** for different types of SNES solver
     //**************************************************
-    if(m_nlsolvertype==NonlinearSolverType::NEWTON||
-       m_nlsolvertype==NonlinearSolverType::NEWTONLS){
-        SNESSetType(m_snes,SNESNEWTONLS);
-        SNESGetLineSearch(m_snes,&m_sneslinesearch);
-        SNESLineSearchSetType(m_sneslinesearch,SNESLINESEARCHBT);
-        SNESLineSearchSetOrder(m_sneslinesearch,3);
+    if(m_NLSolverType==NonlinearSolverType::NEWTON||
+       m_NLSolverType==NonlinearSolverType::NEWTONLS){
+        SNESSetType(m_SNES,SNESNEWTONLS);
+        SNESGetLineSearch(m_SNES,&m_SNESLineSearch);
+        SNESLineSearchSetType(m_SNESLineSearch,SNESLINESEARCHBT);
+        SNESLineSearchSetOrder(m_SNESLineSearch,3);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONAL){
-        SNESSetType(m_snes,SNESNEWTONAL);
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONAL){
+        SNESSetType(m_SNES,SNESNEWTONAL);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONSECANT){
-        SNESSetType(m_snes,SNESNEWTONLS);
-        SNESGetLineSearch(m_snes,&m_sneslinesearch);
-        SNESLineSearchSetType(m_sneslinesearch,SNESLINESEARCHL2);
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONSECANT){
+        SNESSetType(m_SNES,SNESNEWTONLS);
+        SNESGetLineSearch(m_SNES,&m_SNESLineSearch);
+        SNESLineSearchSetType(m_SNESLineSearch,SNESLINESEARCHL2);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONTR){
-        SNESSetType(m_snes,SNESNEWTONTR);
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONTR){
+        SNESSetType(m_SNES,SNESNEWTONTR);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::BFGS){
-        SNESSetType(m_snes,SNESQN);
+    else if(m_NLSolverType==NonlinearSolverType::BFGS){
+        SNESSetType(m_SNES,SNESQN);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::BROYDEN){
-        SNESSetType(m_snes,SNESQN);
-        SNESQNSetType(m_snes,SNES_QN_BROYDEN);
+    else if(m_NLSolverType==NonlinearSolverType::BROYDEN){
+        SNESSetType(m_SNES,SNESQN);
+        SNESQNSetType(m_SNES,SNES_QN_BROYDEN);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::BADBROYDEN){
-        SNESSetType(m_snes,SNESQN);
-        SNESQNSetType(m_snes,SNES_QN_BADBROYDEN);
+    else if(m_NLSolverType==NonlinearSolverType::BADBROYDEN){
+        SNESSetType(m_SNES,SNESQN);
+        SNESQNSetType(m_SNES,SNES_QN_BADBROYDEN);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONCG){
-        SNESSetType(m_snes,SNESNCG);
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONCG){
+        SNESSetType(m_SNES,SNESNCG);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONGMRES){
-        SNESSetType(m_snes,SNESNGMRES);
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONGMRES){
+        SNESSetType(m_SNES,SNESNGMRES);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::RICHARDSON){
-        SNESSetType(m_snes,SNESNRICHARDSON);
+    else if(m_NLSolverType==NonlinearSolverType::RICHARDSON){
+        SNESSetType(m_SNES,SNESNRICHARDSON);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NMS){
-        SNESSetType(m_snes,SNESMS);
-        SNESMSSetType(m_snes,SNESMSEULER);
+    else if(m_NLSolverType==NonlinearSolverType::NMS){
+        SNESSetType(m_SNES,SNESMS);
+        SNESMSSetType(m_SNES,SNESMSEULER);
         PCSetType(lsolver.getPCRef(),PCMG);
     }
-    else if(m_nlsolvertype==NonlinearSolverType::FAS){
-        SNESSetType(m_snes,SNESFAS);
+    else if(m_NLSolverType==NonlinearSolverType::FAS){
+        SNESSetType(m_SNES,SNESFAS);
     }
 
-    SNESSetFromOptions(m_snes);
+    SNESSetFromOptions(m_SNES);
 
-    m_initialized=true;
+    m_Initialized=true;
 }
 
 void SNESSolver::releaseMemory(){
-    if(m_initialized){
-        SNESDestroy(&m_snes);
-        m_initialized=false;
+    if(m_Initialized){
+        SNESDestroy(&m_SNES);
+        m_Initialized=false;
     }
 }
 
@@ -127,37 +127,37 @@ void SNESSolver::printSolverInfo()const{
     char buff[70];
     string str;
 
-    if(m_nlsolvertype==NonlinearSolverType::NEWTON||
-       m_nlsolvertype==NonlinearSolverType::NEWTONLS){
+    if(m_NLSolverType==NonlinearSolverType::NEWTON||
+       m_NLSolverType==NonlinearSolverType::NEWTONLS){
         str="  Solver type= newton with line search";
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONTR){
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONTR){
         str="  Solver type= newton trust region";
     }
-    else if(m_nlsolvertype==NonlinearSolverType::BFGS){
+    else if(m_NLSolverType==NonlinearSolverType::BFGS){
         str="  Solver type= BFGS";
     }
-    else if(m_nlsolvertype==NonlinearSolverType::BROYDEN){
+    else if(m_NLSolverType==NonlinearSolverType::BROYDEN){
         str="  Solver type= Broyden";
     }
-    else if(m_nlsolvertype==NonlinearSolverType::BADBROYDEN){
+    else if(m_NLSolverType==NonlinearSolverType::BADBROYDEN){
         str="  Solver type= Bad Broyden";
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONCG){
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONCG){
         str="  Solver type= newton CG";
     }
-    else if(m_nlsolvertype==NonlinearSolverType::NEWTONGMRES){
+    else if(m_NLSolverType==NonlinearSolverType::NEWTONGMRES){
         str="  Solver type= newton GMRES";
     }
     MessagePrinter::printNormalTxt(str);
 
-    snprintf(buff,70,"  Max iterations=%3d,",m_maxiters);
+    snprintf(buff,70,"  Max iterations=%3d,",m_MaxIters);
     str=buff;
     MessagePrinter::printNormalTxt(str);
-    snprintf(buff,70,"  Abusolute |R| tolerance=%14.5e",m_abstol_r);
+    snprintf(buff,70,"  Abusolute |R| tolerance=%14.5e",m_AbsTolR);
     str=buff;
     MessagePrinter::printNormalTxt(str);
-    snprintf(buff,70,"  Relative |R| tolerance=%14.5e",m_reltol_r);
+    snprintf(buff,70,"  Relative |R| tolerance=%14.5e",m_RelTolR);
     str=buff;
     MessagePrinter::printNormalTxt(str);
     MessagePrinter::printStars();

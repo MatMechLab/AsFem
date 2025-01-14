@@ -53,27 +53,27 @@
 	},
 	"linearsolver":{
 		"type":"superlu",
-		"preconditioner":"ilu",
+		"preconditioner":"lu",
 		"maxiters":10000,
 		"restarts":2500,
-		"tolerance":1.0e-25
+		"tolerance":1.0e-35
 	},
 	"nlsolver":{
-		"type":"newton",
-		"maxiters":12,
+		"type":"newton-ls",
+		"maxiters":8,
 		"abs-tolerance":8.5e-7,
-		"rel-tolerance":1.0e-12,
+		"rel-tolerance":1.0e-14,
 		"s-tolerance":0.0
 	},
 	"timestepping":{
 		"type":"be",
-		"dt0":1.0e-4,
-		"dtmax":4.0e-4,
+		"dt0":5.0e-4,
+		"dtmax":1.0e-3,
 		"dtmin":1.0e-12,
 		"optimize-iters":4,
 		"end-time":2.5e-1,
-		"growth-factor":1.1,
-		"cutback-factor":0.85,
+		"growth-factor":1.2,
+		"cutback-factor":0.5,
 		"adaptive":true
 	},
 	"output":{

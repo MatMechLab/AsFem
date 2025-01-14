@@ -37,7 +37,7 @@ void KSPSolver::init() {
     KSPGetPC(m_KSP, &m_PC);
 
     KSPGMRESSetRestart(m_KSP,m_GMRESRestartNumber);
-    KSPSetTolerances(m_KSP,PETSC_DEFAULT,m_Tolerance,PETSC_DEFAULT,m_MaxIterations);
+    KSPSetTolerances(m_KSP,PETSC_CURRENT,m_Tolerance,PETSC_CURRENT,m_MaxIterations);
 
     // setup the preconditioner
     if (m_PCTypeName == "jacobi") {
@@ -78,7 +78,7 @@ void KSPSolver::init() {
     }
     else if (m_PCTypeName == "lu") {
         PCSetType(m_PC,PCLU);
-        PCFactorSetZeroPivot(m_PC,1.0e-15);
+        PCFactorSetZeroPivot(m_PC,1.0e-12);
     }
     else if (m_PCTypeName == "cholesky") {
         PCSetType(m_PC,PCCHOLESKY);
@@ -155,4 +155,8 @@ void KSPSolver::printKSPSolverInfo()const {
     snprintf(buff,65,"  Tolerance=%14.6e",m_Tolerance);
     MessagePrinter::printTxt(buff);
     MessagePrinter::printStars();
+}
+void KSPSolver::releaseMemory() {
+    KSPDestroy(&m_KSP);
+    PCDestroy(&m_PC);
 }
