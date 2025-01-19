@@ -98,6 +98,9 @@ void SNESSolver::initSolver(LinearSolver &lsolver){
     else if(m_NLSolverType==NonlinearSolverType::NEWTONGMRES){
         SNESSetType(m_SNES,SNESNGMRES);
     }
+    else if(m_NLSolverType==NonlinearSolverType::NCG){
+        SNESSetType(m_SNES,SNESNCG);
+    }
     else if(m_NLSolverType==NonlinearSolverType::RICHARDSON){
         SNESSetType(m_SNES,SNESNRICHARDSON);
     }

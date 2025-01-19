@@ -59,6 +59,10 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
             t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="richardson";
             t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::RICHARDSON;
         }
+        else if(solvertypename=="ncg"){
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="ncg";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NCG;
+        }
         else if(solvertypename.find("bfgs")!=string::npos){
             t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="BFGS";
             t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::BFGS;

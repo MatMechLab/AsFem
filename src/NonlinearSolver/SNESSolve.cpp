@@ -152,6 +152,7 @@ bool SNESSolver::solve(FECell &t_FECell,
                        FEControlInfo &t_FECtrlInfo){
 
     if (t_LinearSolver.getIterationNumber()){}
+    m_Timer.startTimer();
     t_SolnSystem.m_Ucopy.copyFrom(t_SolnSystem.m_Ucurrent);
     
     m_AppCtx=AppCtx{&t_FECell,&t_DofHandler,
@@ -191,6 +192,8 @@ bool SNESSolver::solve(FECell &t_FECell,
     SNESSolve(m_SNES,NULL,m_AppCtx._solutionSystem->m_Ucurrent.getVectorRef());
     SNESGetConvergedReason(m_SNES,&m_SNESConvergeReason);
 
+    m_Timer.endTimer();
+
     m_Iterations=m_MonCtx.iters;
     m_RNorm=m_MonCtx.rnorm;
     m_AbsTolDu=m_MonCtx.dunorm;
@@ -210,6 +213,7 @@ bool SNESSolver::solve(FECell &t_FECell,
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
+        m_Timer.printElapseTime("SNES solver is done");
         return true;
     }
     else if(m_SNESConvergeReason==SNES_CONVERGED_FNORM_RELATIVE){
@@ -223,6 +227,7 @@ bool SNESSolver::solve(FECell &t_FECell,
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
+        m_Timer.printElapseTime("SNES solver is done");
         return true;
     }
     else if(m_SNESConvergeReason==SNES_CONVERGED_SNORM_RELATIVE){
@@ -236,13 +241,16 @@ bool SNESSolver::solve(FECell &t_FECell,
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
+        m_Timer.printElapseTime("SNES solver is done");
         return true;
     }
     else{
         snprintf(buff,68,"  Divergent, SNES nonlinear solver failed, iters=%3d",m_MonCtx.iters);
         str=buff;
         MessagePrinter::printNormalTxt(str);
+        m_Timer.printElapseTime("SNES solver is done");
         return false;
     }
+
     return false;
 }

@@ -39,6 +39,7 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
                                 LinearSolver &t_LinearSolver,
                                 FEControlInfo &t_FECtrlInfo) {
     char buff[68];
+    m_Timer.startTimer();
     t_SolnSystem.m_Utemp.copyFrom(t_SolnSystem.m_Ucurrent);
     t_SolnSystem.m_Ucopy.copyFrom(t_SolnSystem.m_Ucurrent);
     m_IsConverged=false;
@@ -110,6 +111,8 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
         MessagePrinter::printNormalTxt(buff);
     }
     t_SolnSystem.m_Ucurrent.copyFrom(t_SolnSystem.m_Utemp);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("AsFem solver is done");
     return m_IsConverged;
 }
 

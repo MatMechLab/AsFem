@@ -16,6 +16,7 @@
 
 #include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolverBase.h"
+#include "Utils/Timer.h"
 
 
 class NewtonRaphsonSolver : public NonlinearSolverBase {
@@ -89,5 +90,7 @@ private:
     double m_Rnorm0;/**< the initial norm of the residual */
     double m_dUnorm;/**< the norm of the delta u */
     double m_dUnorm0;/**< the initial norm of the delta u */
+
+    Timer m_Timer;/**< timer */
 
 };

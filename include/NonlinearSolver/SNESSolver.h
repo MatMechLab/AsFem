@@ -17,6 +17,7 @@
 #include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolverBase.h"
 #include "NonlinearSolver/NonlinearSolverBlock.h"
+#include "Utils/Timer.h"
 
 /**
  * This is the struct that will be used to pass down/up the args we need to call SNES
@@ -186,7 +187,9 @@ private:
     SNESLineSearch m_SNESLineSearch;/**< for the line search ctx */
     SNESConvergedReason m_SNESConvergeReason;/**< for the converged reason ctx */
 
-    AppCtx m_AppCtx;
-    MonitorCtx m_MonCtx;
+    AppCtx m_AppCtx;/**< App ctx */
+    MonitorCtx m_MonCtx;/**< Mon ctx */
+
+    Timer m_Timer;/**< Timer */
 
 };
