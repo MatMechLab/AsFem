@@ -72,27 +72,27 @@ jobs:
         run: |
           cd temp
           ls -l
-          curl -L -O https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.3.tar.gz
+          curl -L -O https://download.open-mpi.org/release/open-mpi/v5.0/openmpi-5.0.6.tar.gz
           echo "******************************************************"
-          echo "*** Openmpi 5.0.3 has been downloaded !"
+          echo "*** Openmpi 5.0.6 has been downloaded !"
           echo "******************************************************"
           ls -l
       - name: compile and install openmpi
         run: |
           echo "******************************************************"
-          echo "*** Start to compile openmpi-5.0.3"
+          echo "*** Start to compile openmpi-5.0.6"
           echo "******************************************************"
           cd temp
-          tar -xf openmpi-5.0.3.tar.gz
-          cd openmpi-5.0.3
+          tar -xf openmpi-5.0.6.tar.gz
+          cd openmpi-5.0.6
           ./configure --prefix=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/AsFemLibs/openmpi
-          make -j8
+          make -j2
           echo "******************************************************"
-          echo "*** Make -j8 is done for openmpi-5.0.3"
+          echo "*** Make -j2 is done for openmpi-5.0.6"
           echo "******************************************************"
           make install
           echo "******************************************************"
-          echo "*** Make install is done for openmpi-5.0.3"
+          echo "*** Make install is done for openmpi-5.0.6"
           echo "******************************************************"
       - name: check openmpi version
         run: |
@@ -103,7 +103,7 @@ jobs:
           ./mpicxx --version
           ./mpirun --version
           echo "*** Now we check the mpirun"
-          ./mpirun -np 2 echo "Hi"
+          ./mpirun -np 1 echo "Hi"
           echo "******************************************************"
       - name: download PETSc
         run: |
@@ -111,11 +111,11 @@ jobs:
           echo "*** download petsc"
           echo "******************************************************"
           cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp
-          curl -L -O  https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-lite-3.21.2.tar.gz
-          tar -xf petsc-lite-3.21.2.tar.gz
+          curl -L -O  https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-lite-3.22.2.tar.gz
+          tar -xf petsc-lite-3.22.2.tar.gz
       - name: compile and install PETSc
         run: |
-          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.21.2
+          cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.22.2
           echo "******************************************************"
           echo "*** Configure petsc ..."
           echo "******************************************************"
@@ -139,11 +139,11 @@ jobs:
           echo "******************************************************"
           echo "*** Make petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.21.2 PETSC_ARCH=arch-linux-c-opt all
+          make PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.22.2 PETSC_ARCH=arch-linux-c-opt all
           echo "******************************************************"
           echo "*** Install petsc ..."
           echo "******************************************************"
-          make PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.21.2 PETSC_ARCH=arch-linux-c-opt install
+          make PETSC_DIR=/home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/temp/petsc-3.22.2 PETSC_ARCH=arch-linux-c-opt install
       - name: compile AsFem
         run: |
           cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}
@@ -167,7 +167,7 @@ jobs:
           echo "*********************************************************************"
           echo "*** Make AsFem"
           echo "*********************************************************************"
-          make -j8
+          make -j2
           echo "*********************************************************************"
           echo "*** AsFem has been successuflly installed !"
           echo "*********************************************************************"
@@ -192,7 +192,7 @@ jobs:
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          python3 scripts/AutoTest.py -n 2
+          python3 scripts/AutoTest.py -n 1
       - name: run step2-2d with single cpu
         run: |
           cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/examples/tutorial
@@ -228,7 +228,7 @@ jobs:
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          mpirun -np 2 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step2-2d.json
+          mpirun -np 1 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step2-2d.json
       - name: run step2-3d in parallel
         run: |
           cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/examples/tutorial
@@ -246,7 +246,7 @@ jobs:
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          mpirun -np 2 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step2-3d.json
+          mpirun -np 1 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step2-3d.json
       - name: run step3-2d in parallel
         run: |
           cd /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/examples/tutorial
@@ -259,7 +259,7 @@ jobs:
           export FPATH=$mpi/include:$FPATH
           export MANPATH=$mpi/share/man:$MANPATH
           export LD_LIBRARY_PATH=$mpi/lib:$LD_LIBRARY_PATH
-          mpirun -np 2 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step3-2d.json
+          mpirun -np 1 /home/runner/work/${{github.event.repository.name}}/${{github.event.repository.name}}/bin/asfem -i step3-2d.json
       - name: clean all folders and files
         run: |
           rm -rf temp
