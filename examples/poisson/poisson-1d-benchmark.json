@@ -48,10 +48,9 @@
 	},
 	"linearsolver":{
 		"type":"gmres",
-		"preconditioner":"bjacobi",
+		"preconditioner":"lu",
 		"maxiters":10000,
-		"restarts":1600,
-		"tolerance":1.0e-16
+		"tolerance":5.0e-7
 	},
 	"nlsolver":{
 		"type":"newton",
@@ -67,7 +66,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":4
+			"order":2
 		}
 	},
 	"job":{

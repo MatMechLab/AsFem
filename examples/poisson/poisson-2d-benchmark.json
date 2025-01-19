@@ -51,14 +51,13 @@
 		}
 	},
 	"linearsolver":{
-		"type":"mumps",
+		"type":"gmres",
 		"preconditioner":"lu",
 		"maxiters":10000,
-		"restarts":1600,
 		"tolerance":1.0e-16
 	},
 	"nlsolver":{
-		"type":"newton",
+		"type":"asfem",
 		"maxiters":50,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
@@ -71,7 +70,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":3
+			"order":4
 		}
 	},
 	"job":{

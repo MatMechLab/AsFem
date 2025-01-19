@@ -135,6 +135,7 @@ void KSPSolver::init() {
         PCFactorSetMatSolverType(m_PC,MATSOLVERSUPERLU_DIST);
     }
     KSPSetFromOptions(m_KSP);
+    m_IsAllocated=true;
     // KSPSetUp(m_KSP); // this will raise a very stupid bug, please comment out it
 }
 bool KSPSolver::solve(SparseMatrix &A,Vector &b,Vector &x) {
@@ -156,6 +157,9 @@ void KSPSolver::printKSPSolverInfo()const {
     MessagePrinter::printStars();
 }
 void KSPSolver::releaseMemory() {
-    KSPDestroy(&m_KSP);
-    // PCDestroy(&m_PC);
+    if (m_IsAllocated) {
+        KSPDestroy(&m_KSP);
+        // PCDestroy(&m_PC);
+        m_IsAllocated=false;
+    }
 }

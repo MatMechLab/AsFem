@@ -43,13 +43,12 @@
 	},
 	"linearsolver":{
 		"type":"gmres",
-		"preconditioner":"bjacobi",
+		"preconditioner":"lu",
 		"maxiters":10000,
-		"restarts":1600,
-		"tolerance":1.0e-16
+		"tolerance":5.0e-7
 	},
 	"nlsolver":{
-		"type":"newton",
+		"type":"asfem",
 		"maxiters":50,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,

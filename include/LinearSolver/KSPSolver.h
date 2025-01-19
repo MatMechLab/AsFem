@@ -162,6 +162,7 @@ protected:
     int m_MaxIterations;/**< the maximum iterations of the linear solver */
     int m_GMRESRestartNumber;/**< the restart number of GMRES */
     double m_Tolerance;/**< the error tolerance of the linear solver */
+    bool m_IsAllocated;/**< the status of the memory allocation */
 
     KSP m_KSP;/**< the KSP solver class */
     PC m_PC;/**< the Preconditoner class */

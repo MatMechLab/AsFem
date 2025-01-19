@@ -16,10 +16,10 @@
 				"parameters":{
 					"viscosity":1.0e-6,
 					"Gc":2.7e-3,
-					"eps":0.012,
+					"eps":0.01,
 					"K":121.15,
 					"G":80.77,
-					"stabilizer":1.0e-6,
+					"stabilizer":1.0e-5,
 					"finite-strain":false,
 					"plane-strain":true
 				}
@@ -51,29 +51,24 @@
 			"side":["top"]
 		}
 	},
-	"linearsolver":{
-		"type":"superlu",
-		"preconditioner":"lu",
-		"maxiters":10000,
-		"restarts":2500,
-		"tolerance":1.0e-35
-	},
 	"nlsolver":{
-		"type":"newton-ls",
-		"maxiters":8,
-		"abs-tolerance":8.5e-7,
-		"rel-tolerance":1.0e-14,
-		"s-tolerance":0.0
+		"type":"newton",
+		"solver":"gmres",
+		"maxiters":10,
+		"abs-tolerance":8.0e-7,
+		"rel-tolerance":1.0e-9,
+		"s-tolerance":0.0,
+		"preconditioner":"lu"
 	},
 	"timestepping":{
 		"type":"be",
-		"dt0":5.0e-4,
-		"dtmax":1.0e-3,
+		"dt0":1.0e-4,
+		"dtmax":4.0e-4,
 		"dtmin":1.0e-12,
 		"optimize-iters":4,
 		"end-time":2.5e-1,
-		"growth-factor":1.2,
-		"cutback-factor":0.5,
+		"growth-factor":1.1,
+		"cutback-factor":0.85,
 		"adaptive":true
 	},
 	"output":{

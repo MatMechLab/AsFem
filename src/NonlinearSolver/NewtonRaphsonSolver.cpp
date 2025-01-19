@@ -71,7 +71,8 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
                               t_EqSystem.m_AMATRIX,
                               t_EqSystem.m_RHS);
 
-        t_BCSystem.setDirichletPenalty(t_FESystem.getMaxCoefOfKMatrix()*1.0e10);
+        // t_BCSystem.setDirichletPenalty(t_FESystem.getMaxCoefOfKMatrix()*1.0e10);
+        t_BCSystem.setDirichletPenalty(1.0e23);
         t_BCSystem.applyBoundaryConditions(FECalcType::COMPUTERESIDUALANDJACOBIAN,
                                            t_FECtrlInfo.Dt+t_FECtrlInfo.T,
                                            t_FECtrlInfo.Ctan,
@@ -108,6 +109,7 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
         snprintf(buff,68,"  AsFem solver: iters=%4d, |R0|=%12.5e, |R|=%12.5e",m_Iterations,m_Rnorm0,m_Rnorm);
         MessagePrinter::printNormalTxt(buff);
     }
+    t_SolnSystem.m_Ucurrent.copyFrom(t_SolnSystem.m_Utemp);
     return m_IsConverged;
 }
 

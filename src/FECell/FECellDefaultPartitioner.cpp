@@ -70,23 +70,6 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
                 iEnd=(cpuid+1)*ranksize;
                 if(cpuid==size-1) iEnd=datasize;
 
-                if (datasize<size) {
-                    // for the case where the mesh number is less than the cpu numbers
-                    ranksize=1;
-                    iStart=cpuid*ranksize;
-                    iEnd=(cpuid+1)*ranksize;
-                    if (iStart>datasize-2) {
-                        iStart=0;
-                        iEnd=0;
-                    }
-                    if(cpuid==size-1) {
-                        iStart=datasize-1;
-                        iEnd=datasize;
-                    }
-                }
-                if (datasize==0) {
-                    iStart=0;iEnd=0;
-                }
 
                 LocalCellVector.clear();
                 for(int e=iStart;e<iEnd;e++){
@@ -110,23 +93,6 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
             iStart=cpuid*ranksize;
             iEnd=(cpuid+1)*ranksize;
             if(cpuid==size-1) iEnd=datasize;
-            if (datasize<size) {
-                // for the case where the mesh number is less than the cpu numbers
-                ranksize=1;
-                iStart=cpuid*ranksize;
-                iEnd=(cpuid+1)*ranksize;
-                if (iStart>datasize-2) {
-                    iStart=0;
-                    iEnd=0;
-                }
-                if(cpuid==size-1) {
-                    iStart=datasize-1;
-                    iEnd=datasize;
-                }
-            }
-            if (datasize==0) {
-                iStart=0;iEnd=0;
-            }
 
             LocalCellVector.clear();
             for(int e=iStart;e<iEnd;e++){

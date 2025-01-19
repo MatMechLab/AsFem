@@ -38,14 +38,18 @@
 			"side":["back"]
 		}
 	},
+	"linearsolver":{
+		"type":"gmres",
+		"preconditioner":"lu",
+		"maxiters":10000,
+		"tolerance":1.0e-16
+	},
 	"nlsolver":{
-		"type":"newton",
-		"solver":"cg",
+		"type":"asfem",
 		"maxiters":50,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
-		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"s-tolerance":0.0
 	},
 	"output":{
 		"type":"vtu",
