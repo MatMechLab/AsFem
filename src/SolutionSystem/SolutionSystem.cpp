@@ -29,6 +29,7 @@ void SolutionSystem::releaseMemory(){
         m_Uolder.releaseMemory();
         m_Utemp.releaseMemory();
         m_Ucopy.releaseMemory();
+        m_dU.releaseMemory();
 
         m_V.releaseMemory();
 

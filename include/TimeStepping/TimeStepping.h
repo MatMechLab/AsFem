@@ -146,34 +146,39 @@ public:
 
     /**
      * solve the transient equation
-     * @param t_fecell the fe cell class
-     * @param t_dofhandler the dof class
-     * @param t_fe the fe class
-     * @param t_elmtsystem the element system class
-     * @param t_matesystem the material system class
-     * @param t_fesystem the fe system class
-     * @param t_bcsystem the boundary condition system
-     * @param t_icsystem the initial condition system
-     * @param t_solutionsystem the solution system class
-     * @param t_equationsystem the equation system class
-     * @param t_projection the projection system
-     * @param t_fectrlinfo the fe control info
-     * @param t_nlsolver the nonlinear solver
-     * @param t_output  the output system
-     * @param t_postprocess the postprocess system
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dof class
+     * @param t_FE the fe class
+     * @param t_ElmtSystem the element system class
+     * @param t_MateSystem the material system class
+     * @param t_FESystem the fe system class
+     * @param t_BCSystem the boundary condition system
+     * @param t_ICSystem the initial condition system
+     * @param t_SolnSystem the solution system class
+     * @param t_EqSystem the equation system class
+     * @param t_ProjSystem the projection system
+     * @param t_FECtrlInfo the fe control info
+     * @param t_LinearSolver the linear solver system
+     * @param t_NLSolver the nonlinear solver
+     * @param t_Output  the output system
+     * @param t_PostProcess the postprocess system
      */
-    bool solve(FECell &t_fecell,DofHandler &t_dofhandler,FE &t_fe,
-               ElmtSystem &t_elmtsystem,MateSystem &t_matesystem,
-               FESystem &t_fesystem,
-               BCSystem &t_bcsystem,
-               ICSystem &t_icsystem,
-               SolutionSystem &t_solutionsystem,
-               EquationSystem &t_equationsystem,
-               ProjectionSystem &t_projection,
-               FEControlInfo &t_fectrlinfo,
-               NonlinearSolver &t_nlsolver,
-               OutputSystem &t_output,
-               Postprocessor &t_postprocess);
+    bool solve(FECell &t_FECell,
+               DofHandler &t_DofHandler,
+               FE &t_FE,
+               ElmtSystem &t_ElmtSystem,
+               MateSystem &t_MateSystem,
+               FESystem &t_FESystem,
+               BCSystem &t_BCSystem,
+               ICSystem &t_ICSystem,
+               SolutionSystem &t_SolnSystem,
+               EquationSystem &t_EqSystem,
+               ProjectionSystem &t_ProjSystem,
+               FEControlInfo &t_FECtrlInfo,
+               LinearSolver &t_LinearSolver,
+               NonlinearSolver &t_NLSolver,
+               OutputSystem &t_Output,
+               Postprocessor &t_PostProcess);
 
 
 

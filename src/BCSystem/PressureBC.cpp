@@ -31,6 +31,10 @@ void PressureBC::computeBCValue(const FECalcType &CalcType,
     else if(CalcType==FECalcType::COMPUTEJACOBIAN){
         computeJacobian(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK);
     }
+    else if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        computeResidual(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,LocalR);
+        computeJacobian(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK);
+    }
     else{
         MessagePrinter::printErrorTxt("Unsupported calculation type in PressureBC class, please check your code");
         MessagePrinter::exitAsFem();

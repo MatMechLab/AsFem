@@ -23,5 +23,77 @@ NonlinearSolver::NonlinearSolver(){
 
 void NonlinearSolver::init(LinearSolver &lsolver){
     setFromNonlinearSolverBlock(m_NlSolverBlock);
-    initSolver(lsolver);
+    if (m_NlSolverBlock.m_NlSolverType==NonlinearSolverType::ASFEMNR) {
+        NewtonRaphsonSolver::setMaxIterationNum(m_NlSolverBlock.m_MaxIters);
+        NewtonRaphsonSolver::setRAbsTolerance(m_NlSolverBlock.m_AbsTolR);
+        NewtonRaphsonSolver::setRRelTolerance(m_NlSolverBlock.m_RelTolR);
+    }
+    else {
+        initSolver(lsolver);
+    }
+}
+
+int NonlinearSolver::getIterationNum()const {
+    if (m_NlSolverBlock.m_NlSolverType==NonlinearSolverType::ASFEMNR) {
+        return NewtonRaphsonSolver::getNRIterationNum();
+    }
+    else {
+        return SNESSolver::getIterationNum();
+    }
+    return -1;
+}
+
+bool NonlinearSolver::solve(FECell &t_FECell,
+                            DofHandler &t_DofHandler,
+                            FE &t_FE,
+                            ElmtSystem &t_ElmtSystem,
+                            MateSystem &t_MateSystem,
+                            FESystem &t_FESystem,
+                            BCSystem &t_BCSystem,
+                            SolutionSystem &t_SolnSystem,
+                            EquationSystem &t_EqSystem,
+                            LinearSolver &t_LinearSolver,
+                            FEControlInfo &t_FECtrlInfo) {
+    if (m_NlSolverBlock.m_NlSolverType==NonlinearSolverType::ASFEMNR) {
+        return NewtonRaphsonSolver::solve(t_FECell,
+                                   t_DofHandler,
+                                   t_FE,
+                                   t_ElmtSystem,
+                                   t_MateSystem,
+                                   t_FESystem,
+                                   t_BCSystem,
+                                   t_SolnSystem,
+                                   t_EqSystem,
+                                   t_LinearSolver,
+                                   t_FECtrlInfo);
+    }
+    else {
+        return SNESSolver::solve(t_FECell,
+                          t_DofHandler,
+                          t_FE,
+                          t_ElmtSystem,
+                          t_MateSystem,
+                          t_FESystem,
+                          t_BCSystem,
+                          t_SolnSystem,
+                          t_EqSystem,
+                          t_LinearSolver,
+                          t_FECtrlInfo);
+    }
+    return false;
+}
+
+void NonlinearSolver::printSolverInfo()const {
+    if (m_NlSolverBlock.m_NlSolverType==NonlinearSolverType::ASFEMNR) {
+        NewtonRaphsonSolver::printSolverInfo();
+    }
+    else {
+        SNESSolver::printSolverInfo();
+    }
+}
+
+void NonlinearSolver::releaseMemory() {
+    if (m_NlSolverBlock.m_NlSolverType!=NonlinearSolverType::ASFEMNR) {
+        SNESSolver::releaseMemory();
+    }
 }

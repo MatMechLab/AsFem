@@ -28,6 +28,7 @@ void SolutionSystem::init(const DofHandler &t_dofhandler,const FE &t_fe){
     m_Uolder.resize(m_Dofs,0.0);
     m_Utemp.resize(m_Dofs,0.0);
     m_Ucopy.resize(m_Dofs,0.0);
+    m_dU.resize(m_Dofs,0.0);
 
     // for velocity and acceleration
     m_V.resize(m_Dofs,0.0);

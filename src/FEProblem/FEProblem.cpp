@@ -150,7 +150,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     m_Timer.printElapseTime("Projection system is initialized",false);
 
     //***************************************
-    // for Nonlinear solver system init
+    // for Linear solver system init
     //***************************************
     m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the linear solver ...");
@@ -214,6 +214,7 @@ void FEProblem::finalize(){
     m_EqSystem.releaseMemory();
     m_SolnSystem.releaseMemory();
     m_ProjSystem.releaseMemory();
+    m_LinearSolver.releaseMemory();
     m_NLSolver.releaseMemory();
     m_PostProcessor.releaseMemory();
     

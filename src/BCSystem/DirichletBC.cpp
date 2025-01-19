@@ -38,6 +38,12 @@ void DirichletBC::computeBCValue(const FECalcType &CalcType,
             K.insertValue(DofIDs[i],DofIDs[i],Penalty);
         }
     }
+    else if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        for(int i=0;i<static_cast<int>(DofIDs.size());i++){
+            RHS.insertValue(DofIDs[i],0.0);
+            K.insertValue(DofIDs[i],DofIDs[i],Penalty);
+        }
+    }
 
     computeU(BCValue,Params,DofIDs,ElmtInfo,ElmtSoln,m_LocalU);
     for(int i=0;i<static_cast<int>(DofIDs.size());i++){

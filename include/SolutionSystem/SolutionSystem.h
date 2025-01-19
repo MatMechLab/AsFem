@@ -210,6 +210,7 @@ public:
     Vector m_Uolder;/**< the pre-previous solution vector */
     Vector m_Utemp;/**< the intermediate/temporary solution vector */
     Vector m_Ucopy;/**< this is used for arbitray/intermediate usage, i.e. copy. Its different with u_temp! */
+    Vector m_dU;/**< this is used for delta U in NR iterations! */
     Vector m_V;/**< the 'velocity' solution vector */
     Vector m_A;/**< the 'acceleration' solution vector */
 

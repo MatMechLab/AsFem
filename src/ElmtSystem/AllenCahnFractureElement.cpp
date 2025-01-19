@@ -33,6 +33,10 @@ void AllenCahnFractureElement::computeAll(const FECalcType &CalcType,
     else if(CalcType==FECalcType::COMPUTEJACOBIAN){
         computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
     }
+    else if(CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
+    }
     else{
         MessagePrinter::printErrorTxt("unsupported calculation type in AllenCahnFractureElmt, please check your related code");
         MessagePrinter::exitAsFem();

@@ -18,17 +18,21 @@
 #include "ElmtSystem/KobayashiElement.h"
 
 void KobayashiElement::computeAll(const FECalcType &CalcType,
-                                          const LocalElmtInfo &ElmtInfo,
-                                          const double (&Ctan)[3],
-                                          const LocalElmtSolution &ElmtSoln,
-                                          const LocalShapeFun &Shp,
-                                          const MaterialsContainer &MateOld,
-                                          const MaterialsContainer &Mate,
-                                          MatrixXd &LocalK,VectorXd &LocalR) {
+                                const LocalElmtInfo &ElmtInfo,
+                                const double (&Ctan)[3],
+                                const LocalElmtSolution &ElmtSoln,
+                                const LocalShapeFun &Shp,
+                                const MaterialsContainer &MateOld,
+                                const MaterialsContainer &Mate,
+                                MatrixXd &LocalK,VectorXd &LocalR) {
     if(CalcType==FECalcType::COMPUTERESIDUAL){
         computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
     }
     else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
+    }
+    else if(CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
         computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
     }
     else{

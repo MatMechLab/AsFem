@@ -23,7 +23,11 @@ bool InputSystem::readNLSolverBlock(nlohmann::json &t_json,NonlinearSolver &t_nl
             return false;
         }
         string solvertypename=t_json.at("type");
-        if(solvertypename=="newton"){
+        if(solvertypename=="asfem"){
+            t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton-raphson from asfem";
+            t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::ASFEMNR;
+        }
+        else if(solvertypename=="newton"){
             t_nlsolver.m_NlSolverBlock.m_NlSolverTypeName="newton with line search";
             t_nlsolver.m_NlSolverBlock.m_NlSolverType=NonlinearSolverType::NEWTONLS;
         }

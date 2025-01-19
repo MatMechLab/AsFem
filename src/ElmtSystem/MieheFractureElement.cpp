@@ -20,20 +20,23 @@
 
 #include "ElmtSystem/MieheFractureElement.h"
 
-void MieheFractureElement::computeAll(const FECalcType &calctype,
-                                      const LocalElmtInfo &elmtinfo,
-                                      const double (&Ctan)[3],
-                                      const LocalElmtSolution &soln,
-                                      const LocalShapeFun &shp,
-                                      const MaterialsContainer &mate_old,
-                                      const MaterialsContainer &mate,
-                                      MatrixXd &LocalK,
-                                      VectorXd &LocalR) {
-    if(calctype==FECalcType::COMPUTERESIDUAL){
-        computeResidual(elmtinfo,soln,shp,mate_old,mate,LocalR);
+void MieheFractureElement::computeAll(const FECalcType &CalcType,
+                                const LocalElmtInfo &ElmtInfo,
+                                const double (&Ctan)[3],
+                                const LocalElmtSolution &ElmtSoln,
+                                const LocalShapeFun &Shp,
+                                const MaterialsContainer &MateOld,
+                                const MaterialsContainer &Mate,
+                                MatrixXd &LocalK,VectorXd &LocalR) {
+    if(CalcType==FECalcType::COMPUTERESIDUAL){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
     }
-    else if(calctype==FECalcType::COMPUTEJACOBIAN){
-        computeJacobian(elmtinfo,Ctan,soln,shp,mate_old,mate,LocalK);
+    else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
+    }
+    else if(CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
     }
     else{
         MessagePrinter::printErrorTxt("unsupported calculation type in MieheFractureElement, please check your related code");

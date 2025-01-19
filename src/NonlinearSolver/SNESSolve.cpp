@@ -139,28 +139,33 @@ PetscErrorCode computeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
 //***************************************************************
 //*** here we solve our nonlinear equations for R(x)->0 
 //***************************************************************
-bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
-                       ElmtSystem &elmtsystem,MateSystem &matesystem,
-                       FESystem &fesystem,
-                       BCSystem &bcsystem,
-                       SolutionSystem &solutionsystem,
-                       EquationSystem &equationsystem,
-                       FEControlInfo &fectrlinfo){
+bool SNESSolver::solve(FECell &t_FECell,
+                       DofHandler &t_DofHandler,
+                       FE &t_FE,
+                       ElmtSystem &t_ElmtSystem,
+                       MateSystem &t_MateSystem,
+                       FESystem &t_FESystem,
+                       BCSystem &t_BCSystem,
+                       SolutionSystem &t_SolnSystem,
+                       EquationSystem &t_EqSystem,
+                       LinearSolver &t_LinearSolver,
+                       FEControlInfo &t_FECtrlInfo){
 
-    solutionsystem.m_Ucopy.copyFrom(solutionsystem.m_Ucurrent);
+    if (t_LinearSolver.getIterationNumber()){}
+    t_SolnSystem.m_Ucopy.copyFrom(t_SolnSystem.m_Ucurrent);
     
-    m_AppCtx=AppCtx{&fecell,&dofhandler,
-                   &bcsystem,
-                   &elmtsystem,&matesystem,
-                   &solutionsystem,&equationsystem,
-                   &fe,&fesystem,
-                   &fectrlinfo
+    m_AppCtx=AppCtx{&t_FECell,&t_DofHandler,
+                   &t_BCSystem,
+                   &t_ElmtSystem,&t_MateSystem,
+                   &t_SolnSystem,&t_EqSystem,
+                   &t_FE,&t_FESystem,
+                   &t_FECtrlInfo
                    };
     m_MonCtx=MonitorCtx{0.0,1.0,
                 0.0,1.0,
                 0.0,1.0,
                 0,
-                fectrlinfo.IsDepDebug};
+                t_FECtrlInfo.IsDepDebug};
 
 
     m_AppCtx._bcSystem->applyPresetBoundaryConditions(FECalcType::UPDATEU,
@@ -195,7 +200,7 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
     string str;
 
     if(m_SNESConvergeReason==SNES_CONVERGED_FNORM_ABS){
-        if(fectrlinfo.IsDepDebug){
+        if(t_FECtrlInfo.IsDepDebug){
             snprintf(buff,68,"  Converged for |R|<atol, final iters=%3d",m_MonCtx.iters);
             str=buff;
             MessagePrinter::printNormalTxt(str);
@@ -208,7 +213,7 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
         return true;
     }
     else if(m_SNESConvergeReason==SNES_CONVERGED_FNORM_RELATIVE){
-        if(fectrlinfo.IsDepDebug){
+        if(t_FECtrlInfo.IsDepDebug){
             snprintf(buff,68,"  Converged for |R|<rtol*|R0|, final iters=%3d",m_MonCtx.iters);
             str=buff;
             MessagePrinter::printNormalTxt(str);
@@ -221,7 +226,7 @@ bool SNESSolver::solve(FECell &fecell,DofHandler &dofhandler,FE &fe,
         return true;
     }
     else if(m_SNESConvergeReason==SNES_CONVERGED_SNORM_RELATIVE){
-        if(fectrlinfo.IsDepDebug){
+        if(t_FECtrlInfo.IsDepDebug){
             snprintf(buff,68,"  Converged for |delta x|<stol|x|, final iters=%3d",m_MonCtx.iters);
             str=buff;
             MessagePrinter::printNormalTxt(str);

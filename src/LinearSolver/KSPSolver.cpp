@@ -135,28 +135,27 @@ void KSPSolver::init() {
         PCFactorSetMatSolverType(m_PC,MATSOLVERSUPERLU_DIST);
     }
     KSPSetFromOptions(m_KSP);
-    PCSetFromOptions(m_PC);
-    KSPSetUp(m_KSP);
+    // KSPSetUp(m_KSP); // this will raise a very stupid bug, please comment out it
 }
 bool KSPSolver::solve(SparseMatrix &A,Vector &b,Vector &x) {
     m_Iterations=0;
-    KSPSetOperators(m_KSP,A.getCopy(),A.getCopy());
-    KSPSolve(m_KSP,b.getVectorCopy(),x.getVectorRef());
+    KSPSetOperators(m_KSP,A.getReference(),A.getReference());
+    KSPSolve(m_KSP,b.getVectorRef(),x.getVectorRef());
     KSPGetIterationNumber(m_KSP,&m_Iterations);
     return true;
 }
 void KSPSolver::printKSPSolverInfo()const {
     MessagePrinter::printTxt("KSP solver info:");
-    MessagePrinter::printTxt("  Max iterations=\'"+to_string(m_MaxIterations)+"\'");
-    MessagePrinter::printTxt("  Restarts=\'"+to_string(m_GMRESRestartNumber)+"\'");
-    MessagePrinter::printTxt("  Solver=\'"+m_KSPSolverTypeName+"\'");
-    MessagePrinter::printTxt("  PC type=\'"+m_PCTypeName+"\'");
+    MessagePrinter::printTxt("  Max iterations= "+to_string(m_MaxIterations));
+    MessagePrinter::printTxt("  Restarts= "+to_string(m_GMRESRestartNumber));
+    MessagePrinter::printTxt("  Solver= "+m_KSPSolverTypeName);
+    MessagePrinter::printTxt("  PC type= "+m_PCTypeName);
     char buff[65];
-    snprintf(buff,65,"  Tolerance=%14.6e",m_Tolerance);
+    snprintf(buff,65,"  Tolerance= %14.6e",m_Tolerance);
     MessagePrinter::printTxt(buff);
     MessagePrinter::printStars();
 }
 void KSPSolver::releaseMemory() {
     KSPDestroy(&m_KSP);
-    PCDestroy(&m_PC);
+    // PCDestroy(&m_PC);
 }

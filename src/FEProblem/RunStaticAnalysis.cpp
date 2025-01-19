@@ -34,7 +34,9 @@ void FEProblem::runStaticAnalysis(){
                         m_ElmtSystem,m_MateSystem,
                         m_FESystem,
                         m_BCSystem,
-                        m_SolnSystem,m_EqSystem,
+                        m_SolnSystem,
+                        m_EqSystem,
+                        m_LinearSolver,
                         m_FECtrlInfo)){
         m_Timer.endTimer();
         m_Timer.printElapseTime("Static analysis is done");

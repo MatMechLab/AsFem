@@ -121,6 +121,9 @@ void BCSystem::applyDirichletBC(const FECalcType &CalcType,
     U.assemble();
     if(CalcType==FECalcType::COMPUTERESIDUAL) RHS.assemble();
     if(CalcType==FECalcType::COMPUTEJACOBIAN) AMATRIX.assemble();
-
+    if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        RHS.assemble();
+        AMATRIX.assemble();
+    }
 
 }

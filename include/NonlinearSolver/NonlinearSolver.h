@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "NewtonRaphsonSolver.h"
 #include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/SNESSolver.h"
 
@@ -25,7 +26,8 @@
  * This class implement and manage all the nonlinear solvers in AsFem.
  * The R(x)->0 problem will be solved within this class
  */
-class NonlinearSolver:public SNESSolver{
+class NonlinearSolver:public SNESSolver,
+                      public NewtonRaphsonSolver{
 public:
     /**
      * constructor
@@ -37,6 +39,42 @@ public:
      * @param lsolver the linear solver class
      */
     void init(LinearSolver &lsolver);
+
+    /**
+     * solve the nonlinear equation, if success then return true
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dof class
+     * @param t_FE the fe class
+     * @param t_ElmtSystem the element system class
+     * @param t_MateSystem the material system class
+     * @param t_FESystem the fe system class
+     * @param t_BCSystem the boundary condition system
+     * @param t_SolnSystem the solution system class
+     * @param t_EqSystem the equation system class
+     * @param t_LinearSolver the linear solver system
+     * @param t_FECtrlInfo the fe control info
+     */
+    virtual bool solve(FECell &t_FECell,
+                       DofHandler &t_DofHandler,
+                       FE &t_FE,
+                       ElmtSystem &t_ElmtSystem,
+                       MateSystem &t_MateSystem,
+                       FESystem &t_FESystem,
+                       BCSystem &t_BCSystem,
+                       SolutionSystem &t_SolnSystem,
+                       EquationSystem &t_EqSystem,
+                       LinearSolver &t_LinearSolver,
+                       FEControlInfo &t_FECtrlInfo) final;
+
+    /**
+     * get the nonlinear iterations
+     * @return return the nonlinear iterations
+     */
+    int getIterationNum()const;
+
+    void releaseMemory();
+
+    void printSolverInfo()const;
 
 public:
     NonlinearSolverBlock m_NlSolverBlock;/**< the nonlinear solver block defined in json file */

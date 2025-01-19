@@ -8,33 +8,20 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.08.12
-//+++ Purpose: define the nonlinear solver abstrct class in AsFem
-//+++          all the nonlinear solver should inherit from here
+//+++ Date   : 2025.01.18
+//+++ Purpose: the newton-raphson solver from AsFem
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #pragma once
 
-#include "Utils/MessagePrinter.h"
-
-#include "FECell/FECell.h"
-#include "DofHandler/DofHandler.h"
-#include "FE/FE.h"
-#include "ElmtSystem/ElmtSystem.h"
-#include "MateSystem/MateSystem.h"
-#include "FESystem/FESystem.h"
-#include "BCSystem/BCSystem.h"
-#include "SolutionSystem/SolutionSystem.h"
-#include "EquationSystem/EquationSystem.h"
 #include "LinearSolver/LinearSolver.h"
-#include "FEProblem/FEControlInfo.h"
+#include "NonlinearSolver/NonlinearSolverBase.h"
 
 
-/**
- * This class defines the abstract class for the nonlinear solver in AsFem
- */
-class NonlinearSolverBase{
+class NewtonRaphsonSolver : public NonlinearSolverBase {
 public:
+    NewtonRaphsonSolver();
+
     /**
      * solve the nonlinear equation, if success then return true
      * @param t_FECell the fe cell class
@@ -59,5 +46,48 @@ public:
                        SolutionSystem &t_SolnSystem,
                        EquationSystem &t_EqSystem,
                        LinearSolver &t_LinearSolver,
-                       FEControlInfo &t_FECtrlInfo)=0;
+                       FEControlInfo &t_FECtrlInfo) override;
+
+    inline int getNRIterationNum()const {
+        return m_Iterations;
+    }
+
+    /**
+     * set the maximum iterations of NR
+     * @param t_MaxIterationNum the maximum nonolinear iterations
+     */
+    void setMaxIterationNum(int t_MaxIterationNum) {
+        m_MaxIterations = t_MaxIterationNum;
+    }
+
+    /**
+     * set the tolerance of the absolute error of residual
+     * @param t_Tolerance the tolerance of residual
+     */
+    void setRAbsTolerance(double t_Tolerance) {
+        m_RAbsTol=t_Tolerance;
+    }
+
+    /**
+     * set the relative tolerance of the residual
+     * @param t_Tolerance the tolerance
+     */
+    void setRRelTolerance(double t_Tolerance) {
+        m_RRelTol=t_Tolerance;
+    }
+
+    void printSolverInfo()const;
+
+
+private:
+    int m_MaxIterations;/**< the maximum iterations */
+    int m_Iterations;/**< the current iteration number */
+    double m_RAbsTol;/**< the absolution error of the residual */
+    double m_RRelTol;/**< the relative error of the residual */
+    bool m_IsConverged;/**< converge status */
+    double m_Rnorm;/**< the norm of the residual */
+    double m_Rnorm0;/**< the initial norm of the residual */
+    double m_dUnorm;/**< the norm of the delta u */
+    double m_dUnorm0;/**< the initial norm of the delta u */
+
 };

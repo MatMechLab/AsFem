@@ -70,7 +70,8 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                 JxW=1.0;
 
                 // do the residual and jacobian calculation
-                if(CalcType==FECalcType::COMPUTERESIDUAL){
+                if(CalcType==FECalcType::COMPUTERESIDUAL||
+                   CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
                     for(i=1;i<=nNodesPerBCElmt;i++){
                         m_LocalShp.m_Test=1.0;
                         m_LocalShp.m_GradTest=0.0;
@@ -83,6 +84,19 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                                   m_LocalK,m_LocalR);
                         // for assemble
                         assembleLocalResidual2Global(m_LocalElmtInfo.m_DofsNum,DofIDs,iInd,JxW,t_DofHandler,m_LocalR,RHS);
+                        if (CalcType == FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+                            for(j=1;j<=nNodesPerBCElmt;j++){
+                                m_LocalShp.m_Trial=0.0;
+                                m_LocalShp.m_GradTrial=0.0;
+                                jInd=cell.ElmtConn[j-1];
+                                runBCLibs(CalcType,t_BCType,BCValue,Ctan,Parameters,
+                                          m_Normal,
+                                          m_LocalElmtInfo,m_LocalElmtSoln,m_LocalShp,
+                                          m_LocalK,m_LocalR);
+                                // for jacobian assemble
+                                assembleLocalJacobian2Global(m_LocalElmtInfo.m_DofsNum,DofIDs,iInd,jInd,JxW,t_DofHandler,m_LocalK,AMATRIX);
+                            }
+                        }
                     }
                 }
                 else if(CalcType==FECalcType::COMPUTEJACOBIAN){
@@ -172,7 +186,8 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                             
                     }// end-of-node-loop-for-phy-quantities
 
-                    if(CalcType==FECalcType::COMPUTERESIDUAL){
+                    if(CalcType==FECalcType::COMPUTERESIDUAL||
+                       CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
                         for(i=1;i<=nNodesPerBCElmt;i++){
                             m_LocalShp.m_Test=t_FE.m_LineShp.shape_value(i);
                             m_LocalShp.m_GradTest=t_FE.m_LineShp.shape_grad(i);
@@ -185,6 +200,21 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                                       m_LocalK,m_LocalR);
                             // assemble local residual to global
                             assembleLocalResidual2Global(m_LocalElmtInfo.m_DofsNum,DofIDs,iInd,JxW,t_DofHandler,m_LocalR,RHS);
+                            if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+                                for(j=1;j<=nNodesPerBCElmt;j++){
+                                    m_LocalShp.m_Trial    =t_FE.m_LineShp.shape_value(j);
+                                    m_LocalShp.m_GradTrial=t_FE.m_LineShp.shape_grad(j);
+                                    jInd=cell.ElmtConn[j-1];
+
+                                    runBCLibs(CalcType,t_BCType,BCValue,Ctan,Parameters,
+                                              m_Normal,
+                                              m_LocalElmtInfo,m_LocalElmtSoln,m_LocalShp,
+                                              m_LocalK,m_LocalR);
+
+                                    // assemble local jacobian to global
+                                    assembleLocalJacobian2Global(m_LocalElmtInfo.m_DofsNum,DofIDs,iInd,jInd,JxW,t_DofHandler,m_LocalK,AMATRIX);
+                                }
+                            }
                         }
                     }
                     else if(CalcType==FECalcType::COMPUTEJACOBIAN){
@@ -283,7 +313,8 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                     
                     }// end-of-node-loop-for-phy-quantities
 
-                    if(CalcType==FECalcType::COMPUTERESIDUAL){
+                    if(CalcType==FECalcType::COMPUTERESIDUAL||
+                       CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
                         for(i=1;i<=nNodesPerBCElmt;i++){
                             m_LocalShp.m_Test    =t_FE.m_SurfaceShp.shape_value(i);
                             m_LocalShp.m_GradTest=t_FE.m_SurfaceShp.shape_grad(i);
@@ -297,6 +328,21 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                                     
                             // assemble local residual to global
                             assembleLocalResidual2Global(m_LocalElmtInfo.m_DofsNum,DofIDs,iInd,JxW,t_DofHandler,m_LocalR,RHS);
+                            if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+                                for(j=1;j<=nNodesPerBCElmt;j++){
+                                    m_LocalShp.m_Trial    =t_FE.m_SurfaceShp.shape_value(j);
+                                    m_LocalShp.m_GradTrial=t_FE.m_SurfaceShp.shape_grad(j);
+                                    jInd=cell.ElmtConn[j-1];
+
+                                    runBCLibs(CalcType,t_BCType,BCValue,Ctan,Parameters,
+                                              m_Normal,
+                                              m_LocalElmtInfo,m_LocalElmtSoln,m_LocalShp,
+                                              m_LocalK,m_LocalR);
+
+                                    // assemble local jacobian to global
+                                    assembleLocalJacobian2Global(m_LocalElmtInfo.m_DofsNum,DofIDs,iInd,jInd,JxW,t_DofHandler,m_LocalK,AMATRIX);
+                                }
+                            }
                         }
                     }
                     else if(CalcType==FECalcType::COMPUTEJACOBIAN){
@@ -336,5 +382,9 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
 
     if(CalcType==FECalcType::COMPUTERESIDUAL) RHS.assemble();
     if(CalcType==FECalcType::COMPUTEJACOBIAN) AMATRIX.assemble();
+    if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        RHS.assemble();
+        AMATRIX.assemble();
+    }
 
 }

@@ -36,6 +36,10 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
     else if(t_CalcType==FECalcType::COMPUTEJACOBIAN){
         AMATRIX.setToZero();
     }
+    else if (t_CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        RHS.setToZero();
+        AMATRIX.setToZero();
+    }
 
     // for the current and the previous steps' solution array
     t_SolnSystem.m_Utemp.makeGhostCopy();// we always use u_temp as u-current in FormBulkFE !!!
@@ -121,12 +125,20 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
             else if (t_CalcType==FECalcType::COMPUTEJACOBIAN) {
                 m_LocalK.setToZero();
             }
+            else if (t_CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+                m_LocalR.setToZero();
+                m_LocalK.setToZero();
+            }
 
             for (int SubElmt=1;SubElmt<=t_ElmtSystem.getLocalIthBulkElmtSubElmtsNum(e);SubElmt++) {
                 if (t_CalcType==FECalcType::COMPUTERESIDUAL) {
                     m_SubR.setToZero();
                 }
                 else if (t_CalcType==FECalcType::COMPUTEJACOBIAN) {
+                    m_SubK.setToZero();
+                }
+                else if (t_CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+                    m_SubR.setToZero();
                     m_SubK.setToZero();
                 }
 
@@ -221,7 +233,8 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
                     t_SolnSystem.m_QpointsRank4Materials_Local[(e-1)*m_LocalElmtInfo.m_QpointsNum+qp-1]=t_MateSystem.m_MaterialContainer.getRank4MaterialsCopy();
                 }
 
-                if (t_CalcType==FECalcType::COMPUTERESIDUAL){
+                if (t_CalcType==FECalcType::COMPUTERESIDUAL||
+                    t_CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
                     for (int i=1;i<=m_BulkElmtNodesNum;i++) {
                         m_LocalShp.m_Test=t_FE.m_BulkShp.shape_value(i);
                         m_LocalShp.m_GradTest=t_FE.m_BulkShp.shape_grad(i);
@@ -243,6 +256,24 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
                                                       t_DofHandler,
                                                       JxW,m_SubR,
                                                       RHS);
+                        if (t_CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+                            for (int j=1;j<=m_BulkElmtNodesNum;j++) {
+                                m_LocalShp.m_Trial=t_FE.m_BulkShp.shape_value(j);
+                                m_LocalShp.m_GradTrial=t_FE.m_BulkShp.shape_grad(j);
+                                GlobalJ=MyLocalCellVec[e-1].ElmtConn[j-1];
+                                t_ElmtSystem.runBulkElmtLibs(t_CalcType,
+                                                             Ctan,
+                                                             SubElmtBlockID,
+                                                             t_MateSystem.m_MaterialContainerOld,
+                                                             t_MateSystem.m_MaterialContainer,
+                                                             m_LocalElmtInfo,
+                                                             m_LocalElmtSoln,
+                                                             m_LocalShp,
+                                                             m_SubK,
+                                                             m_SubR);
+                                assembleLocalJacobian2GlobalK(m_SubElmtDofs,m_SubElmtDofIDs,GlobalI,GlobalJ,JxW,t_DofHandler,m_SubK,AMATRIX);
+                            } // end-of-J-loop
+                        }
                     } // end-of-I-loop
                 }// end-of-residual-calculation
                 else if (t_CalcType==FECalcType::COMPUTEJACOBIAN) {
@@ -276,6 +307,10 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
     // finish the final assemble
     if(t_CalcType==FECalcType::COMPUTERESIDUAL) RHS.assemble();
     if(t_CalcType==FECalcType::COMPUTEJACOBIAN) AMATRIX.assemble();
+    if (t_CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        RHS.assemble();
+        AMATRIX.assemble();
+    }
 
 
     // release the ghost copy

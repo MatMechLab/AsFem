@@ -609,6 +609,10 @@ set(src ${src} src/NonlinearSolver/SNESSolve.cpp)
 ###
 set(inc ${inc} include/NonlinearSolver/NonlinearSolver.h)
 set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
+### for newton-raphson solver
+set(inc ${inc} include/NonlinearSolver/NewtonRaphsonSolver.h)
+set(src ${src} src/NonlinearSolver/NewtonRaphsonSolver.cpp)
+
 
 #############################################################
 ### For Timesteppinig class                               ###
@@ -620,6 +624,7 @@ set(inc ${inc} include/TimeStepping/TimeSteppingTool.h)
 set(inc ${inc} include/TimeStepping/TimeStepping.h)
 set(src ${src} src/TimeStepping/TimeStepping.cpp)
 set(src ${src} src/TimeStepping/TimeSteppingSolve.cpp)
+set(src ${src} src/TimeStepping/TimeSteppingTool.cpp)
 
 #############################################################
 ### For Result output class                               ###
