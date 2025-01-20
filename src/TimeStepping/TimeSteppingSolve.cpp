@@ -39,6 +39,7 @@ bool TimeStepping::solve(FECell &t_FECell,
 
     t_SolnSystem.m_Ucurrent.setToZero();
     t_ICSystem.applyInitialConditions(t_FECell,t_DofHandler,t_SolnSystem.m_Ucurrent);
+    t_SolnSystem.m_Utemp.copyFrom(t_SolnSystem.m_Ucurrent);
     t_SolnSystem.m_Uold.copyFrom(t_SolnSystem.m_Ucurrent);
     t_SolnSystem.m_Uolder.copyFrom(t_SolnSystem.m_Ucurrent);
 
@@ -157,6 +158,7 @@ bool TimeStepping::solve(FECell &t_FECell,
         }
         else{
             //  if the nonlinear solver failed we will try to reduce the dt
+            t_SolnSystem.m_Ucurrent.copyFrom(t_SolnSystem.m_Uold);
             t_FECtrlInfo.Dt*=getCutbackFactor();
             snprintf(buff,68," Transient solver failed, reduce dt to %13.5e",t_FECtrlInfo.Dt);
             str=buff;

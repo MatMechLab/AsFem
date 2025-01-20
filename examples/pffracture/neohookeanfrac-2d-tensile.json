@@ -16,7 +16,7 @@
 				"parameters":{
 					"L":1.0e6,
 					"Gc":2.7e-3,
-					"eps":0.012,
+					"eps":0.025,
 					"K":121.15,
 					"G":80.77,
 					"stabilizer":1.0e-5,
@@ -28,7 +28,7 @@
 	"projection":{
 		"type":"default",
 		"scalarmate":["vonMises-stress"],
-		"rank2mate":["stress"]
+		"rank2mate":["Stress"]
 	},
 	"bcs":{
 		"fixux":{
@@ -51,15 +51,15 @@
 		}
 	},
 	"linearsolver":{
-		"type":"gmres",
+		"type":"superlu",
 		"preconditioner":"lu",
 		"maxiters":10000,
-		"restarts":1600,
+		"restarts":2600,
 		"tolerance":1.0e-26
 	},
 	"nlsolver":{
-		"type":"asfem",
-		"maxiters":50,
+		"type":"newton",
+		"maxiters":12,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
 		"s-tolerance":0.0
@@ -67,12 +67,12 @@
 	"timestepping":{
 		"type":"be",
 		"dt0":1.0e-4,
-		"dtmax":1.0e-3,
+		"dtmax":2.0e-3,
 		"dtmin":1.0e-12,
 		"optimize-iters":4,
 		"end-time":2.5e-1,
 		"growth-factor":1.1,
-		"cutback-factor":0.85,
+		"cutback-factor":0.5,
 		"adaptive":true
 	},
 	"output":{
@@ -82,7 +82,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":2
+			"order":1
 		}
 	},
 	"postprocess":{
@@ -95,7 +95,7 @@
 			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
-				"rank2mate":"stress",
+				"rank2mate":"Stress",
 				"i-index":1,
 				"j-index":1
 			}
@@ -104,7 +104,7 @@
 			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
-				"rank2mate":"stress",
+				"rank2mate":"Stress",
 				"i-index":1,
 				"j-index":2
 			}
@@ -113,7 +113,7 @@
 			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
-				"rank2mate":"stress",
+				"rank2mate":"Stress",
 				"i-index":2,
 				"j-index":2
 			}

@@ -37,7 +37,7 @@ void NeoHookeanPFFractureMaterial::initMaterialProperties(const nlohmann::json &
     //*** get rid of unused warning
     //***************************************************
     if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]){}
-    mate.ScalarMaterial("H")=0.0;
+    mate.ScalarMaterial("Hist")=0.0;
 }
 //********************************************************************
 void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
@@ -63,8 +63,15 @@ void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::jso
 
     mate.ScalarMaterial("L")=JsonUtils::getValue(inputparams,"L");
     mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
-    mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
+    mate.ScalarMaterial("Eps")=JsonUtils::getValue(inputparams,"eps");
 
+    /**
+     * Here the dofs are:
+     * 1st: damage variable
+     * 2nd: disp_x
+     * 3rd: disp_y
+     * 4th: disp_z
+     */
     if(elmtinfo.m_Dim==2){
         m_GradU.setFromGradU(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);// grad(ux), grad(uy)
     }
@@ -77,7 +84,7 @@ void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::jso
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_Dim,m_GradU,m_Estrain);
+    computeStrain(elmtinfo.m_Dim,m_GradU,m_Estrain);// calculate the deformation tensor
     
     m_d=elmtsoln.m_QpU[1];
 
@@ -89,26 +96,28 @@ void NeoHookeanPFFractureMaterial::computeMaterialProperties(const nlohmann::jso
     m_devstress=m_PK1stress.dev();
 
     mate.ScalarMaterial("F")=m_F(1);
-    mate.ScalarMaterial("dFdD")=m_dFdargs(1);
-    mate.ScalarMaterial("d2FdD2")=m_d2Fdargs2(1,1);
 
     mate.ScalarMaterial("vonMises-stress")=sqrt(1.5*m_devstress.doubledot(m_devstress));
     mate.ScalarMaterial("hydrostatic-stress")=m_PK1stress.trace()/3.0;
 
-    mate.Rank2Material("strain")=m_Estrain;
-    mate.Rank2Material("stress")=m_PK1stress;
-    mate.Rank2Material("dstressdD")=m_dPK1stress_dD;
+    mate.Rank2Material("Strain")=m_Estrain;
+    mate.Rank2Material("Stress")=m_PK1stress;
+    mate.Rank2Material("dStressdD")=m_dPK1stress_dD;
 
-    mate.Rank4Material("jacobian")=m_I.ikXlj(m_PK2stress)+m_jacobian.conjPushForward(m_Fe);
+    mate.Rank4Material("Jacobian")=m_I.ikXlj(m_PK2stress)+m_jacobian.conjPushForward(m_Fe);
 
     // for history variables
-    if(m_psipos>mateold.ScalarMaterial("H")){
-        mate.ScalarMaterial("H")=m_psipos;
-        mate.Rank2Material("dHdstrain")=m_Fe*m_PK2stress_pos;
+    if(m_psipos>mateold.ScalarMaterial("Hist")){
+        mate.ScalarMaterial("Hist")=m_psipos;
+        mate.ScalarMaterial("dFdD")=m_dFdargs(1)+m_psipos*dg(m_d);
+        mate.ScalarMaterial("d2FdD2")=m_d2Fdargs2(1,1)+m_psipos*d2g(m_d);
+        mate.Rank2Material("d2FdDdStrain")=m_dPK1stress_dD;
     }
     else{
-        mate.ScalarMaterial("H")=mateold.ScalarMaterial("H");
-        mate.Rank2Material("dHdstrain").setToZeros();
+        mate.ScalarMaterial("Hist")=mateold.ScalarMaterial("Hist");
+        mate.ScalarMaterial("dFdD")=m_dFdargs(1)+mateold.ScalarMaterial("Hist")*dg(m_d);
+        mate.ScalarMaterial("d2FdD2")=m_d2Fdargs2(1,1)+mateold.ScalarMaterial("Hist")*d2g(m_d);
+        mate.Rank2Material("d2FdDdStrain").setToZeros();
     }
 
 }

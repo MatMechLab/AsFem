@@ -129,6 +129,8 @@ PetscErrorCode computeJacobian(SNES snes,Vec U,Mat Jac,Mat B,void *ctx){
     int i;
     SNESGetMaxNonlinearStepFailures(snes,&i);
 
+    user->_equationSystem->m_AMATRIX.copy2Mat(Jac);
+
     if(Jac!=B){
         MatAssemblyBegin(Jac,MAT_FINAL_ASSEMBLY);
         MatAssemblyEnd(Jac,MAT_FINAL_ASSEMBLY);
@@ -181,15 +183,15 @@ bool SNESSolver::solve(FECell &t_FECell,
                                              m_AppCtx._equationSystem->m_AMATRIX,
                                              m_AppCtx._equationSystem->m_RHS);
 
-    SNESSetFunction(m_SNES,m_AppCtx._equationSystem->m_RHS.getVectorCopy(),computeResidual,&m_AppCtx);
-    SNESSetJacobian(m_SNES,m_AppCtx._equationSystem->m_AMATRIX.getCopy(),m_AppCtx._equationSystem->m_AMATRIX.getCopy(),computeJacobian,&m_AppCtx);
+    SNESSetFunction(m_SNES,m_AppCtx._equationSystem->m_RHS.getVectorRef(),computeResidual,&m_AppCtx);
+    SNESSetJacobian(m_SNES,m_AppCtx._equationSystem->m_AMATRIX.getReference(),m_AppCtx._equationSystem->m_AMATRIX.getReference(),computeJacobian,&m_AppCtx);
     if (m_NLSolverType==NonlinearSolverType::NEWTONAL) {
         SNESNewtonALSetFunction(m_SNES,computeResidual,NULL);
     }
     SNESMonitorSet(m_SNES,myMonitor,&m_MonCtx,0);
     SNESSetForceIteration(m_SNES,PETSC_TRUE);
     SNESSetFromOptions(m_SNES);
-    SNESSolve(m_SNES,NULL,m_AppCtx._solutionSystem->m_Ucurrent.getVectorRef());
+    SNESSolve(m_SNES,NULL,m_AppCtx._solutionSystem->m_Ucurrent.getVectorCopy());
     SNESGetConvergedReason(m_SNES,&m_SNESConvergeReason);
 
     m_Timer.endTimer();
@@ -213,6 +215,7 @@ bool SNESSolver::solve(FECell &t_FECell,
             str=buff;
             MessagePrinter::printNormalTxt(str);
         }
+        // t_SolnSystem.m_Ucurrent.copyFrom(t_SolnSystem.m_Utemp);
         m_Timer.printElapseTime("SNES solver is done");
         return true;
     }

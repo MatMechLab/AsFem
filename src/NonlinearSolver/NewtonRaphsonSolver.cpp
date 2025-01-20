@@ -110,7 +110,9 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
         snprintf(buff,68,"  AsFem solver: iters=%4d, |R0|=%12.5e, |R|=%12.5e",m_Iterations,m_Rnorm0,m_Rnorm);
         MessagePrinter::printNormalTxt(buff);
     }
-    t_SolnSystem.m_Ucurrent.copyFrom(t_SolnSystem.m_Utemp);
+    if (m_IsConverged) {
+        t_SolnSystem.m_Ucurrent.copyFrom(t_SolnSystem.m_Utemp);
+    }
     m_Timer.endTimer();
     m_Timer.printElapseTime("AsFem solver is done");
     return m_IsConverged;
