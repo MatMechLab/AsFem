@@ -34,6 +34,7 @@ bool TimeStepping::solve(FECell &t_FECell,
     char buff[68];//77-12=65
     string str;
     int lastiters=1000;
+    bool IsLastStepFailed;
     t_FECtrlInfo.Dt=m_Data.m_Dt0;
     t_FECtrlInfo.CurrentStep=0;
 
@@ -78,6 +79,7 @@ bool TimeStepping::solve(FECell &t_FECell,
     }
     MessagePrinter::printStars();
 
+    IsLastStepFailed=true;
     for(t_FECtrlInfo.T=0.0;t_FECtrlInfo.T<=m_Data.m_FinalTime;){
         snprintf(buff,68,"Time=%13.5e, step=%8d, dt=%13.5e",t_FECtrlInfo.T+t_FECtrlInfo.Dt,t_FECtrlInfo.CurrentStep+1,t_FECtrlInfo.Dt);
         str=buff;
@@ -135,7 +137,7 @@ bool TimeStepping::solve(FECell &t_FECell,
                 }
             }
             MessagePrinter::printStars();
-            if(isAdaptive()){
+            if(isAdaptive()&& !IsLastStepFailed){
                 if(t_NLSolver.getIterationNum()<=getOptimizeIters() && lastiters<=getOptimizeIters()){
                     t_FECtrlInfo.Dt*=getGrowthFactor();
                     if(t_FECtrlInfo.Dt>getMaxDt()) t_FECtrlInfo.Dt=getMaxDt();
@@ -155,6 +157,7 @@ bool TimeStepping::solve(FECell &t_FECell,
             t_SolnSystem.m_V.setToZero();
             // store the previous step's iteration numbers
             lastiters=t_NLSolver.getIterationNum();
+            IsLastStepFailed=false;
         }
         else{
             //  if the nonlinear solver failed we will try to reduce the dt
@@ -167,6 +170,7 @@ bool TimeStepping::solve(FECell &t_FECell,
                 MessagePrinter::printErrorTxt("The minimum detal t is reached, however, your solver still fails. Please check either your code or your boundary conditions");
                 return false;
             }
+            IsLastStepFailed=true;
         }
     }
     if(t_FECtrlInfo.CurrentStep%t_Output.getIntervalNum()!=0){

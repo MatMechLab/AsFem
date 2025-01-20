@@ -58,7 +58,7 @@
 		"tolerance":1.0e-26
 	},
 	"nlsolver":{
-		"type":"newton",
+		"type":"asfem",
 		"maxiters":12,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
