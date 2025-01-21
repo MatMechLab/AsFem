@@ -89,8 +89,8 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d operator+(const double &val)const{
-        Vector3d temp=*this;
-        temp.m_Vals[0]+=val;temp.m_Vals[1]+=val;temp.m_Vals[2]+=val;
+        Vector3d temp(0.0);
+        temp.m_Vals[0]=m_Vals[0]+val;temp.m_Vals[1]=m_Vals[1]+val;temp.m_Vals[2]=m_Vals[2]+val;
         return temp;
     }
     /**
@@ -98,8 +98,8 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d operator+(const Vector3d &a)const{
-        Vector3d temp=*this;
-        temp.m_Vals[0]+=a.m_Vals[0];temp.m_Vals[1]+=a.m_Vals[1];temp.m_Vals[2]+=a.m_Vals[2];
+        Vector3d temp(0.0);
+        temp.m_Vals[0]=m_Vals[0]+a.m_Vals[0];temp.m_Vals[1]=m_Vals[1]+a.m_Vals[1];temp.m_Vals[2]=m_Vals[2]+a.m_Vals[2];
         return temp;
     }
     //*************************************************
@@ -125,8 +125,8 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d operator-(const double &val)const{
-        Vector3d temp=*this;
-        temp.m_Vals[0]-=val;temp.m_Vals[1]-=val;temp.m_Vals[2]-=val;
+        Vector3d temp(0.0);
+        temp.m_Vals[0]=m_Vals[0]-val;temp.m_Vals[1]=m_Vals[1]-val;temp.m_Vals[2]=m_Vals[2]-val;
         return temp;
     }
     /**
@@ -134,8 +134,8 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d operator-(const Vector3d &a)const{
-        Vector3d temp=*this;
-        temp.m_Vals[0]-=a.m_Vals[0];temp.m_Vals[1]-=a.m_Vals[1];temp.m_Vals[2]-=a.m_Vals[2];
+        Vector3d temp(0.0);
+        temp.m_Vals[0]=m_Vals[0]-a.m_Vals[0];temp.m_Vals[1]=m_Vals[1]-a.m_Vals[1];temp.m_Vals[2]=m_Vals[2]-a.m_Vals[2];
         return temp;
     }
     //*************************************************
@@ -161,8 +161,8 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d operator*(const double &val)const{
-        Vector3d temp=*this;
-        temp.m_Vals[0]*=val;temp.m_Vals[1]*=val;temp.m_Vals[2]*=val;
+        Vector3d temp(0.0);
+        temp.m_Vals[0]=m_Vals[0]*val;temp.m_Vals[1]=m_Vals[1]*val;temp.m_Vals[2]=m_Vals[2]*val;
         return temp;
     }
     /**
@@ -216,12 +216,12 @@ public:
      * @param val right hand side double value
      */
     inline Vector3d operator/(const double &val)const{
-        Vector3d temp=*this;
+        Vector3d temp(0.0);
         if(abs(val)<1.0e-15){
             MessagePrinter::printErrorTxt("val= "+to_string(val)+" is singular for / operator in Vector3");
             MessagePrinter::exitAsFem();
         }
-        temp.m_Vals[0]/=val;temp.m_Vals[1]/=val;temp.m_Vals[2]/=val;
+        temp.m_Vals[0]=m_Vals[0]/val;temp.m_Vals[1]=m_Vals[1]/val;temp.m_Vals[2]=m_Vals[2]/val;
         return temp;
     }
     //*****************************************************

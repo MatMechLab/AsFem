@@ -575,8 +575,8 @@ public:
      * set current rannk-2 tensor to be an identitiy tensor, where \f$a_{ij}=\delta_{ij}\f$.
      */
     inline void setToIdentity(){
-        for(int i=1;i<=3;++i){
-            for(int j=1;j<=3;++j){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
                 if(i==j){
                     (*this)(i,j)=1.0;
                 }
@@ -591,8 +591,8 @@ public:
      */
     inline void setToRandom(){
         srand(time(0));
-        for(int i=1;i<=3;++i){
-            for(int j=1;j<=3;++j){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
                 (*this)(i,j)=static_cast<double>(1.0*rand()/RAND_MAX);
             }
         }
@@ -625,20 +625,20 @@ public:
      * fill up current rank-2 tensor from the displacement gradient
      * @param gradUx the gradient of Ux, namely, \f$\nabla u_{x}\f$
      */ 
-    void setFromGradU(const Vector3d &gradUx);
+    void setFromGradU1D(const Vector3d &gradUx);
     /**
      * fill up current rank-2 tensor from the gradient of ux and uy
      * @param gradUx the gradient of Ux, namely, \f$\nabla u_{x}\f$
      * @param gradUy the gradient of Uy, namely, \f$\nabla u_{y}\f$
      */
-    void setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy);
+    void setFromGradU2D(const Vector3d &gradUx,const Vector3d &gradUy);
     /**
      * fill up current rank-2 tensor from the gradient of ux, uy, and uz
      * @param gradUx the gradient of Ux, namely, \f$\nabla u_{x}\f$
      * @param gradUy the gradient of Uy, namely, \f$\nabla u_{y}\f$
      * @param gradUz the gradient of Uz, namely, \f$\nabla u_{z}\f$
      */
-    void setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz);
+    void setFromGradU3D(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz);
     /**
      * fill up current rank-2 tensor with eular angle, which should be used for the rotation tensor
      * @param theta1 the first eular angle, the angle must be degree

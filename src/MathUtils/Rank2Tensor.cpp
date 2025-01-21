@@ -81,17 +81,17 @@ Rank2Tensor Rank2Tensor::doubledot(const Rank4Tensor &a) const{
         return temp;
     }
 //************************************************************************
-void Rank2Tensor::setFromGradU(const Vector3d &gradUx){
+void Rank2Tensor::setFromGradU1D(const Vector3d &gradUx){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=0.0;(*this)(1,3)=0.0;
     (*this)(2,1)=      0.0;(*this)(2,2)=0.0;(*this)(2,3)=0.0;
     (*this)(3,1)=      0.0;(*this)(3,2)=0.0;(*this)(3,3)=0.0;
 }
-void Rank2Tensor::setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy){
+void Rank2Tensor::setFromGradU2D(const Vector3d &gradUx,const Vector3d &gradUy){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=gradUx(2);(*this)(1,3)=0.0;
     (*this)(2,1)=gradUy(1);(*this)(2,2)=gradUy(2);(*this)(2,3)=0.0;
     (*this)(3,1)=      0.0;(*this)(3,2)=      0.0;(*this)(3,3)=0.0;
 }
-void Rank2Tensor::setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz){
+void Rank2Tensor::setFromGradU3D(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=gradUx(2);(*this)(1,3)=gradUx(3);
     (*this)(2,1)=gradUy(1);(*this)(2,2)=gradUy(2);(*this)(2,3)=gradUy(3);
     (*this)(3,1)=gradUz(1);(*this)(3,2)=gradUz(2);(*this)(3,3)=gradUz(3);

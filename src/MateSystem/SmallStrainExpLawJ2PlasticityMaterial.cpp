@@ -42,13 +42,13 @@ void SmallStrainExpLawJ2PlasticityMaterial::computeMaterialProperties(const nloh
     if(mateold.getScalarMaterialsNum()) {}
 
     if(elmtinfo.m_Dim==1){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[1]);
+        m_GradU.setFromGradU1D(elmtsoln.m_QpGradU[1]);
     }
     else if(elmtinfo.m_Dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2]);
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2]);
     }
     else if(elmtinfo.m_Dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
     }
     else{
         MessagePrinter::printErrorTxt("dim>3 is invalid for SmallStrainExpLawJ2PlasticityMaterial, please check your code");

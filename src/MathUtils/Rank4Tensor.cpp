@@ -85,13 +85,13 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
             return (*this)(1,1,3,3);
         }
         else if(j==4){
-            return (*this)(1,1,1,2);
-        }
-        else if(j==5){
             return (*this)(1,1,2,3);
         }
-        else if(j==6){
+        else if(j==5){
             return (*this)(1,1,3,1);
+        }
+        else if(j==6){
+            return (*this)(1,1,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -100,7 +100,7 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==2){
         if(j==1){
-            return (*this)(1,1,2,2);
+            return (*this)(2,2,1,1);
         }
         else if(j==2){
             return (*this)(2,2,2,2);
@@ -109,13 +109,13 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
             return (*this)(2,2,3,3);
         }
         else if(j==4){
-            return (*this)(2,2,1,2);
-        }
-        else if(j==5){
             return (*this)(2,2,2,3);
         }
+        else if(j==5){
+            return (*this)(2,2,3,1);
+        }
         else if(j==6){
-            return (*this)(2,2,1,3);
+            return (*this)(2,2,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -124,22 +124,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==3){
         if(j==1){
-            return (*this)(1,1,3,3);
+            return (*this)(3,3,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,3,3);
+            return (*this)(3,3,2,2);
         }
         else if(j==3){
             return (*this)(3,3,3,3);
         }
         else if(j==4){
-            return (*this)(3,3,1,2);
-        }
-        else if(j==5){
             return (*this)(3,3,2,3);
         }
+        else if(j==5){
+            return (*this)(3,3,3,1);
+        }
         else if(j==6){
-            return (*this)(3,3,1,3);
+            return (*this)(3,3,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -148,22 +148,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==4){
         if(j==1){
-            return (*this)(1,1,1,2);
+            return (*this)(2,3,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,1,2);
+            return (*this)(2,3,2,2);
         }
         else if(j==3){
-            return (*this)(3,3,1,2);
+            return (*this)(2,3,3,3);
         }
         else if(j==4){
-            return (*this)(1,2,1,2);
+            return (*this)(2,3,2,3);
         }
         else if(j==5){
-            return (*this)(1,2,2,3);
+            return (*this)(2,3,3,1);
         }
         else if(j==6){
-            return (*this)(1,2,1,3);
+            return (*this)(2,3,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -172,22 +172,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==5){
         if(j==1){
-            return (*this)(1,1,2,3);
+            return (*this)(3,1,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,2,3);
+            return (*this)(3,1,2,2);
         }
         else if(j==3){
-            return (*this)(3,3,2,3);
+            return (*this)(3,1,3,3);
         }
         else if(j==4){
-            return (*this)(1,2,2,3);
+            return (*this)(3,1,2,3);
         }
         else if(j==5){
-            return (*this)(2,3,2,3);
+            return (*this)(3,1,3,1);
         }
         else if(j==6){
-            return (*this)(2,3,1,3);
+            return (*this)(3,1,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -196,22 +196,22 @@ double Rank4Tensor::getVoigtComponent(const int &i,const int &j)const{
     }
     else if(i==6){
         if(j==1){
-            return (*this)(1,1,1,3);
+            return (*this)(1,2,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,1,3);
+            return (*this)(1,2,2,2);
         }
         else if(j==3){
-            return (*this)(3,3,1,3);
+            return (*this)(1,2,3,3);
         }
         else if(j==4){
-            return (*this)(1,2,1,3);
+            return (*this)(1,2,2,3);
         }
         else if(j==5){
-            return (*this)(2,3,1,3);
+            return (*this)(1,2,3,1);
         }
         else if(j==6){
-            return (*this)(1,3,1,3);
+            return (*this)(1,2,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -237,13 +237,13 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
             return (*this)(1,1,3,3);
         }
         else if(j==4){
-            return (*this)(1,1,1,2);
-        }
-        else if(j==5){
             return (*this)(1,1,2,3);
         }
+        else if(j==5){
+            return (*this)(1,1,3,1);
+        }
         else if(j==6){
-            return (*this)(1,1,1,3);
+            return (*this)(1,1,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -252,7 +252,7 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==2){
         if(j==1){
-            return (*this)(1,1,2,2);
+            return (*this)(2,2,1,1);
         }
         else if(j==2){
             return (*this)(2,2,2,2);
@@ -261,13 +261,13 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
             return (*this)(2,2,3,3);
         }
         else if(j==4){
-            return (*this)(2,2,1,2);
-        }
-        else if(j==5){
             return (*this)(2,2,2,3);
         }
+        else if(j==5){
+            return (*this)(2,2,3,1);
+        }
         else if(j==6){
-            return (*this)(2,2,1,3);
+            return (*this)(2,2,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -276,22 +276,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==3){
         if(j==1){
-            return (*this)(1,1,3,3);
+            return (*this)(3,3,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,3,3);
+            return (*this)(3,3,2,2);
         }
         else if(j==3){
             return (*this)(3,3,3,3);
         }
         else if(j==4){
-            return (*this)(3,3,1,2);
-        }
-        else if(j==5){
             return (*this)(3,3,2,3);
         }
+        else if(j==5){
+            return (*this)(3,3,3,1);
+        }
         else if(j==6){
-            return (*this)(3,3,1,3);
+            return (*this)(3,3,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -300,22 +300,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==4){
         if(j==1){
-            return (*this)(1,1,1,2);
+            return (*this)(2,3,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,1,2);
+            return (*this)(2,3,2,2);
         }
         else if(j==3){
-            return (*this)(3,3,1,2);
+            return (*this)(2,3,3,3);
         }
         else if(j==4){
-            return (*this)(1,2,1,2);
+            return (*this)(2,3,2,3);
         }
         else if(j==5){
-            return (*this)(1,2,2,3);
+            return (*this)(2,3,3,1);
         }
         else if(j==6){
-            return (*this)(1,2,1,3);
+            return (*this)(2,3,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -324,22 +324,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==5){
         if(j==1){
-            return (*this)(1,1,2,3);
+            return (*this)(3,1,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,2,3);
+            return (*this)(3,1,2,2);
         }
         else if(j==3){
-            return (*this)(3,3,2,3);
+            return (*this)(3,1,3,3);
         }
         else if(j==4){
-            return (*this)(1,2,2,3);
+            return (*this)(3,1,2,3);
         }
         else if(j==5){
-            return (*this)(2,3,2,3);
+            return (*this)(3,1,3,1);
         }
         else if(j==6){
-            return (*this)(2,3,1,3);
+            return (*this)(3,1,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");
@@ -348,22 +348,22 @@ double& Rank4Tensor::voigtComponent(const int &i,const int &j){
     }
     else if(i==6){
         if(j==1){
-            return (*this)(1,1,1,3);
+            return (*this)(1,2,1,1);
         }
         else if(j==2){
-            return (*this)(2,2,1,3);
+            return (*this)(1,2,2,2);
         }
         else if(j==3){
-            return (*this)(3,3,1,3);
+            return (*this)(1,2,3,3);
         }
         else if(j==4){
-            return (*this)(1,2,1,3);
+            return (*this)(1,2,2,3);
         }
         else if(j==5){
-            return (*this)(2,3,1,3);
+            return (*this)(1,2,3,1);
         }
         else if(j==6){
-            return (*this)(1,3,1,3);
+            return (*this)(1,2,1,2);
         }
         else{
             MessagePrinter::printErrorTxt("i="+to_string(i)+", j="+to_string(j)+" is invalid for the voigt notation in rank-4 tensor");

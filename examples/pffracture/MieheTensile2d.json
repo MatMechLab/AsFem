@@ -16,7 +16,7 @@
 				"parameters":{
 					"viscosity":1.0e-6,
 					"Gc":2.7e-3,
-					"eps":0.0115,
+					"eps":0.012,
 					"K":121.15,
 					"G":80.77,
 					"stabilizer":1.0e-6,
@@ -52,14 +52,14 @@
 		}
 	},
 	"linearsolver":{
-		"type":"gmres",
+		"type":"mumps",
 		"preconditioner":"lu",
 		"maxiters":10000,
 		"restarts":1600,
 		"tolerance":1.0e-28
 	},
 	"nlsolver":{
-		"type":"asfem",
+		"type":"newton",
 		"maxiters":12,
 		"abs-tolerance":1.0e-7,
 		"rel-tolerance":5.0e-13,
@@ -78,7 +78,7 @@
 	},
 	"output":{
 		"type":"vtu",
-		"interval":10
+		"interval":5
 	},
 	"qpoints":{
 		"bulk":{

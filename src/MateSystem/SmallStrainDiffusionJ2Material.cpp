@@ -51,13 +51,13 @@ void SmallStrainDiffusionJ2Material::computeMaterialProperties(const nlohmann::j
     mate.ScalarMaterial("Omega")=JsonUtils::getValue(inputparams,"Omega");
 
     if(elmtinfo.m_Dim==1){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[2]);
+        m_GradU.setFromGradU1D(elmtsoln.m_QpGradU[2]);
     }
     else if(elmtinfo.m_Dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
     }
     else if(elmtinfo.m_Dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);
     }
     else{
         MessagePrinter::printErrorTxt("dim>3 is invalid for SmallStrainDiffusionJ2Material, please check your code");

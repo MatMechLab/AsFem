@@ -68,10 +68,10 @@ void DiffusionACFractureMaterial::computeMaterialProperties(const nlohmann::json
     mate.ScalarMaterial("Omega")=JsonUtils::getValue(inputparams,"Omega");
 
     if(elmtinfo.m_Dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);// grad(ux), grad(uy)
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);// grad(ux), grad(uy)
     }
     else if(elmtinfo.m_Dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4],elmtsoln.m_QpGradU[5]);// grad(ux), grad(uy)
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4],elmtsoln.m_QpGradU[5]);// grad(ux), grad(uy)
     }
     else{
         MessagePrinter::printErrorTxt("DiffusionACFractureMaterial works only for 2d and 3d case, please check your input file");

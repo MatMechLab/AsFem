@@ -33,13 +33,13 @@ void SaintVenantMaterial::computeMaterialProperties(const nlohmann::json &inputp
     if(mateold.getRank2MaterialsNum()){}
     m_gradU.setToZeros();
     if(elmtinfo.m_Dim==1){
-        m_gradU.setFromGradU(elmtsoln.m_QpGradU[1]);
+        m_gradU.setFromGradU1D(elmtsoln.m_QpGradU[1]);
     }
     else if(elmtinfo.m_Dim==2){
-        m_gradU.setFromGradU(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2]);
+        m_gradU.setFromGradU2D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2]);
     }
     else if(elmtinfo.m_Dim==3){
-        m_gradU.setFromGradU(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
+        m_gradU.setFromGradU3D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
     }
 
     computeStrain(elmtinfo.m_Dim,m_gradU,m_strain);
