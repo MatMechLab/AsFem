@@ -8,21 +8,20 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author  : Yang Bai
-//+++ Date    : 2024.08.04
-//+++ Function: the fe cell partitioner used by AsFem
+//+++ Date    : 2025.01.22
+//+++ Function: the fe cell partitioner based on METIS
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "FECell/FECellPartioner.h"
+#pragma once
 
-void FECellPartioner::partFECell(const string &PartTypeName,FECellData &t_CellData){
-    if(PartTypeName.find("asfem")!=string::npos){
-        FECellDefaultPartitioner::partitionFECell(t_CellData);
-    }
-    else if(PartTypeName.find("metis")!=string::npos) {
-        FECellMETISPartitioner::partitionFECell(t_CellData);
-    }
-    else{
-        MessagePrinter::printErrorTxt("Unsupported partition type name("+PartTypeName+"), please check you input file");
-        MessagePrinter::exitAsFem();
-    }
-}
+#include "FECell/FECellPartitionerBase.h"
+
+
+class FECellMETISPartitioner:public FECellPartitionerBase{
+public:
+    /**
+     * partition the fe cell based on mpi rank
+     * @param t_CellData the fecell data
+     */
+    virtual void partitionFECell(FECellData &t_CellData) override;
+};

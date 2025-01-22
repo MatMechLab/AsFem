@@ -128,12 +128,15 @@ set(src ${src} src/FECell/Gmsh2File2FECellImporter.cpp)
 set(inc ${inc} include/FECell/MeshFile2FECellImporter.h)
 set(src ${src} src/FECell/MeshFile2FECellImporter.cpp)
 #############################################################
-### For FE cell importer class                            ###
+### For FE cell partitioner class                         ###
 #############################################################
 set(inc ${inc} include/FECell/FECellPartitionerBase.h)
 ### for built-in partitioner
 set(inc ${inc} include/FECell/FECellDefaultPartitioner.h)
 set(src ${src} src/FECell/FECellDefaultPartitioner.cpp)
+### for METIS partitioner
+set(inc ${inc} include/FECell/FECellMETISPartitioner.h)
+set(src ${src} src/FECell/FECellMETISPartitioner.cpp)
 ###
 set(inc ${inc} include/FECell/FECellPartioner.h)
 set(src ${src} src/FECell/FECellPartioner.cpp)

@@ -15,8 +15,10 @@
 #pragma once
 
 #include "FECell/FECellDefaultPartitioner.h"
+#include "FECell/FECellMETISPartitioner.h"
 
-class FECellPartioner:public FECellDefaultPartitioner{
+class FECellPartioner:public FECellDefaultPartitioner,
+                      public FECellMETISPartitioner{
 public:
     /**
      * the fe cell partition

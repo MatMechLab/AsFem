@@ -2,6 +2,7 @@
 	"mesh":{
 		"type":"msh4",
 		"file":"tensile.msh",
+		"distribution":"asfem",
 		"savemesh":true
 	},
 	"dofs":{
@@ -51,7 +52,7 @@
 		}
 	},
 	"linearsolver":{
-		"type":"gmres",
+		"type":"mumps",
 		"preconditioner":"lu",
 		"maxiters":10000,
 		"restarts":2600,
