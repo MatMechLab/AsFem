@@ -22,9 +22,15 @@
 		}
 	},
 	"projection":{
-		"type":"default",
+		"type":"fullleastsquare",
 		"scalarmate":["vonMises-stress","vonMises-strain","hydrostatic-stress"],
 		"rank2mate":["stress","strain","cauchy-stress"]
+	},
+	"qpoints":{
+		"bulk":{
+			"type":"gauss-legendre",
+			"order":5
+		}
 	},
 	"linearsolver":{
 		"type":"gmres",
