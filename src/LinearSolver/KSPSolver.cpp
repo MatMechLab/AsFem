@@ -22,15 +22,23 @@ KSPSolver::KSPSolver() {
     m_Tolerance=1.0e-25;
 
     m_KSPSolverTypeName="gmres";
-    string m_PCTypeName="bjacobi";
+    m_PCTypeName="bjacobi";
 }
 void KSPSolver::setDefaultParams(){
     m_MaxIterations=10000;
     m_GMRESRestartNumber=1500;
-    m_Tolerance=1.0e-16;
+    m_Tolerance=1.0e-26;
 
     m_KSPSolverTypeName="gmres";
-    string m_PCTypeName="bjacobi";
+    m_PCTypeName="bjacobi";
+}
+void KSPSolver::setPreferParams() {
+    m_MaxIterations=10000;
+    m_GMRESRestartNumber=1500;
+    m_Tolerance=1.0e-26;
+
+    m_KSPSolverTypeName="gmres";
+    m_PCTypeName="lu";
 }
 void KSPSolver::init() {
     KSPCreate(PETSC_COMM_WORLD, &m_KSP);
@@ -146,14 +154,14 @@ bool KSPSolver::solve(SparseMatrix &A,Vector &b,Vector &x) {
     return true;
 }
 void KSPSolver::printKSPSolverInfo()const {
-    MessagePrinter::printTxt("KSP solver info:");
-    MessagePrinter::printTxt("  Max iterations= "+to_string(m_MaxIterations));
-    MessagePrinter::printTxt("  Restarts= "+to_string(m_GMRESRestartNumber));
-    MessagePrinter::printTxt("  Solver= "+m_KSPSolverTypeName);
-    MessagePrinter::printTxt("  PC type= "+m_PCTypeName);
+    MessagePrinter::printNormalTxt("KSP solver info:");
+    MessagePrinter::printNormalTxt("  max iterations= "+to_string(m_MaxIterations));
+    MessagePrinter::printNormalTxt("  restarts= "+to_string(m_GMRESRestartNumber));
+    MessagePrinter::printNormalTxt("  solver= "+m_KSPSolverTypeName);
+    MessagePrinter::printNormalTxt("  preconditioner type= "+m_PCTypeName);
     char buff[65];
-    snprintf(buff,65,"  Tolerance= %14.6e",m_Tolerance);
-    MessagePrinter::printTxt(buff);
+    snprintf(buff,65,"  tolerance= %14.6e",m_Tolerance);
+    MessagePrinter::printNormalTxt(buff);
     MessagePrinter::printStars();
 }
 void KSPSolver::releaseMemory() {

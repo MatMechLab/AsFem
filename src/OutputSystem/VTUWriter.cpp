@@ -24,10 +24,11 @@ void VTUWriter::saveResults(const string &t_filename,
     if(t_dofHandler.getActiveDofs()){}
 
     t_solution.m_Ucurrent.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_scalarmate_vec.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_vectormate_vec.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank2mate_vec.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank4mate_vec.makeGhostCopy();
+
+    for (auto &it:t_projection.getProjectionDataRef().m_ScalarProjMateVecList) it.makeGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_VectorProjMateVecList) it.makeGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank2ProjMateVecList) it.makeGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank4ProjMateVecList) it.makeGhostCopy();
 
     if(m_rank==0){
         std::ofstream out;
@@ -157,8 +158,8 @@ void VTUWriter::saveResults(const string &t_filename,
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
             out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
-                iInd = (i-1)*(1+nproj)+j+1;
-                value=t_projection.getProjectionDataRef().m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
+                iInd = (i-1)*(1+1)+2;
+                value=t_projection.getProjectionDataRef().m_ScalarProjMateVecList[j-1].getIthValueFromGhost(iInd);
                 out << value << "\n";
             }
             out << "</DataArray>\n\n";
@@ -174,8 +175,8 @@ void VTUWriter::saveResults(const string &t_filename,
             out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 for(k=1;k<=3;k++){
-                    iInd = (i-1)*(1+nproj*3)+3*(j-1)+k+1;
-                    value=t_projection.getProjectionDataRef().m_proj_vectormate_vec.getIthValueFromGhost(iInd);
+                    iInd = (i-1)*(1+3)+k+1;
+                    value=t_projection.getProjectionDataRef().m_VectorProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     out << value << " ";
                 }
                 out <<"\n";
@@ -193,8 +194,8 @@ void VTUWriter::saveResults(const string &t_filename,
             out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 for(k=1;k<=9;k++){
-                    iInd = (i-1)*(1+nproj*9)+9*(j-1)+k+1;
-                    value=t_projection.getProjectionDataRef().m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
+                    iInd = (i-1)*(1+9)+k+1;
+                    value=t_projection.getProjectionDataRef().m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     out << value << " ";
                 }
                 out <<"\n";
@@ -212,8 +213,8 @@ void VTUWriter::saveResults(const string &t_filename,
             out<<std::scientific<<std::setprecision(6);
             for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 for(k=1;k<=36;k++){
-                    iInd = (i-1)*(1+nproj*36)+36*(j-1)+k+1;
-                    value=t_projection.getProjectionDataRef().m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
+                    iInd = (i-1)*(1+36)+k+1;
+                    value=t_projection.getProjectionDataRef().m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     out << value << " ";
                 }
                 out <<"\n";
@@ -234,9 +235,9 @@ void VTUWriter::saveResults(const string &t_filename,
     }// end-of-master-rank-process
 
     t_solution.m_Ucurrent.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_scalarmate_vec.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_vectormate_vec.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank2mate_vec.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank4mate_vec.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_ScalarProjMateVecList) it.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_VectorProjMateVecList) it.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank2ProjMateVecList) it.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank4ProjMateVecList) it.destroyGhostCopy();
 
 }

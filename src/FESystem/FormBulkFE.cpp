@@ -88,6 +88,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
          * Now, we execute the qpoint integration
          */
         m_LocalElmtInfo.m_QpointsNum=t_FE.m_BulkQpoints.getQPointsNum();
+        MyLocalCellVec[e-1].Volume=0.0;
         for(int qp=1;qp<=m_LocalElmtInfo.m_QpointsNum;qp++){
             m_LocalElmtInfo.m_QpointID=qp;
             w=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,0);
@@ -108,6 +109,7 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
             t_FE.m_BulkShp.calc(xi,eta,zeta,m_Nodes,true);
             J=t_FE.m_BulkShp.getJacDet();
             JxW=J*w;
+            MyLocalCellVec[e-1].Volume+=1.0*JxW;/**< for the volume of the current fe cell */
 
             m_LocalElmtInfo.m_QpCoords=0.0;
             for (int i=1;i<=m_LocalElmtInfo.m_NodesNum;i++) {

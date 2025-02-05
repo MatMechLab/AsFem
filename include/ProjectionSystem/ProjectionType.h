@@ -19,5 +19,6 @@
  */
 enum class ProjectionType{
     DEFAULT,
-    LEASTSQUARE
+    LEASTSQUARE,
+    FULLLEASTSQUARE
 };

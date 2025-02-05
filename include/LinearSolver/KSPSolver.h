@@ -51,6 +51,11 @@ public:
     void setDefaultParams();
 
     /**
+     * set the preferred parameters for the ksp solver
+     */
+    void setPreferParams();
+
+    /**
      * set the GMRES restart number of ksp solver
      * @param restartNumber the restart number
      */

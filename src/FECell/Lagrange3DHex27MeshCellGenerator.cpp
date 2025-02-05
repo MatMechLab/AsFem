@@ -179,6 +179,7 @@ bool Lagrange3DHex27MeshCellGenerator::generateFECell(FECellData &t_celldata){
                     t_celldata.MeshCell_Total[e-1].Dim=3;
                     t_celldata.MeshCell_Total[e-1].VTKCellType=t_celldata.BulkElmtVTKCellType;
                     t_celldata.MeshCell_Total[e-1].NodesNumPerElmt=27;
+                    t_celldata.MeshCell_Total[e-1].Volume=2*dx*2*dy*2*dz;
                     t_celldata.MeshCell_Total[e-1].ElmtNodeCoords.resize(27);
 
                     t_celldata.MeshCell_Total[e-1].ElmtConn.clear();

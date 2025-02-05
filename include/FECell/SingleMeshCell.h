@@ -47,4 +47,6 @@ struct SingleMeshCell{
     vector<string> PhysicalNameList;/**< pyhsical name list of current mesh cell, it can have more than one name */
     vector<int>    PhysicalIDList;/**< physical id list of current mesh cell, it can have more than one phy id */
 
+    double Volume;/**< the volume of the local FE Cell */
+
 };

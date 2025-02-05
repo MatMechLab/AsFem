@@ -260,26 +260,26 @@ void FECell::printSummaryInfo()const{
     MessagePrinter::printDashLine();
     string txt;
     char buff[65];
-    snprintf(buff,65,"Total nodes=%5d, total elmts=%5d, total dofs=%6d",m_CellData.NodesNum,m_CellData.ElmtsNum,m_CellData.TotalDofsNum);
+    snprintf(buff,65,"  total nodes=%5d, total elmts=%5d, total dofs=%6d",m_CellData.NodesNum,m_CellData.ElmtsNum,m_CellData.TotalDofsNum);
     txt=string(buff);
     MessagePrinter::printNormalTxt(txt);
 
-    snprintf(buff,65,"Bulk elmts=%6d, line elmts=%6d, surf elmts=%6d",m_CellData.BulkElmtsNum,m_CellData.LineElmtsNum,m_CellData.SurfElmtsNum);
+    snprintf(buff,65,"  bulk elmts=%6d, line elmts=%6d, surf elmts=%6d",m_CellData.BulkElmtsNum,m_CellData.LineElmtsNum,m_CellData.SurfElmtsNum);
     txt=string(buff);
     MessagePrinter::printNormalTxt(txt);
 
-    snprintf(buff,65,"Bulk elmt nodes=%2d, nodal dofs=%6d",m_CellData.NodesNumPerBulkElmt,m_CellData.MaxDofsPerNode);
+    snprintf(buff,65,"  bulk elmt nodes=%2d, nodal dofs=%6d",m_CellData.NodesNumPerBulkElmt,m_CellData.MaxDofsPerNode);
     txt=string(buff);
     MessagePrinter::printNormalTxt(txt);
 
-    MessagePrinter::printNormalTxt("Cell distribution method:"+MeshDistributionMethod);
+    MessagePrinter::printNormalTxt("  cell distribution method:"+MeshDistributionMethod);
 
-    snprintf(buff,65,"Elemental physical groups=%4d, nodal physical groups=%4d",m_CellData.PhyGroupNum_Global,m_CellData.NodalPhyGroupNum_Global);
+    snprintf(buff,65,"  elemental physical groups=%4d, nodal physical groups=%4d",m_CellData.PhyGroupNum_Global,m_CellData.NodalPhyGroupNum_Global);
     txt=string(buff);
     MessagePrinter::printNormalTxt(txt);
 
     MessagePrinter::printDashLine();
-    MessagePrinter::printNormalTxt("Physical ID<------>Physical name<------>Dim<---------->Elmts num");
+    MessagePrinter::printNormalTxt("  physical ID<------>physical name<------>dim<---------->elmts num");
     for(int i=0;i<m_CellData.PhyGroupNum_Global;i++){
         snprintf(buff,65,"%8d    %20s         %2d          %8d",m_CellData.PhyIDVector_Global[i],m_CellData.PhyNameVector_Global[i].c_str(),m_CellData.PhyDimVector_Global[i],m_CellData.PhyGroupElmtsNumVector_Global[i]);
         txt=string(buff);
@@ -287,7 +287,7 @@ void FECell::printSummaryInfo()const{
     }
 
     MessagePrinter::printDashLine();
-    MessagePrinter::printNormalTxt("Nodal physical ID<------>Physical name<---------->Nodes num");
+    MessagePrinter::printNormalTxt("  nodal physical ID<------>physical name<---------->nodes num");
     for(int i=0;i<m_CellData.NodalPhyGroupNum_Global;i++){
         snprintf(buff,65,"  %8d        %20s           %8d",m_CellData.NodalPhyIDVector_Global[i],m_CellData.NodalPhyNameVector_Global[i].c_str(),m_CellData.NodalPhyGroupNodesNumVector_Global[i]);
         txt=string(buff);
@@ -299,10 +299,10 @@ void FECell::printSummaryInfo()const{
     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
 
     if(size==1){
-        snprintf(buff,65,"FECell is distributed in %5d cpu",size);
+        snprintf(buff,65,"  FECell is distributed in %5d cpu",size);
     }
     else{
-        snprintf(buff,65,"FECell is distributed in %5d cpus",size);
+        snprintf(buff,65,"  FECell is distributed in %5d cpus",size);
     }
     txt=string(buff);
     MessagePrinter::printDashLine();

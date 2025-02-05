@@ -31,6 +31,9 @@ bool InputSystem::readProjectionBlock(nlohmann::json &t_json,const DofHandler &t
         else if(methodname=="leastsquare"){
             t_projsystem.setProjectionType(ProjectionType::LEASTSQUARE);
         }
+        else if(methodname=="fullleastsquare"){
+            t_projsystem.setProjectionType(ProjectionType::FULLLEASTSQUARE);
+        }
         else{
             MessagePrinter::printErrorTxt("type="+methodname+" is unsupported in your 'projection' block, please check your input file");
             MessagePrinter::exitAsFem();
@@ -119,6 +122,7 @@ bool InputSystem::readProjectionBlock(nlohmann::json &t_json,const DofHandler &t
             t_projsystem.addRank4MateName2List(matename);
         }
     }
+
     return true;
     
 }

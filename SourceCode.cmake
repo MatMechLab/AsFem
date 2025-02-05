@@ -568,10 +568,12 @@ set(inc ${inc} include/ProjectionSystem/ProjectionSystem.h)
 ### for leastsquare projection
 set(inc ${inc} include/ProjectionSystem/LeastSquareProjection.h)
 set(src ${src} src/ProjectionSystem/LeastSquareProjection.cpp)
+### for FullLeastSquareProjection projection
+set(inc ${inc} include/ProjectionSystem/FullLeastSquareProjection.h)
+set(src ${src} src/ProjectionSystem/FullLeastSquareProjection.cpp)
 ###
 set(src ${src} src/ProjectionSystem/ProjectionSystem.cpp)
 set(src ${src} src/ProjectionSystem/Projection.cpp)
-set(src ${src} src/ProjectionSystem/ProjectionLibs.cpp)
 set(src ${src} src/ProjectionSystem/ProjectionGettings.cpp)
 
 #############################################################

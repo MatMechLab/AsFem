@@ -8,20 +8,18 @@
 //****************************************************************
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
-//+++ Date   : 2022.07.22
-//+++ Purpose: Implement least square projection from integration
+//+++ Date   : 2025.01.24
+//+++ Purpose: Implement full least square projection from integration
 //+++          points to nodal points
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-#include "ProjectionSystem/LeastSquareProjection.h"
 
-LeastSquareProjection::LeastSquareProjection(){
+#include "ProjectionSystem/FullLeastSquareProjection.h"
 
+FullLeastSquareProjection::FullLeastSquareProjection(){
+    IsFirstSetup=true;
 }
-void LeastSquareProjection::initMyProjection(const FECell &t_FECell, const DofHandler &t_DofHandler) {
-    /**
-     * for the qpoints used in projection system
-     */
+void FullLeastSquareProjection::initMyProjection(const FECell &t_FECell, const DofHandler &t_DofHandler) {
     int m_max_nodal_dofs=t_DofHandler.getMaxDofsPerNode();
     m_BulkElmtNodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
@@ -49,207 +47,255 @@ void LeastSquareProjection::initMyProjection(const FECell &t_FECell, const DofHa
 
     m_Nodes.resize(m_BulkElmtNodesNum);
     m_Nodes0.resize(m_BulkElmtNodesNum);
+    IsFirstSetup=true;
 }
 
 //******************************************************
 //*** for local projection action
 //******************************************************
-void LeastSquareProjection::localProjectionAction(const int &NodesNum,
-                                                  const vector<int> &ElConn,
-                                                  const double &DetJac,
-                                                  const ShapeFun &Shp,
-                                                  const MaterialsContainer &Mate,
-                                                  ProjectionData &Data){
-    
+void FullLeastSquareProjection::localProjectionAction(const int &NodesNum,
+                                                      const int &ElmtID,
+                                                      const int &QPointsNum,
+                                                      Eigen::MatrixXd &ALeft,
+                                                      Eigen::MatrixXd &ARight,
+                                                      const vector<int> &ElConn,
+                                                      const double &Volume,
+                                                      const SolutionSystem &SolnSystem,
+                                                      ProjectionData &Data){
+
     if(Data.m_ScalarProjMateNum){
-        projectLocalScalarMate2Global(NodesNum,ElConn,DetJac,Shp,Mate,Data.m_ScalarProjMateNum,Data.m_ScalarProjMateNameList,Data.m_ScalarProjMateVecList);
+        projectLocalScalarMate2Global(NodesNum,ElmtID,QPointsNum,ALeft,ARight,ElConn,Volume,SolnSystem,Data.m_ScalarProjMateNum,Data.m_ScalarProjMateNameList,Data.m_ScalarProjMateVecList);
     }
     if(Data.m_VectorProjMateNum){
-        projectLocalVectorMate2Global(NodesNum,ElConn,DetJac,Shp,Mate,Data.m_VectorProjMateNum,Data.m_VectorProjMateNamelist,Data.m_VectorProjMateVecList);
+        projectLocalVectorMate2Global(NodesNum,ElmtID,QPointsNum,ALeft,ARight,ElConn,Volume,SolnSystem,Data.m_VectorProjMateNum,Data.m_VectorProjMateNamelist,Data.m_VectorProjMateVecList);
     }
     if(Data.m_Rank2ProjMateNum){
-        projectLocalRank2Mate2Global(NodesNum,ElConn,DetJac,Shp,Mate,Data.m_Rank2ProjMateNum,Data.m_Rank2ProjMateNameList,Data.m_Rank2ProjMateVecList);
+        projectLocalRank2Mate2Global(NodesNum,ElmtID,QPointsNum,ALeft,ARight,ElConn,Volume,SolnSystem,Data.m_Rank2ProjMateNum,Data.m_Rank2ProjMateNameList,Data.m_Rank2ProjMateVecList);
     }
     if(Data.m_Rank4ProjMateNum){
-        projectLocalRank4Mate2Global(NodesNum,ElConn,DetJac,Shp,Mate,Data.m_Rank4ProjMateNum,Data.m_Rank4ProjMateNameList,Data.m_Rank4ProjMateVecList);
+        projectLocalRank4Mate2Global(NodesNum,ElmtID,QPointsNum,ALeft,ARight,ElConn,Volume,SolnSystem,Data.m_Rank4ProjMateNum,Data.m_Rank4ProjMateNameList,Data.m_Rank4ProjMateVecList);
     }
 }
 //******************************************************
-void LeastSquareProjection::projectLocalScalarMate2Global(const int &NodesNum,
-                                                          const vector<int> &ElConn,
-                                                          const double &DetJac,
-                                                          const ShapeFun &Shp,
-                                                          const MaterialsContainer &Mate,
-                                                          const int &ProjNum,
-                                                          const vector<string> &ScalarMateNameList,
-                                                          vector<Vector> &ScalarProjMateVecList){
+void FullLeastSquareProjection::projectLocalScalarMate2Global(const int &NodesNum,
+                                                              const int &ElmtID,
+                                                              const int &QPointsNum,
+                                                              Eigen::MatrixXd &ALeft,
+                                                              Eigen::MatrixXd &ARight,
+                                                              const vector<int> &ElConn,
+                                                              const double &Volume,
+                                                              const SolutionSystem &SolnSystem,
+                                                              const int &ProjNum,
+                                                              const vector<string> &ScalarMateNameList,
+                                                              vector<Vector> &ScalarProjMateVecList){
     if(ProjNum!=static_cast<int>(ScalarMateNameList.size())){
         MessagePrinter::printErrorTxt("the number of projected scalar material does not match with the given one, please check your code");
         MessagePrinter::exitAsFem();
     }
+
     bool HasName;
-    double w;
-    int j,k,jInd,iInd;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getScalarMaterialsCopy()){
-                if(it.first==ScalarMateNameList[k-1]){
-                    HasName=true;
-                    jInd=(iInd-1)*(1+1)+1;
-                    ScalarProjMateVecList[k-1].addValue(jInd,w);
-                    jInd=(iInd-1)*(1+1)+2;
-                    ScalarProjMateVecList[k-1].addValue(jInd,w*it.second);
-                    break;
+    int j,k,jInd,iInd,qp;
+    for(k=1;k<=ProjNum;k++){
+        HasName=false;
+        for(const auto &it:SolnSystem.m_QpointsScalarMaterials_Local[(ElmtID-1)*QPointsNum+1-1]){
+            if(it.first==ScalarMateNameList[k-1]){
+                RHSVec.setZero();
+                QpSolnVec.setZero();
+                NodalSolnVec.setZero();
+                for (qp=1;qp<=QPointsNum;qp++) {
+                    QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsScalarMaterials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first);
                 }
-            }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the scalar material ("+ScalarMateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
+                RHSVec=ARight*QpSolnVec;
+                NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                HasName=true;
+                for(j=1;j<=NodesNum;j++) {
+                    iInd=ElConn[j-1];
+                    jInd=(iInd-1)*(1+1)+1;
+                    ScalarProjMateVecList[k-1].addValue(jInd,Volume);
+                    jInd=(iInd-1)*(1+1)+2;
+                    ScalarProjMateVecList[k-1].addValue(jInd,NodalSolnVec.coeff(j-1)*Volume);
+                }
+                break;
             }
         }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the scalar material ("+ScalarMateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
+        }
     }
-    
 }
 //******************************************************
-void LeastSquareProjection::projectLocalVectorMate2Global(const int &NodesNum,
-                                                          const vector<int> &ElConn,
-                                                          const double &DetJac,
-                                                          const ShapeFun &Shp,
-                                                          const MaterialsContainer &Mate,
-                                                          const int &ProjNum,
-                                                          const vector<string> &VectorMateNameList,
-                                                          vector<Vector> &VectorProjMateVecList){
+void FullLeastSquareProjection::projectLocalVectorMate2Global(const int &NodesNum,
+                                                              const int &ElmtID,
+                                                              const int &QPointsNum,
+                                                              Eigen::MatrixXd &ALeft,
+                                                              Eigen::MatrixXd &ARight,
+                                                              const vector<int> &ElConn,
+                                                              const double &Volume,
+                                                              const SolutionSystem &SolnSystem,
+                                                              const int &ProjNum,
+                                                              const vector<string> &VectorMateNameList,
+                                                              vector<Vector> &VectorProjMateVecList){
     if(ProjNum!=static_cast<int>(VectorMateNameList.size())){
         MessagePrinter::printErrorTxt("the number of projected vector material does not match with the given one, please check your code");
         MessagePrinter::exitAsFem();
     }
     bool HasName;
-    double w;
-    int j,k,jInd,iInd;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getVectorMaterialsCopy()){
-                if(it.first==VectorMateNameList[k-1]){
-                    HasName=true;
+    int j,jInd,iInd;
+    for(int k=1;k<=ProjNum;k++){
+        HasName=false;
+        for(const auto &it:SolnSystem.m_QpointsVectorMaterials_Local[(ElmtID-1)*QPointsNum+1-1]){
+            if(it.first==VectorMateNameList[k-1]){
+                HasName=true;
+                for(j=1;j<=NodesNum;j++) {
+                    iInd=ElConn[j-1];
                     jInd=(iInd-1)*(1+3)+1;
-                    VectorProjMateVecList[k-1].addValue(jInd,w);
-                    //
-                    jInd=(iInd-1)*(1+3)+2;
-                    VectorProjMateVecList[k-1].addValue(jInd,it.second(1)*w);
-                    jInd=(iInd-1)*(1+3)+3;
-                    VectorProjMateVecList[k-1].addValue(jInd,it.second(2)*w);
-                    jInd=(iInd-1)*(1+3)+4;
-                    VectorProjMateVecList[k-1].addValue(jInd,it.second(3)*w);
-                    break;
+                    VectorProjMateVecList[k-1].addValue(jInd,Volume);
                 }
+                for (int component=1;component<=3;component++) {
+                    RHSVec.setZero();
+                    QpSolnVec.setZero();
+                    NodalSolnVec.setZero();
+                    for (int qp=1;qp<=QPointsNum;qp++) {
+                        QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsVectorMaterials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first)(component);
+                    }
+                    RHSVec=ARight*QpSolnVec;
+                    NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                    for (j=1;j<=NodesNum;j++) {
+                        iInd=ElConn[j-1];
+                        jInd=(iInd-1)*(1+3)+1+component;
+                        VectorProjMateVecList[k-1].addValue(jInd,NodalSolnVec.coeff(j-1)*Volume);
+                    }
+                }
+                break;
             }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the vector material ("+VectorMateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
-            }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the vector material ("+VectorMateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
         }
     }
 }
 //******************************************************
-void LeastSquareProjection::projectLocalRank2Mate2Global(const int &NodesNum,
-                                                         const vector<int> &ElConn,
-                                                         const double &DetJac,
-                                                         const ShapeFun &Shp,
-                                                         const MaterialsContainer &Mate,
-                                                         const int &ProjNum,
-                                                         const vector<string> &Rank2MateNameList,
-                                                         vector<Vector> &Rank2ProjMateVecList){
+void FullLeastSquareProjection::projectLocalRank2Mate2Global(const int &NodesNum,
+                                                             const int &ElmtID,
+                                                             const int &QPointsNum,
+                                                             Eigen::MatrixXd &ALeft,
+                                                             Eigen::MatrixXd &ARight,
+                                                             const vector<int> &ElConn,
+                                                             const double &Volume,
+                                                             const SolutionSystem &SolnSystem,
+                                                             const int &ProjNum,
+                                                             const vector<string> &Rank2MateNameList,
+                                                             vector<Vector> &Rank2ProjMateVecList){
     if(ProjNum!=static_cast<int>(Rank2MateNameList.size())){
         MessagePrinter::printErrorTxt("the number of projected rank-2 material does not match with the given one, please check your code");
         MessagePrinter::exitAsFem();
     }
     bool HasName;
-    double w;
     int j,k,jInd,iInd;
     int i1,j1,ii;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getRank2MaterialsCopy()){
-                if(it.first==Rank2MateNameList[k-1]){
-                    HasName=true;
+    for(k=1;k<=ProjNum;k++){
+        HasName=false;
+        for(const auto &it:SolnSystem.m_QpointsRank2Materials_Local[(ElmtID-1)*QPointsNum+1-1]){
+            if(it.first==Rank2MateNameList[k-1]){
+                HasName=true;
+                for(j=1;j<=NodesNum;j++) {
+                    iInd=ElConn[j-1];
                     jInd=(iInd-1)*(9+1)+0+1;
-                    Rank2ProjMateVecList[k-1].addValue(jInd,w);
-                    ii=0;
-                    for(i1=1;i1<=3;i1++){
-                        for(j1=1;j1<=3;j1++){
-                            ii+=1;
+                    Rank2ProjMateVecList[k-1].addValue(jInd,Volume);
+                }
+
+                ii=0;
+                for(i1=1;i1<=3;i1++){
+                    for(j1=1;j1<=3;j1++){
+                        RHSVec.setZero();
+                        QpSolnVec.setZero();
+                        NodalSolnVec.setZero();
+                        for (int qp=1;qp<=QPointsNum;qp++) {
+                            QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsRank2Materials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first)(i1,j1);
+                        }
+                        RHSVec=ARight*QpSolnVec;
+                        NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                        ii+=1;
+                        for(j=1;j<=NodesNum;j++) {
+                            iInd=ElConn[j-1];
                             jInd=(iInd-1)*(9+1)+ii+1;
-                            Rank2ProjMateVecList[k-1].addValue(jInd,it.second(i1,j1)*w);
+                            Rank2ProjMateVecList[k-1].addValue(jInd,NodalSolnVec.coeff(j-1)*Volume);
                         }
                     }
-                    break;
                 }
+                break;
             }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the rank-2 material ("+Rank2MateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
-            }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the rank-2 material ("+Rank2MateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
         }
     }
 }
 //******************************************************
-void LeastSquareProjection::projectLocalRank4Mate2Global(const int &NodesNum,
-                                                         const vector<int> &ElConn,
-                                                         const double &DetJac,
-                                                         const ShapeFun &Shp,
-                                                         const MaterialsContainer &Mate,
-                                                         const int &ProjNum,
-                                                         const vector<string> &Rank4MateNameList,
-                                                         vector<Vector> &Rank4ProjMateVecList){
+void FullLeastSquareProjection::projectLocalRank4Mate2Global(const int &NodesNum,
+                                                             const int &ElmtID,
+                                                             const int &QPointsNum,
+                                                             Eigen::MatrixXd &ALeft,
+                                                             Eigen::MatrixXd &ARight,
+                                                             const vector<int> &ElConn,
+                                                             const double &Volume,
+                                                             const SolutionSystem &SolnSystem,
+                                                             const int &ProjNum,
+                                                             const vector<string> &Rank4MateNameList,
+                                                             vector<Vector> &Rank4ProjMateVecList){
     if(ProjNum!=static_cast<int>(Rank4MateNameList.size())){
         MessagePrinter::printErrorTxt("the number of projected rank-4 material does not match with the given one, please check your code");
         MessagePrinter::exitAsFem();
     }
     bool HasName;
-    double w;
     int j,k,jInd,iInd;
     int i1,j1,ii;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getRank4MaterialsCopy()){
-                if(it.first==Rank4MateNameList[k-1]){
-                    HasName=true;
-                    ii=0;
+    for(k=1;k<=ProjNum;k++){
+        HasName=false;
+        for(const auto &it:SolnSystem.m_QpointsRank4Materials_Local[(ElmtID-1)*QPointsNum+1-1]){
+            if(it.first==Rank4MateNameList[k-1]){
+                HasName=true;
+                ii=0;
+                for(j=1;j<=NodesNum;j++) {
+                    iInd=ElConn[j-1];
                     jInd=(iInd-1)*(36+1)+ii+1;
-                    Rank4ProjMateVecList[k-1].addValue(jInd,w);
-                    for(i1=1;i1<=6;i1++){
-                        for(j1=1;j1<=6;j1++){
-                            ii+=1;
+                    Rank4ProjMateVecList[k-1].addValue(jInd,Volume);
+                }
+                for(i1=1;i1<=6;i1++){
+                    for(j1=1;j1<=6;j1++){
+                        RHSVec.setZero();
+                        QpSolnVec.setZero();
+                        NodalSolnVec.setZero();
+                        for (int qp=1;qp<=QPointsNum;qp++) {
+                            QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsRank4Materials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first).getVoigtComponent(i1,j1);
+                        }
+                        RHSVec=ARight*QpSolnVec;
+                        NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+
+                        ii+=1;
+                        for(j=1;j<=NodesNum;j++) {
+                            iInd=ElConn[j-1];
                             jInd=(iInd-1)*(36+1)+ii+1;
-                            Rank4ProjMateVecList[k-1].addValue(jInd,it.second.getVoigtComponent(i1,j1)*w);
+                            Rank4ProjMateVecList[k-1].addValue(jInd,NodalSolnVec.coeff(j-1)*Volume);
                         }
                     }
-                    break;
                 }
+                break;
             }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the rank-4 material ("+Rank4MateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
-            }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the rank-4 material ("+Rank4MateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
         }
     }
 }
 //******************************************************
 //*** for global projection action
 //******************************************************
-void LeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
+void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
                                                    ProjectionData &Data){
     int j,k,iInd,nproj;
     double value,weight,newvalue;
@@ -367,14 +413,14 @@ void LeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
     for (auto &it:Data.m_Rank4ProjMateVecList) it.destroyGhostCopy();
 
 }
-void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
-                                                const DofHandler &t_DofHandler,
-                                                const ElmtSystem &t_ElmtSystem,
-                                                MateSystem &t_MateSystem,
-                                                FE &t_FE,
-                                                SolutionSystem &t_SolnSystem,
-                                                const FEControlInfo &t_FECtrlInfo,
-                                                ProjectionData &Data) {
+void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
+                                                    const DofHandler &t_DofHandler,
+                                                    const ElmtSystem &t_ElmtSystem,
+                                                    MateSystem &t_MateSystem,
+                                                    FE &t_FE,
+                                                    SolutionSystem &t_SolnSystem,
+                                                    const FEControlInfo &t_FECtrlInfo,
+                                                    ProjectionData &Data) {
     // if no projection is required, then return back
     if(Data.m_ScalarProjMateNum<1 &&
        Data.m_VectorProjMateNum<1 &&
@@ -399,7 +445,7 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
     t_SolnSystem.m_A.makeGhostCopy();
 
     int QpointsNum;
-    double xi,eta,zeta,w,J,JxW;
+    double xi,eta,zeta,w,J,JxW,Volume;
 
     int SubElmtBlockID;
     int GlobalDofID,GlobalNodeID;
@@ -415,6 +461,20 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
     QpointsNum=t_FE.m_BulkQpoints.getQPointsNum();
     m_LocalElmtInfo.m_QpointsNum=QpointsNum;
 
+    if (IsFirstSetup) {
+        A.resize(QpointsNum,m_BulkElmtNodesNum);
+        AT.resize(m_BulkElmtNodesNum,QpointsNum);
+        W.resize(QpointsNum,QpointsNum);
+
+        Al.resize(m_BulkElmtNodesNum,m_BulkElmtNodesNum);
+        Ar.resize(m_BulkElmtNodesNum,QpointsNum);
+
+        QpSolnVec.resize(QpointsNum);
+        NodalSolnVec.resize(m_BulkElmtNodesNum);
+        RHSVec.resize(m_BulkElmtNodesNum);
+        IsFirstSetup=false;
+    }
+
     for (int e=1;e<=t_FECell.getLocalFECellBulkElmtsNum();e++) {
         m_LocalElmtInfo.m_Dim=MyLocalCellVec[e-1].Dim;
         m_LocalElmtInfo.m_NodesNum=MyLocalCellVec[e-1].NodesNumPerElmt;
@@ -424,6 +484,15 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
         m_Nodes=MyLocalCellVec[e-1].ElmtNodeCoords;
         m_Nodes0=MyLocalCellVec[e-1].ElmtNodeCoords0;
         m_ElmtConn=MyLocalCellVec[e-1].ElmtConn;
+
+        A.setZero();
+        AT.setZero();
+        W.setZero();
+        Al.setZero();
+        Ar.setZero();
+
+        Volume=0.0;
+
         for (int qp=1;qp<=QpointsNum;qp++) {
             w=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,0);
             xi=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,1);
@@ -441,6 +510,9 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
             t_FE.m_BulkShp.calc(xi,eta,zeta,m_Nodes0,true);
             J=t_FE.m_BulkShp.getJacDet();
             JxW=J*w;
+            Volume+=1.0*JxW;
+
+            W.coeffRef(qp-1,qp-1)=w;
 
             m_LocalElmtInfo.m_QpointID=qp;
             m_LocalElmtInfo.m_QpCoords0=0.0;
@@ -448,6 +520,9 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
                 m_LocalElmtInfo.m_QpCoords0(1)+=t_FE.m_BulkShp.shape_value(i)*m_Nodes0(i,1);
                 m_LocalElmtInfo.m_QpCoords0(2)+=t_FE.m_BulkShp.shape_value(i)*m_Nodes0(i,2);
                 m_LocalElmtInfo.m_QpCoords0(3)+=t_FE.m_BulkShp.shape_value(i)*m_Nodes0(i,3);
+
+                A.coeffRef(qp-1,i-1)=t_FE.m_BulkShp.shape_value(i);
+                AT.coeffRef(i-1,qp-1)=t_FE.m_BulkShp.shape_value(i);
             }
 
             t_MateSystem.m_MaterialContainerOld.getScalarMaterialsRef()=t_SolnSystem.m_QpointsScalarMaterialsOld_Local[(e-1)*QpointsNum+qp-1];
@@ -518,11 +593,23 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
                                              m_LocalElmtInfo,
                                              m_LocalElmtSoln);
 
-            }//end-of-sub-element-loop
-            // execute the local projection
-            localProjectionAction(m_BulkElmtNodesNum,m_ElmtConn,JxW,t_FE.m_BulkShp,t_MateSystem.m_MaterialContainer,Data);
+                t_SolnSystem.m_QpointsScalarMaterials_Local[(e-1)*QpointsNum+qp-1]=t_MateSystem.m_MaterialContainer.getScalarMaterialsCopy();
+                t_SolnSystem.m_QpointsVectorMaterials_Local[(e-1)*QpointsNum+qp-1]=t_MateSystem.m_MaterialContainer.getVectorMaterialsCopy();
+                t_SolnSystem.m_QpointsRank2Materials_Local[(e-1)*QpointsNum+qp-1]=t_MateSystem.m_MaterialContainer.getRank2MaterialsCopy();
+                t_SolnSystem.m_QpointsRank4Materials_Local[(e-1)*QpointsNum+qp-1]=t_MateSystem.m_MaterialContainer.getRank4MaterialsCopy();
 
+            }//end-of-sub-element-loop
         }// end-of-qpoints-loop
+
+        // execute the local projection, one must call this outside the qpoint loop
+        // which means, this is the elemental operation !!!
+        Al=AT*W*A;
+        Ar=AT*W;
+        if (Al.fullPivLu().rcond()<1.0e-12) {
+            MessagePrinter::printErrorTxt("The extrapolation matrix is singular for the FullLeastSquare projection, please check your code");
+            MessagePrinter::exitAsFem();
+        }
+        localProjectionAction(m_BulkElmtNodesNum,e,QpointsNum,Al,Ar,m_ElmtConn,Volume,t_SolnSystem,Data);
     }// end-of-element-loop
 
     t_SolnSystem.m_Ucurrent.destroyGhostCopy();//

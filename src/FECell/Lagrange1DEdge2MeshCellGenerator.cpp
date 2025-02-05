@@ -98,6 +98,7 @@ bool Lagrange1DEdge2MeshCellGenerator::generateFECell(FECellData &t_celldata){
             t_celldata.MeshCell_Total[e].Dim=1;
             t_celldata.MeshCell_Total[e].NodesNumPerElmt=2;
             t_celldata.MeshCell_Total[e].VTKCellType=3;
+            t_celldata.MeshCell_Total[e].Volume=dx;
             t_celldata.MeshCell_Total[e].ElmtConn.clear();
             t_celldata.MeshCell_Total[e].ElmtConn.push_back(i1);
             t_celldata.MeshCell_Total[e].ElmtConn.push_back(i2);

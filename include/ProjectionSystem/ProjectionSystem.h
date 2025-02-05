@@ -30,11 +30,13 @@
 #include "ElmtSystem/LocalElmtData.h"
 
 #include "ProjectionSystem/LeastSquareProjection.h"
+#include "ProjectionSystem/FullLeastSquareProjection.h"
 
 /**
  * This class implements the general projections method for extrapolating the gauss point's quantities
  */
-class ProjectionSystem:public LeastSquareProjection{
+class ProjectionSystem:public LeastSquareProjection,
+                       public FullLeastSquareProjection{
 public:
     /**
      * constructor
@@ -60,22 +62,22 @@ public:
      * set the number of scalar materials to be projected
      * @param num integer
      */
-    void setScalarMaterialNum(const int &num){m_Data.m_scalarmate_num=num;}
+    void setScalarMaterialNum(const int &num){m_Data.m_ScalarProjMateNum=num;}
     /**
      * set the number of vector materials to be projected
      * @param num integer
      */
-    void setVectorMaterialNum(const int &num){m_Data.m_vectormate_num=num;}
+    void setVectorMaterialNum(const int &num){m_Data.m_VectorProjMateNum=num;}
     /**
      * set the number of rank-2 tensor materials to be projected
      * @param num integer
      */
-    void setRank2TensorMaterialNum(const int &num){m_Data.m_rank2mate_num=num;}
+    void setRank2TensorMaterialNum(const int &num){m_Data.m_Rank2ProjMateNum=num;}
     /**
      * set the number of rank-4 tensor materials to be projected
      * @param num integer
      */
-    void setRank4TensorMaterialNum(const int &num){m_Data.m_rank4mate_num=num;}
+    void setRank4TensorMaterialNum(const int &num){m_Data.m_Rank4ProjMateNum=num;}
     /**
      * set the projection type from input file
      * @param projtype the projection type
@@ -117,69 +119,69 @@ public:
     /**
      * get the number of scalar materials
      */
-    inline int getScalarMaterialNum()const{return m_Data.m_scalarmate_num;}
+    inline int getScalarMaterialNum()const{return m_Data.m_ScalarProjMateNum;}
     /**
      * get the i-th scalar material name
      * @param i i index for scalar material name list
      */
     inline string getIthScalarMateName(const int &i)const{
-        if(i<1||i>m_Data.m_scalarmate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_scalarmate_num)+") for scalar material,"
+        if(i<1||i>m_Data.m_ScalarProjMateNum){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_ScalarProjMateNum)+") for scalar material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_Data.m_scalarmate_namelist[i-1];
+        return m_Data.m_ScalarProjMateNameList[i-1];
     }
 
     /**
      * get the number of vector materials
      */
-    inline int getVectorMaterialNum()const{return m_Data.m_vectormate_num;}
+    inline int getVectorMaterialNum()const{return m_Data.m_VectorProjMateNum;}
     /**
      * get the i-th vector material name
      * @param i i index for vector material name list
      */
     inline string getIthVectorMateName(const int &i)const{
-        if(i<1||i>m_Data.m_vectormate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_vectormate_num)+") for vector material,"
+        if(i<1||i>m_Data.m_VectorProjMateNum){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_VectorProjMateNum)+") for vector material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_Data.m_vectormate_namelist[i-1];
+        return m_Data.m_VectorProjMateNamelist[i-1];
     }
 
     /**
      * get the number of rank-2 tensor materials
      */
-    inline int getRank2MaterialNum()const{return m_Data.m_rank2mate_num;}
+    inline int getRank2MaterialNum()const{return m_Data.m_Rank2ProjMateNum;}
     /**
      * get the i-th rank-2 material name
      * @param i i index for rank-2 material name list
      */
     inline string getIthRank2MateName(const int &i)const{
-        if(i<1||i>m_Data.m_rank2mate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_rank2mate_num)+") for rank-2 material,"
+        if(i<1||i>m_Data.m_Rank2ProjMateNum){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_Rank2ProjMateNum)+") for rank-2 material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_Data.m_rank2mate_namelist[i-1];
+        return m_Data.m_Rank2ProjMateNameList[i-1];
     }
 
     /**
      * get the number of rank-4 materials
      */
-    inline int getRank4MaterialNum()const{return m_Data.m_rank4mate_num;}
+    inline int getRank4MaterialNum()const{return m_Data.m_Rank4ProjMateNum;}
     /**
      * get the i-th rank-4 material name
      * @param i i index for rank-4 material name list
      */
     inline string getIthRank4MateName(const int &i)const{
-        if(i<1||i>m_Data.m_rank4mate_num){
-            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_rank4mate_num)+") for rank-2 material,"
+        if(i<1||i>m_Data.m_Rank4ProjMateNum){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range ("+to_string(m_Data.m_Rank4ProjMateNum)+") for rank-2 material,"
                                         +"please check either your code or your input file");
             MessagePrinter::exitAsFem();
         }
-        return m_Data.m_rank4mate_namelist[i-1];
+        return m_Data.m_Rank4ProjMateNameList[i-1];
     }
 
     /**
@@ -258,28 +260,6 @@ public:
      * print out the projection information
      */
     void printProjectionInfo()const;
-
-
-private:
-    /**
-     * for different projection methods
-     * @param Flag true for local, false for global
-     * @param t_FECell the fe cell class
-     * @param NodesNum nodes number of current element
-     * @param ElConn the local element's connectivity
-     * @param DetJac the jacobian determinte
-     * @param Shp the shape function
-     * @param Mate the material container
-     * @param Data the projection data
-     */
-    void runProjectionLibs(const bool &Flag,
-                           const FECell &t_FECell,
-                           const int &NodesNum,
-                           const vector<int> &ElConn,
-                           const double &DetJac,
-                           const ShapeFun &Shp,
-                           const MaterialsContainer &Mate,
-                           ProjectionData &Data);
     
 
 private:

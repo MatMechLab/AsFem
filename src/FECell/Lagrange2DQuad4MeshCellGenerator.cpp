@@ -110,6 +110,7 @@ bool Lagrange2DQuad4MeshCellGenerator::generateFECell(FECellData &t_celldata){
                 t_celldata.MeshCell_Total[e-1].Dim=2;
                 t_celldata.MeshCell_Total[e-1].NodesNumPerElmt=4;
                 t_celldata.MeshCell_Total[e-1].VTKCellType=9;
+                t_celldata.MeshCell_Total[e-1].Volume=dx*dy;
                 t_celldata.MeshCell_Total[e-1].ElmtConn.clear();
                 t_celldata.MeshCell_Total[e-1].ElmtConn.push_back(i1);
                 t_celldata.MeshCell_Total[e-1].ElmtConn.push_back(i2);

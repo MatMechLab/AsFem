@@ -59,7 +59,7 @@ void BulkDofHandler::printBulkDofsInfo()const{
     char buff[69];
     string str;
     MessagePrinter::printStars();
-    MessagePrinter::printNormalTxt("bulk dofs information summary");
+    MessagePrinter::printNormalTxt("Bulk dofs information summary");
     snprintf(buff,69,"  total dofs=%9d, active dofs=%9d, max dofs per node=%2d",getTotalDofs(),
                                                                                 getActiveDofs(),
                                                                                 getMaxDofsPerNode());

@@ -126,6 +126,7 @@ bool Lagrange3DHex8MeshCellGenerator::generateFECell(FECellData &t_celldata){
 
                     t_celldata.MeshCell_Total[e-1].Dim=3;
                     t_celldata.MeshCell_Total[e-1].NodesNumPerElmt=8;
+                    t_celldata.MeshCell_Total[e-1].Volume=dx*dy*dz;
                     t_celldata.MeshCell_Total[e-1].VTKCellType=t_celldata.BulkElmtVTKCellType;
                     t_celldata.MeshCell_Total[e-1].ElmtNodeCoords.resize(8);
                     t_celldata.MeshCell_Total[e-1].ElmtNodeCoords0.resize(8);

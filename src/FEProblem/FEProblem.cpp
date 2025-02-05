@@ -50,6 +50,7 @@ void FEProblem::initFEProblem(int args,char *argv[]){
     m_FECell.distributeMesh();
     m_Timer.endTimer();
     m_Timer.printElapseTime("FEcell distribution is done",false);
+    m_FECell.getCellDataRef().MaxDofsPerNode=m_DofHandler.getMaxDofsPerNode();
 
     /**
      * Save the partition info to vtu file, which is named by the input file name
