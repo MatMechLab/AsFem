@@ -22,7 +22,7 @@
 		}
 	},
 	"projection":{
-		"type":"default",
+		"type":"fullleastsquare",
 		"scalarmate":["vonMises-stress","vonMises-strain","hydrostatic-stress"],
 		"rank2mate":["stress","strain"]
 	},
@@ -65,7 +65,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":2
+			"order":4
 		}
 	},
 	"job":{

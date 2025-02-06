@@ -27,9 +27,9 @@
 		}
 	},
 	"projection":{
-		"type":"default",
-		"scalarmate":["vonMises-stress"],
-		"rank2mate":["Stress"]
+		"type":"fullleastsquare",
+		"scalarmate":["vonMises-stress","vonMises-strain"],
+		"rank2mate":["Stress","strain"]
 	},
 	"bcs":{
 		"fixux":{
