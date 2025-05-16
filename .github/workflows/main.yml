@@ -131,6 +131,7 @@ jobs:
           --with-sowing=0 \
           --download-fblaslapack=1 \
           --download-scalapack=1 \
+          --download-metis=1 \
           --download-mumps=1 \
           COPTFLAGS='-fPIC -O3 ' \
           CXXOPTFLAGS='-fPIC -O3 ' \
