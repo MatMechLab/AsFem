@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(AsFem)
+project(AsFem2)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -198,7 +198,7 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GL /openmp")
 endif()
 
-message("AsFem will be compiled in ${CMAKE_BUILD_TYPE} mode !")
+message("AsFem2 will be compiled in ${CMAKE_BUILD_TYPE} mode !")
 message("CXX compiler options are: ${CMAKE_CXX_FLAGS}")
 message("The executable file 'asfem' will be generated in ${CMAKE_CURRENT_SOURCE_DIR}/bin folder")
 ###############################################
@@ -210,10 +210,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include(SourceCode.cmake)
 
 ##################################################
-add_executable(asfem ${inc} ${src})
+add_executable(asfem2 ${inc} ${src})
 
 # target_link_libraries(asfem ${MPI_LIB} ${PETSC_LIB} ${METIS_LIB} ${GKLIB})
-target_link_libraries(asfem ${MPI_LIB} ${PETSC_LIB})
+target_link_libraries(asfem2 ${MPI_LIB} ${PETSC_LIB})
 
 ###############################################
 ### set LTO for asfem                       ###

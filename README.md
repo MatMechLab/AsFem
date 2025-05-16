@@ -57,6 +57,15 @@ Additional documentation and details about AsFem are available on its [homepage]
 # Author
 [Yang Bai](https://yangbai90.github.io/)
 
+[MMLab members](https://www.x-mol.com/groups/matmechlab/people)
+
+# Funding
+This project is supported by:
+
+- Start up fund of the Great Bay University
+- General Program of Guangdong Natural Science Foundation, 2025-2027
+- Youth Program of the National Natural Science Foundation of China, 2025-2027
+
 
 # Citation
 ```
