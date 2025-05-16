@@ -16,90 +16,92 @@
 #include "MateSystem/BulkMateSystem.h"
 
 
-void BulkMateSystem::runBulkMateLibs(const MateType &t_matetype,const nlohmann::json &t_params,
-                                     const LocalElmtInfo &t_elmtinfo,const LocalElmtSolution &t_elmtsoln){
-    switch (t_matetype)
+void BulkMateSystem::runBulkMateLibs(const MateType &t_MateType,
+                                     const nlohmann::json &Params,
+                                     const LocalElmtInfo &ElmtInfo,
+                                     const LocalElmtSolution &ElmtSoln){
+    switch (t_MateType)
     {
     case MateType::CONSTPOISSONMATE:
-        ConstPoissonMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        ConstPoissonMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::POISSON1DBENCHMARKMATE:
-        Poisson1DBenchmarkMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        Poisson1DBenchmarkMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::POISSON2DBENCHMARKMATE:
-        Poisson2DBenchmarkMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        Poisson2DBenchmarkMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::NONLINEARPOISSON2DMATE:
-        NonlinearPoisson2DMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        NonlinearPoisson2DMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::NONLINEARPOISSON3DMATE:
-        NonlinearPoisson3DMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        NonlinearPoisson3DMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::CONSTDIFFUSIONNMATE:
-        ConstDiffusionMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        ConstDiffusionMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::NONLINEARDIFFUSION2DMATE:
-        NonlinearDiffusion2DMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        NonlinearDiffusion2DMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     //******************************************
     //*** for free energy materials
     //******************************************
     case MateType::DOUBLEWELLMATE:
-        DoubleWellPotentialMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        DoubleWellPotentialMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::BINARYMIXMATE:
-        BinaryMixtureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        BinaryMixtureMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::KOBAYASHIMATE:
-        KobayashiDendriteMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        KobayashiDendriteMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     //******************************************
     //*** for mechanics materials
     //******************************************
     case MateType::LINEARELASTICMATE:
-        LinearElasticMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        LinearElasticMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::SAINTVENANTMATE:
-        SaintVenantMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        SaintVenantMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::NEOHOOKEANMATE:
-        NeoHookeanMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        NeoHookeanMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::SMALLSTRAINJ2PLASTICITYMATE:
-        SmallStrainJ2PlasticityMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        SmallStrainJ2PlasticityMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::SMALLSTRAINEXPLAWJ2PLASTICITYMATE:
-        SmallStrainExpLawJ2PlasticityMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        SmallStrainExpLawJ2PlasticityMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     //******************************************
     //*** for coupled materials
     //******************************************
     case MateType::SMALLSTRAINDIFFUSIONMATE:
-        SmallStrainDiffusionMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        SmallStrainDiffusionMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::LINEARELASTICFRACMATE:
-        LinearElasticFractureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        LinearElasticFractureMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::NEOHOOKEANPFFRACTUREMATE:
-        NeoHookeanPFFractureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        NeoHookeanPFFractureMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::MIEHEFRACTUREMATE:
-        MieheFractureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        MieheFractureMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::SMALLSTRAINCAHNHILLIARDMATE:
-        SmallStrainCahnHilliardMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        SmallStrainCahnHilliardMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::SMALLSTRAINDIFFUSIONJ2MATE:
-        SmallStrainDiffusionJ2Material::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        SmallStrainDiffusionJ2Material::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     case MateType::DIFFUSIONACFRACTUREMATE:
-        DiffusionACFractureMaterial::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        DiffusionACFractureMaterial::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     //******************************************
     //*** for User-Defined-Material (UMAT)
     //******************************************
     case MateType::USER1MATE:
-        User1Material::computeMaterialProperties(t_params,t_elmtinfo,t_elmtsoln,m_materialcontainer_old,m_materialcontainer);
+        User1Material::computeMaterialProperties(Params,ElmtInfo,ElmtSoln,m_MaterialContainerOld,m_MaterialContainer);
         break;
     default:
         MessagePrinter::printErrorTxt("Unsupported material type in runBulkMateLibs, please check your code");

@@ -47,20 +47,20 @@ public:
      */
     inline MaterialsContainer& operator=(const MaterialsContainer &a){
         clean();
-        for(const auto &it:a.m_boolean_materials){
-            m_boolean_materials[it.first]=it.second;
+        for(const auto &it:a.m_BooleanMaterials){
+            m_BooleanMaterials[it.first]=it.second;
         }
-        for(const auto &it:a.m_scalar_materials){
-            m_scalar_materials[it.first]=it.second;
+        for(const auto &it:a.m_ScalarMaterials){
+            m_ScalarMaterials[it.first]=it.second;
         }
-        for(const auto &it:a.m_vector_materials){
-            m_vector_materials[it.first]=it.second;
+        for(const auto &it:a.m_VectorMaterials){
+            m_VectorMaterials[it.first]=it.second;
         }
-        for(const auto &it:a.m_rank2_materials){
-            m_rank2_materials[it.first]=it.second;
+        for(const auto &it:a.m_Rank2Materials){
+            m_Rank2Materials[it.first]=it.second;
         }
-        for(const auto &it:a.m_rank4_materials){
-            m_rank4_materials[it.first]=it.second;
+        for(const auto &it:a.m_Rank4Materials){
+            m_Rank4Materials[it.first]=it.second;
         }
         return *this;
     }
@@ -77,7 +77,7 @@ public:
      * @param matename the string name of inquery material
      */
     inline bool& BooleanMaterial(const string &matename){
-        return m_boolean_materials[matename];
+        return m_BooleanMaterials[matename];
     }
 
     /**
@@ -90,7 +90,7 @@ public:
      * @param matename the string name of inquery material
      */
     inline double& ScalarMaterial(const string &matename){
-        return m_scalar_materials[matename];
+        return m_ScalarMaterials[matename];
     }
 
     /**
@@ -103,7 +103,7 @@ public:
      * @param matename the string name of inquery material
      */
     inline Vector3d& VectorMaterial(const string &matename){
-        return m_vector_materials[matename];
+        return m_VectorMaterials[matename];
     }
 
     /**
@@ -116,7 +116,7 @@ public:
      * @param matename the string name of inquery material
      */
     Rank2Tensor& Rank2Material(const string &matename){
-        return m_rank2_materials[matename];
+        return m_Rank2Materials[matename];
     }
 
     /**
@@ -129,111 +129,111 @@ public:
      * @param matename the string name of inquery material
      */
     Rank4Tensor& Rank4Material(const string &matename){
-        return m_rank4_materials[matename];
+        return m_Rank4Materials[matename];
     }
 
     /**
      * get the reference of boolean materials
      */
     inline BooleanMateType& getBooleanMaterialsRef(){
-        return m_boolean_materials;
+        return m_BooleanMaterials;
     }
     /**
      * get the copy of boolean materials
      */
     inline BooleanMateType getBooleanMaterialsCopy()const{
-        return m_boolean_materials;
+        return m_BooleanMaterials;
     }
 
     /**
      * get the reference of scalar materials
      */
     inline ScalarMateType& getScalarMaterialsRef(){
-        return m_scalar_materials;
+        return m_ScalarMaterials;
     }
     /**
      * get the copy of scalar materials
      */
     inline ScalarMateType getScalarMaterialsCopy()const{
-        return m_scalar_materials;
+        return m_ScalarMaterials;
     }
 
     /**
      * get the reference of vector materials
      */
     inline VectorMateType& getVectorMaterialsRef(){
-        return m_vector_materials;
+        return m_VectorMaterials;
     }
     /**
      * get the copy of vector materials
      */
     inline VectorMateType getVectorMaterialsCopy()const{
-        return m_vector_materials;
+        return m_VectorMaterials;
     }
 
     /**
      * get the reference of rank-2 materials
      */
     inline Rank2MateType& getRank2MaterialsRef(){
-        return m_rank2_materials;
+        return m_Rank2Materials;
     }
     /**
      * get the copy of rank-2 materials
      */
     inline Rank2MateType getRank2MaterialsCopy()const{
-        return m_rank2_materials;
+        return m_Rank2Materials;
     }
 
     /**
      * get the reference of rank-4 materials
      */
     inline Rank4MateType& getRank4MaterialsRef(){
-        return m_rank4_materials;
+        return m_Rank4Materials;
     }
     /**
      * get the copy of rank-4 materials
      */
     inline Rank4MateType getRank4MaterialsCopy()const{
-        return m_rank4_materials;
+        return m_Rank4Materials;
     }
 
     /**
      * get the number of boolean materials
      */
     inline int getBooleanMaterialsNum()const{
-        return static_cast<int>(m_boolean_materials.size());
+        return static_cast<int>(m_BooleanMaterials.size());
     }
     /**
      * get the number of scalar materials
      */
     inline int getScalarMaterialsNum()const{
-        return static_cast<int>(m_scalar_materials.size());
+        return static_cast<int>(m_ScalarMaterials.size());
     }
     /**
      * get the number of vector materials
      */
     inline int getVectorMaterialsNum()const{
-        return static_cast<int>(m_vector_materials.size());
+        return static_cast<int>(m_VectorMaterials.size());
     }
     /**
      * get the number of rank-2 tensor materials
      */
     inline int getRank2MaterialsNum()const{
-        return static_cast<int>(m_rank2_materials.size());
+        return static_cast<int>(m_Rank2Materials.size());
     }
     /**
      * get the number of rank-4 materials
      */
     inline int getRank4MaterialsNum()const{
-        return static_cast<int>(m_rank4_materials.size());
+        return static_cast<int>(m_Rank4Materials.size());
     }
     
 
 private:
-    BooleanMateType m_boolean_materials;/**< boolean materials */
-    ScalarMateType m_scalar_materials;/**< scalar materials */
-    VectorMateType m_vector_materials;/**< vector materials */
-    Rank2MateType  m_rank2_materials;/**< rank-2 materials */
-    Rank4MateType  m_rank4_materials;/**< rank-4 materials */
+    BooleanMateType m_BooleanMaterials;/**< boolean materials */
+    ScalarMateType m_ScalarMaterials;/**< scalar materials */
+    VectorMateType m_VectorMaterials;/**< vector materials */
+    Rank2MateType  m_Rank2Materials;/**< rank-2 materials */
+    Rank4MateType  m_Rank4Materials;/**< rank-4 materials */
 
 };

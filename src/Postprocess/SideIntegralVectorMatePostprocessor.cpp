@@ -22,7 +22,7 @@ double SideIntegralVectorMatePostprocessor::computeSideIntegralValue(const int &
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||elmtinfo.m_dim){}
+    if(dofid||soln.getDofsNum()||elmtinfo.m_Dim){}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"vectormate","component"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the SideIntegralVectorMatePostprocessor, "
@@ -41,7 +41,7 @@ double SideIntegralVectorMatePostprocessor::computeSideIntegralValue(const int &
     
     m_vectorvalue=projsystem.getIthNodeVectorMateViaMateName(nodeid,m_vectormatename);
     
-    m_ppsvalue=m_vectorvalue(m_component)*shp.m_test;
+    m_ppsvalue=m_vectorvalue(m_component)*shp.m_Test;
     
     return m_ppsvalue;
 }

@@ -22,7 +22,7 @@ double VolumeIntegralScalarMatePostprocessor::computeVolumeIntegralValue(const i
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()||elmtinfo.m_dim) {}
+    if(dofid||soln.getDofsNum()||projsystem.getNodesNum()||elmtinfo.m_Dim) {}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"scalarmate"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the VolumeIntegralScalarMatePostprocessor, "
@@ -35,7 +35,7 @@ double VolumeIntegralScalarMatePostprocessor::computeVolumeIntegralValue(const i
     
     m_scalarvalue=projsystem.getIthNodeScalarMateViaMateName(nodeid,m_scalarmatename);
     
-    m_ppsvalue=m_scalarvalue*shp.m_test;
+    m_ppsvalue=m_scalarvalue*shp.m_Test;
     
     return m_ppsvalue;
 }

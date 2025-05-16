@@ -71,10 +71,10 @@ public:
      */
     inline double operator()(const int &i,const int &j,const int &k,const int &l) const{
         if(i<1||i>3 || j<1||j>3 || k<1||k>3 || l<1||l>3){
-            MessagePrinter::printErrorTxt("your i or j or k or l is out of range when you call a rank-4 tensor");
+            MessagePrinter::printErrorTxt("your i or j or k or l is out of range when you access a rank-4 tensor");
             MessagePrinter::exitAsFem();
         }
-        return m_vals[(((i-1)*N+j-1)*N+k-1)*N+l-1];
+        return m_vals[i-1][j-1][k-1][l-1];
     }
     /**
      * () operator for rank-4 tensor \f$\mathbb{C}_{ijkl}\f$
@@ -85,10 +85,10 @@ public:
      */
     inline double& operator()(const int &i,const int &j,const int &k,const int &l){
         if(i<1||i>3 || j<1||j>3 || k<1||k>3 || l<1||l>3){
-            MessagePrinter::printErrorTxt("your i or j or k or l is out of range when you call a rank-4 tensor");
+            MessagePrinter::printErrorTxt("your i or j or k or l is out of range when you access a rank-4 tensor");
             MessagePrinter::exitAsFem();
         }
-        return m_vals[(((i-1)*N+j-1)*N+k-1)*N+l-1];
+        return m_vals[i-1][j-1][k-1][l-1];
     }
     /**
      * get the voigt component of current rank-4 tensor
@@ -130,23 +130,6 @@ public:
                 +(*this)(i,3,k,3)*grad_test(3))*grad_trial(3);
     }
     //*******************************
-    //*** for []  operator
-    //*******************************
-    /**
-     * [] operator to get the component of a rank-4 tensor \f$\mathbb{C}_{ijkl}\f$
-     * @param i i index
-     */
-    inline double  operator[](const int &i) const{
-        return m_vals[i-1];
-    }
-    /**
-     * [] operator to get the component of a rank-4 tensor \f$\mathbb{C}_{ijkl}\f$
-     * @param i i index
-     */
-    inline double& operator[](const int &i){
-        return m_vals[i-1];
-    }
-    //*******************************
     //*** for =  operator
     //*******************************
     /**
@@ -154,7 +137,15 @@ public:
      * @param a right hand side scalar
      */
     inline Rank4Tensor& operator=(const double &a){
-        fill(m_vals.begin(),m_vals.end(),a);
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=a;
+                    }
+                }
+            }
+        }
         return *this;
     }
     /**
@@ -162,7 +153,15 @@ public:
      * @param a right hand rank-4 tensor
      */
     inline Rank4Tensor& operator=(const Rank4Tensor &a){
-        for(int i=0;i<N4;i++) m_vals[i]=a.m_vals[i];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=a.m_vals[i][j][k][l];
+                    }
+                }
+            }
+        }
         return *this;
     }
     //*******************************
@@ -174,7 +173,15 @@ public:
      */
     inline Rank4Tensor operator+(const double &a) const{
         Rank4Tensor temp(0.0);
-        for(int i=0;i<N4;i++) temp.m_vals[i]=m_vals[i]+a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        temp.m_vals[i][j][k][l]=m_vals[i][j][k][l]+a;
+                    }
+                }
+            }
+        }
         return temp;
     }
     /**
@@ -183,7 +190,15 @@ public:
      */
     inline Rank4Tensor operator+(const Rank4Tensor &a) const{
         Rank4Tensor temp(0.0);
-        for(int i=0;i<N4;i++) temp.m_vals[i]=m_vals[i]+a.m_vals[i];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        temp.m_vals[i][j][k][l]=m_vals[i][j][k][l]+a.m_vals[i][j][k][l];
+                    }
+                }
+            }
+        }
         return temp;
     }
     //*******************************
@@ -194,7 +209,15 @@ public:
      * @param a right hand side scalar
      */
     inline Rank4Tensor& operator+=(const double &a){
-        for(int i=0;i<N4;i++) m_vals[i]=m_vals[i]+a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=m_vals[i][j][k][l]+a;
+                    }
+                }
+            }
+        }
         return *this;
     }
     /**
@@ -202,7 +225,15 @@ public:
      * @param a right hand side rank-4 tensor
      */
     inline Rank4Tensor& operator+=(const Rank4Tensor &a){
-        for(int i=0;i<N4;i++) m_vals[i]=m_vals[i]+a.m_vals[i];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=m_vals[i][j][k][l]+a.m_vals[i][j][k][l];
+                    }
+                }
+            }
+        }
         return *this;
     }
     //*******************************
@@ -214,7 +245,15 @@ public:
      */
     inline Rank4Tensor operator-(const double &a) const{
         Rank4Tensor temp(0.0);
-        for(int i=0;i<N4;i++) temp.m_vals[i]=m_vals[i]-a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        temp.m_vals[i][j][k][l]=m_vals[i][j][k][l]-a;
+                    }
+                }
+            }
+        }
         return temp;
     }
     /**
@@ -223,7 +262,15 @@ public:
      */
     inline Rank4Tensor operator-(const Rank4Tensor &a) const{
         Rank4Tensor temp(0.0);
-        for(int i=0;i<N4;i++) temp.m_vals[i]=m_vals[i]-a.m_vals[i];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        temp.m_vals[i][j][k][l]=m_vals[i][j][k][l]-a.m_vals[i][j][k][l];
+                    }
+                }
+            }
+        }
         return temp;
     }
     //*******************************
@@ -234,7 +281,15 @@ public:
      * @param a right hand side scalar
      */
     inline Rank4Tensor& operator-=(const double &a){
-        for(int i=0;i<N4;i++) m_vals[i]=m_vals[i]-a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=m_vals[i][j][k][l]-a;
+                    }
+                }
+            }
+        }
         return *this;
     }
     /**
@@ -242,7 +297,15 @@ public:
      * @param a right hand side rank-4 tensor
      */
     inline Rank4Tensor& operator-=(const Rank4Tensor &a){
-        for(int i=0;i<N4;i++) m_vals[i]=m_vals[i]-a.m_vals[i];
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=m_vals[i][j][k][l]-a.m_vals[i][j][k][l];
+                    }
+                }
+            }
+        }
         return *this;
     }
     //*******************************
@@ -254,7 +317,15 @@ public:
      */
     inline Rank4Tensor operator*(const double &a) const{
         Rank4Tensor temp(0.0);
-        for(int i=0;i<N4;i++) temp.m_vals[i]=m_vals[i]*a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        temp.m_vals[i][j][k][l]=m_vals[i][j][k][l]*a;
+                    }
+                }
+            }
+        }
         return temp;
     }
     /**
@@ -281,7 +352,15 @@ public:
      * @param a right hand side scalar
      */
     inline Rank4Tensor& operator*=(const double &a){
-        for(int i=0;i<N4;++i) m_vals[i]=m_vals[i]*a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=m_vals[i][j][k][l]*a;
+                    }
+                }
+            }
+        }
         return *this;
     }
     //*******************************
@@ -297,7 +376,15 @@ public:
             MessagePrinter::exitAsFem();
         }
         Rank4Tensor temp(0.0);
-        for(int i=0;i<N4;i++) temp.m_vals[i]=m_vals[i]/a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        temp.m_vals[i][j][k][l]=m_vals[i][j][k][l]/a;
+                    }
+                }
+            }
+        }
         return temp;
     }
     //*******************************
@@ -312,7 +399,15 @@ public:
             MessagePrinter::printErrorTxt("a="+to_string(a)+" is singular for /= operator in rank-4 tensor");
             MessagePrinter::exitAsFem();
         }
-        for(int i=0;i<N4;++i) m_vals[i]=m_vals[i]*a;
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=m_vals[i][j][k][l]/a;
+                    }
+                }
+            }
+        }
         return *this;
     }
     //*******************************************************************
@@ -337,14 +432,22 @@ public:
      * set current rank-4 tensor to 0
      */
     inline void setToZeros(){
-        fill(m_vals.begin(),m_vals.end(),0.0);
+        for(int i=0;i<3;i++){
+            for(int j=0;j<3;j++){
+                for(int k=0;k<3;k++){
+                    for(int l=0;l<3;l++){
+                        m_vals[i][j][k][l]=0.0;
+                    }
+                }
+            }
+        }
     }
     /**
      * set current rank-4 tensor to idendity
      */
     inline void setToIdentity(){
         setToZeros();
-        for(int i=1;i<=N;i++) (*this)(i,i,i,i)=1.0;
+        for(int i=1;i<=3;i++) (*this)(i,i,i,i)=1.0;
     }
     /**
      * set current rank-4 tensor to rank-4 identity
@@ -352,10 +455,10 @@ public:
     inline void setToIdentity4(){
         // maps a rank2 tensor to itself(no symmetric consideriation here),i.e. Iden4:rank2=rank2
         setToZeros();
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
-                for(int k=1;k<=N;k++){
-                    for(int l=1;l<=N;l++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
+                for(int k=1;k<=3;k++){
+                    for(int l=1;l<=3;l++){
                         (*this)(i,j,k,l)=1.0*((i==k)&&(j==l));
                     }
                 }
@@ -368,10 +471,10 @@ public:
     inline void setIdentity4Transpose(){
         // maps a rank-2 tensor to its transpose, A^{T}=I4:A
         setToZeros();
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
-                for(int k=1;k<=N;k++){
-                    for(int l=1;l<=N;l++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
+                for(int k=1;k<=3;k++){
+                    for(int l=1;l<=3;l++){
                         (*this)(i,j,k,l)=1.0*((j==k)&&(i==l));
                     }
                 }
@@ -384,10 +487,10 @@ public:
     inline void setToIdentity4Symmetric(){
         // symmetric fourth-order tensor
         setToZeros();
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
-                for(int k=1;k<=N;k++){
-                    for(int l=1;l<=N;l++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
+                for(int k=1;k<=3;k++){
+                    for(int l=1;l<=3;l++){
                         (*this)(i,j,k,l)=0.5*((i==k)&&(j==l))
                                         +0.5*((i==l)&&(j==k));
                     }
@@ -400,10 +503,10 @@ public:
      */
     inline void setToRandom(){
         srand(time(0));
-        for(int i=1;i<=N;++i){
-            for(int j=1;j<=N;++j){
-                for(int k=1;k<=N;++k){
-                    for(int l=1;l<=N;++l){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
+                for(int k=1;k<=3;k++){
+                    for(int l=1;l<=3;l++){
                         (*this)(i,j,k,l)=static_cast<double>(1.0*rand()/RAND_MAX);
                     }
                 }
@@ -466,8 +569,6 @@ public:
     Rank4Tensor conjPushForward(const Rank2Tensor &F) const;
 
 private:
-    const int N=3;/**< the dimension of current tensor */
-    const int N4=81;/**< the total length of current tensor */
-    vector<double> m_vals;/**< the tensor components */
+    double m_vals[3][3][3][3];/**< the tensor's matrix */
 
 };

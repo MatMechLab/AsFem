@@ -15,27 +15,27 @@
 
 #include "BCSystem/BCSystem.h"
 
-void BCSystem::runBCLibs(const FECalcType &calctype,
-                         const BCType &bctype,
-                         const double &bcvalue,
-                         const double (&ctan)[3],
-                         const nlohmann::json &json,
-                         const Vector3d &normal,
-                         const LocalElmtInfo &elmtinfo,
-                         const LocalElmtSolution &elmtsoln,
-                         const LocalShapeFun &shp,
-                         MatrixXd &localK,
-                         VectorXd &localR){
-    switch (bctype)
+void BCSystem::runBCLibs(const FECalcType &CalcType,
+                         const BCType &t_BCType,
+                         const double &BCValue,
+                         const double (&Ctan)[3],
+                         const nlohmann::json &Params,
+                         const Vector3d &Normal,
+                         const LocalElmtInfo &ElmtInfo,
+                         const LocalElmtSolution &ElmtSoln,
+                         const LocalShapeFun &Shp,
+                         MatrixXd &LocalK,
+                         VectorXd &LocalR){
+    switch (t_BCType)
     {
     case BCType::NEUMANNBC:
-        NeumannBC::computeBCValue(calctype,bcvalue,json,elmtinfo,elmtsoln,normal,shp,ctan,localK,localR);
+        NeumannBC::computeBCValue(CalcType,BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK,LocalR);
         break;
     case BCType::PRESSUREBC:
-        PressureBC::computeBCValue(calctype,bcvalue,json,elmtinfo,elmtsoln,normal,shp,ctan,localK,localR);
+        PressureBC::computeBCValue(CalcType,BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK,LocalR);
         break;
     case BCType::TRACTIONBC:
-        TractionBC::computeBCValue(calctype,bcvalue,json,elmtinfo,elmtsoln,normal,shp,ctan,localK,localR);
+        TractionBC::computeBCValue(CalcType,BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK,LocalR);
         break;
     default:
         MessagePrinter::printErrorTxt("unsupported boundary condition type in RunBCLibs.cpp, please check your input file or your code");

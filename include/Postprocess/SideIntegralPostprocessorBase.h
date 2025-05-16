@@ -15,8 +15,7 @@
 
 #pragma once
 
-#include "Mesh/Mesh.h"
-#include "DofHandler/DofHandler.h"
+#include "SolutionSystem/SolutionSystem.h"
 #include "ProjectionSystem/ProjectionSystem.h"
 
 #include "MathUtils/Vector.h"

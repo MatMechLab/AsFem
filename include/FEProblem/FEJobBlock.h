@@ -22,28 +22,28 @@
  */
 class FEJobBlock{
 public:
-    FEJobType m_jobtype=FEJobType::STATIC;/**< for the job type, i.e., static, transient. */
-    string   m_jobtypename="static";/**< the job type name */
-    bool m_isdebug=true;/**< message print level */
-    bool m_isdepdebug=false;/**< for the dep message print */
+    FEJobType m_JobType=FEJobType::STATIC;/**< for the job type, i.e., static, transient. */
+    string   m_JobTypeName="static";/**< the job type name */
+    bool m_IsDebug=true;/**< message print level */
+    bool m_IsDepDebug=false;/**< for the dep message print */
 
     /**
      * init the job block
      */
     void init(){
-        m_jobtype=FEJobType::STATIC;
-        m_jobtypename="static";
-        m_isdebug=true;
-        m_isdepdebug=false;
+        m_JobType=FEJobType::STATIC;
+        m_JobTypeName="static";
+        m_IsDebug=true;
+        m_IsDepDebug=false;
     }
     /**
      * print out the job block information
      */
     void printJobInfo(){
         MessagePrinter::printNormalTxt("Job information summary:");
-        MessagePrinter::printNormalTxt("  job type="+m_jobtypename);
-        if(m_isdebug){
-            if(m_isdepdebug){
+        MessagePrinter::printNormalTxt("  job type="+m_JobTypeName);
+        if(m_IsDebug){
+            if(m_IsDepDebug){
                 MessagePrinter::printNormalTxt("  dep message print is enabled");
             }
             else{

@@ -1,14 +1,14 @@
 //+
 SetFactory("OpenCASCADE");
 
-dx=0.015;
-dx1=0.004;
+dx=0.0225;
+dx1=0.0035;
 
 w=1.0;
 w1=0.5;
 h=0.5;
-z=0.05;
-dh=5.0e-4;
+z=0.025;
+dh=6.0e-4;
 
 n1=601;// for long edge
 n2=81;// for short edge

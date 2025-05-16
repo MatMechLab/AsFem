@@ -14,14 +14,16 @@
 
 #pragma once
 
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolverBase.h"
 #include "NonlinearSolver/NonlinearSolverBlock.h"
+#include "Utils/Timer.h"
 
 /**
  * This is the struct that will be used to pass down/up the args we need to call SNES
  */
 typedef struct{
-    Mesh *_mesh;
+    FECell *_fecell;
     DofHandler *_dofHandler;
     BCSystem *_bcSystem;
     ElmtSystem *_elmtSystem;
@@ -99,8 +101,9 @@ public:
 
     /**
      * initialize the SNES solver
+     * @param lsolver the linear solver class
      */
-    void initSolver();
+    void initSolver(LinearSolver &lsolver);
     /**
      * release the allocated memory in SNES solver
      */
@@ -108,48 +111,48 @@ public:
 
     /**
      * solve the nonlinear equation, if success then return true
-     * @param t_mesh the mesh class
-     * @param t_dofhandler the dof class
-     * @param t_fe the fe class
-     * @param t_elmtsyste the element system class
-     * @param t_matesystem the material system class
-     * @param t_fesystem the fe system class
-     * @param t_bcsystem the boundary condition system
-     * @param t_solutionsystem the solution system class
-     * @param t_equationsystem the equation system class
-     * @param t_fectrlinfo the fe control info
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dof class
+     * @param t_FE the fe class
+     * @param t_ElmtSystem the element system class
+     * @param t_MateSystem the material system class
+     * @param t_FESystem the fe system class
+     * @param t_BCSystem the boundary condition system
+     * @param t_SolnSystem the solution system class
+     * @param t_EqSystem the equation system class
+     * @param t_LinearSolver the linear solver system
+     * @param t_FECtrlInfo the fe control info
      */
-    virtual bool solve(Mesh &t_mesh,DofHandler &t_dofhandler,FE &t_fe,
-                       ElmtSystem &t_elmtsyste,MateSystem &t_matesystem,
-                       FESystem &t_fesystem,
-                       BCSystem &t_bcsystem,
-                       SolutionSystem &t_solutionsystem,
-                       EquationSystem &t_equationsystem,
-                       FEControlInfo &t_fectrlinfo) override;
-    
-    /**
-     * get the linear solver name in current SNES solver
-     */
-    inline string getLinearSolverName()const{return m_linearsolvername;}
+    virtual bool solve(FECell &t_FECell,
+                       DofHandler &t_DofHandler,
+                       FE &t_FE,
+                       ElmtSystem &t_ElmtSystem,
+                       MateSystem &t_MateSystem,
+                       FESystem &t_FESystem,
+                       BCSystem &t_BCSystem,
+                       SolutionSystem &t_SolnSystem,
+                       EquationSystem &t_EqSystem,
+                       LinearSolver &t_LinearSolver,
+                       FEControlInfo &t_FECtrlInfo) override;
 
     /**
      * get the nonlinear solver name
      */
-    inline string getNonLinearSolverName()const{return m_nlsolvername;}
+    inline string getNonLinearSolverName()const{return m_NLSolverName;}
 
     /**
      * get the iteration number
      */
-    inline int getIterationNum()const{return m_iterations;}
+    inline int getIterationNum()const{return m_Iterations;}
 
     /**
      * get the initial norm of residual
      */
-    inline double getInitResidualNorm()const{return m_rnorm0;}
+    inline double getInitResidualNorm()const{return m_RNorm0;}
     /**
      * get the residual norm
      */
-    inline double getResidualNorm()const{return m_rnorm;}
+    inline double getResidualNorm()const{return m_RNorm;}
 
     /**
      * print out the SNES solver information
@@ -157,38 +160,36 @@ public:
     void printSolverInfo()const;
 
 private:
-    bool m_initialized;/**< boolean flag for the status of initializing */
-    int m_maxiters;/**< the maximum iterations */
-    int m_iterations;/**< the iteration number */
+    bool m_Initialized;/**< boolean flag for the status of initializing */
+    int m_MaxIters;/**< the maximum iterations */
+    int m_Iterations;/**< the iteration number */
 
-    double m_s_tol;/**< the tolerance for delta U */
+    double m_STol;/**< the tolerance for delta U */
 
-    double m_abstol_r;/**< the absolute tolerance for residual */
-    double m_reltol_r;/**< the relative tolerance for residual */
+    double m_AbsTolR;/**< the absolute tolerance for residual */
+    double m_RelTolR;/**< the relative tolerance for residual */
 
-    double m_abstol_du;/**< the absolute tolerance for delta u */
-    double m_reltol_du;/**< the relative tolerance for delta u */
+    double m_AbsTolDu;/**< the absolute tolerance for delta u */
+    double m_RelTolDu;/**< the relative tolerance for delta u */
 
-    double m_abstol_e;/**< the absolute tolerance for energy */
-    double m_reltol_e;/**< the relative tolerance for energy */
+    double m_AbsTolE;/**< the absolute tolerance for energy */
+    double m_RelTolE;/**< the relative tolerance for energy */
 
-    double m_rnorm0;/**< the initial norm of residual */
-    double m_rnorm;/**< the intermediate or final norm of reisudal */
-
-private:
-    string m_linearsolvername;/**< the string name of the linear solver in SNES*/
-    string m_nlsolvername;/**< the nonlinear solver name in SNES */
-    string m_pcname;/**< the preconditioner name of current SNES solver */
-    NonlinearSolverType m_nlsolvertype;/**< the nonlinear solver type */
+    double m_RNorm0;/**< the initial norm of residual */
+    double m_RNorm;/**< the intermediate or final norm of reisudal */
 
 private:
-    SNES m_snes;/**< the SNES solver from PETSc */
-    KSP  m_ksp;/**< the KSP linear solver from PETSc */
-    PC   m_pc;/**< the preconditioner from PETSc */
-    SNESLineSearch m_sneslinesearch;/**< for the line search ctx */
-    SNESConvergedReason m_snesconvergereason;/**< for the converged reason ctx */
+    string m_NLSolverName;/**< the nonlinear solver name in SNES */
+    NonlinearSolverType m_NLSolverType;/**< the nonlinear solver type */
 
-    AppCtx m_appctx;
-    MonitorCtx m_monctx;
+private:
+    SNES m_SNES;/**< the SNES solver from PETSc */
+    SNESLineSearch m_SNESLineSearch;/**< for the line search ctx */
+    SNESConvergedReason m_SNESConvergeReason;/**< for the converged reason ctx */
+
+    AppCtx m_AppCtx;/**< App ctx */
+    MonitorCtx m_MonCtx;/**< Mon ctx */
+
+    Timer m_Timer;/**< Timer */
 
 };

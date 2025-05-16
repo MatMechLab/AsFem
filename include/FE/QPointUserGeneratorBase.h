@@ -18,7 +18,7 @@
 #include <vector>
 #include <cmath>
 
-#include "Mesh/MeshType.h"
+#include "FECell/MeshType.h"
 #include "Utils/MessagePrinter.h"
 
 using std::vector;

@@ -19,16 +19,16 @@
 					"eps":0.015,
 					"K":121.15,
 					"G":80.77,
-					"stabilizer":1.0e-4,
+					"stabilizer":1.0e-6,
 					"finite-strain":true
 				}
 			}
 		}
 	},
 	"projection":{
-		"type":"default",
+		"type":"fullleastsquare",
 		"scalarmate":["vonMises-stress"],
-		"rank2mate":["stress"]
+		"rank2mate":["Stress"]
 	},
 	"bcs":{
 		"fixux":{
@@ -56,19 +56,24 @@
 			"side":["top"]
 		}
 	},
+	"linearsolver":{
+		"type":"gmres",
+		"preconditioner":"lu",
+		"maxiters":10000,
+		"restarts":2600,
+		"tolerance":1.0e-26
+	},
 	"nlsolver":{
 		"type":"newton",
-		"solver":"cg",
-		"maxiters":15,
-		"abs-tolerance":8.5e-7,
-		"rel-tolerance":1.0e-9,
-		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"maxiters":50,
+		"abs-tolerance":5.0e-7,
+		"rel-tolerance":5.0e-10,
+		"s-tolerance":0.0
 	},
 	"timestepping":{
 		"type":"be",
 		"dt0":1.0e-4,
-		"dtmax":1.0e-3,
+		"dtmax":5.0e-3,
 		"dtmin":1.0e-12,
 		"optimize-iters":4,
 		"end-time":2.5e-1,

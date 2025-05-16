@@ -15,103 +15,91 @@
 
 #include "BCSystem/BCSystem.h"
 
-void BCSystem::applyDirichletBC(const FECalcType &calctype,
-                                const double &bcvalue,
-                                const BCType &bctype,
-                                const nlohmann::json &json,
-                                const vector<int> &dofids,
-                                const vector<string> &bcnamelist,
-                                const Mesh &mesh,const DofHandler &dofhandler,
-                                Vector &U,Vector &Ucopy,Vector &Uold,Vector &Uolder,
+void BCSystem::applyDirichletBC(const FECalcType &CalcType,
+                                const double &BCValue,
+                                const BCType &t_BCType,
+                                const nlohmann::json &Params,
+                                const vector<int> &DofIDs,
+                                const vector<string> &BCNameList,
+                                const FECell &t_FECell,
+                                const DofHandler &t_DofHandler,
+                                Vector &U,
+                                Vector &Ucopy,
+                                Vector &Uold,
+                                Vector &Uolder,
                                 Vector &V,
                                 SparseMatrix &AMATRIX,
                                 Vector &RHS){
-    //************************************
-    //*** get rid of unused warnings 
-    //************************************
-    int i,j,k,e,iInd,nElmts;
-    int rankne,eStart,eEnd;
+    int i,j,k,iInd;
     vector<int> globaldofids;
-    globaldofids.resize(dofids.size(),0);
+    globaldofids.resize(DofIDs.size(),0);
 
-    m_local_elmtinfo.m_dofsnum=static_cast<int>(dofids.size());
-    if(Uold.getSize()||Uolder.getSize()||V.getSize()) {}
+    m_LocalElmtInfo.m_DofsNum=static_cast<int>(DofIDs.size());
 
     Ucopy.makeGhostCopy();
     Uold.makeGhostCopy();
     Uolder.makeGhostCopy();
     V.makeGhostCopy();
 
-    MPI_Comm_size(PETSC_COMM_WORLD,&m_size);
-    MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
-
-    for(const auto &name:bcnamelist){
-        nElmts=mesh.getBulkMeshElmtsNumViaPhyName(name);
-        rankne=nElmts/m_size;
-        eStart=m_rank*rankne;
-        eEnd=(m_rank+1)*rankne;
-        if(m_rank==m_size-1) eEnd=nElmts;
-        m_local_elmtinfo.m_dim=mesh.getBulkMeshElmtDimViaPhyName(name);
-
-        for(e=eStart;e<eEnd;e++){
-            m_local_elmtinfo.m_nodesnum=mesh.getBulkMeshIthElmtNodesNumViaPhyName(name,e+1);
-            
-            for(i=1;i<=m_local_elmtinfo.m_nodesnum;i++){
-                j=mesh.getBulkMeshIthElmtJthNodeIDViaPhyName(name,e+1,i);
-                m_local_elmtinfo.m_gpCoords0(1)=mesh.getBulkMeshIthNodeJthCoord0(j,1);
-                m_local_elmtinfo.m_gpCoords0(2)=mesh.getBulkMeshIthNodeJthCoord0(j,2);
-                m_local_elmtinfo.m_gpCoords0(3)=mesh.getBulkMeshIthNodeJthCoord0(j,3);
-
-                for(k=1;k<=m_local_elmtinfo.m_dofsnum;k++){
-                    iInd=dofhandler.getIthNodeJthDofID(j,dofids[k-1]);
+    for(const auto &name:BCNameList){
+        for (const auto &cell:t_FECell.getLocalMeshCellVectorCopyViaPhyName(name)){
+            m_LocalElmtInfo.m_Dim=cell.Dim;
+            m_LocalElmtInfo.m_DofsNum=static_cast<int>(DofIDs.size());
+            for(i=1;i<=cell.NodesNumPerElmt;i++){
+                j=cell.ElmtConn[i-1];
+                m_LocalElmtInfo.m_QpCoords0(1)=cell.ElmtNodeCoords0(i,1);
+                m_LocalElmtInfo.m_QpCoords0(2)=cell.ElmtNodeCoords0(i,2);
+                m_LocalElmtInfo.m_QpCoords0(3)=cell.ElmtNodeCoords0(i,3);
+                for(k=1;k<=m_LocalElmtInfo.m_DofsNum;k++){
+                    iInd=t_DofHandler.getIthNodeJthDofID(j,DofIDs[k-1]);
                     globaldofids[k-1]=iInd;
 
-                    m_local_elmtsoln.m_gpU[k]=Ucopy.getIthValueFromGhost(iInd);
-                    m_local_elmtsoln.m_gpUold[k]=Uold.getIthValueFromGhost(iInd);
-                    m_local_elmtsoln.m_gpUolder[k]=Uolder.getIthValueFromGhost(iInd);
-                    m_local_elmtsoln.m_gpV[k]=V.getIthValueFromGhost(iInd);
+                    m_LocalElmtSoln.m_QpU[k]=Ucopy.getIthValueFromGhost(iInd);
+                    m_LocalElmtSoln.m_QpUold[k]=Uold.getIthValueFromGhost(iInd);
+                    m_LocalElmtSoln.m_QpUolder[k]=Uolder.getIthValueFromGhost(iInd);
+                    m_LocalElmtSoln.m_QpV[k]=V.getIthValueFromGhost(iInd);
                 }
 
-                switch (bctype)
+                switch (t_BCType)
                 {
                 case BCType::DIRICHLETBC:
-                    DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    DirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::ROTATEDDIRICHLETBC:
-                    RotatedDirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    RotatedDirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::USER1DIRICHLETBC:
-                    User1DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    User1DirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::USER2DIRICHLETBC:
-                    User2DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    User2DirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::USER3DIRICHLETBC:
-                    User3DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    User3DirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::USER4DIRICHLETBC:
-                    User4DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    User4DirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::USER5DIRICHLETBC:
-                    User5DirichletBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    User5DirichletBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 case BCType::POISSON2DBENCHMARKBC:
-                    Poisson2DBenchmarkBC::computeBCValue(calctype,m_dirichlet_penalty,bcvalue,json,
-                                                m_local_elmtinfo,m_local_elmtsoln,globaldofids,
+                    Poisson2DBenchmarkBC::computeBCValue(CalcType,m_DirichletPenalty,BCValue,Params,
+                                                m_LocalElmtInfo,m_LocalElmtSoln,globaldofids,
                                                 U,AMATRIX,RHS);
                     break;
                 default:
@@ -121,6 +109,7 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
                 }
             }
         }
+
     }
 
     Ucopy.destroyGhostCopy();
@@ -130,7 +119,11 @@ void BCSystem::applyDirichletBC(const FECalcType &calctype,
 
     // do the assemble
     U.assemble();
-    if(calctype==FECalcType::COMPUTERESIDUAL) RHS.assemble();
-    if(calctype==FECalcType::COMPUTEJACOBIAN) AMATRIX.assemble();
+    if(CalcType==FECalcType::COMPUTERESIDUAL) RHS.assemble();
+    if(CalcType==FECalcType::COMPUTEJACOBIAN) AMATRIX.assemble();
+    if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        RHS.assemble();
+        AMATRIX.assemble();
+    }
 
 }

@@ -24,7 +24,7 @@
 //******************************************
 #include "Utils/MessagePrinter.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 
 #include "MathUtils/Vector.h"
@@ -65,11 +65,11 @@ public:
 
     /**
      * apply the initial conditions to the solution
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofHandler class
      * @param U0 the initial solution
      */
-    void applyInitialConditions(const Mesh &t_mesh,const DofHandler &t_dofhandler,Vector &U0);
+    void applyInitialConditions(const FECell &t_fecell,const DofHandler &t_dofhandler,Vector &U0);
 
     /**
      * print out the initial condition info

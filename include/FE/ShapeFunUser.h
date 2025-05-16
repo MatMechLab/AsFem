@@ -21,8 +21,8 @@
 #include "FE/ShapeFunUser5.h"
 
 
-#include "Mesh/Nodes.h"
-#include "Mesh/MeshType.h"
+#include "FECell/Nodes.h"
+#include "FECell/MeshType.h"
 #include "FE/ShapeFunType.h"
 #include "MathUtils/MatrixXd.h"
 

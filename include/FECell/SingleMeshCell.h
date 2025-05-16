@@ -22,8 +22,8 @@
 #include <map>
 #include <utility>
 
-#include "Mesh/MeshType.h"
-#include "Mesh/Nodes.h"
+#include "FECell/MeshType.h"
+#include "FECell/Nodes.h"
 
 using std::vector;
 using std::map;
@@ -41,9 +41,12 @@ struct SingleMeshCell{
     Nodes ElmtNodeCoords0;/**< node coordinates of current mesh cell (undeformed)*/
     Nodes ElmtNodeCoords ;/**< node coordinates of current mesh cell (deformed)*/
     int VTKCellType;/**< the vtk cell type of current mesh */ 
+    MeshType CellMeshType;/**< the mesh type of current mesh cell */
 
     int            PhysicalGroupNums;/**< number of physical groups of current mesh cell, default one should be 1 */
     vector<string> PhysicalNameList;/**< pyhsical name list of current mesh cell, it can have more than one name */
     vector<int>    PhysicalIDList;/**< physical id list of current mesh cell, it can have more than one phy id */
+
+    double Volume;/**< the volume of the local FE Cell */
 
 };

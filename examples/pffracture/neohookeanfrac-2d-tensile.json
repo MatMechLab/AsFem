@@ -2,6 +2,7 @@
 	"mesh":{
 		"type":"msh4",
 		"file":"tensile.msh",
+		"distribution":"asfem",
 		"savemesh":true
 	},
 	"dofs":{
@@ -16,19 +17,19 @@
 				"parameters":{
 					"L":1.0e6,
 					"Gc":2.7e-3,
-					"eps":0.012,
+					"eps":0.01,
 					"K":121.15,
 					"G":80.77,
-					"stabilizer":1.0e-5,
+					"stabilizer":1.0e-6,
 					"finite-strain":true
 				}
 			}
 		}
 	},
 	"projection":{
-		"type":"default",
-		"scalarmate":["vonMises-stress"],
-		"rank2mate":["stress"]
+		"type":"fullleastsquare",
+		"scalarmate":["vonMises-stress","vonMises-strain"],
+		"rank2mate":["Stress","strain"]
 	},
 	"bcs":{
 		"fixux":{
@@ -50,34 +51,39 @@
 			"side":["top"]
 		}
 	},
+	"linearsolver":{
+		"type":"mumps",
+		"preconditioner":"lu",
+		"maxiters":10000,
+		"restarts":2600,
+		"tolerance":1.0e-26
+	},
 	"nlsolver":{
 		"type":"newton",
-		"solver":"gmres",
-		"maxiters":15,
-		"abs-tolerance":8.5e-7,
-		"rel-tolerance":1.0e-9,
-		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"maxiters":12,
+		"abs-tolerance":5.0e-7,
+		"rel-tolerance":5.0e-10,
+		"s-tolerance":0.0
 	},
 	"timestepping":{
 		"type":"be",
 		"dt0":1.0e-4,
-		"dtmax":1.0e-3,
+		"dtmax":5.0e-4,
 		"dtmin":1.0e-12,
 		"optimize-iters":4,
 		"end-time":2.5e-1,
 		"growth-factor":1.1,
-		"cutback-factor":0.85,
+		"cutback-factor":0.5,
 		"adaptive":true
 	},
 	"output":{
 		"type":"vtu",
-		"interval":10
+		"interval":5
 	},
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":2
+			"order":4
 		}
 	},
 	"postprocess":{
@@ -90,7 +96,7 @@
 			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
-				"rank2mate":"stress",
+				"rank2mate":"Stress",
 				"i-index":1,
 				"j-index":1
 			}
@@ -99,7 +105,7 @@
 			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
-				"rank2mate":"stress",
+				"rank2mate":"Stress",
 				"i-index":1,
 				"j-index":2
 			}
@@ -108,7 +114,7 @@
 			"type":"sideintegralrank2mate",
 			"side":["top"],
 			"parameters":{
-				"rank2mate":"stress",
+				"rank2mate":"Stress",
 				"i-index":2,
 				"j-index":2
 			}

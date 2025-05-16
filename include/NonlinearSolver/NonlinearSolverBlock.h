@@ -30,40 +30,33 @@ using std::string;
 class NonlinearSolverBlock{
 public:
     NonlinearSolverBlock(){
-        m_nlsolvertypename="newton with line search";
-        m_nlsolvertype=NonlinearSolverType::NEWTONLS;
-        m_maxiters=25;
-        m_abstol_r=7.5e-7;
-        m_reltol_r=5.0e-10;
-        m_s_tol=0.0; // |dx|<|x|*stol
-        m_pctypename="lu";
-        m_linearsolvername="default(gmres)";
-        m_checkjacobian=false;
+        m_NlSolverTypeName="newton with line search";
+        m_NlSolverType=NonlinearSolverType::NEWTONLS;
+        m_MaxIters=25;
+        m_AbsTolR=7.5e-7;
+        m_RelTolR=5.0e-10;
+        m_STol=0.0; // |dx|<|x|*stol
+        m_CheckJacobian=false;
     }
 
-    string              m_nlsolvertypename;/**< the string name of nonlinear solver */
-    NonlinearSolverType m_nlsolvertype; /**< the type of nonlinear solver */
-    int                 m_maxiters;/**< maximum iterations */
-    double m_abstol_r;/**< the absolute tolerance for residual */
-    double m_reltol_r;/**< the relative tolerance for residual */
-    double m_s_tol;/**< the tolerance for line search */
-    string m_linearsolvername;/**< the linear solver name */
-
-    string m_pctypename;/**< the string name of preconditioner */
-    bool m_checkjacobian=false;/**< if this is true, then SNES will compare your jacobian with the finite difference one */
+    string              m_NlSolverTypeName;/**< the string name of nonlinear solver */
+    NonlinearSolverType m_NlSolverType; /**< the type of nonlinear solver */
+    int                 m_MaxIters;/**< maximum iterations */
+    double m_AbsTolR;/**< the absolute tolerance for residual */
+    double m_RelTolR;/**< the relative tolerance for residual */
+    double m_STol;/**< the tolerance for line search */
+    bool m_CheckJacobian=false;/**< if this is true, then SNES will compare your jacobian with the finite difference one */
 
     /**
      * initialize the nlsolver block
      */
     void init(){
-        m_nlsolvertypename="newton with line search";
-        m_nlsolvertype=NonlinearSolverType::NEWTONLS;
-        m_maxiters=25;
-        m_abstol_r=7.5e-7;
-        m_reltol_r=5.0e-10;
-        m_s_tol=0.0; // |dx|<|x|*stol
-        m_pctypename="lu";
-        m_linearsolvername="default(gmres)";
-        m_checkjacobian=false;
+        m_NlSolverTypeName="newton with line search";
+        m_NlSolverType=NonlinearSolverType::NEWTONLS;
+        m_MaxIters=25;
+        m_AbsTolR=7.5e-7;
+        m_RelTolR=5.0e-10;
+        m_STol=0.0; // |dx|<|x|*stol
+        m_CheckJacobian=false;
     }
 };

@@ -13,10 +13,10 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "InputSystem/InputSystem.h"
-#include "Mesh/MeshGenerator.h"
-#include "Mesh/MeshFileImporter.h"
+#include "FECell/FECellGenerator.h"
+#include "FECell/MeshFile2FECellImporter.h"
 
-bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
+bool InputSystem::readMeshBlock(nlohmann::json &t_json,FECell &t_fecell){
     // the json already read 'mesh' !!!
     MeshType meshtype;
     int dim,nx,ny,nz;
@@ -53,8 +53,13 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             return false;
                         }
                         nx=static_cast<int>(t_json.at("nx"));
+                        if(nx<1){
+                            MessagePrinter::printErrorTxt("the nx number in your mesh block is <=0, please check your input file");
+                            return false;
+                        }
                         HasNx=true;
                     }
+
                     if(t_json.contains("xmin")){
                         if(!t_json.at("xmin").is_number_float()){
                             MessagePrinter::printErrorTxt("the xmin value in your mesh block is not a valid float");
@@ -76,6 +81,7 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                     else{
                         xmax=1.0;
                     }
+
                     if(t_json.contains("meshtype")){
                         if(!t_json.at("meshtype").is_string()){
                             MessagePrinter::printErrorTxt("the meshtype in your mesh block is not a valid string");
@@ -94,10 +100,6 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             meshtype=MeshType::EDGE4;
                             HasMeshType=true;
                         }
-                        else if(meshname=="edge5"){
-                            meshtype=MeshType::EDGE5;
-                            HasMeshType=true;
-                        }
                         else{
                             MessagePrinter::printErrorTxt("unsupported meshtype in your mesh block, it should be edge2,edge3,edge4");
                             return false;
@@ -111,6 +113,10 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                         }
                         IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
                     }
+                    else{
+                        IsSaveMesh=false;
+                    }
+
                     // now all the necessary information is ready for 1d case, we start to check unnecessary inputs
                     if(t_json.contains("ny")){
                         MessagePrinter::printErrorTxt("ny is invalid for 1d case in your mesh block, please check your input file");
@@ -146,13 +152,7 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                         return false;
                     }
                     // assign the mesh info to mesh data
-                    t_mesh.getBulkMeshMeshDataRef().m_nx=nx;
-                    t_mesh.getBulkMeshMeshDataRef().m_xmin=xmin;
-                    t_mesh.getBulkMeshMeshDataRef().m_xmax=xmax;
-                    t_mesh.getBulkMeshMeshDataRef().m_ymin=0.0;
-                    t_mesh.getBulkMeshMeshDataRef().m_ymax=0.0;
-                    t_mesh.getBulkMeshMeshDataRef().m_zmin=0.0;
-                    t_mesh.getBulkMeshMeshDataRef().m_zmax=0.0;
+                    t_fecell.setMeshInfo(nx,xmin,xmax,meshtype);
                 }// end-of-dim1-case
                 else if(dim==2){
                     // for 2d case
@@ -162,6 +162,10 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             return false;
                         }
                         nx=static_cast<int>(t_json.at("nx"));
+                        if(nx<1){
+                            MessagePrinter::printErrorTxt("the nx number in your mesh block is <=0, please check your input file");
+                            return false;
+                        }
                         HasNx=true;
                     }
                     if(t_json.contains("ny")){
@@ -170,6 +174,10 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             return false;
                         }
                         ny=static_cast<int>(t_json.at("ny"));
+                        if(ny<1){
+                            MessagePrinter::printErrorTxt("the ny number in your mesh block is <=0, please check your input file");
+                            return false;
+                        }
                         HasNy=true;
                     }
                     if(t_json.contains("xmin")){
@@ -231,7 +239,6 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             HasMeshType=true;
                         }
                         else{
-                            
                             MessagePrinter::printErrorTxt("unsupported 2d meshtype in your mesh block, it should be quad4,quad8,quad9");
                             return false;
                         }
@@ -243,6 +250,9 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             return false;
                         }
                         IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
+                    }
+                    else{
+                        IsSaveMesh=false;
                     }
                     // now all the necessary information is ready for 2d case, we start to check unnecessary inputs
                     if(t_json.contains("nz")){
@@ -271,24 +281,21 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                         return false;
                     }
                     // assign the mesh info to mesh data
-                    t_mesh.getBulkMeshMeshDataRef().m_nx=nx;
-                    t_mesh.getBulkMeshMeshDataRef().m_ny=ny;
-                    t_mesh.getBulkMeshMeshDataRef().m_xmin=xmin;
-                    t_mesh.getBulkMeshMeshDataRef().m_xmax=xmax;
-                    t_mesh.getBulkMeshMeshDataRef().m_ymin=ymin;
-                    t_mesh.getBulkMeshMeshDataRef().m_ymax=ymax;
-                    t_mesh.getBulkMeshMeshDataRef().m_zmin=0.0;
-                    t_mesh.getBulkMeshMeshDataRef().m_zmax=0.0;
+                    t_fecell.setMeshInfo(nx,ny,xmin,xmax,ymin,ymax,meshtype);
 
                 }//end-of-dim2-case
                 else if(dim==3){
-                    // for 2d case
+                    // for 3d case
                     if(t_json.contains("nx")){
                         if(!t_json.at("nx").is_number_integer()){
                             MessagePrinter::printErrorTxt("the nx number in your mesh block is not a valid integer");
                             return false;
                         }
                         nx=static_cast<int>(t_json.at("nx"));
+                        if(nx<1){
+                            MessagePrinter::printErrorTxt("the nx number in your mesh block is <=0, please check your input file");
+                            return false;
+                        }
                         HasNx=true;
                     }
                     if(t_json.contains("ny")){
@@ -297,6 +304,10 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             return false;
                         }
                         ny=static_cast<int>(t_json.at("ny"));
+                        if(ny<1){
+                            MessagePrinter::printErrorTxt("the ny number in your mesh block is <=0, please check your input file");
+                            return false;
+                        }
                         HasNy=true;
                     }
                     if(t_json.contains("nz")){
@@ -305,6 +316,10 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                             return false;
                         }
                         nz=static_cast<int>(t_json.at("nz"));
+                        if(nz<1){
+                            MessagePrinter::printErrorTxt("the nz number in your mesh block is <=0, please check your input file");
+                            return false;
+                        }
                         HasNz=true;
                     }
                     if(t_json.contains("xmin")){
@@ -395,9 +410,13 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                     if(t_json.contains("savemesh")){
                         if(!t_json.at("savemesh").is_boolean()){
                             MessagePrinter::printErrorTxt("invalid boolean value for savemesh in your mesh block, it should be true/false");
+                            MessagePrinter::printStars();
                             return false;
                         }
                         IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
+                    }
+                    else{
+                        IsSaveMesh=false;
                     }
                     // now all the necessary information is ready for 3d case, we start to check unnecessary inputs
                     if(!HasNx){
@@ -417,15 +436,7 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                         return false;
                     }
                     // assign the mesh info to mesh data
-                    t_mesh.getBulkMeshMeshDataRef().m_nx=nx;
-                    t_mesh.getBulkMeshMeshDataRef().m_ny=ny;
-                    t_mesh.getBulkMeshMeshDataRef().m_nz=nz;
-                    t_mesh.getBulkMeshMeshDataRef().m_xmin=xmin;
-                    t_mesh.getBulkMeshMeshDataRef().m_xmax=xmax;
-                    t_mesh.getBulkMeshMeshDataRef().m_ymin=ymin;
-                    t_mesh.getBulkMeshMeshDataRef().m_ymax=ymax;
-                    t_mesh.getBulkMeshMeshDataRef().m_zmin=zmin;
-                    t_mesh.getBulkMeshMeshDataRef().m_zmax=zmax;
+                    t_fecell.setMeshInfo(nx,ny,nz,xmin,xmax,ymin,ymax,zmin,zmax,meshtype);
                 }//end-of-dim3-case
                 else{
                     MessagePrinter::printErrorTxt("dim>3 or dim<1 is invalid for mesh generation, please check your input file");
@@ -433,12 +444,33 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                 }
 
             }// end-of-contain-dim
-            MeshGenerator meshGenerator;
-            if(meshGenerator.createMesh(dim,meshtype,t_mesh.getBulkMeshMeshDataRef())){
+
+            if(t_json.contains("distribution")){
+                if(!t_json.at("distribution").is_string()){
+                    MessagePrinter::printErrorTxt("the \"distribution\" in your mesh block is not a valid string");
+                    return false;
+                }
+                string method=t_json.at("distribution");
+                if(method.find("asfem")!=string::npos||method.find("metis")!=string::npos){
+                    t_fecell.setMeshDistributionMethod(method);
+                }
+                else{
+                    MessagePrinter::printErrorTxt("the distribution method:"+method+" in your mesh block is not supported");
+                    return false;
+                }
+            }
+            else{
+                t_fecell.setMeshDistributionMethod("asfem");// using built-in distribution method
+            }
+
+            FECellGenerator fecellGenerator;
+            if(fecellGenerator.createFEMeshCell(meshtype,t_fecell.getCellDataRef())){
                 MessagePrinter::printNormalTxt("mesh generator is done, your mesh is generated");
                 if(IsSaveMesh){
-                    t_mesh.saveBulkMesh2VTU(m_inputfile_name);
-                    MessagePrinter::printNormalTxt("save mesh to "+m_inputfile_name.substr(0,m_inputfile_name.size()-5)+"-mesh.vtu");
+                    t_fecell.saveFECell2VTUFile(m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printDashLine(MessageColor::BLUE);
+                    MessagePrinter::printNormalTxt("save mesh to "+m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu",MessageColor::BLUE);
+                    MessagePrinter::printDashLine(MessageColor::BLUE);
                     MessagePrinter::printStars();
                 }
                 return true;
@@ -471,12 +503,31 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                 }
                 IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
             }
-            MeshFileImporter importer;
 
-            if(importer.importMsh2Mesh(meshfile,t_mesh.getBulkMeshMeshDataRef())){
+            if(t_json.contains("distribution")){
+                if(!t_json.at("distribution").is_string()){
+                    MessagePrinter::printErrorTxt("the \"distribution\" in your mesh block is not a valid string");
+                    return false;
+                }
+                string method=t_json.at("distribution");
+                if(method.find("asfem")!=string::npos||method.find("metis")!=string::npos){
+                    t_fecell.setMeshDistributionMethod(method);
+                }
+                else{
+                    MessagePrinter::printErrorTxt("the distribution method:"+method+" in your mesh block is not supported");
+                    return false;
+                }
+            }
+            else{
+                t_fecell.setMeshDistributionMethod("asfem");// using built-in distribution method
+            }
+
+            MeshFile2FECellImporter importer;
+            if(importer.importMeshFile2FECell("msh2",meshfile,t_fecell.getCellDataRef())){
                 if(IsSaveMesh){
-                    t_mesh.saveBulkMesh2VTU(m_inputfile_name);
-                    MessagePrinter::printNormalTxt("save mesh to "+m_inputfile_name.substr(0,m_inputfile_name.size()-5)+"-mesh.vtu");
+                    t_fecell.saveFECell2VTUFile(m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printNormalTxt("save mesh to "+m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printStars();
                 }
                 return true;
             }
@@ -503,16 +554,36 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
             if(t_json.contains("savemesh")){
                 if(!t_json.at("savemesh").is_boolean()){
                     MessagePrinter::printErrorTxt("invalid boolean value for savemesh in your mesh block, it should be true/false");
+                    MessagePrinter::printStars();
                     return false;
                 }
                 IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
             }
-            MeshFileImporter importer;
 
-            if(importer.importMsh4Mesh(meshfile,t_mesh.getBulkMeshMeshDataRef())){
+            if(t_json.contains("distribution")){
+                if(!t_json.at("distribution").is_string()){
+                    MessagePrinter::printErrorTxt("the \"distribution\" in your mesh block is not a valid string");
+                    return false;
+                }
+                string method=t_json.at("distribution");
+                if(method.find("asfem")!=string::npos||method.find("metis")!=string::npos){
+                    t_fecell.setMeshDistributionMethod(method);
+                }
+                else{
+                    MessagePrinter::printErrorTxt("the distribution method:"+method+" in your mesh block is not supported");
+                    return false;
+                }
+            }
+            else{
+                t_fecell.setMeshDistributionMethod("asfem");// using built-in distribution method
+            }
+
+            MeshFile2FECellImporter importer;
+            if(importer.importMeshFile2FECell("msh4",meshfile,t_fecell.getCellDataRef())){
                 if(IsSaveMesh){
-                    t_mesh.saveBulkMesh2VTU(m_inputfile_name);
-                    MessagePrinter::printNormalTxt("save mesh to "+m_inputfile_name.substr(0,m_inputfile_name.size()-5)+"-mesh.vtu");
+                    t_fecell.saveFECell2VTUFile(m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printNormalTxt("save mesh to "+m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printStars();
                 }
                 return true;
             }
@@ -547,12 +618,31 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
                 }
                 IsSaveMesh=static_cast<bool>(t_json.at("savemesh"));
             }
-            MeshFileImporter importer;
 
-            if(importer.importGmsh2Mesh(meshfile,t_mesh.getBulkMeshMeshDataRef())){
+            if(t_json.contains("distribution")){
+                if(!t_json.at("distribution").is_string()){
+                    MessagePrinter::printErrorTxt("the \"distribution\" in your mesh block is not a valid string");
+                    return false;
+                }
+                string method=t_json.at("distribution");
+                if(method.find("asfem")!=string::npos||method.find("metis")!=string::npos){
+                    t_fecell.setMeshDistributionMethod(method);
+                }
+                else{
+                    MessagePrinter::printErrorTxt("the distribution method:"+method+" in your mesh block is not supported");
+                    return false;
+                }
+            }
+            else{
+                t_fecell.setMeshDistributionMethod("asfem");// using built-in distribution method
+            }
+
+            MeshFile2FECellImporter importer;
+            if(importer.importMeshFile2FECell("gmsh2",meshfile,t_fecell.getCellDataRef())){
                 if(IsSaveMesh){
-                    t_mesh.saveBulkMesh2VTU(m_inputfile_name);
-                    MessagePrinter::printNormalTxt("save mesh to "+m_inputfile_name.substr(0,m_inputfile_name.size()-5)+"-mesh.vtu");
+                    t_fecell.saveFECell2VTUFile(m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printNormalTxt("save mesh to "+m_InputFileName.substr(0,m_InputFileName.size()-5)+"-mesh.vtu");
+                    MessagePrinter::printStars();
                 }
                 return true;
             }
@@ -565,6 +655,10 @@ bool InputSystem::readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh){
             MessagePrinter::exitAsFem();
             return false;
         }
+    }//end-of-if(type)
+    else{
+        MessagePrinter::printErrorTxt("can\'t find \'type\' in your mesh block, please check your input file");
+        return false;
     }
     return true;
 }

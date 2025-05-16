@@ -6,8 +6,8 @@
 ### Do not edit the following lines !!!                   ###
 #############################################################
 #############################################################
-# For Welcome header file and main.cpp
-set(inc include/Welcome.h)
+# For main.cpp
+set(inc "")
 set(src src/main.cpp)
 
 #############################################################
@@ -65,54 +65,6 @@ set(src ${src} src/MathUtils/Rank4Tensor.cpp)
 set(inc ${inc} include/MathUtils/MathFuns.h)
 set(src ${src} src/MathUtils/MathFuns.cpp)
 
-
-#############################################################
-### For mesh class                                        ###
-#############################################################
-### for nodes
-set(inc ${inc} include/Mesh/Nodes.h)
-### for mesh type
-set(inc ${inc} include/Mesh/MeshType.h)
-### for mesh structure data
-set(inc ${inc} include/Mesh/MeshData.h)
-### for mesh generator class
-set(inc ${inc} include/Mesh/MeshGeneratorBase.h)
-### for 1d mesh generator class
-set(inc ${inc} include/Mesh/Lagrange1DMeshGenerator.h)
-set(src ${src} src/Mesh/Lagrange1DMeshGenerator.cpp)
-### for 2d mesh generator class
-set(inc ${inc} include/Mesh/Lagrange2DMeshGenerator.h)
-set(src ${src} src/Mesh/Lagrange2DMeshGenerator.cpp)
-### for 3d mesh generator class
-set(inc ${inc} include/Mesh/Lagrange3DMeshGenerator.h)
-set(src ${src} src/Mesh/Lagrange3DMeshGenerator.cpp)
-### for general mesh generator class
-set(inc ${inc} include/Mesh/MeshGenerator.h)
-set(src ${src} src/Mesh/MeshGenerator.cpp)
-### for bulk mesh
-set(inc ${inc} include/Mesh/BulkMesh.h)
-set(src ${src} src/Mesh/BulkMesh.cpp)
-set(src ${src} src/Mesh/SaveMesh.cpp)
-set(src ${src} src/Mesh/PrintMesh.cpp)
-### for the final mesh
-set(inc ${inc} include/Mesh/Mesh.h)
-### utils for msh file
-set(inc ${inic} include/Mesh/MshFileUtils.h)
-set(src ${src} src/Mesh/MshFileUtils.cpp)
-### for msh2 file
-set(inc ${inc} include/Mesh/Msh2FileImporter.h)
-set(src ${src} src/Mesh/Msh2FileImporter.cpp)
-### for msh2 file
-set(inc ${inc} include/Mesh/Msh4FileImporter.h)
-set(src ${src} src/Mesh/Msh4FileImporter.cpp)
-### for gmsh2 file
-set(inc ${inc} include/Mesh/Gmsh2FileImporter.h)
-set(src ${src} src/Mesh/Gmsh2FileImporter.cpp)
-### for MeshIO
-set(inc ${inc} include/Mesh/MeshFileImporterBase.h)
-set(inc ${inc} include/Mesh/MeshFileImporter.h)
-set(src ${src} src/Mesh/MeshFileImporter.cpp)
-
 #############################################################
 ### For FE cell class                                     ###
 #############################################################
@@ -122,11 +74,73 @@ set(inc ${inc} include/FECell/FECellData.h)
 set(inc ${inc} include/FECell/FECell.h)
 set(src ${src} src/FECell/FECell.cpp)
 set(inc ${inc} include/FECell/FECellGeneratorBase.h)
+### for 1d lagrange mesh cell
+### for edge2
+set(inc ${inc} include/FECell/Lagrange1DEdge2MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange1DEdge2MeshCellGenerator.cpp)
+### for edge3
+set(inc ${inc} include/FECell/Lagrange1DEdge3MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange1DEdge3MeshCellGenerator.cpp)
+### for edge4
+set(inc ${inc} include/FECell/Lagrange1DEdge4MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange1DEdge4MeshCellGenerator.cpp)
+### for 2d lagrange mesh cell
+### for quad4
+set(inc ${inc} include/FECell/Lagrange2DQuad4MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange2DQuad4MeshCellGenerator.cpp)
+### for quad8
+set(inc ${inc} include/FECell/Lagrange2DQuad8MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange2DQuad8MeshCellGenerator.cpp)
+### for quad9
+set(inc ${inc} include/FECell/Lagrange2DQuad9MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange2DQuad9MeshCellGenerator.cpp)
 ### for 3d lagrange mesh cell
-set(inc ${inc} include/FECell/Lagrange3DMeshCellGenerator.h)
-set(src ${src} src/FECell/Lagrange3DMeshCellGenerator.cpp)
+### for 3d-hex8 mesh cell
+set(inc ${inc} include/FECell/Lagrange3DHex8MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange3DHex8MeshCellGenerator.cpp)
+### for 3d-hex20 mesh cell
+set(inc ${inc} include/FECell/Lagrange3DHex20MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange3DHex20MeshCellGenerator.cpp)
+### for 3d-hex27 mesh cell
+set(inc ${inc} include/FECell/Lagrange3DHex27MeshCellGenerator.h)
+set(src ${src} src/FECell/Lagrange3DHex27MeshCellGenerator.cpp)
+##
 set(inc ${inc} include/FECell/FECellGenerator.h)
 set(src ${src} src/FECell/FECellGenerator.cpp)
+
+#############################################################
+### For FE cell importer class                            ###
+#############################################################
+### for msh file utils and nodes
+set(inc ${inc} include/FECell/Nodes.h include/FECell/MshFileUtils.h include/FECell/MeshType.h)
+set(src ${src} src/FECell/Nodes.cpp src/FECell/MshFileUtils.cpp)
+set(inc ${inc} include/FECell/MeshFile2FECellImporterBase.h)
+### for msh2 file importer
+set(inc ${inc} include/FECell/Msh2File2FECellImporter.h)
+set(src ${src} src/FECell/Msh2File2FECellImporter.cpp)
+### for msh4 file importer
+set(inc ${inc} include/FECell/Msh4File2FECellImporter.h)
+set(src ${src} src/FECell/Msh4File2FECellImporter.cpp)
+### for gmsh2 file importer
+set(inc ${inc} include/FECell/Gmsh2File2FECellImporter.h)
+set(src ${src} src/FECell/Gmsh2File2FECellImporter.cpp)
+###
+set(inc ${inc} include/FECell/MeshFile2FECellImporter.h)
+set(src ${src} src/FECell/MeshFile2FECellImporter.cpp)
+#############################################################
+### For FE cell partitioner class                         ###
+#############################################################
+set(inc ${inc} include/FECell/FECellPartitionerBase.h)
+### for built-in partitioner
+set(inc ${inc} include/FECell/FECellDefaultPartitioner.h)
+set(src ${src} src/FECell/FECellDefaultPartitioner.cpp)
+### for METIS partitioner
+set(inc ${inc} include/FECell/FECellMETISPartitioner.h)
+set(src ${src} src/FECell/FECellMETISPartitioner.cpp)
+###
+set(inc ${inc} include/FECell/FECellPartioner.h)
+set(src ${src} src/FECell/FECellPartioner.cpp)
+
 
 #############################################################
 ### For inputystem                                        ###
@@ -150,6 +164,8 @@ set(src ${src} src/InputSystem/ReadBCsBlock.cpp)
 set(src ${src} src/InputSystem/ReadICsBlock.cpp)
 ### for projection condition block
 set(src ${src} src/InputSystem/ReadProjectionBlock.cpp)
+### for linear solver block
+set(src ${src} src/InputSystem/ReadLinearSolverBlock.cpp)
 ### for nonlinear solver block
 set(src ${src} src/InputSystem/ReadNLSolverBlock.cpp)
 ### for nonlinear solver block
@@ -255,7 +271,6 @@ set(inc ${inc} include/ElmtSystem/LocalElmtData.h)
 ### for bulk element system
 set(inc ${inc} include/ElmtSystem/BulkElmtSystem.h)
 set(src ${src} src/ElmtSystem/BulkElmtSystem.cpp)
-set(src ${src} src/ElmtSystem/BulkElmtSystemInit.cpp)
 set(src ${src} src/ElmtSystem/RunBulkElmtLibs.cpp)
 set(inc ${inc} include/ElmtSystem/BulkElmtBase.h)
 ### for poisson element
@@ -553,10 +568,12 @@ set(inc ${inc} include/ProjectionSystem/ProjectionSystem.h)
 ### for leastsquare projection
 set(inc ${inc} include/ProjectionSystem/LeastSquareProjection.h)
 set(src ${src} src/ProjectionSystem/LeastSquareProjection.cpp)
+### for FullLeastSquareProjection projection
+set(inc ${inc} include/ProjectionSystem/FullLeastSquareProjection.h)
+set(src ${src} src/ProjectionSystem/FullLeastSquareProjection.cpp)
 ###
 set(src ${src} src/ProjectionSystem/ProjectionSystem.cpp)
 set(src ${src} src/ProjectionSystem/Projection.cpp)
-set(src ${src} src/ProjectionSystem/ProjectionLibs.cpp)
 set(src ${src} src/ProjectionSystem/ProjectionGettings.cpp)
 
 #############################################################
@@ -574,6 +591,17 @@ set(src ${src} src/SolutionSystem/SolutionSystemInit.cpp)
 set(src ${src} src/SolutionSystem/SolutionUpdate.cpp)
 
 #############################################################
+### For Linear solver class                               ###
+#############################################################
+set(inc ${inc} include/LinearSolver/LinearSolverBase.h)
+### for ksp linear solver
+set(inc ${inc} include/LinearSolver/KSPSolver.h)
+set(src ${src} src/LinearSolver/KSPSolver.cpp)
+### for linear solver
+set(inc ${inc} include/LinearSolver/LinearSolver.h)
+set(src ${src} src/LinearSolver/LinearSolver.cpp)
+
+#############################################################
 ### For Nonlinear solver class                            ###
 #############################################################
 set(inc ${inc} include/NonlinearSolver/NonlinearSolverBase.h)
@@ -586,6 +614,10 @@ set(src ${src} src/NonlinearSolver/SNESSolve.cpp)
 ###
 set(inc ${inc} include/NonlinearSolver/NonlinearSolver.h)
 set(src ${src} src/NonlinearSolver/NonlinearSolver.cpp)
+### for newton-raphson solver
+set(inc ${inc} include/NonlinearSolver/NewtonRaphsonSolver.h)
+set(src ${src} src/NonlinearSolver/NewtonRaphsonSolver.cpp)
+
 
 #############################################################
 ### For Timesteppinig class                               ###
@@ -597,6 +629,7 @@ set(inc ${inc} include/TimeStepping/TimeSteppingTool.h)
 set(inc ${inc} include/TimeStepping/TimeStepping.h)
 set(src ${src} src/TimeStepping/TimeStepping.cpp)
 set(src ${src} src/TimeStepping/TimeSteppingSolve.cpp)
+set(src ${src} src/TimeStepping/TimeSteppingTool.cpp)
 
 #############################################################
 ### For Result output class                               ###
@@ -703,3 +736,10 @@ set(src ${src} src/FEProblem/FEProblem.cpp)
 set(src ${src} src/FEProblem/RunFEProblem.cpp)
 set(src ${src} src/FEProblem/RunStaticAnalysis.cpp)
 set(src ${src} src/FEProblem/RunTransientAnalysis.cpp) 
+
+
+#############################################################
+### For Application class                                 ###
+#############################################################
+set(inc ${inc} include/Application.h)
+set(src ${src} src/Application.cpp)

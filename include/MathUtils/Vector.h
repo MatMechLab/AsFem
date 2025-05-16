@@ -72,7 +72,7 @@ public:
     inline double operator()(const int &i)const{
         double val;int index[1];
         index[0]=i-1;
-        VecGetValues(m_vector,1,index,&val);
+        VecGetValues(m_Vector,1,index,&val);
         return val;
     }
     /**
@@ -80,11 +80,11 @@ public:
      * @param val the right hand side scalar value
      */
     inline Vector& operator=(const double &val){
-        if(!m_allocated){
+        if(!m_Allocated){
             MessagePrinter::printErrorTxt("can\'t apply = to an empty vector, you must initialize it before use");
             MessagePrinter::exitAsFem();
         }
-        VecSet(m_vector,val);
+        VecSet(m_Vector,val);
         assemble();
         return *this;
     }
@@ -93,15 +93,15 @@ public:
      * @param a the right hand side vector class
      */
     inline Vector& operator=(const Vector &a){
-        if(!m_allocated){
+        if(!m_Allocated){
             MessagePrinter::printErrorTxt("can\'t apply = to an empty vector, you must initialize it before use");
             MessagePrinter::exitAsFem();
         }
-        if(m_size!=a.getSize()){
+        if(m_Size!=a.getSize()){
             MessagePrinter::printErrorTxt("can\'t apply = to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecCopy(a.m_vector,m_vector);
+        VecCopy(a.m_Vector,m_Vector);
         assemble();
         return *this;
     }
@@ -110,17 +110,17 @@ public:
      * @param a the right hand side vector class
      */
     inline Vector& operator=(const Vec &a){
-        if(!m_allocated){
+        if(!m_Allocated){
             MessagePrinter::printErrorTxt("can\'t apply = to an empty vector, you must initialize it before use");
             MessagePrinter::exitAsFem();
         }
         int size;
         VecGetSize(a,&size);
-        if(m_size!=size){
+        if(m_Size!=size){
             MessagePrinter::printErrorTxt("can\'t apply = to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecCopy(a,m_vector);
+        VecCopy(a,m_Vector);
         assemble();
         return *this;
     }
@@ -129,15 +129,15 @@ public:
      * @param a the vector class
     */
     inline void copyFrom(const Vector &a){
-        if(!m_allocated){
+        if(!m_Allocated){
             MessagePrinter::printErrorTxt("can\'t apply = to an empty vector, you must initialize it before use");
             MessagePrinter::exitAsFem();
         }
-        if(m_size!=a.getSize()){
+        if(m_Size!=a.getSize()){
             MessagePrinter::printErrorTxt("can\'t apply = to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecCopy(a.m_vector,m_vector);
+        VecCopy(a.m_Vector,m_Vector);
         assemble();
     }
     /**
@@ -145,17 +145,17 @@ public:
      * @param a the PETSc vec object
     */
     inline void copyFrom(const Vec &a){
-        if(!m_allocated){
+        if(!m_Allocated){
             MessagePrinter::printErrorTxt("can\'t apply copyFrom to an empty vector, you must initialize it before use");
             MessagePrinter::exitAsFem();
         }
         int size;
         VecGetSize(a,&size);
-        if(m_size!=size){
+        if(m_Size!=size){
             MessagePrinter::printErrorTxt("can\'t apply copyFrom to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecCopy(a,m_vector);
+        VecCopy(a,m_Vector);
         assemble();
     }
     //**********************************************
@@ -165,13 +165,13 @@ public:
      */
     inline Vector operator+(const double &val)const{
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
-        VecShift(anew.m_vector,val);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
+        VecShift(anew.m_Vector,val);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     /**
@@ -179,19 +179,19 @@ public:
      * @param a right hand side vector
      */
     inline Vector operator+(const Vector &a)const{
-        if(a.getSize()!=m_size){
+        if(a.getSize()!=m_Size){
             MessagePrinter::printErrorTxt("can\'t appy + to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem(); 
         }
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
         //VecAXPY(Vec y,PetscScalar a,Vec x);//y = y + a*x
-        VecAXPY(anew.m_vector,1.0,a.m_vector);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecAXPY(anew.m_Vector,1.0,a.m_Vector);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     /**
@@ -201,19 +201,19 @@ public:
     inline Vector operator+(const Vec &a)const{
         int size;
         VecGetSize(a,&size);
-        if(m_size!=size){
+        if(m_Size!=size){
             MessagePrinter::printErrorTxt("can\'t appy + to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem(); 
         }
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
         //VecAXPY(Vec y,PetscScalar a,Vec x);//y = y + a*x
-        VecAXPY(anew.m_vector,1.0,a);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecAXPY(anew.m_Vector,1.0,a);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     //***********************************
@@ -222,7 +222,7 @@ public:
      * @param val the right hand side scalar
      */
     inline Vector& operator+=(const double &val){
-        VecShift(m_vector,val);
+        VecShift(m_Vector,val);
         assemble();
         return *this;
     }
@@ -231,11 +231,11 @@ public:
      * @param a the right hand side vector class
      */
     inline Vector& operator+=(const Vector &a){
-        if(m_size!=a.getSize()){
+        if(m_Size!=a.getSize()){
             MessagePrinter::printErrorTxt("can\'t apply += to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecAXPY(m_vector,1.0,a.m_vector);
+        VecAXPY(m_Vector,1.0,a.m_Vector);
         assemble();
         return *this;
     }
@@ -246,11 +246,11 @@ public:
     inline Vector& operator+=(const Vec &a){
         int size;
         VecGetSize(a,&size);
-        if(m_size!=size){
+        if(m_Size!=size){
             MessagePrinter::printErrorTxt("can\'t apply += to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecAXPY(m_vector,1.0,a);
+        VecAXPY(m_Vector,1.0,a);
         assemble();
         return *this;
     }
@@ -261,13 +261,13 @@ public:
      */
     inline Vector operator-(const double &val)const{
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
-        VecShift(anew.m_vector,-1.0*val);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
+        VecShift(anew.m_Vector,-1.0*val);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     /**
@@ -275,19 +275,19 @@ public:
      * @param a right hand side vector class 
      */
     inline Vector operator-(const Vector &a)const{
-        if(a.getSize()!=m_size){
+        if(a.getSize()!=m_Size){
             MessagePrinter::printErrorTxt("can\'t appy - to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem(); 
         }
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
         //VecAXPY(Vec y,PetscScalar a,Vec x);//y = y + a*x
-        VecAXPY(anew.m_vector,-1.0,a.m_vector);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecAXPY(anew.m_Vector,-1.0,a.m_Vector);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     /**
@@ -297,19 +297,19 @@ public:
     inline Vector operator-(const Vec &a)const{
         int size;
         VecGetSize(a,&size);
-        if(size!=m_size){
+        if(size!=m_Size){
             MessagePrinter::printErrorTxt("can\'t appy - to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem(); 
         }
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
         //VecAXPY(Vec y,PetscScalar a,Vec x);//y = y + a*x
-        VecAXPY(anew.m_vector,-1.0,a);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecAXPY(anew.m_Vector,-1.0,a);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     //***********************************
@@ -318,7 +318,7 @@ public:
      * @param val the right hand side scalar
      */
     inline Vector& operator-=(const double &val){
-        VecShift(m_vector,-1.0*val);
+        VecShift(m_Vector,-1.0*val);
         assemble();
         return *this;
     }
@@ -327,11 +327,11 @@ public:
      * @param a the right hand side vector class
      */
     inline Vector& operator-=(const Vector &a){
-        if(m_size!=a.getSize()){
+        if(m_Size!=a.getSize()){
             MessagePrinter::printErrorTxt("can\'t apply -= to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecAXPY(m_vector,-1.0,a.m_vector);
+        VecAXPY(m_Vector,-1.0,a.m_Vector);
         assemble();
         return *this;
     }
@@ -342,11 +342,11 @@ public:
     inline Vector& operator-=(const Vec &a){
         int size;
         VecGetSize(a,&size);
-        if(m_size!=size){
+        if(m_Size!=size){
             MessagePrinter::printErrorTxt("can\'t apply -= to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem();
         }
-        VecAXPY(m_vector,-1.0,a);
+        VecAXPY(m_Vector,-1.0,a);
         assemble();
         return *this;
     }
@@ -357,13 +357,13 @@ public:
      */
     inline Vector operator*(const double &val)const{
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
-        VecScale(anew.m_vector,val);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
+        VecScale(anew.m_Vector,val);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     /**
@@ -371,12 +371,12 @@ public:
      * @param a right hand side vector class 
      */
     inline double dot(const Vector &a)const{
-        if(a.getSize()!=m_size){
+        if(a.getSize()!=m_Size){
             MessagePrinter::printErrorTxt("can\'t appy dot to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem(); 
         }
         double val;
-        VecDot(m_vector,a.m_vector,&val);
+        VecDot(m_Vector,a.m_Vector,&val);
         return val;
     }
     /**
@@ -386,12 +386,12 @@ public:
     inline double dot(const Vec &a)const{
         int size;
         VecGetSize(a,&size);
-        if(size!=m_size){
+        if(size!=m_Size){
             MessagePrinter::printErrorTxt("can\'t appy dot to two different vectors, they must have the same size");
             MessagePrinter::exitAsFem(); 
         }
         double val;
-        VecDot(m_vector,a,&val);
+        VecDot(m_Vector,a,&val);
         return val;
     }
     //***********************************
@@ -400,7 +400,7 @@ public:
      * @param val the right hand side scalar
      */
     inline Vector& operator*=(const double &val){
-        VecScale(m_vector,val);
+        VecScale(m_Vector,val);
         assemble();
         return *this;
     }
@@ -415,13 +415,13 @@ public:
             MessagePrinter::exitAsFem(); 
         }
         Vector anew;
-        VecDuplicate(m_vector,&anew.m_vector);
-        VecCopy(m_vector,anew.m_vector);
-        anew.m_size=m_size;
-        anew.m_allocated=true;
-        VecScale(anew.m_vector,1.0/val);
-        VecAssemblyBegin(anew.m_vector);
-        VecAssemblyEnd(anew.m_vector);
+        VecDuplicate(m_Vector,&anew.m_Vector);
+        VecCopy(m_Vector,anew.m_Vector);
+        anew.m_Size=m_Size;
+        anew.m_Allocated=true;
+        VecScale(anew.m_Vector,1.0/val);
+        VecAssemblyBegin(anew.m_Vector);
+        VecAssemblyEnd(anew.m_Vector);
         return anew;
     }
     //***********************************
@@ -434,7 +434,7 @@ public:
             MessagePrinter::printErrorTxt("can\'t appy /= to a singular value, val must be nonzero");
             MessagePrinter::exitAsFem(); 
         }
-        VecScale(m_vector,1.0/val);
+        VecScale(m_Vector,1.0/val);
         assemble();
         return *this;
     }
@@ -445,13 +445,13 @@ public:
     /**
      * set the size of current vector
      */
-    inline void setSize(const int &n){m_size=n;}
+    inline void setSize(const int &n){m_Size=n;}
     /**
      * set the current vector's elements to zero, but keep the storage
      */
     inline void setToZero(){
-        if(m_size) {
-            VecSet(m_vector,0.0);
+        if(m_Size) {
+            VecSet(m_Vector,0.0);
             assemble();
         }
     }
@@ -462,7 +462,7 @@ public:
         PetscRandom    rand;
         PetscRandomCreate(PETSC_COMM_WORLD, &rand);
         PetscRandomSetFromOptions(rand);
-        VecSetRandom(m_vector,rand);
+        VecSetRandom(m_Vector,rand);
         PetscRandomDestroy(&rand);
         assemble();
     }
@@ -472,7 +472,11 @@ public:
      * @param val scalar value
      */
     inline void addValue(const int &i,const double &val){
-        VecSetValue(m_vector,i-1,val,ADD_VALUES);
+        if(i<1||i>getSize()){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range("+to_string(getSize())+") for your vector");
+            MessagePrinter::exitAsFem();
+        }
+        VecSetValue(m_Vector,i-1,val,ADD_VALUES);
     }
     /**
      * add multiple values to current vector
@@ -481,7 +485,7 @@ public:
      * @param vals the values vector
      */
     inline void addValues(const int &n,const int *index,const double *vals){
-        VecSetValues(m_vector,n,index,vals,ADD_VALUES);
+        VecSetValues(m_Vector,n,index,vals,ADD_VALUES);
     }
     /**
      * add multiple values to current vector
@@ -489,7 +493,7 @@ public:
      * @param vals the values vector(it must have the same size as index)
      */
     inline void addValues(const vector<int> &index,const vector<double> &vals){
-        VecSetValues(m_vector,index.size(),index.data(),vals.data(),ADD_VALUES);
+        VecSetValues(m_Vector,index.size(),index.data(),vals.data(),ADD_VALUES);
     }
     //****************************************************************
     /**
@@ -498,7 +502,11 @@ public:
      * @param val scalar value
      */
     inline void insertValue(const int &i,const double &val){
-        VecSetValue(m_vector,i-1,val,INSERT_VALUES);
+        if(i<1||i>getSize()){
+            MessagePrinter::printErrorTxt("i="+to_string(i)+" is out of range("+to_string(getSize())+") for your vector");
+            MessagePrinter::exitAsFem();
+        }
+        VecSetValue(m_Vector,i-1,val,INSERT_VALUES);
     }
     /**
      * insert multiple values to current vector
@@ -507,7 +515,7 @@ public:
      * @param vals the values vector
      */
     inline void insertValues(const int &n,const int *index,const double *vals){
-        VecSetValues(m_vector,n,index,vals,INSERT_VALUES);
+        VecSetValues(m_Vector,n,index,vals,INSERT_VALUES);
     }
     /**
      * insert multiple values to current vector
@@ -515,16 +523,16 @@ public:
      * @param vals the values vector(it must have the same size as index)
      */
     inline void insertValues(const vector<int> &index,const vector<double> &vals){
-        VecSetValues(m_vector,index.size(),index.data(),vals.data(),INSERT_VALUES);
+        VecSetValues(m_Vector,index.size(),index.data(),vals.data(),INSERT_VALUES);
     }
     /**
      * assemble function, you can add/insert values as you like, but do not forget to do the
      * 'assemble' call, otherwise, no value can be added into your vector
      */
     inline void assemble(){
-        if(m_size<1) return;
-        VecAssemblyBegin(m_vector);
-        VecAssemblyEnd(m_vector);
+        if(m_Size<1) return;
+        VecAssemblyBegin(m_Vector);
+        VecAssemblyEnd(m_Vector);
     }
 
     //********************************************************
@@ -533,13 +541,13 @@ public:
     /**
      * get the size of current vector
      */
-    inline int getSize()const{return m_size;}
+    inline int getSize()const{return m_Size;}
     /**
      * get the L2 norm of current vector
      */
     inline double getNorm()const{
         double val;
-        VecNorm(m_vector,NORM_2,&val);
+        VecNorm(m_Vector,NORM_2,&val);
         return val;
     }
     /**
@@ -547,17 +555,17 @@ public:
      */
     inline double getSum()const{
         double val;
-        VecSum(m_vector,&val);
+        VecSum(m_Vector,&val);
         return val;
     }
     /**
      * get the reference of vector 
      */
-    inline Vec& getVectorRef(){return m_vector;}
+    inline Vec& getVectorRef(){return m_Vector;}
     /**
      * get the reference of vector 
      */
-    inline Vec  getVectorCopy()const{return m_vector;}
+    inline Vec  getVectorCopy()const{return m_Vector;}
     /**
      * copy current vector to PETSc vec
      * @param a the PETSc Vec class
@@ -565,11 +573,11 @@ public:
     inline void copy2Vec(Vec &a){
         int size;
         VecGetSize(a,&size);
-        if(size!=m_size){
+        if(size!=m_Size){
             MessagePrinter::printErrorTxt("can\'t copy current vector to PETSc vec, the size does not match");
             MessagePrinter::exitAsFem();
         }
-        VecCopy(m_vector,a);
+        VecCopy(m_Vector,a);
         VecAssemblyBegin(a);
         VecAssemblyEnd(a);
     }
@@ -577,13 +585,13 @@ public:
      * de-allocate the vector and release the memory
      */
     void releaseMemory(){
-        if(m_allocated) VecDestroy(&m_vector);
-        m_size=0;
-        m_allocated=false;
-        if(m_ghostallocated){
-            VecScatterDestroy(&m_scatter);
-            VecDestroy(&m_vector_ghost);
-            m_ghostallocated=false;
+        if(m_Allocated) VecDestroy(&m_Vector);
+        m_Size=0;
+        m_Allocated=false;
+        if(m_GhostAllocated){
+            VecScatterDestroy(&m_Scatter);
+            VecDestroy(&m_VectorGhost);
+            m_GhostAllocated=false;
         }
     }
     /**
@@ -615,17 +623,17 @@ public:
         }
         double val;int index[1];
         index[0]=i-1;
-        VecGetValues(m_vector_ghost,1,index,&val);
+        VecGetValues(m_VectorGhost,1,index,&val);
         return val;
     }
 
 
 private:
-    bool m_allocated=false;/**< boolean flag for the status of allocation */
-    Vec m_vector;/** petsc vector for current vector class */
-    int m_size;/** the size of current vector */
+    bool m_Allocated=false;/**< boolean flag for the status of allocation */
+    Vec m_Vector;/** petsc vector for current vector class */
+    int m_Size;/** the size of current vector */
 
-    bool m_ghostallocated=false;/**< boolean flag for ghost processor allocation */
-    Vec m_vector_ghost;/**< the ghost copy of m_vector, which should be destroy after use */
-    VecScatter m_scatter;/**< scatter used for ghost copy */
+    bool m_GhostAllocated=false;/**< boolean flag for ghost processor allocation */
+    Vec m_VectorGhost;/**< the ghost copy of m_vector, which should be destroy after use */
+    VecScatter m_Scatter;/**< scatter used for ghost copy */
 };

@@ -27,7 +27,7 @@ void NonlinearPoisson3DMaterial::initMaterialProperties(const nlohmann::json &in
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
@@ -40,19 +40,19 @@ void NonlinearPoisson3DMaterial::computeMaterialProperties(const nlohmann::json 
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||
        mateold.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
     double sigma,f,x,y,z,u;
     
     sigma=JsonUtils::getValue(inputparams,"sigma");
 
-    x=elmtinfo.m_gpCoords0(1);
-    y=elmtinfo.m_gpCoords0(2);
-    z=elmtinfo.m_gpCoords0(3);
+    x=elmtinfo.m_QpCoords0(1);
+    y=elmtinfo.m_QpCoords0(2);
+    z=elmtinfo.m_QpCoords0(3);
 
     f=sin(x*y*z);
-    u=elmtsoln.m_gpU[1];
+    u=elmtsoln.m_QpU[1];
 
     //************************
     //*** here the poisson equation is:
@@ -61,6 +61,6 @@ void NonlinearPoisson3DMaterial::computeMaterialProperties(const nlohmann::json 
     mate.ScalarMaterial("dsigmadu")=sigma*cos(u);// dsigma/dphi
     mate.ScalarMaterial("f")=f;// F
     mate.ScalarMaterial("dfdu")=0.0;// dF/dphi
-    mate.VectorMaterial("gradu")=elmtsoln.m_gpGradU[1];// the gradient of u
+    mate.VectorMaterial("gradu")=elmtsoln.m_QpGradU[1];// the gradient of u
 
 }

@@ -18,98 +18,98 @@
 #include "MathUtils/Vector.h"
 
 Vector::Vector(){
-    m_allocated=false;
-    m_size=0;
-    m_ghostallocated=false;
+    m_Allocated=false;
+    m_Size=0;
+    m_GhostAllocated=false;
 }
 Vector::Vector(const int &n){
-    m_size=n;
-    VecCreate(PETSC_COMM_WORLD,&m_vector);
-    VecSetSizes(m_vector,PETSC_DECIDE,m_size);
-    VecSetFromOptions(m_vector);
-    VecSet(m_vector,0.0);
+    m_Size=n;
+    VecCreate(PETSC_COMM_WORLD,&m_Vector);
+    VecSetSizes(m_Vector,PETSC_DECIDE,m_Size);
+    VecSetFromOptions(m_Vector);
+    VecSet(m_Vector,0.0);
     assemble();
-    m_allocated=true;
-    m_ghostallocated=false;
+    m_Allocated=true;
+    m_GhostAllocated=false;
 }
 Vector::Vector(const int &n,const double &val){
-    m_size=n;
-    VecCreate(PETSC_COMM_WORLD,&m_vector);
-    VecSetSizes(m_vector,PETSC_DECIDE,m_size);
-    VecSetFromOptions(m_vector);
-    VecSet(m_vector,val);
+    m_Size=n;
+    VecCreate(PETSC_COMM_WORLD,&m_Vector);
+    VecSetSizes(m_Vector,PETSC_DECIDE,m_Size);
+    VecSetFromOptions(m_Vector);
+    VecSet(m_Vector,val);
     assemble();
-    m_allocated=true;
-    m_ghostallocated=false;
+    m_Allocated=true;
+    m_GhostAllocated=false;
 }
 Vector::Vector(const Vector &a){
-    VecDuplicate(a.getVectorCopy(),&m_vector);
-    VecCopy(a.m_vector,m_vector);
+    VecDuplicate(a.getVectorCopy(),&m_Vector);
+    VecCopy(a.m_Vector,m_Vector);
     assemble();
-    m_size=a.getSize();
-    m_allocated=true;
-    m_ghostallocated=false;
+    m_Size=a.getSize();
+    m_Allocated=true;
+    m_GhostAllocated=false;
 }
 //**************************************************
 void Vector::setup(){
-    if(m_allocated){
-        VecDestroy(&m_vector);
+    if(m_Allocated){
+        VecDestroy(&m_Vector);
     }
-    VecCreate(PETSC_COMM_WORLD,&m_vector);
-    VecSetSizes(m_vector,PETSC_DECIDE,m_size);
-    VecSetFromOptions(m_vector);
-    VecSet(m_vector,0.0);
+    VecCreate(PETSC_COMM_WORLD,&m_Vector);
+    VecSetSizes(m_Vector,PETSC_DECIDE,m_Size);
+    VecSetFromOptions(m_Vector);
+    VecSet(m_Vector,0.0);
     assemble();
-    m_allocated=true;
-    m_ghostallocated=false;
+    m_Allocated=true;
+    m_GhostAllocated=false;
 }
 void Vector::resize(const int &n){
-    m_size=n;
-    if(m_allocated) VecDestroy(&m_vector);
+    m_Size=n;
+    if(m_Allocated) VecDestroy(&m_Vector);
     
-    VecCreate(PETSC_COMM_WORLD,&m_vector);
-    VecSetSizes(m_vector,PETSC_DECIDE,m_size);
-    VecSetFromOptions(m_vector);
-    VecSet(m_vector,0.0);
+    VecCreate(PETSC_COMM_WORLD,&m_Vector);
+    VecSetSizes(m_Vector,PETSC_DECIDE,m_Size);
+    VecSetFromOptions(m_Vector);
+    VecSet(m_Vector,0.0);
     assemble();
-    m_allocated=true;
-    m_ghostallocated=false;
+    m_Allocated=true;
+    m_GhostAllocated=false;
 }
 void Vector::resize(const int &n,const double &val){
-    m_size=n;
-    if(m_allocated) VecDestroy(&m_vector);
+    m_Size=n;
+    if(m_Allocated) VecDestroy(&m_Vector);
     
-    VecCreate(PETSC_COMM_WORLD,&m_vector);
-    VecSetSizes(m_vector,PETSC_DECIDE,m_size);
-    VecSetFromOptions(m_vector);
-    VecSet(m_vector,val);
+    VecCreate(PETSC_COMM_WORLD,&m_Vector);
+    VecSetSizes(m_Vector,PETSC_DECIDE,m_Size);
+    VecSetFromOptions(m_Vector);
+    VecSet(m_Vector,val);
     assemble();
-    m_allocated=true;
+    m_Allocated=true;
     
-    m_ghostallocated=false;
+    m_GhostAllocated=false;
 }
 //**************************************************
 void Vector::makeGhostCopy(){
-    if(m_ghostallocated){
-        VecDestroy(&m_vector_ghost);
-        VecScatterDestroy(&m_scatter);
-        m_ghostallocated=false;
+    if(m_GhostAllocated){
+        VecDestroy(&m_VectorGhost);
+        VecScatterDestroy(&m_Scatter);
+        m_GhostAllocated=false;
     }
-    if(m_size){
-        VecScatterCreateToAll(m_vector,&m_scatter,&m_vector_ghost);
-        VecScatterBegin(m_scatter,m_vector,m_vector_ghost,INSERT_VALUES,SCATTER_FORWARD);
-        VecScatterEnd(m_scatter,m_vector,m_vector_ghost,INSERT_VALUES,SCATTER_FORWARD);
-        m_ghostallocated=true;
+    if(m_Size){
+        VecScatterCreateToAll(m_Vector,&m_Scatter,&m_VectorGhost);
+        VecScatterBegin(m_Scatter,m_Vector,m_VectorGhost,INSERT_VALUES,SCATTER_FORWARD);
+        VecScatterEnd(m_Scatter,m_Vector,m_VectorGhost,INSERT_VALUES,SCATTER_FORWARD);
+        m_GhostAllocated=true;
     }
     else{
-        m_ghostallocated=false;
+        m_GhostAllocated=false;
     }
 }
 void Vector::destroyGhostCopy(){
-    if(m_ghostallocated){
-        VecDestroy(&m_vector_ghost);
-        VecScatterDestroy(&m_scatter);
-        m_ghostallocated=false;
+    if(m_GhostAllocated){
+        VecDestroy(&m_VectorGhost);
+        VecScatterDestroy(&m_Scatter);
+        m_GhostAllocated=false;
     }
 }
 //**************************************************
@@ -119,11 +119,11 @@ void Vector::printVec(const string &txt)const{
     }
     Vec seqvec;
     VecScatter scatter;
-    VecScatterCreateToAll(m_vector,&scatter,&seqvec);
-    VecScatterBegin(scatter,m_vector,seqvec,INSERT_VALUES,SCATTER_FORWARD);
-    VecScatterEnd(scatter,m_vector,seqvec,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterCreateToAll(m_Vector,&scatter,&seqvec);
+    VecScatterBegin(scatter,m_Vector,seqvec,INSERT_VALUES,SCATTER_FORWARD);
+    VecScatterEnd(scatter,m_Vector,seqvec,INSERT_VALUES,SCATTER_FORWARD);
     double val;
-    for(int i=0;i<m_size;i++){
+    for(int i=0;i<m_Size;i++){
         VecGetValues(seqvec,1,&i,&val);
         PetscPrintf(PETSC_COMM_WORLD,"*** i=%8d, value=%14.6e\n",i+1,val);
     }

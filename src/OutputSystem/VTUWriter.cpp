@@ -15,17 +15,20 @@
 #include "OutputSystem/VTUWriter.h"
 
 void VTUWriter::saveResults(const string &t_filename,
-                            const Mesh &t_mesh,
+                            const FECell &t_fecell,
                             const DofHandler &t_dofHandler,
                             SolutionSystem &t_solution,
                             ProjectionSystem &t_projection){
     MPI_Comm_rank(PETSC_COMM_WORLD,&m_rank);
 
-    t_solution.m_u_current.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_scalarmate_vec.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_vectormate_vec.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank2mate_vec.makeGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank4mate_vec.makeGhostCopy();
+    if(t_dofHandler.getActiveDofs()){}
+
+    t_solution.m_Ucurrent.makeGhostCopy();
+
+    for (auto &it:t_projection.getProjectionDataRef().m_ScalarProjMateVecList) it.makeGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_VectorProjMateVecList) it.makeGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank2ProjMateVecList) it.makeGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank4ProjMateVecList) it.makeGhostCopy();
 
     if(m_rank==0){
         std::ofstream out;
@@ -36,21 +39,22 @@ void VTUWriter::saveResults(const string &t_filename,
         }
 
         int i,j,k,iInd,e;
+        if(i||j||k||iInd||e){}
 
         out << "<?xml version=\"1.0\"?>\n";
         out << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\">\n";
         out << "<UnstructuredGrid>\n";
-        out << "<Piece NumberOfPoints=\"" << t_mesh.getBulkMeshNodesNum() << "\" NumberOfCells=\"" << t_mesh.getBulkMeshBulkElmtsNum() << "\">\n";
+        out << "<Piece NumberOfPoints=\"" << t_fecell.getFECellNodesNum() << "\" NumberOfCells=\"" << t_fecell.getFECellBulkElmtsNum() << "\">\n";
         out << "<Points>\n";
         out << "<DataArray type=\"Float64\" Name=\"nodes\"  NumberOfComponents=\"3\"  format=\"ascii\">\n";
 
         //*****************************
         // print out node coordinates
         out <<std::scientific << std::setprecision(6);
-        for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-            out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 1) << " ";
-            out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 2) << " ";
-            out << t_mesh.getBulkMeshIthNodeJthCoord0(i, 3) << "\n";
+        for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+            out << t_fecell.getFECellIthNodeJthCoord(i, 1) << " ";
+            out << t_fecell.getFECellIthNodeJthCoord(i, 2) << " ";
+            out << t_fecell.getFECellIthNodeJthCoord(i, 3) << "\n";
         }
         out << "</DataArray>\n";
         out << "</Points>\n";
@@ -60,9 +64,9 @@ void VTUWriter::saveResults(const string &t_filename,
         //***************************************
         out << "<Cells>\n";
         out << "<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
-        for (e = 1; e <= t_mesh.getBulkMeshBulkElmtsNum(); e++){
-            for (j = 1; j <= t_mesh.getBulkMeshIthBulkElmtNodesNum(e); j++){
-                out << t_mesh.getBulkMeshIthBulkElmtJthNodeID(e,j) - 1 << " ";
+        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
+            for (j = 1; j <= t_fecell.getFECellIthBulkElmtNodesNum(e); j++){
+                out << t_fecell.getFECellIthBulkElmtJthNodeID(e,j) - 1 << " ";
             }
             out << "\n";
         }
@@ -73,8 +77,8 @@ void VTUWriter::saveResults(const string &t_filename,
         //***************************************
         out << "<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
         int offset = 0;
-        for (e = 1; e <= t_mesh.getBulkMeshBulkElmtsNum(); e++){
-            offset += t_mesh.getBulkMeshIthBulkElmtNodesNum(e);
+        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
+            offset += t_fecell.getFECellIthBulkElmtNodesNum(e);
             out << offset << "\n";
         }
         out << "</DataArray>\n";
@@ -83,8 +87,8 @@ void VTUWriter::saveResults(const string &t_filename,
         //*** For connectivity
         //***************************************
         out << "<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
-        for (e = 1; e <= t_mesh.getBulkMeshBulkElmtsNum(); e++){
-            out << t_mesh.getBulkMeshBulkElmtVTKCellType() << "\n";
+        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
+            out << t_fecell.getFECellIthBulkElmtVTKCellType(e) << "\n";
         }
         out << "</DataArray>\n";
         out << "</Cells>\n";
@@ -136,14 +140,13 @@ void VTUWriter::saveResults(const string &t_filename,
             dofname =t_dofHandler.getIthDofName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
             out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 iInd = t_dofHandler.getIthNodeJthDofID(i,j);
-                value=t_solution.m_u_current.getIthValueFromGhost(iInd);
+                value=t_solution.m_Ucurrent.getIthValueFromGhost(iInd);
                 out << value << "\n";
             }
             out << "</DataArray>\n\n";
         }
-
 
         int nproj;
         //**************************************
@@ -154,9 +157,9 @@ void VTUWriter::saveResults(const string &t_filename,
             dofname = t_projection.getIthScalarMateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
             out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
-                iInd = (i-1)*(1+nproj)+j+1;
-                value=t_projection.getProjectionDataRef().m_proj_scalarmate_vec.getIthValueFromGhost(iInd);
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+                iInd = (i-1)*(1+1)+2;
+                value=t_projection.getProjectionDataRef().m_ScalarProjMateVecList[j-1].getIthValueFromGhost(iInd);
                 out << value << "\n";
             }
             out << "</DataArray>\n\n";
@@ -170,10 +173,10 @@ void VTUWriter::saveResults(const string &t_filename,
             dofname = t_projection.getIthVectorMateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"3\" format=\"ascii\">\n";
             out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 for(k=1;k<=3;k++){
-                    iInd = (i-1)*(1+nproj*3)+3*(j-1)+k+1;
-                    value=t_projection.getProjectionDataRef().m_proj_vectormate_vec.getIthValueFromGhost(iInd);
+                    iInd = (i-1)*(1+3)+k+1;
+                    value=t_projection.getProjectionDataRef().m_VectorProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     out << value << " ";
                 }
                 out <<"\n";
@@ -189,10 +192,10 @@ void VTUWriter::saveResults(const string &t_filename,
             dofname = t_projection.getIthRank2MateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"9\" format=\"ascii\">\n";
             out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 for(k=1;k<=9;k++){
-                    iInd = (i-1)*(1+nproj*9)+9*(j-1)+k+1;
-                    value=t_projection.getProjectionDataRef().m_proj_rank2mate_vec.getIthValueFromGhost(iInd);
+                    iInd = (i-1)*(1+9)+k+1;
+                    value=t_projection.getProjectionDataRef().m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     out << value << " ";
                 }
                 out <<"\n";
@@ -208,18 +211,16 @@ void VTUWriter::saveResults(const string &t_filename,
             dofname = t_projection.getIthRank4MateName(j);
             out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"36\" format=\"ascii\">\n";
             out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_mesh.getBulkMeshNodesNum(); i++){
+            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
                 for(k=1;k<=36;k++){
-                    iInd = (i-1)*(1+nproj*36)+36*(j-1)+k+1;
-                    value=t_projection.getProjectionDataRef().m_proj_rank4mate_vec.getIthValueFromGhost(iInd);
+                    iInd = (i-1)*(1+36)+k+1;
+                    value=t_projection.getProjectionDataRef().m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     out << value << " ";
                 }
                 out <<"\n";
             }
             out << "</DataArray>\n\n";
         }
-
-        
 
         //***************************************
         //*** End of output
@@ -233,10 +234,10 @@ void VTUWriter::saveResults(const string &t_filename,
 
     }// end-of-master-rank-process
 
-    t_solution.m_u_current.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_scalarmate_vec.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_vectormate_vec.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank2mate_vec.destroyGhostCopy();
-    t_projection.getProjectionDataRef().m_proj_rank4mate_vec.destroyGhostCopy();
+    t_solution.m_Ucurrent.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_ScalarProjMateVecList) it.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_VectorProjMateVecList) it.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank2ProjMateVecList) it.destroyGhostCopy();
+    for (auto &it:t_projection.getProjectionDataRef().m_Rank4ProjMateVecList) it.destroyGhostCopy();
 
 }

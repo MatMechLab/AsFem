@@ -17,6 +17,6 @@
 #include "MateSystem/BulkMateSystem.h"
 
 BulkMateSystem::BulkMateSystem(){
-    m_materialcontainer_old.clean();
-    m_materialcontainer.clean();
+    m_MaterialContainerOld.clean();
+    m_MaterialContainer.clean();
 }

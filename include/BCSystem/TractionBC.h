@@ -27,65 +27,65 @@ public:
     /**
      * execute the boundary integration calculation for different integrated boundary conditions.
      * \f$\int_{\partial\Omega}f(u,\nabla u,\vec{n})dS\f$ is the final output
-     * @param t_calctype the calculation type for either residual or jacbobian
-     * @param t_bcvalue the boundary value defined in the input file
-     * @param t_json the json content for boundary condition parameters
-     * @param t_elmtinfo the basic information for current element
-     * @param t_soln the solution of current element
-     * @param normal the normal vector of current gauss point in the current element
-     * @param t_shp the local shape function values
-     * @param ctan the time derivative related coefficient array
-     * @param localK the local K matrix
-     * @param localR the locak R matrix
+     * @param CalcType the calculation type for either residual or jacbobian
+     * @param BCValue the boundary value defined in the input file
+     * @param Params the json content for boundary condition parameters
+     * @param ElmtInfo the basic information for current element
+     * @param ElmtSoln the solution of current element
+     * @param Normal the normal vector of current gauss point in the current element
+     * @param Shp the local shape function values
+     * @param Ctan the time derivative related coefficient array
+     * @param LocalK the local K matrix
+     * @param LocalR the locak R matrix
      */
-    virtual void computeBCValue(const FECalcType &t_calctype,const double &t_bcvalue,
-                                const nlohmann::json t_json,
-                                const LocalElmtInfo &t_elmtinfo,
-                                const LocalElmtSolution &t_soln,
-                                const Vector3d &normal,
-                                const LocalShapeFun &t_shp,
-                                const double (&ctan)[3],
-                                MatrixXd &localK,
-                                VectorXd &localR) override;
+    virtual void computeBCValue(const FECalcType &CalcType,const double &BCValue,
+                                const nlohmann::json Params,
+                                const LocalElmtInfo &ElmtInfo,
+                                const LocalElmtSolution &ElmtSoln,
+                                const Vector3d &Normal,
+                                const LocalShapeFun &Shp,
+                                const double (&Ctan)[3],
+                                MatrixXd &LocalK,
+                                VectorXd &LocalR) override;
 private:
     /**
      * calculate the residual of current boundary element
      * \f$\int_{\partial\Omega}R_{u}dS\f$ is the final output
-     * @param t_bcvalue the boundary value defined in the input file
-     * @param t_params the boundary condition related parameters (json content)
-     * @param t_elmtinfo the basic information for current element
-     * @param t_elmtsoln the solution of current element
-     * @param normal the normal vector of current gauss point in the current element
-     * @param shp the local shape function values
-     * @param localR the locak R matrix
+     * @param BCValue the boundary value defined in the input file
+     * @param Params the boundary condition related parameters (json content)
+     * @param ElmtInfo the basic information for current element
+     * @param ElmtSoln the solution of current element
+     * @param Normal the normal vector of current gauss point in the current element
+     * @param Shp the local shape function values
+     * @param LocalR the locak R matrix
      */
-    virtual void computeResidual(const double &t_bcvalue,
-                                 const nlohmann::json t_params,
-                                 const LocalElmtInfo &t_elmtinfo,
-                                 const LocalElmtSolution &t_elmtsoln,
-                                 const Vector3d &normal,
-                                 const LocalShapeFun &t_shp,
-                                 VectorXd &localR) override; 
+    virtual void computeResidual(const double &BCValue,
+                                 const nlohmann::json Params,
+                                 const LocalElmtInfo &ElmtInfo,
+                                 const LocalElmtSolution &ElmtSoln,
+                                 const Vector3d &Normal,
+                                 const LocalShapeFun &Shp,
+                                 VectorXd &LocalR) override; 
     
     /**
      * calculate the jacbobian contribution of current boundary element 
      * \f$\int_{\partial\Omega}\frac{\partial R{u}}{\partial u}dS\f$ is the final output
-     * @param t_bcvalue the boundary value defined in the input file
-     * @param t_params the boundary condition related parameters (json content)
-     * @param t_elmtinfo the basic information for current element
-     * @param t_soln the solution of current element
-     * @param normal the normal vector of current gauss point in the current element
-     * @param t_shp the local shape function values
-     * @param localK the local K matrix
+     * @param BCValue the boundary value defined in the input file
+     * @param Params the boundary condition related parameters (json content)
+     * @param ElmtInfo the basic information for current element
+     * @param ElmtSoln the solution of current element
+     * @param Normal the normal vector of current gauss point in the current element
+     * @param Shp the local shape function values
+     * @param LocalK the local K matrix
      */
-    virtual void computeJacobian(const double &t_bcvalue,
-                                 const nlohmann::json &t_params,
-                                 const LocalElmtInfo &t_elmtinfo,
-                                 const LocalElmtSolution &t_soln,
-                                 const Vector3d &normal,
-                                 const LocalShapeFun &t_shp,
-                                 const double (&ctan)[3],
-                                 MatrixXd &localK) override;
+    virtual void computeJacobian(const double &BCValue,
+                                 const nlohmann::json &Params,
+                                 const LocalElmtInfo &ElmtInfo,
+                                 const LocalElmtSolution &ElmtSoln,
+                                 const Vector3d &Normal,
+                                 const LocalShapeFun &Shp,
+                                 const double (&Ctan)[3],
+                                 MatrixXd &LocalK) override;
 private:
     Vector3d m_traction;/**< the traction vector based given pressure */
     int m_component;/**< the displacement component index */

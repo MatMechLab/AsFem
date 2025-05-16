@@ -22,7 +22,7 @@ double SideIntegralScalarMatePostprocessor::computeSideIntegralValue(const int &
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||elmtinfo.m_dim){}
+    if(dofid||soln.getDofsNum()||elmtinfo.m_Dim){}
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"scalarmate"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the SideIntegralScalarMatePostprocessor, "
                                       "the 'scalarmate' is the only parameter you need,"
@@ -34,7 +34,7 @@ double SideIntegralScalarMatePostprocessor::computeSideIntegralValue(const int &
     
     m_scalarvalue=projsystem.getIthNodeScalarMateViaMateName(nodeid,m_scalarmatename);
     
-    m_ppsvalue=m_scalarvalue*shp.m_test;
+    m_ppsvalue=m_scalarvalue*shp.m_Test;
     
     return m_ppsvalue;
 }

@@ -16,49 +16,76 @@
 #include "SolutionSystem/SolutionSystem.h"
 
 SolutionSystem::SolutionSystem(){
-    m_dofs=0;
-    m_allocated=false;
-    m_bulkelmts_num=0;
-    m_qpoints_num=0;
+    m_Dofs=0;
+    m_Allocated=false;
+    m_BulkElmtsNum=0;
+    m_QpointsNum=0;
 }
 
 void SolutionSystem::releaseMemory(){
-    if(m_allocated){
-        m_u_current.releaseMemory();
-        m_u_old.releaseMemory();
-        m_u_older.releaseMemory();
-        m_u_temp.releaseMemory();
-        m_u_copy.releaseMemory();
+    if(m_Allocated){
+        m_Ucurrent.releaseMemory();
+        m_Uold.releaseMemory();
+        m_Uolder.releaseMemory();
+        m_Utemp.releaseMemory();
+        m_Ucopy.releaseMemory();
+        m_dU.releaseMemory();
 
-        m_v.releaseMemory();
+        m_V.releaseMemory();
 
-        m_a.releaseMemory();
+        m_A.releaseMemory();
 
-        for(auto &it:m_qpoints_scalarmaterials) it.clear();
-        m_qpoints_scalarmaterials.clear();
+        // for local one
+        for(auto &it:m_QpointsScalarMaterials_Local) it.clear();
+        m_QpointsScalarMaterials_Local.clear();
 
-        for(auto &it:m_qpoints_vectormaterials) it.clear();
-        m_qpoints_vectormaterials.clear();
+        for(auto &it:m_QpointsVectorMaterials_Local) it.clear();
+        m_QpointsVectorMaterials_Local.clear();
 
-        for(auto &it:m_qpoints_rank2materials) it.clear();
-        m_qpoints_rank2materials.clear();
+        for(auto &it:m_QpointsRank2Materials_Local) it.clear();
+        m_QpointsRank2Materials_Local.clear();
 
-        for(auto &it:m_qpoints_rank4materials) it.clear();
-        m_qpoints_rank4materials.clear();
+        for(auto &it:m_QpointsRank4Materials_Local) it.clear();
+        m_QpointsRank4Materials_Local.clear();
+        // for total one
+        for(auto &it:m_QpointsScalarMaterials_Total) it.clear();
+        m_QpointsScalarMaterials_Total.clear();
+
+        for(auto &it:m_QpointsVectorMaterials_Total) it.clear();
+        m_QpointsVectorMaterials_Total.clear();
+
+        for(auto &it:m_QpointsRank2Materials_Total) it.clear();
+        m_QpointsRank2Materials_Total.clear();
+
+        for(auto &it:m_QpointsRank4Materials_Total) it.clear();
+        m_QpointsRank4Materials_Total.clear();
 
         //****************************************
-        for(auto &it:m_qpoints_scalarmaterials_old) it.clear();
-        m_qpoints_scalarmaterials_old.clear();
+        // for local one
+        for(auto &it:m_QpointsScalarMaterialsOld_Local) it.clear();
+        m_QpointsScalarMaterialsOld_Local.clear();
 
-        for(auto &it:m_qpoints_vectormaterials_old) it.clear();
-        m_qpoints_vectormaterials_old.clear();
+        for(auto &it:m_QpointsVectorMaterialsOld_Local) it.clear();
+        m_QpointsVectorMaterialsOld_Local.clear();
 
-        for(auto &it:m_qpoints_rank2materials_old) it.clear();
-        m_qpoints_rank2materials_old.clear();
+        for(auto &it:m_QpointsRank2MaterialsOld_Local) it.clear();
+        m_QpointsRank2MaterialsOld_Local.clear();
 
-        for(auto &it:m_qpoints_rank4materials_old) it.clear();
-        m_qpoints_rank4materials_old.clear();
+        for(auto &it:m_QpointsRank4MaterialsOld_Local) it.clear();
+        m_QpointsRank4MaterialsOld_Local.clear();
+        // for total one
+        for(auto &it:m_QpointsScalarMaterialsOld_Total) it.clear();
+        m_QpointsScalarMaterialsOld_Total.clear();
 
-        m_allocated=false;
+        for(auto &it:m_QpointsVectorMaterialsOld_Total) it.clear();
+        m_QpointsVectorMaterialsOld_Total.clear();
+
+        for(auto &it:m_QpointsRank2MaterialsOld_Total) it.clear();
+        m_QpointsRank2MaterialsOld_Total.clear();
+
+        for(auto &it:m_QpointsRank4MaterialsOld_Total) it.clear();
+        m_QpointsRank4MaterialsOld_Total.clear();
+
+        m_Allocated=false;
     }
 }

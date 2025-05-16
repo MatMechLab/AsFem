@@ -36,9 +36,8 @@ public:
     /**
      * virtual function for the details of different cell(mesh) generation, the child class should
      * offer the implementations
-     * @param t_meshtype the type of mesh one want to use for the mesh generation
      * @param t_celldata the fe cell data structure, which should be updated within each cell generator!
      */
-    virtual bool generateFECell(const MeshType &t_meshtype,FECellData &t_celldata)=0;
+    virtual bool generateFECell(FECellData &t_celldata)=0;
 
 };

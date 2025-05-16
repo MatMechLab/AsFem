@@ -28,14 +28,16 @@
 
 #include "Utils/MessagePrinter.h"
 #include "Utils/StringUtils.h"
+#include "MPIUtils/MPIDataBus.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "FE/FE.h"
 #include "BCSystem/BCSystem.h"
 #include "ICSystem/ICSystem.h"
 #include "ProjectionSystem/ProjectionSystem.h"
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
@@ -73,23 +75,25 @@ public:
     //*******************************************************
     /**
      * read the input file (json)
-     * @param t_mesh the mesh class
+     * @param t_fecell the fecell class
      * @param t_dofhandler the dofhandler class
      * @param t_elmtSystem the element system class
      * @param t_fe the fe space class for shape function and qpoints
      * @param t_bcsystem the boundary condition system class
      * @param t_icsystem the initial condition system class
      * @param t_projsystem the projection system class
+     * @param t_linearsolver the linear solver system
      * @param t_nlsolver the nonlinear solver system
      * @param t_timestepping the time stepping system
      * @param t_output the output system
      * @param t_postprocess the postprocessor system
      * @param t_jobblock the job block
      */
-    bool readInputFile(Mesh &t_mesh,DofHandler &t_dofhandler,ElmtSystem &t_elmtSystem,
+    bool readInputFile(FECell &t_fecell,DofHandler &t_dofhandler,ElmtSystem &t_elmtSystem,
                        FE &t_fe,
                        BCSystem &t_bcsystem,ICSystem &t_icsystem,
                        ProjectionSystem &t_projsystem,
+                       LinearSolver &t_linearsolver,
                        NonlinearSolver &t_nlsolver,
                        TimeStepping &t_timestepping,
                        OutputSystem &t_output,
@@ -101,20 +105,20 @@ public:
     /**
      * get the name of input file, a string is returned
      */
-    inline string getInputFileName()const{return m_inputfile_name;}
+    inline string getInputFileName()const{return m_InputFileName;}
 
     /**
      * check whether the read-only flag is true
      */
-    bool isReadOnly()const{return m_readonly;}
+    bool isReadOnly()const{return m_ReadOnly;}
 
 private:
     /**
      * read the mesh block from json file
      * @param t_json the json parse which contains 'mesh'
-     * @param t_mesh the mesh class
+     * @param t_fecell the fecell class
      */
-    bool readMeshBlock(nlohmann::json &t_json,Mesh &t_mesh);
+    bool readMeshBlock(nlohmann::json &t_json,FECell &t_fecell);
     /**
      * read the dofs block from json file
      * @param t_json the json parse which contains 'dofs'
@@ -124,41 +128,41 @@ private:
     /**
      * read the element block from json file
      * @param t_json the json parse which contains 'elements'
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofHandler class
      * @param t_elmtsystem the element system class
      */
-    bool readElmtsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,ElmtSystem &t_elmtsystem);
+    bool readElmtsBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,ElmtSystem &t_elmtsystem);
     /**
      * read the qpoint block
      * @param t_json the json parse which contains 'elements'
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_fe the fe class
      */
-    bool readQPointBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &t_fe);
+    bool readQPointBlock(nlohmann::json &t_json,const FECell &t_fecell,FE &t_fe);
     /**
      * read the shape function block
      * @param t_json the json parse which contains 'elements'
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_fe the fe class
      */
-    bool readShapeFunBlock(nlohmann::json &t_json,const Mesh &t_mesh,FE &t_fe);
+    bool readShapeFunBlock(nlohmann::json &t_json,const FECell &t_fecell,FE &t_fe);
     /**
      * read the boundary condition blocks
      * @param t_json the json parse which contains 'elements'
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofHandler class
      * @param t_bcsystem the boundary condition class
      */
-    bool readBCsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,BCSystem &t_bcsystem);
+    bool readBCsBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,BCSystem &t_bcsystem);
     /**
      * read the initial condition blocks
      * @param t_json the json parse which contains 'elements'
-     * @param t_mesh the mesh class
+     * @param t_fecell the mesh class
      * @param t_dofhandler the dofHandler class
      * @param t_icsystem the initial condition class
      */
-    bool readICsBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,ICSystem &t_icsystem);
+    bool readICsBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,ICSystem &t_icsystem);
     /**
      * read the projection blocks
      * @param t_json the json parse which contains 'elements'
@@ -166,6 +170,14 @@ private:
      * @param t_projsystem the projection system class
      */
     bool readProjectionBlock(nlohmann::json &t_json,const DofHandler &t_dofhandler,ProjectionSystem &t_projsystem);
+
+    /**
+     * read the linear solver block
+     * @param t_json
+     * @param t_solver
+     * @return true if everthing is ok, otherwise false
+     */
+    bool readLinearSolverBlock(nlohmann::json &t_json,LinearSolver &t_solver);
     /**
      * read the nonlinear solver blocks
      * @param t_json the json parse which contains 'elements'
@@ -187,11 +199,11 @@ private:
     /**
      * read the postprocessor blocks
      * @param t_json the json parse which contains 'elements'
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dofhandler class
      * @param t_postprocessor the postprocessor class
      */
-    bool readPostprocessBlock(nlohmann::json &t_json,const Mesh &t_mesh,const DofHandler &t_dofhandler,Postprocessor &t_postprocessor);
+    bool readPostprocessBlock(nlohmann::json &t_json,const FECell &t_fecell,const DofHandler &t_dofhandler,Postprocessor &t_postprocessor);
     /**
      * read the fe job block
      * @param t_json the json parse which contains 'elements'
@@ -200,10 +212,10 @@ private:
     bool readJobBlock(nlohmann::json &t_json,FEJobBlock &t_jobblock);
 
 private:
-    bool m_readonly;/**< boolean flag, if readonly=true, it will only read the mesh block */
-    bool m_hasinputfile;/**< boolean flag, if true then the input file is loaded */
-    string m_inputfile_name;/**< string for the name of input file */
-    string m_meshfile_name;/**< string for the name of mesh file(external mesh file)*/
-    nlohmann::json m_json;/**< json file reader */
+    bool m_ReadOnly;/**< boolean flag, if readonly=true, it will only read the mesh block */
+    bool m_HasInputFile;/**< boolean flag, if true then the input file is loaded */
+    string m_InputFileName;/**< string for the name of input file */
+    string m_MeshFileName;/**< string for the name of mesh file(external mesh file)*/
+    nlohmann::json m_Json;/**< json file reader */
     
 };

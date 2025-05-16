@@ -14,20 +14,25 @@
 
 #include "BCSystem/NeumannBC.h"
 
-void NeumannBC::computeBCValue(const FECalcType &calctype,const double &bcvalue,
-                               const nlohmann::json json,
-                               const LocalElmtInfo &elmtinfo,
-                               const LocalElmtSolution &elmtsoln,
-                               const Vector3d &normal,
-                               const LocalShapeFun &shp,
-                               const double (&ctan)[3],
-                               MatrixXd &localK,
-                               VectorXd &localR){
-    if(calctype==FECalcType::COMPUTERESIDUAL){
-        computeResidual(bcvalue,json,elmtinfo,elmtsoln,normal,shp,localR);
+void NeumannBC::computeBCValue(const FECalcType &CalcType,
+                               const double &BCValue,
+                               const nlohmann::json Params,
+                               const LocalElmtInfo &ElmtInfo,
+                               const LocalElmtSolution &ElmtSoln,
+                               const Vector3d &Normal,
+                               const LocalShapeFun &Shp,
+                               const double (&Ctan)[3],
+                               MatrixXd &LocalK,
+                               VectorXd &LocalR){
+    if(CalcType==FECalcType::COMPUTERESIDUAL){
+        computeResidual(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,LocalR);
     }
-    else if(calctype==FECalcType::COMPUTEJACOBIAN){
-        computeJacobian(bcvalue,json,elmtinfo,elmtsoln,normal,shp,ctan,localK);
+    else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        computeJacobian(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK);
+    }
+    else if (CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN) {
+        computeResidual(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,LocalR);
+        computeJacobian(BCValue,Params,ElmtInfo,ElmtSoln,Normal,Shp,Ctan,LocalK);
     }
     else{
         MessagePrinter::printErrorTxt("Unsupported calculation type in NeumannBC class, please check your code");
@@ -36,29 +41,29 @@ void NeumannBC::computeBCValue(const FECalcType &calctype,const double &bcvalue,
 }
 
 
-void NeumannBC::computeResidual(const double &bcvalue,
-                                const nlohmann::json json,
-                                const LocalElmtInfo &elmtinfo,
-                                const LocalElmtSolution &elmtsoln,
-                                const Vector3d &normal,
-                                const LocalShapeFun &shp,
-                                VectorXd &localR){
+void NeumannBC::computeResidual(const double &BCValue,
+                                const nlohmann::json Params,
+                                const LocalElmtInfo &ElmtInfo,
+                                const LocalElmtSolution &ElmtSoln,
+                                const Vector3d &Normal,
+                                const LocalShapeFun &Shp,
+                                VectorXd &LocalR){
     // get rid of unused warnings
-    if(json.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||normal(1)){}
+    if(Params.size()||ElmtInfo.m_Dt||ElmtSoln.m_QpU[0]||Normal(1)){}
 
-    localR(1)=bcvalue*shp.m_test;
+    LocalR(1)=BCValue*Shp.m_Test;
 }
 
-void NeumannBC::computeJacobian(const double &bcvalue,
-                                const nlohmann::json &json,
-                                const LocalElmtInfo &elmtinfo,
-                                const LocalElmtSolution &elmtsoln,
-                                const Vector3d &normal,
-                                const LocalShapeFun &shp,
-                                const double (&ctan)[3],
-                                MatrixXd &localK){
+void NeumannBC::computeJacobian(const double &BCValue,
+                                const nlohmann::json &Params,
+                                const LocalElmtInfo &ElmtInfo,
+                                const LocalElmtSolution &ElmtSoln,
+                                const Vector3d &Normal,
+                                const LocalShapeFun &Shp,
+                                const double (&Ctan)[3],
+                                MatrixXd &LocalK){
     // get rid of unused warnings
-    if(bcvalue||json.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||normal(1)||shp.m_test){}
-    localK(1,1)=0.0*ctan[0]; // since bcvalue is a constant, its derivative should be zero!
+    if(BCValue||Params.size()||ElmtInfo.m_Dt||ElmtSoln.m_QpU[0]||Normal(1)||Shp.m_Test){}
+    LocalK(1,1)=0.0*Ctan[0]; // since bcvalue is a constant, its derivative should be zero!
 
 }

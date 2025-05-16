@@ -18,25 +18,28 @@
 #include "Eigen/Eigen"
 
 Rank2Tensor::Rank2Tensor(){
-    m_vals.resize(9,0.0);
+    m_vals[0][0]=0.0;m_vals[0][1]=0.0;m_vals[0][2]=0.0;
+    m_vals[1][0]=0.0;m_vals[1][1]=0.0;m_vals[1][2]=0.0;
+    m_vals[2][0]=0.0;m_vals[2][1]=0.0;m_vals[2][2]=0.0;
 }
 Rank2Tensor::Rank2Tensor(const double &val){
-    m_vals.resize(9,val);
+    m_vals[0][0]=val;m_vals[0][1]=val;m_vals[0][2]=val;
+    m_vals[1][0]=val;m_vals[1][1]=val;m_vals[1][2]=val;
+    m_vals[2][0]=val;m_vals[2][1]=val;m_vals[2][2]=val;
 }
 Rank2Tensor::Rank2Tensor(const Rank2Tensor &a){
-    m_vals.resize(9,0.0);
-    for(int i=0;i<N2;i++) m_vals[i]=a.m_vals[i];
+    for(int i=0;i<3;i++){
+        m_vals[i][0]=a.m_vals[i][0];m_vals[i][1]=a.m_vals[i][1];m_vals[i][2]=a.m_vals[i][2];
+    }
 }
 Rank2Tensor::Rank2Tensor(const InitMethod &initmethod){
     if(initmethod==InitMethod::ZERO){
-        m_vals.resize(9,0.0);
+        setToZeros();
     }
     else if(initmethod==InitMethod::IDENTITY){
-        m_vals.resize(9,0.0);
         setToIdentity();
     }
     else if(initmethod==InitMethod::RANDOM){
-        m_vals.resize(9,0.0);
         setToRandom();
     }
     else{
@@ -45,17 +48,20 @@ Rank2Tensor::Rank2Tensor(const InitMethod &initmethod){
     }
 }
 Rank2Tensor::~Rank2Tensor(){
-    m_vals.clear();
 }
 //**********************************************************************
 Rank2Tensor operator*(const double &lhs,const Rank2Tensor &a){
     Rank2Tensor temp(0.0);
-    for(int i=0;i<a.N2;i++) temp.m_vals[i]=lhs*a.m_vals[i];
+    for(int i=0;i<3;i++){
+        temp.m_vals[i][0]=lhs*a.m_vals[i][0];
+        temp.m_vals[i][1]=lhs*a.m_vals[i][1];
+        temp.m_vals[i][2]=lhs*a.m_vals[i][2];
+    }
     return temp;
 }
 Vector3d operator*(const Vector3d &lhs,const Rank2Tensor &a){
     Vector3d temp(0.0);
-    for(int j=1;j<=a.N;j++){
+    for(int j=1;j<=3;j++){
         temp(j)=lhs(1)*a(1,j)+lhs(2)*a(2,j)+lhs(3)*a(3,j);
     }
     return temp;
@@ -63,10 +69,10 @@ Vector3d operator*(const Vector3d &lhs,const Rank2Tensor &a){
 Rank2Tensor Rank2Tensor::doubledot(const Rank4Tensor &a) const{
         // return A:B calculation
         Rank2Tensor temp(0.0);
-        for(int i=1;i<=N;i++){
-            for(int j=1;j<=N;j++){
-                for(int k=1;k<=N;k++){
-                    for(int l=1;l<=N;l++){
+        for(int i=1;i<=3;i++){
+            for(int j=1;j<=3;j++){
+                for(int k=1;k<=3;k++){
+                    for(int l=1;l<=3;l++){
                         temp(k,l)+=(*this)(i,j)*a(i,j,k,l);
                     }
                 }
@@ -75,17 +81,17 @@ Rank2Tensor Rank2Tensor::doubledot(const Rank4Tensor &a) const{
         return temp;
     }
 //************************************************************************
-void Rank2Tensor::setFromGradU(const Vector3d &gradUx){
+void Rank2Tensor::setFromGradU1D(const Vector3d &gradUx){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=0.0;(*this)(1,3)=0.0;
     (*this)(2,1)=      0.0;(*this)(2,2)=0.0;(*this)(2,3)=0.0;
     (*this)(3,1)=      0.0;(*this)(3,2)=0.0;(*this)(3,3)=0.0;
 }
-void Rank2Tensor::setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy){
+void Rank2Tensor::setFromGradU2D(const Vector3d &gradUx,const Vector3d &gradUy){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=gradUx(2);(*this)(1,3)=0.0;
     (*this)(2,1)=gradUy(1);(*this)(2,2)=gradUy(2);(*this)(2,3)=0.0;
     (*this)(3,1)=      0.0;(*this)(3,2)=      0.0;(*this)(3,3)=0.0;
 }
-void Rank2Tensor::setFromGradU(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz){
+void Rank2Tensor::setFromGradU3D(const Vector3d &gradUx,const Vector3d &gradUy,const Vector3d &gradUz){
     (*this)(1,1)=gradUx(1);(*this)(1,2)=gradUx(2);(*this)(1,3)=gradUx(3);
     (*this)(2,1)=gradUy(1);(*this)(2,2)=gradUy(2);(*this)(2,3)=gradUy(3);
     (*this)(3,1)=gradUz(1);(*this)(3,2)=gradUz(2);(*this)(3,3)=gradUz(3);
@@ -127,7 +133,7 @@ Rank2Tensor exp(const Rank2Tensor &a){
           +a*a*a*a*a*a*(1.0/(1.0*2.0*3.0*4.0*5.0*6.0));
 }
 Rank2Tensor dexp(const double &a,const Rank2Tensor &b){
-    // return dexp(ab)/db
+    // return dexp(ab)/da
     return b
           +b*b*a*(1.0/1.0)
           +b*b*b*a*a*(1.0/(1.0*2.0))
@@ -141,10 +147,10 @@ Rank2Tensor dexp(const double &a,const Rank2Tensor &b){
 Rank4Tensor Rank2Tensor::otimes(const Rank2Tensor &a) const{
     // return C_ijkl=a_ij*b_kl
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(i,j)*a(k,l);
                 }
             }
@@ -155,10 +161,10 @@ Rank4Tensor Rank2Tensor::otimes(const Rank2Tensor &a) const{
 Rank4Tensor Rank2Tensor::ijXlk(const Rank2Tensor &a) const{
     // return C_ijkl=a_ij*b_lk
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(i,j)*a(l,k);
                 }
             }
@@ -168,16 +174,16 @@ Rank4Tensor Rank2Tensor::ijXlk(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::odot(const Rank2Tensor &a) const{
     // extremely useful for:
-    //    dA^-1/dA=-A^-1 \otimes A^-1
-    //            =-0.5*Ainv\otimes Ainv=rank-4 tensor
+    //    dA^-1/dA=-A^-1 \odot A^-1
+    //            =-0.5*Ainv\odot Ainv=rank-4 tensor
     // for nonlinear constitutive law
     // the proof can be found here:
     // https://en.wikipedia.org/wiki/Tensor_derivative_(continuum_mechanics)
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=0.5*((*this)(i,k)*a(j,l)+(*this)(i,l)*a(j,k));
                 }
             }
@@ -190,10 +196,10 @@ Rank4Tensor Rank2Tensor::odot(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::ikXjl(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(i,k)*a(j,l);
                 }
             }
@@ -203,10 +209,10 @@ Rank4Tensor Rank2Tensor::ikXjl(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::ikXlj(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(i,k)*a(l,j);
                 }
             }
@@ -219,10 +225,10 @@ Rank4Tensor Rank2Tensor::ikXlj(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::ilXjk(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(i,l)*a(j,k);
                 }
             }
@@ -232,10 +238,10 @@ Rank4Tensor Rank2Tensor::ilXjk(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::ilXkj(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(i,l)*a(k,j);
                 }
             }
@@ -248,10 +254,10 @@ Rank4Tensor Rank2Tensor::ilXkj(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::jiXkl(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(j,i)*a(k,l);
                 }
             }
@@ -261,10 +267,10 @@ Rank4Tensor Rank2Tensor::jiXkl(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::jiXlk(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(j,i)*a(l,k);
                 }
             }
@@ -277,10 +283,10 @@ Rank4Tensor Rank2Tensor::jiXlk(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::jkXil(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(j,k)*a(i,l);
                 }
             }
@@ -290,10 +296,10 @@ Rank4Tensor Rank2Tensor::jkXil(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::jkXli(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(j,k)*a(l,i);
                 }
             }
@@ -306,10 +312,10 @@ Rank4Tensor Rank2Tensor::jkXli(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::jlXik(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(j,l)*a(i,k);
                 }
             }
@@ -319,10 +325,10 @@ Rank4Tensor Rank2Tensor::jlXik(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::jlXki(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(j,l)*a(k,i);
                 }
             }
@@ -335,10 +341,10 @@ Rank4Tensor Rank2Tensor::jlXki(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::kiXjl(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(k,i)*a(j,l);
                 }
             }
@@ -348,10 +354,10 @@ Rank4Tensor Rank2Tensor::kiXjl(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::kiXlj(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(k,i)*a(l,j);
                 }
             }
@@ -364,10 +370,10 @@ Rank4Tensor Rank2Tensor::kiXlj(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::kjXil(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(k,j)*a(i,l);
                 }
             }
@@ -377,10 +383,10 @@ Rank4Tensor Rank2Tensor::kjXil(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::kjXli(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(k,j)*a(l,i);
                 }
             }
@@ -393,10 +399,10 @@ Rank4Tensor Rank2Tensor::kjXli(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::klXij(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(k,l)*a(i,j);
                 }
             }
@@ -406,10 +412,10 @@ Rank4Tensor Rank2Tensor::klXij(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::klXji(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(k,l)*a(j,i);
                 }
             }
@@ -422,10 +428,10 @@ Rank4Tensor Rank2Tensor::klXji(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::liXkj(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(l,i)*a(k,j);
                 }
             }
@@ -435,10 +441,10 @@ Rank4Tensor Rank2Tensor::liXkj(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::liXjk(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(l,i)*a(j,k);
                 }
             }
@@ -451,10 +457,10 @@ Rank4Tensor Rank2Tensor::liXjk(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::ljXik(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(l,j)*a(i,k);
                 }
             }
@@ -464,10 +470,10 @@ Rank4Tensor Rank2Tensor::ljXik(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::ljXki(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(l,j)*a(k,i);
                 }
             }
@@ -480,10 +486,10 @@ Rank4Tensor Rank2Tensor::ljXki(const Rank2Tensor &a) const{
 //********************************************************
 Rank4Tensor Rank2Tensor::lkXij(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(l,k)*a(i,j);
                 }
             }
@@ -493,10 +499,10 @@ Rank4Tensor Rank2Tensor::lkXij(const Rank2Tensor &a) const{
 }
 Rank4Tensor Rank2Tensor::lkXji(const Rank2Tensor &a) const{
     Rank4Tensor temp(0.0);
-    for(int i=1;i<=N;i++){
-        for(int j=1;j<=N;j++){
-            for(int k=1;k<=N;k++){
-                for(int l=1;l<=N;l++){
+    for(int i=1;i<=3;i++){
+        for(int j=1;j<=3;j++){
+            for(int k=1;k<=3;k++){
+                for(int l=1;l<=3;l++){
                     temp(i,j,k,l)=(*this)(l,k)*a(j,i);
                 }
             }
@@ -509,22 +515,22 @@ Rank4Tensor Rank2Tensor::lkXji(const Rank2Tensor &a) const{
 //*** stress and strain decomposition related functions
 //**************************************************************
 void Rank2Tensor::calcEigenValueAndEigenVectors(double (&eigval)[3],Rank2Tensor &eigvec) const{
-    Eigen::Matrix3d _M;
+    Eigen::Matrix3d M;
 
-    _M<<(*this)(1,1),(*this)(1,2),(*this)(1,3),
-        (*this)(2,1),(*this)(2,2),(*this)(2,3),
-        (*this)(3,1),(*this)(3,2),(*this)(3,3);
+    M<<(*this)(1,1),(*this)(1,2),(*this)(1,3),
+       (*this)(2,1),(*this)(2,2),(*this)(2,3),
+       (*this)(3,1),(*this)(3,2),(*this)(3,3);
     
-    Eigen::EigenSolver<Eigen::Matrix3d> _eigen_solver;
-    _eigen_solver.compute(_M);
+    Eigen::EigenSolver<Eigen::Matrix3d> eigen_solver;
+    eigen_solver.compute(M);
     //
-    eigval[0]=_eigen_solver.eigenvalues()(0).real();
-    eigval[1]=_eigen_solver.eigenvalues()(1).real();
-    eigval[2]=_eigen_solver.eigenvalues()(2).real();
-    for(int i=0;i<N;i++){
-        eigvec(1,i+1)=_eigen_solver.eigenvectors()(0,i).real();
-        eigvec(2,i+1)=_eigen_solver.eigenvectors()(1,i).real();
-        eigvec(3,i+1)=_eigen_solver.eigenvectors()(2,i).real();
+    eigval[0]=eigen_solver.eigenvalues()(0).real();
+    eigval[1]=eigen_solver.eigenvalues()(1).real();
+    eigval[2]=eigen_solver.eigenvalues()(2).real();
+    for(int i=0;i<3;i++){
+        eigvec(1,i+1)=eigen_solver.eigenvectors()(0,i).real();
+        eigvec(2,i+1)=eigen_solver.eigenvectors()(1,i).real();
+        eigvec(3,i+1)=eigen_solver.eigenvectors()(2,i).real();
     }
 }
 Rank4Tensor Rank2Tensor::calcPositiveProjTensor(double (&eigval)[3],Rank2Tensor &eigvec) const{
@@ -538,7 +544,7 @@ Rank4Tensor Rank2Tensor::calcPositiveProjTensor(double (&eigval)[3],Rank2Tensor 
     //         lambda_i-->eigenvalue  n_i--> the eigenvector
 
     double epos[3],diag[3];
-    for(int i=0;i<N;i++){
+    for(int i=0;i<3;i++){
         epos[i]=0.5*(abs(eigval[i])+eigval[i]);
         diag[i]=0.0;
         if(eigval[i]>0.0){
@@ -552,7 +558,7 @@ Rank4Tensor Rank2Tensor::calcPositiveProjTensor(double (&eigval)[3],Rank2Tensor 
 
     // calculate Ma defined in Eq.(9)-2
     // Ma=n_a x n_a
-    for(int i=1;i<=N;i++){
+    for(int i=1;i<=3;i++){
         Ma.setFromVectorDyad(eigvec.getIthCol(i),eigvec.getIthCol(i));
         // Eq.(19), first term on the right side
         ProjPos+=Ma.otimes(Ma)*diag[i-1];
@@ -562,8 +568,8 @@ Rank4Tensor Rank2Tensor::calcPositiveProjTensor(double (&eigval)[3],Rank2Tensor 
     // We need a new rank-2 tensor Mb(same defination as Ma)
     double theta_ab;// defined in Eq.(21)-1
     Rank4Tensor Gab(0.0),Gba(0.0);
-    const double tol=1.0e-13;
-    for(int a=0;a<N;a++){
+    const double tol=1.0e-14;
+    for(int a=0;a<3;a++){
         for(int b=0;b<a;b++){
             Ma.setFromVectorDyad(eigvec.getIthCol(a+1),eigvec.getIthCol(a+1));// Eq.(12)
             Mb.setFromVectorDyad(eigvec.getIthCol(b+1),eigvec.getIthCol(b+1));// change the order of Eq.(12)
@@ -604,7 +610,7 @@ Rank4Tensor Rank2Tensor::getPositiveProjectionTensor() const{
     //         lambda_i-->eigenvalue  
     //         n_i     --> the eigenvector
     double epos[3],diag[3];
-    for(int i=0;i<N;i++){
+    for(int i=0;i<3;i++){
         epos[i]=0.5*(abs(eigval[i])+eigval[i]);
         diag[i]=0.0;
         if(eigval[i]>0.0){
@@ -618,7 +624,7 @@ Rank4Tensor Rank2Tensor::getPositiveProjectionTensor() const{
 
     // calculate Ma defined in Eq.(9)-2
     // Ma=n_a x n_a
-    for(int i=1;i<=N;i++){
+    for(int i=1;i<=3;i++){
         Ma.setFromVectorDyad(eigvec.getIthCol(i),eigvec.getIthCol(i));
         // Eq.(19), first term on the right side
         ProjPos+=Ma.otimes(Ma)*diag[i-1];
@@ -629,7 +635,7 @@ Rank4Tensor Rank2Tensor::getPositiveProjectionTensor() const{
     double theta_ab;// defined in Eq.(21)-1
     Rank4Tensor Gab(0.0),Gba(0.0);
     const double tol=1.0e-13;
-    for(int a=0;a<N;a++){
+    for(int a=0;a<3;a++){
         for(int b=0;b<a;b++){
             Ma.setFromVectorDyad(eigvec.getIthCol(a+1),eigvec.getIthCol(a+1));// Eq.(12)
             Mb.setFromVectorDyad(eigvec.getIthCol(b+1),eigvec.getIthCol(b+1));// change the order of Eq.(12)

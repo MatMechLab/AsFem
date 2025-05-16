@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.21.0)
-project(AsFem)
+project(AsFem2)
 
 set(CMAKE_CXX_STANDARD 17)
 
 ###############################################
 ### Set your PETSc/MPI path here or bashrc  ###
-### The only things to modify is the        ###
+### The only things to modify are the       ###
 ### following two lines(PETSC/MPI_DIR)      ###
 ###############################################
 SET(WINDOWS "False" CACHE STRING "WINDOWS")
@@ -75,7 +75,13 @@ elseif(UNIX)
         if(NOT PETSC_LIB)
             message(FATAL_ERROR " PETSc lib dir can\'t be found!")
         endif()
-        message("    PETSc include dir is: ${PETSC_DIR}/include")
+        find_library(METIS_LIB NAMES metis HINTS ${PETSC_DIR}/lib ${PETSC_DIR}/lib64)
+        # ###
+        # if(NOT METIS_LIB)
+        #     message(FATAL_ERROR " METIS lib dir can\'t be found!")
+        # endif()
+        # message("    METIS library is: ${METIS_LIB}")
+        # link_libraries("${METIS_LIB}")
     else()
         message (WARNING "PETSc location (PETSC_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your PETSC_DIR path is not correct, please modifiy PETSC_INC and PETSC_LIB in your CMakeList.txt")
         find_path(PETSC_INC NAMES petsc.h 
@@ -96,10 +102,54 @@ elseif(UNIX)
         message(" PETSc include dir is: ${PETSC_INC}")
         include_directories("${PETSC_INC}")
     endif()
+    message("    PETSC include dir is: ${PETSC_DIR}/include")
     message("    PETSc library dir is: ${PETSC_LIB}")
     link_directories("${PETSC_LIB}")
 endif()
 
+#############################################################
+### ENV setup for the METIS package                       ###
+### You should install the GKlib and METIS package        ###
+#############################################################
+# ### for GKlib
+# if(EXISTS $ENV{GKLIB_DIR})
+#     set(GKLIB_DIR $ENV{GKLIB_DIR})
+#     message("GKLib dir is: ${GKLIB_DIR}")
+#     find_library(GKLIB NAMES GKlib HINTS ${GKLIB_DIR}/lib ${GKLIB_DIR}/lib64)
+#     if(NOT GKLIB)
+#         message(FATAL_ERROR "GKLib dir can\'t be found!")
+#     endif()
+#     message("    GKLib include dir is: ${GKLIB_DIR}/include")
+#     message("    GKLib library dir is: ${GKLIB}")
+#     include_directories("${GKLIB_DIR}/include")
+#     link_libraries("${GKLIB}")
+# else()
+#     message (WARNING "GKLib location (GKLIB_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your GKLib path is not correct, please modifiy GKLIB_DIR in your CMakeList.txt")
+#     set(GKLIB_DIR "/home/by/Programs/toolkits/gcc13/GKlib")
+#     message("    GKLib include dir is: ${GKLIB_DIR}/include")
+#     message("    GKLib library dir is: ${GKLIB_DIR}/lib/libGKlib.a")
+#     include_directories("${GKLIB_DIR}/include")
+#     link_libraries("${GKLIB_DIR}/lib/libGKlib.a")
+# endif ()
+# ## for METIS
+# if(EXISTS $ENV{METIS_DIR})
+#     set(METIS_DIR $ENV{METIS_DIR})
+#     message("METIS dir is: ${METIS_DIR}")
+#     find_library(METIS_LIB NAMES metis HINTS ${METIS_DIR}/lib ${METIS_DIR}/lib64)
+#     if(NOT METIS_LIB)
+#         message(FATAL_ERROR " METIS lib can\'t be found!")
+#     endif()
+#     message("    METIS include dir is: ${METIS_DIR}/include")
+#     message("    METIS library dir is: ${METIS_LIB}")
+#     include_directories("${METIS_DIR}/include")
+#     link_libraries("${METIS_LIB}")
+# else()
+#     message (WARNING "METIS location (METIS_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your METIS_DIR path is not correct, please modifiy METIS_DIR_DIR in your CMakeList.txt")
+#     set(METIS_DIR "/home/by/Programs/toolkits/gcc13/METIS")
+#     set(METIS_LIB "/home/by/Programs/toolkits/gcc13/METIS/lib/libmetis.so")
+#     include_directories("${METIS_DIR}/include")
+#     link_libraries("${METIS_LIB}")
+# endif ()
 
 ###############################################
 # For external packages                     ###
@@ -148,7 +198,7 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GL /openmp")
 endif()
 
-message("AsFem will be compiled in ${CMAKE_BUILD_TYPE} mode !")
+message("AsFem2 will be compiled in ${CMAKE_BUILD_TYPE} mode !")
 message("CXX compiler options are: ${CMAKE_CXX_FLAGS}")
 message("The executable file 'asfem' will be generated in ${CMAKE_CURRENT_SOURCE_DIR}/bin folder")
 ###############################################
@@ -160,10 +210,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include(SourceCode.cmake)
 
 ##################################################
-add_executable(asfem ${inc} ${src})
+add_executable(asfem2 ${inc} ${src})
 
-target_link_libraries(asfem PUBLIC ${MPI_LIB})
-target_link_libraries(asfem PUBLIC ${PETSC_LIB})
+# target_link_libraries(asfem ${MPI_LIB} ${PETSC_LIB} ${METIS_LIB} ${GKLIB})
+target_link_libraries(asfem2 ${MPI_LIB} ${PETSC_LIB})
 
 ###############################################
 ### set LTO for asfem                       ###

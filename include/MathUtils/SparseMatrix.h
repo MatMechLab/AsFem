@@ -259,6 +259,7 @@ public:
     inline void insertValues(const int &isize,const int (&iInd)[],const int &jsize,const int (&jInd)[],const vector<double> &vals){
         MatSetValues(m_matrix,isize,iInd,jsize,jInd,vals.data(),INSERT_VALUES);
     }
+
     //********************************************************
     /**
      * assemble the sparse matrix, this should be called after all the intermediate assemble

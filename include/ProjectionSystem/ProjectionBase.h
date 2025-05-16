@@ -24,10 +24,14 @@
 #include "Utils/MessagePrinter.h"
 
 #include "ProjectionSystem/ProjectionData.h"
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "FE/ShapeFun.h"
+#include "MateSystem/MateSystem.h"
 #include "MateSystem/MaterialsContainer.h"
+#include "FE/FE.h"
+#include "SolutionSystem/SolutionSystem.h"
+#include "FEProblem/FEControlInfo.h"
 
 using std::string;
 using std::vector;
@@ -39,25 +43,30 @@ using std::vector;
 class ProjectionBase{
 protected:
     /**
-     * the global projection action
-     * @param t_mesh the mesh class
-     * @param t_data the projection data structure
+     * initialize the projection system
+     * @param t_FECell the fe cell class
+     * @param t_DofHandler the dof handler class
      */
-    virtual void globalProjectionAction(const Mesh &t_mesh,ProjectionData &t_data)=0;
+    virtual void initMyProjection(const FECell &t_FECell,const DofHandler &t_DofHandler)=0;
+
     /**
-     * the local projection action
-     * @param nodesnum the nodes number of current element
-     * @param t_elconn the local element connectivity
-     * @param detjac the jacobian determinte of current qpoint
-     * @param t_shp the shapefunction class
-     * @param m_mate the material container from material system
-     * @param t_data the projection data structure
+     * execute my own projection method based on the child class
+     * @param t_FECell the FECell class
+     * @param t_DofHandler the DofHandler class
+     * @param t_ElmtSystem the ElmtSystem class
+     * @param t_MateSystem the MateSystem class
+     * @param t_FE the FE class
+     * @param t_SolnSystem the SolutionSystem
+     * @param t_FECtrlInfo the FECtrlInfo structure
+     * @param Data the projection data
      */
-    virtual void localProjectionAction(const int &nodesnum,
-                                       const vector<int> &t_elconn,
-                                       const double &detjac,
-                                       const ShapeFun &t_shp,
-                                       const MaterialsContainer &m_mate,
-                                       ProjectionData &t_data)=0;
+    virtual void executeMyProjection(const FECell &t_FECell,
+                                     const DofHandler &t_DofHandler,
+                                     const ElmtSystem &t_ElmtSystem,
+                                     MateSystem &t_MateSystem,
+                                     FE &t_FE,
+                                     SolutionSystem &t_SolnSystem,
+                                     const FEControlInfo &t_FECtrlInfo,
+                                     ProjectionData &Data)=0;
 
 };

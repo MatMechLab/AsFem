@@ -25,34 +25,34 @@
 class FEControlInfo{
 public:
     FEControlInfo(){
-        ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
-        dt=1.0e-6;
-        t=1.0;
+        Ctan[0]=1.0;Ctan[1]=0.0;Ctan[2]=0.0;
+        Dt=1.0e-6;
+        T=1.0;
         CurrentStep=0;
         FinalStep=0;
         IsDebug=true;
         IsDepDebug=false;
         IsProjection=false;
 
-        m_timesteppingtype=TimeSteppingType::BACKWARDEULER;
+        m_TimesteppingType=TimeSteppingType::BACKWARDEULER;
     }
 
     void init(){
-        ctan[0]=1.0;ctan[1]=0.0;ctan[2]=0.0;
-        dt=1.0e-6;
-        t=1.0;
+        Ctan[0]=1.0;Ctan[1]=0.0;Ctan[2]=0.0;
+        Dt=1.0e-6;
+        T=1.0;
         CurrentStep=0;
         FinalStep=0;
         IsDebug=true;
         IsDepDebug=false;
         IsProjection=false;
 
-        m_timesteppingtype=TimeSteppingType::BACKWARDEULER;
+        m_TimesteppingType=TimeSteppingType::BACKWARDEULER;
     }
 
-    double ctan[3];
-    double dt=1.0e-6;
-    double t=1.0;
+    double Ctan[3];
+    double Dt=1.0e-6;
+    double T=1.0;
     int CurrentStep=0;
     int FinalStep=0;
     bool IsDebug=true;
@@ -60,6 +60,6 @@ public:
     bool IsProjection=false;
 
     // for time stepping
-    TimeSteppingType m_timesteppingtype=TimeSteppingType::BACKWARDEULER;
+    TimeSteppingType m_TimesteppingType=TimeSteppingType::BACKWARDEULER;
 
 };

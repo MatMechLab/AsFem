@@ -22,8 +22,8 @@
 /**
  * For AsFem's own header files
  */
-#include "Mesh/Nodes.h"
-#include "Mesh/Mesh.h"
+#include "FECell/Nodes.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "FE/FE.h"
 #include "EquationSystem/EquationSystem.h"
@@ -60,36 +60,43 @@ public:
     //***************************************************************
     /**
      * init the bulk FE system
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofhandler the dof handler class
      */
-    void init(const Mesh &t_mesh, const DofHandler &t_dofhandler);
+    void init(const FECell &t_fecell, const DofHandler &t_dofhandler);
     
     /**
      * reset the maximum coefficient of K matrix
      */
-    inline void resetMaxKMatrixCoeff(){m_max_k_coeff=-1.0e16;}
+    inline void resetMaxKMatrixCoeff(){m_MaxKmatCoeff=-1.0e16;}
 
     /**
      * generate the system residual and jacobian based on different elements(PDEs/ODEs)
-     * @param t_calctype the calculation action type, i.e., form residual or form jacobian
-     * @param t double value for the current time
-     * @param dt double value for the current time increment
-     * @param ctan the 3-d vector for the time derivative coefficients
-     * @param t_mesh the mesh class
-     * @param t_dofhandler the dofHandler class
-     * @param t_fe the fe class for the shape function and gauss points
-     * @param t_elmtsystem the element system class
-     * @param t_matesystem the material system class
-     * @param t_solutionsystem the solution system class for 'U', 'V', and 'A'
+     * @param t_CalcType the calculation action type, i.e., form residual or form jacobian
+     * @param T double value for the current time
+     * @param Dt double value for the current time increment
+     * @param Ctan the 3-d vector for the time derivative coefficients
+     * @param t_FEcell the fe cell class
+     * @param t_DofHandler the dofHandler class
+     * @param t_FE the fe class for the shape function and gauss points
+     * @param t_ElmtSystem the element system class
+     * @param t_MateSystem the material system class
+     * @param t_SolnSystem the solution system class for 'U', 'V', and 'A'
      * @param AMATRIX the system K matrix
      * @param RHS the system residual vector
      */
-    void formBulkFE(const FECalcType &t_calctype,const double &t,const double &dt,const double (&ctan)[3],
-                    Mesh &t_mesh,const DofHandler &t_dofhandler,FE &t_fe,
-                    ElmtSystem &t_elmtsystem,MateSystem &t_matesystem,
-                    SolutionSystem &t_solutionsystem,
-                    SparseMatrix &AMATRIX,Vector &RHS);
+    void formBulkFE(const FECalcType &t_CalcType,
+                    const double &T,
+                    const double &Dt,
+                    const double (&Ctan)[3],
+                    FECell &t_FEcell,
+                    const DofHandler &t_DofHandler,
+                    FE &t_FE,
+                    ElmtSystem &t_ElmtSystem,
+                    MateSystem &t_MateSystem,
+                    SolutionSystem &t_SolnSystem,
+                    SparseMatrix &AMATRIX,
+                    Vector &RHS);
     /**
      * release the allocated memory
      */
@@ -101,7 +108,7 @@ public:
     /**
      * get the maximum coefficient of current K matrix
      */
-    inline double getMaxCoefOfKMatrix()const{return m_max_k_coeff;}
+    inline double getMaxCoefOfKMatrix()const{return m_MaxKmatCoeff;}
 
 private:
     //***************************************************************
@@ -109,71 +116,72 @@ private:
     //***************************************************************
     /**
      * assemble local residual to global residual
-     * @param t_dofs the dofs number of current sub element
-     * @param t_dofsid the dofs id of current sub element, the local one, not the global ids!
-     * @param t_globalnodeid the global node index
-     * @param t_dofhandler the dofHandler class
-     * @param jxw the JxW for integration
-     * @param t_subR the residual of current sub element
+     * @param Dofs the dofs number of current sub element
+     * @param DofIDs the dofs id of current sub element, the local one, not the global ids!
+     * @param GlobalNodeID the global node index
+     * @param t_DofHandler the dofHandler class
+     * @param JxW the JxW for integration
+     * @param SubR the residual of current sub element
      * @param RHS the global residual
      */
-    void assembleLocalResidual2GlobalR(const int &t_dofs,const vector<int> &t_dofsid,
-                                       const int &t_globalnodeid,
-                                       const DofHandler &t_dofhandler,
-                                       const double &jxw,
-                                       const VectorXd &t_subR,
+    void assembleLocalResidual2GlobalR(const int &Dofs,
+                                       const vector<int> &DofIDs,
+                                       const int &GlobalNodeID,
+                                       const DofHandler &t_DofHandler,
+                                       const double &JxW,
+                                       const VectorXd &SubR,
                                        Vector &RHS);
     /**
      * assemble local residual to global residual
-     * @param t_dofs the dofs number of current sub element
-     * @param t_dofsid the dofs id of current sub element, the local one
-     * @param t_globalnodeidI the node index (I-index), global one
-     * @param t_globalnodeidJ the node index (J-index), global one
+     * @param Dofs the dofs number of current sub element
+     * @param DofIDs the dofs id of current sub element, the local one
+     * @param GlobalNodeIDI the node index (I-index), global one
+     * @param GlobalNodeIDJ the node index (J-index), global one
      * @param jxw JxW for integration
      * @param t_dofhandler the dofHandler class
-     * @param t_subK the jacobian of current sub element
+     * @param SubK the jacobian of current sub element
      * @param AMATRIX the global K matrix
      */
-    void assembleLocalJacobian2GlobalK(const int &t_dofs,const vector<int> &t_dofsid,
-                                       const int &t_globalnodeidI,const int &t_globalnodeidJ,
-                                       const double &jxw,
-                                       const DofHandler &t_dofhandler,
-                                       const MatrixXd &t_subK,
+    void assembleLocalJacobian2GlobalK(const int &Dofs,
+                                       const vector<int> &DofIDs,
+                                       const int &GlobalNodeIDI,
+                                       const int &GlobalNodeIDJ,
+                                       const double &JxW,
+                                       const DofHandler &t_DofHandler,
+                                       const MatrixXd &SubK,
                                        SparseMatrix &AMATRIX);
 
 
 private:
-    int m_max_nodal_dofs;/**< the maximum dofs number of each node */
-    int m_max_elmt_dofs;/**< the maximum dofs number of each bulk element */
-    int m_bulkelmt_nodesnum;/**< the nodes number of the bulk element */
-    VectorXd m_localR;/**< for the local Residual vector, this is used for the whole element */
-    MatrixXd m_localK;/**< for the local Jacobian matrix, this is used for the whole element */
-    VectorXd m_subR;/**< for the local 'element's vector, used for one single element/model */
-    MatrixXd m_subK;/**< for the local 'element's matrix, used for one single element/model */
+    int m_MaxNodalDofs;/**< the maximum dofs number of each node */
+    int m_MaxElmtDofs;/**< the maximum dofs number of each bulk element */
+    int m_BulkElmtNodesNum;/**< the nodes number of the bulk element */
+    VectorXd m_LocalR;/**< for the local Residual vector, this is used for the whole element */
+    MatrixXd m_LocalK;/**< for the local Jacobian matrix, this is used for the whole element */
+    VectorXd m_SubR;/**< for the local 'element's vector, used for one single element/model */
+    MatrixXd m_SubK;/**< for the local 'element's matrix, used for one single element/model */
 
-    vector<int> m_elmtconn;/**< for local element's connectivity */
-    vector<int> m_elmtdofsid;/**< for local elemental nodes' gloabl ids, start from 0 */
-    int         m_subelmt_dofs;/**< for the dofs number of each sub element */
-    vector<int> m_subelmtdofsid;/**< for local sub-elemental nodes' gloabl ids, start from 0 */
+    vector<int> m_ElmtConn;/**< for local element's connectivity */
+    vector<int> m_ElmtDofIDs;/**< for local elemental nodes' gloabl ids, start from 0 */
+    int         m_SubElmtDofs;/**< for the dofs number of each sub element */
+    vector<int> m_SubElmtDofIDs;/**< for local sub-elemental nodes' gloabl ids, start from 0 */
 
-    double m_max_k_coeff;/**< the max(absolute) value of current K matrix */
+    double m_MaxKmatCoeff;/**< the max(absolute) value of current K matrix */
 
-    vector<double> m_elmtU;/**< 'displacemen' of current element */
-    vector<double> m_elmtUold;/**< previous 'displacemen' of current element */
-    vector<double> m_elmtUolder;/**< pre-previous 'displacemen' of current element */
-    vector<double> m_elmtV;/**< 'velocity' of current element */
-    vector<double> m_elmtA;/**< 'acceleration' of current element */
+    vector<double> m_ElmtU;/**< 'displacemen' of current element */
+    vector<double> m_ElmtUold;/**< previous 'displacemen' of current element */
+    vector<double> m_ElmtUolder;/**< pre-previous 'displacemen' of current element */
+    vector<double> m_ElmtV;/**< 'velocity' of current element */
+    vector<double> m_ElmtA;/**< 'acceleration' of current element */
 
-    Nodes m_nodes;/**< for the nodal coordinates of current bulk element (current configuration) */
-    Nodes m_nodes0;/**< for the nodal coordinates of current bulk element (reference configuration) */
+    Nodes m_Nodes;/**< for the nodal coordinates of current bulk element (current configuration) */
+    Nodes m_Nodes0;/**< for the nodal coordinates of current bulk element (reference configuration) */
 
-    LocalElmtInfo m_local_elmtinfo;/**< for the local element information */
-    LocalElmtSolution m_local_elmtsoln;/**< for the local element solution */
-    LocalShapeFun m_local_shp;/**< for the local shape function */
+    LocalElmtInfo m_LocalElmtInfo;/**< for the local element information */
+    LocalElmtSolution m_LocalElmtSoln;/**< for the local element solution */
+    LocalShapeFun m_LocalShp;/**< for the local shape function */
 
 private:
-    PetscMPIInt m_rank;/**< for the rank id of current cpu */
-    PetscMPIInt m_size;/**< for the size of total cpus */
 
     
 };

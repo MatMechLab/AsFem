@@ -21,10 +21,10 @@ double VolumePostprocessor::computeVolumeIntegralValue(const int &dofid,
                                             const LocalShapeFun &t_shp,
                                             SolutionSystem &t_soln,
                                             ProjectionSystem &t_projsystem){
-    if(dofid||nodeid||t_parameters.size()||t_shp.m_test||t_soln.getDofsNum()||t_projsystem.getNodesNum()) {}
+    if(dofid||nodeid||t_parameters.size()||t_shp.m_Test||t_soln.getDofsNum()||t_projsystem.getNodesNum()) {}
     
     
-    m_ppsvalue=1.0/elmtinfo.m_nodesnum;
+    m_ppsvalue=1.0/elmtinfo.m_NodesNum;
     
     return m_ppsvalue;
 }

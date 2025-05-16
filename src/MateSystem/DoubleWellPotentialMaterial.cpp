@@ -34,7 +34,7 @@ void DoubleWellPotentialMaterial::initMaterialProperties(const nlohmann::json &i
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
@@ -47,7 +47,7 @@ void DoubleWellPotentialMaterial::computeMaterialProperties(const nlohmann::json
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||
        mateold.getScalarMaterialsNum()){}
 
     //************************
@@ -60,7 +60,7 @@ void DoubleWellPotentialMaterial::computeMaterialProperties(const nlohmann::json
     }
     
 
-    m_args(1)=elmtsoln.m_gpU[1];
+    m_args(1)=elmtsoln.m_QpU[1];
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
 
     mate.ScalarMaterial("F")=m_F(1);
@@ -68,7 +68,7 @@ void DoubleWellPotentialMaterial::computeMaterialProperties(const nlohmann::json
     mate.ScalarMaterial("d2Fdeta2")=m_d2Fdargs2(1,1);
     mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
     mate.ScalarMaterial("L")=JsonUtils::getValue(inputparams,"L");
-    mate.VectorMaterial("gradu")=elmtsoln.m_gpGradU[1];// the gradient of u
+    mate.VectorMaterial("gradu")=elmtsoln.m_QpGradU[1];// the gradient of u
 
 }
 //**************************************************************

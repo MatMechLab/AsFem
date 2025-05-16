@@ -34,58 +34,58 @@ public:
      * constructor
      */
     ICBlock(){
-        m_icBlockIndex=0;
-        m_icBlockName.clear();
-        m_icTypeName.clear();
-        m_icType=ICType::NULLIC;
-        m_dofsName.clear();
-        m_dofIDs.clear();
-        m_json_params.clear();
-        m_icvalue=0.0;
-        m_domainNameList.clear();
+        m_ICBlockIndex=0;
+        m_ICBlockName.clear();
+        m_ICTypeName.clear();
+        m_ICType=ICType::NULLIC;
+        m_DofNames.clear();
+        m_DofIDs.clear();
+        m_Params.clear();
+        m_ICValue=0.0;
+        m_DomainNameList.clear();
     }
     /**
      * reset the bc block info
      */
     void reset(){
-        m_icBlockIndex=0;
-        m_icBlockName.clear();
-        m_icTypeName.clear();
-        m_icType=ICType::NULLIC;
-        m_dofsName.clear();
-        m_dofIDs.clear();
-        m_json_params.clear();
-        m_icvalue=0.0;
-        m_domainNameList.clear();
+        m_ICBlockIndex=0;
+        m_ICBlockName.clear();
+        m_ICTypeName.clear();
+        m_ICType=ICType::NULLIC;
+        m_DofNames.clear();
+        m_DofIDs.clear();
+        m_Params.clear();
+        m_ICValue=0.0;
+        m_DomainNameList.clear();
     }
 
     /**
      * print out the information of current ic block
      */
     void printICBlockInfo()const{
-        MessagePrinter::printNormalTxt(" ics block-"+to_string(m_icBlockIndex)+" info");
-        MessagePrinter::printNormalTxt("  block name = "+m_icBlockName+", type name = "+m_icTypeName);
+        MessagePrinter::printNormalTxt(" ics block-"+to_string(m_ICBlockIndex)+" info");
+        MessagePrinter::printNormalTxt("  block name = "+m_ICBlockName+", type name = "+m_ICTypeName);
         string str;
 
         str="";
-        for(const auto &it:m_dofsName) str+=it+" ";
+        for(const auto &it:m_DofNames) str+=it+" ";
         MessagePrinter::printNormalTxt("  dofs name = "+str);
 
         str="";
-        for(const auto &it:m_dofIDs) str+=to_string(it)+" ";
+        for(const auto &it:m_DofIDs) str+=to_string(it)+" ";
         MessagePrinter::printNormalTxt("  dofs id = "+str);
 
         str="";
-        for(const auto &it:m_domainNameList){
+        for(const auto &it:m_DomainNameList){
                 str+=it+" ";
         }
         MessagePrinter::printNormalTxt("  domain = "+str);
         
-        MessagePrinter::printNormalTxt("  ic value = "+to_string(m_icvalue));
-        if(m_json_params.size()>0){
+        MessagePrinter::printNormalTxt("  ic value = "+to_string(m_ICValue));
+        if(m_Params.size()>0){
             char buff[69];
             MessagePrinter::printNormalTxt("  parameters are:");
-            for(auto it=m_json_params.begin();it!=m_json_params.end();it++){
+            for(auto it=m_Params.begin();it!=m_Params.end();it++){
                 snprintf(buff,69,"    %16s = %14.5e",it.key().c_str(),static_cast<double>(it.value()));
                 str=buff;
                 MessagePrinter::printNormalTxt(str);
@@ -95,14 +95,14 @@ public:
     }
 
 public:
-    int            m_icBlockIndex;/**< index of current ic block */
-    string         m_icBlockName;/**< for the name of current ic block */
-    string         m_icTypeName;/**< the for ic type name of current ic block */
-    ICType         m_icType;/**< ic type of current block */
-    vector<string> m_dofsName;/**< list of dofs */
-    vector<int>    m_dofIDs;/**< list of dofs id */
-    double         m_icvalue;/**< the initial condition value */
-    nlohmann::json m_json_params;/**< json class for material paramters of current ic block */
-    vector<string> m_domainNameList;/**< domain name list */
+    int            m_ICBlockIndex;/**< index of current ic block */
+    string         m_ICBlockName;/**< for the name of current ic block */
+    string         m_ICTypeName;/**< the for ic type name of current ic block */
+    ICType         m_ICType;/**< ic type of current block */
+    vector<string> m_DofNames;/**< list of dofs */
+    vector<int>    m_DofIDs;/**< list of dofs id */
+    double         m_ICValue;/**< the initial condition value */
+    nlohmann::json m_Params;/**< json class for material paramters of current ic block */
+    vector<string> m_DomainNameList;/**< domain name list */
     
 };

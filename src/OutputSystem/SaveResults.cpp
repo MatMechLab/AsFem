@@ -15,7 +15,7 @@
 #include "OutputSystem/OutputSystem.h"
 
 void OutputSystem::saveResults2File(const int &t_step,
-                                    const Mesh &t_mesh,
+                                    const FECell &t_fecell,
                                     const DofHandler &t_dofHandler,
                                     SolutionSystem &t_solution,
                                     ProjectionSystem &t_projection){
@@ -33,7 +33,7 @@ void OutputSystem::saveResults2File(const int &t_step,
     }
     
     if(m_fileformat==ResultFileFormat::VTU){
-        VTUWriter::saveResults(m_outputfile_name,t_mesh,t_dofHandler,t_solution,t_projection);
+        VTUWriter::saveResults(m_outputfile_name,t_fecell,t_dofHandler,t_solution,t_projection);
     }
 }
 //***********************************************

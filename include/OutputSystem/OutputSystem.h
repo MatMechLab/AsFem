@@ -48,13 +48,13 @@ public:
     /**
      * save result to different files according to the output format
      * @param t_step the time step, -1 for static analysis output
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofHandler the dofhandler class
      * @param t_solution the solution class
      * @param t_projection the projection class
      */
     void saveResults2File(const int &t_step,
-                          const Mesh &t_mesh,
+                          const FECell &t_fecell,
                           const DofHandler &t_dofHandler,
                           SolutionSystem &t_solution,
                           ProjectionSystem &t_projection);

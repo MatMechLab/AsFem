@@ -15,19 +15,20 @@
 #include "SolutionSystem/SolutionSystem.h"
 
 void SolutionSystem::updateSolution(){
-    m_u_older=m_u_old;
-    m_u_old=m_u_current;
+    m_Uolder=m_Uold;
+    m_Uold=m_Ucurrent;
 }
 
 void SolutionSystem::updateMaterialsSolution(){
-    // TODO: in the future, this vector should be designed as the distributed one (mpi vector) 
-    //       to reduce the memory consumption !!!
-    for(int e=1;e<=m_bulkelmts_num;e++){
-        for(int j=1;j<=m_qpoints_num;j++){
-            m_qpoints_scalarmaterials_old[(e-1)*m_qpoints_num+j-1]=m_qpoints_scalarmaterials[(e-1)*m_qpoints_num+j-1];
-            m_qpoints_vectormaterials_old[(e-1)*m_qpoints_num+j-1]=m_qpoints_vectormaterials[(e-1)*m_qpoints_num+j-1];
-            m_qpoints_rank2materials_old[(e-1)*m_qpoints_num+j-1]=m_qpoints_rank2materials[(e-1)*m_qpoints_num+j-1];
-            m_qpoints_rank4materials_old[(e-1)*m_qpoints_num+j-1]=m_qpoints_rank4materials[(e-1)*m_qpoints_num+j-1];
+    /**
+     * Here we only need to update the local material vectors
+     */
+    for(int e=1;e<=m_BulkElmtsNum_Local;e++){
+        for(int j=1;j<=m_QpointsNum;j++){
+            m_QpointsScalarMaterialsOld_Local[(e-1)*m_QpointsNum+j-1]=m_QpointsScalarMaterials_Local[(e-1)*m_QpointsNum+j-1];
+            m_QpointsVectorMaterialsOld_Local[(e-1)*m_QpointsNum+j-1]=m_QpointsVectorMaterials_Local[(e-1)*m_QpointsNum+j-1];
+            m_QpointsRank2MaterialsOld_Local[(e-1)*m_QpointsNum+j-1]=m_QpointsRank2Materials_Local[(e-1)*m_QpointsNum+j-1];
+            m_QpointsRank4MaterialsOld_Local[(e-1)*m_QpointsNum+j-1]=m_QpointsRank4Materials_Local[(e-1)*m_QpointsNum+j-1];
         }
     }
 }

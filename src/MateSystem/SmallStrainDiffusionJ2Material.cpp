@@ -29,7 +29,7 @@ void SmallStrainDiffusionJ2Material::initMaterialProperties(const nlohmann::json
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]){}
     mate.ScalarMaterial("effective-plastic-strain")=0.0;// store the effective plastic strain
     mate.Rank2Material("plastic-strain").setToZeros();// the plastic strain tensor
 }
@@ -50,14 +50,14 @@ void SmallStrainDiffusionJ2Material::computeMaterialProperties(const nlohmann::j
     mate.ScalarMaterial("D")=JsonUtils::getValue(inputparams,"D");
     mate.ScalarMaterial("Omega")=JsonUtils::getValue(inputparams,"Omega");
 
-    if(elmtinfo.m_dim==1){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2]);
+    if(elmtinfo.m_Dim==1){
+        m_GradU.setFromGradU1D(elmtsoln.m_QpGradU[2]);
     }
-    else if(elmtinfo.m_dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);
+    else if(elmtinfo.m_Dim==2){
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
     }
-    else if(elmtinfo.m_dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);
+    else if(elmtinfo.m_Dim==3){
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);
     }
     else{
         MessagePrinter::printErrorTxt("dim>3 is invalid for SmallStrainDiffusionJ2Material, please check your code");
@@ -80,7 +80,7 @@ void SmallStrainDiffusionJ2Material::computeMaterialProperties(const nlohmann::j
     m_dev_strain=mate.Rank2Material("elastic-strain");
     mate.ScalarMaterial("vonMises-elastic-strain")=sqrt(1.5*m_dev_strain.doubledot(m_dev_strain));
 
-    mate.VectorMaterial("gradc")=elmtsoln.m_gpGradU[1];
+    mate.VectorMaterial("gradc")=elmtsoln.m_QpGradU[1];
 
 }
 //***********************************************************************************
@@ -105,7 +105,7 @@ void SmallStrainDiffusionJ2Material::computeAdmissibleStressState(const nlohmann
                                               const MaterialsContainer &mateold,
                                               const Rank2Tensor &total_strain,
                                               MaterialsContainer &mate){
-    if(elmtinfo.m_dim||elmtsoln.m_gpU.size()){}
+    if(elmtinfo.m_Dim||elmtsoln.m_QpU.size()){}
 
     double K,E,nu,G,lame;// for elastic constants
     double H;// hardening moduli
@@ -155,7 +155,7 @@ void SmallStrainDiffusionJ2Material::computeAdmissibleStressState(const nlohmann
     m_Cref=JsonUtils::getValue(parameters,"Cref");
 
     m_I.setToIdentity();
-    m_eigenstrain=m_I*(elmtsoln.m_gpU[1]-m_Cref)*m_Omega/3.0;
+    m_eigenstrain=m_I*(elmtsoln.m_QpU[1]-m_Cref)*m_Omega/3.0;
     m_deigenstrain_dc=m_I*(m_Omega/3.0);
     m_dtotal_strain_dc=m_deigenstrain_dc;
     // implementation for BOX 3.2(P124)

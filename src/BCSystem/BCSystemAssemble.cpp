@@ -15,29 +15,29 @@
 
 #include "BCSystem/BCSystem.h"
 
-void BCSystem::assembleLocalResidual2Global(const int &dofs,const vector<int> &dofids,
-                                            const int &I,const double &jxw,
-                                            const DofHandler &dofhandler,
-                                            const VectorXd &localR,Vector &RHS){
+void BCSystem::assembleLocalResidual2Global(const int &Dofs,const vector<int> &DofIDs,
+                                            const int &I,const double &JxW,
+                                            const DofHandler &t_DofHandler,
+                                            const VectorXd &LocalR,Vector &RHS){
     int iInd;
-    for(int i=0;i<dofs;i++){
-        iInd=dofhandler.getIthNodeJthDofID(I,dofids[i]);
-        RHS.addValue(iInd,localR(i+1)*jxw);
+    for(int i=0;i<Dofs;i++){
+        iInd=t_DofHandler.getIthNodeJthDofID(I,DofIDs[i]);
+        RHS.addValue(iInd,LocalR(i+1)*JxW);
     }
 }
 
-void BCSystem::assembleLocalJacobian2Global(const int &dofs,const vector<int> &dofids,
+void BCSystem::assembleLocalJacobian2Global(const int &Dofs,const vector<int> &DofIDs,
                                             const int &I,const int &J,
-                                            const double &jxw,
-                                            const DofHandler &dofhandler,
-                                            const MatrixXd &localK,
+                                            const double &JxW,
+                                            const DofHandler &t_DofHandler,
+                                            const MatrixXd &LocalK,
                                             SparseMatrix &AMATRIX){
     int iInd,jInd;
-    for(int i=0;i<dofs;i++){
-        iInd=dofhandler.getIthNodeJthDofID(I,dofids[i]);
-        for(int j=0;j<dofs;j++){
-            jInd=dofhandler.getIthNodeJthDofID(J,dofids[j]);
-            AMATRIX.addValue(iInd,jInd,localK(i+1,j+1)*jxw);
+    for(int i=0;i<Dofs;i++){
+        iInd=t_DofHandler.getIthNodeJthDofID(I,DofIDs[i]);
+        for(int j=0;j<Dofs;j++){
+            jInd=t_DofHandler.getIthNodeJthDofID(J,DofIDs[j]);
+            AMATRIX.addValue(iInd,jInd,LocalK(i+1,j+1)*JxW);
         }
     }
 }

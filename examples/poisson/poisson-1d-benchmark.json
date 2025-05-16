@@ -46,14 +46,18 @@
 			"side":["left","right"]
 		}
 	},
+	"linearsolver":{
+		"type":"gmres",
+		"preconditioner":"lu",
+		"maxiters":10000,
+		"tolerance":5.0e-7
+	},
 	"nlsolver":{
 		"type":"newton",
-		"solver":"gmres",
 		"maxiters":50,
 		"abs-tolerance":5.0e-7,
 		"rel-tolerance":5.0e-10,
-		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"s-tolerance":0.0
 	},
 	"output":{
 		"type":"vtu",
@@ -62,7 +66,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":4
+			"order":2
 		}
 	},
 	"job":{

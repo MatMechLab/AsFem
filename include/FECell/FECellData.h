@@ -85,11 +85,16 @@ struct FECellData{
     vector<SingleMeshCell> MeshCell_Total;/**< this vector stores the whole mesh info (only active on master rank) */
     vector<SingleMeshCell> MeshCell_Local;/**< local mesh cell vector of each rank */
 
+    vector<int> NodeIDs_Local;/**< this vector stores the unique nodal index for each rank */
+
     map<string,vector<SingleMeshCell>> PhyName2MeshCellVectorMap_Global;/**< the global phy name to cell vector map */
     map<int,vector<SingleMeshCell>>    PhyID2MeshCellVectorMap_Global;/**< the global phy id to cell vector map */
 
     map<string,vector<SingleMeshCell>> PhyName2MeshCellVectorMap_Local;/**< the local phy name to cell vector map */
     map<int,vector<SingleMeshCell>>    PhyID2MeshCellVectorMap_Local;/**< the local phy id to cell vector map */
+
+    map<string,vector<int>> PhyName2BulkFECellIDMap_Global;/**< the global phy anme to cell id vector map */
+    map<int,vector<int>>    PhyID2BulkFECellIDMap_Global;/**< the global phy id to cell id vector map */
     
     //*** for nodal physical group information
     int NodalPhyGroupNum_Global;/**< nodal physical group numbers among all ranks */
@@ -101,5 +106,9 @@ struct FECellData{
 
     map<string,vector<int>> NodalPhyName2NodeIDVecMap_Global;/**< the global nodal phy name to node id map*/
     map<string,vector<int>> NodalPhyName2NodeIDVecMap_Local;/**< the global nodal phy name to node id map*/
+
+    //*** for partition message
+    vector<int> BulkCellPartionInfo_Global;/**< the partition info of the bulk fe cell */
+    vector<int> RanksElmtsNum_Global;/**< this vector stores the number of bulk elmts owned by each rank */
 
 };

@@ -32,7 +32,7 @@ void SmallStrainJ2PlasticityMaterial::initMaterialProperties(const nlohmann::jso
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]){}
     mate.ScalarMaterial("effective-plastic-strain")=0.0;// store the effective plastic strain
     mate.Rank2Material("plastic-strain").setToZeros();// the plastic strain tensor
 }
@@ -44,14 +44,14 @@ void SmallStrainJ2PlasticityMaterial::computeMaterialProperties(const nlohmann::
                                            MaterialsContainer &mate){
     if(mateold.getScalarMaterialsNum()) {}
 
-    if(elmtinfo.m_dim==1){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[1]);
+    if(elmtinfo.m_Dim==1){
+        m_GradU.setFromGradU1D(elmtsoln.m_QpGradU[1]);
     }
-    else if(elmtinfo.m_dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[1],elmtsoln.m_gpGradU[2]);
+    else if(elmtinfo.m_Dim==2){
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2]);
     }
-    else if(elmtinfo.m_dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[1],elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);
+    else if(elmtinfo.m_Dim==3){
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
     }
     else{
         MessagePrinter::printErrorTxt("dim>3 is invalid for SmallStrainJ2PlasticityMaterial, please check your code");
@@ -96,7 +96,7 @@ void SmallStrainJ2PlasticityMaterial::computeAdmissibleStressState(const nlohman
                                               const MaterialsContainer &mateold,
                                               const Rank2Tensor &total_strain,
                                               MaterialsContainer &mate){
-    if(elmtinfo.m_dim||elmtsoln.m_gpU.size()){}
+    if(elmtinfo.m_Dim||elmtsoln.m_QpU.size()){}
 
     double K,E,nu,G,lame;// for elastic constants
     double H;// hardening moduli

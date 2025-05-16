@@ -22,18 +22,23 @@
 		}
 	},
 	"projection":{
-		"type":"default",
+		"type":"fullleastsquare",
 		"scalarmate":["vonMises-stress","vonMises-strain","hydrostatic-stress"],
 		"rank2mate":["stress","strain"]
 	},
+	"linearsolver":{
+		"type":"gmres",
+		"preconditioner":"lu",
+		"maxiters":10000,
+		"restarts":1600,
+		"tolerance":1.0e-26
+	},
 	"nlsolver":{
-		"type":"newton",
-		"solver":"gmres",
-		"maxiters":250,
+		"type":"asfem",
+		"maxiters":50,
 		"abs-tolerance":5.0e-7,
-		"rel-tolerance":5.0e-12,
-		"s-tolerance":0.0,
-		"preconditioner":"lu"
+		"rel-tolerance":5.0e-10,
+		"s-tolerance":0.0
 	},
 	"output":{
 		"type":"vtu",
@@ -60,7 +65,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":2
+			"order":4
 		}
 	},
 	"job":{

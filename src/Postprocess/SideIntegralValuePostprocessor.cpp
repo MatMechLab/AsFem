@@ -22,13 +22,13 @@ double SideIntegralValuePostprocessor::computeSideIntegralValue(const int &dofid
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(nodeid||parameters.size()||projsystem.getNodesNum()||elmtinfo.m_dim) {}
+    if(nodeid||parameters.size()||projsystem.getNodesNum()||elmtinfo.m_Dim) {}
     if(dofid<1||dofid>soln.getDofsNum()){
         MessagePrinter::printErrorTxt("dof id="+to_string(dofid)+" is out of range for SideIntegralValuePostprocessor");
         MessagePrinter::exitAsFem();
     }
     
-    m_ppsvalue=soln.m_u_current.getIthValueFromGhost(dofid)*shp.m_test;
+    m_ppsvalue=soln.m_Ucurrent.getIthValueFromGhost(dofid)*shp.m_Test;
     
     return m_ppsvalue;
 }

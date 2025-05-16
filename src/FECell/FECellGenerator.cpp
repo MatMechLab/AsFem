@@ -19,13 +19,39 @@ FECellGenerator::FECellGenerator(){
 }
 //********************************************
 bool FECellGenerator::createFEMeshCell(const MeshType &meshtype,FECellData &meshdata){
-    if(meshtype==MeshType::HEX8||
-       meshtype==MeshType::HEX20||
-       meshtype==MeshType::HEX27){
-        return Lagrange3DMeshCellGenerator::generateFECell(meshtype,meshdata);
-    }
-    else{
-        return false;
+    switch (meshtype)
+    {
+    case MeshType::EDGE2:
+        return Lagrange1DEdge2MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::EDGE3:
+        return Lagrange1DEdge3MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::EDGE4:
+        return Lagrange1DEdge4MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::QUAD4:
+        return Lagrange2DQuad4MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::QUAD8:
+        return Lagrange2DQuad8MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::QUAD9:
+        return Lagrange2DQuad9MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::HEX8:
+        return Lagrange3DHex8MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::HEX20:
+        return Lagrange3DHex20MeshCellGenerator::generateFECell(meshdata);
+        break;
+    case MeshType::HEX27:
+        return Lagrange3DHex27MeshCellGenerator::generateFECell(meshdata);
+        break;
+    default:
+        MessagePrinter::printErrorTxt("Unsupported meshtype for FEMeshCell generation");
+        MessagePrinter::exitAsFem();
+        break;
     }
     return true;
 }

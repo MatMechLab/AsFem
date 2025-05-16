@@ -21,7 +21,7 @@
 /**
  * For AsFem's built-in classes
  */
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "SolutionSystem/SolutionSystem.h"
 #include "ProjectionSystem/ProjectionSystem.h"
@@ -36,13 +36,13 @@ public:
     /**
      * save result to different files according to the output format
      * @param t_filename the string name of result file
-     * @param t_mesh the mesh class
+     * @param t_fecell the fe cell class
      * @param t_dofHandler the dofhandler class
      * @param t_solution the solution class
      * @param t_projection the projection class
      */
     virtual void saveResults(const string &t_filename,
-                             const Mesh &t_mesh,
+                             const FECell &t_fecell,
                              const DofHandler &t_dofHandler,
                              SolutionSystem &t_solution,
                              ProjectionSystem &t_projection)=0;

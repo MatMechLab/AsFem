@@ -24,24 +24,24 @@ void ConstDiffusionMaterial::initMaterialProperties(const nlohmann::json &inputp
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
 //********************************************************************
 void ConstDiffusionMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
-                                           const LocalElmtInfo &elmtinfo,
-                                           const LocalElmtSolution &elmtsoln,
-                                           const MaterialsContainer &mateold,
-                                           MaterialsContainer &mate){
+                                                       const LocalElmtInfo &elmtinfo,
+                                                       const LocalElmtSolution &elmtsoln,
+                                                       const MaterialsContainer &mateold,
+                                                       MaterialsContainer &mate){
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||
        mateold.getScalarMaterialsNum()||mate.getScalarMaterialsNum()){}
 
     mate.ScalarMaterial("D")=JsonUtils::getValue(inputparams,"D");// diffusivity
     mate.ScalarMaterial("dDdc")=0.0;// dD/dc
-    mate.VectorMaterial("gradc")=elmtsoln.m_gpGradU[1];// the gradient of concentration
+    mate.VectorMaterial("gradc")=elmtsoln.m_QpGradU[1];// the gradient of concentration
 
 }

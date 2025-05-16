@@ -25,21 +25,24 @@ public:
     /**
      * execute the boundary condition value for different (dirichlet type) boundary conditions.
      * \f$u=u_{g}\f$ is the final output
-     * @param t_calctype the calculation type for either residual or jacbobian
-     * @param t_penalty the penalty for dirichlet boundary conditions
-     * @param t_bcvalue the boundary value defined in the input file
-     * @param t_json the boundary condition related parameters(json file content)
-     * @param t_elmtinfo the basic information for current element
-     * @param t_elmtsoln the element solution of current element
-     * @param dofids the global id of the applied dof(start from 1, the global one)
+     * @param CalcType the calculation type for either residual or jacbobian
+     * @param Penalty the penalty for dirichlet boundary conditions
+     * @param BCValue the boundary value defined in the input file
+     * @param Params the boundary condition related parameters(json file content)
+     * @param ElmtInfo the basic information for current element
+     * @param ElmtSoln the element solution of current element
+     * @param DofIDs the global id of the applied dof(start from 1, the global one)
      * @param U the system solution
      * @param K the system sparse matrix
      * @param RHS the system residual vector
      */
-    virtual void computeBCValue(const FECalcType &t_calctype,const double &t_penalty,const double &t_bcvalue,const nlohmann::json &t_json,
-                                const LocalElmtInfo &t_elmtinfo,
-                                const LocalElmtSolution &t_elmtsoln,
-                                const vector<int> &dofids,
+    virtual void computeBCValue(const FECalcType &CalcType,
+                                const double &Penalty,
+                                const double &BCValue,
+                                const nlohmann::json &Params,
+                                const LocalElmtInfo &ElmtInfo,
+                                const LocalElmtSolution &ElmtSoln,
+                                const vector<int> &DofIDs,
                                 Vector &U,
                                 SparseMatrix &K,
                                 Vector &RHS) override;
@@ -47,16 +50,18 @@ public:
 private:
     /**
      * calculate the 'displacement' value of current dofs
-     * @param t_bcvalue the boundary value defined in the input file
-     * @param t_json the boundary condition related parameters(json file content)
-     * @param dofids the global id of the applied dof(start from 1, the global one)
-     * @param t_elmtinfo the basic information for current element
-     * @param t_elmtsoln the solution of current element
-     * @param localU the solution vector of current node
+     * @param BCValue the boundary value defined in the input file
+     * @param Params the boundary condition related parameters(json file content)
+     * @param DofIDs the global id of the applied dof(start from 1, the global one)
+     * @param ElmtInfo the basic information for current element
+     * @param ElmtSoln the solution of current element
+     * @param LocalU the solution vector of current node
      */
-    virtual void computeU(const double &t_bcvalue,const nlohmann::json &t_json,const vector<int> &dofids,
-                          const LocalElmtInfo &t_elmtinfo,
-                          const LocalElmtSolution &t_elmtsoln,
-                          VectorXd &localU) override; 
+    virtual void computeU(const double &BCValue,
+                          const nlohmann::json &Params,
+                          const vector<int> &DofIDs,
+                          const LocalElmtInfo &ElmtInfo,
+                          const LocalElmtSolution &ElmtSoln,
+                          VectorXd &LocalU) override;  
 
 };

@@ -14,173 +14,209 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "FEProblem/FEProblem.h"
+#include "MPIUtils/MPIDataBus.h"
 
 FEProblem::FEProblem(){
-    m_timer.resetTimer();
+    m_Timer.resetTimer();
 }
 
 void FEProblem::initFEProblem(int args,char *argv[]){
     //***************************************
     // for input file reading
     //***************************************
-    m_timer.startTimer();
-    m_inputSystem.init(args,argv);
+    m_Timer.startTimer();
+    m_InputSystem.init(args,argv);
 
     MessagePrinter::printStars();
     MessagePrinter::printNormalTxt("Start to read the input file");
-    m_inputSystem.readInputFile(m_mesh,m_dofhandler,m_elmtsystem,m_fe,
-                                m_bcsystem,m_icsystem,
-                                m_projsystem,
-                                m_nlsolver,
-                                m_timestepping,
-                                m_output,
-                                m_postprocessor,
-                                m_jobblock);
-    m_timer.endTimer();
-    m_timer.printElapseTime("Input file reading is done",false);
-    m_mesh.printBulkMeshInfo();
+    m_InputSystem.readInputFile(m_FECell,m_DofHandler,m_ElmtSystem,m_FE,
+                                m_BCSystem,m_ICSystem,
+                                m_ProjSystem,
+                                m_LinearSolver,
+                                m_NLSolver,
+                                m_TimeStepping,
+                                m_Output,
+                                m_PostProcessor,
+                                m_JobBlock);
+    m_Timer.endTimer();
+    MessagePrinter::printStars();
+    m_Timer.printElapseTime("Input file reading is done",false);
 
-    if(m_inputSystem.isReadOnly()) return;
+    //***************************************
+    // for mesh init
+    //***************************************
+    m_Timer.startTimer();
+    MessagePrinter::printNormalTxt("Start to distribute fecell ...");
+    m_FECell.distributeMesh();
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("FEcell distribution is done",false);
+    m_FECell.getCellDataRef().MaxDofsPerNode=m_DofHandler.getMaxDofsPerNode();
+
+    /**
+     * Save the partition info to vtu file, which is named by the input file name
+     */
+    string FileName;
+    FileName = m_InputSystem.getInputFileName();
+    m_FECell.saveFECellPartionInfo2VTUFile(FileName.substr(0,FileName.size()-5)+"-partition.vtu");
+    MessagePrinter::printDashLine(MessageColor::BLUE);
+    MessagePrinter::printNormalTxt("Save partition info to:"+FileName.substr(0,FileName.size()-5)+"-partition.vtu",MessageColor::BLUE);
+    MessagePrinter::printDashLine(MessageColor::BLUE);
+
+    if(m_InputSystem.isReadOnly()) return;
 
     //***************************************
     // for dofs init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to create dofs map ...");
-    m_dofhandler.createBulkDofsMap(m_mesh,m_elmtsystem);
-    m_timer.endTimer();
-    m_timer.printElapseTime("Dofs map generation is done",false);
-    m_dofhandler.printBulkDofsInfo();
+    m_DofHandler.createBulkDofsMap(m_FECell,m_ElmtSystem);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Dofs map generation is done",false);
 
     //***************************************
     // for elmt system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the Element system ...");
-    m_elmtsystem.init(m_mesh);
-    m_timer.endTimer();
-    m_timer.printElapseTime("Element system is initialized",false);
+    m_ElmtSystem.init(m_FECell);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Element system is initialized",false);
+
 
     //***************************************
     // for bc system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the BC system ...");
-    m_bcsystem.init(m_dofhandler.getMaxDofsPerNode());
-    m_timer.endTimer();
-    m_timer.printElapseTime("BC system is initialized",false);
+    m_BCSystem.init(m_DofHandler.getMaxDofsPerNode());
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("BC system is initialized",false);
 
     //***************************************
     // for ic system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the IC system ...");
-    m_icsystem.init(m_dofhandler.getMaxDofsPerNode());
-    m_timer.endTimer();
-    m_timer.printElapseTime("IC system is initialized",false);
+    m_ICSystem.init(m_DofHandler.getMaxDofsPerNode());
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("IC system is initialized",false);
+
 
     //***************************************
     // for FE space init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the FE space ...");
-    m_fe.init(m_mesh);
-    m_timer.endTimer();
-    m_timer.printElapseTime("FE space is initialized",false);
+    m_FE.init(m_FECell);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("FE space is initialized",false);
 
     //***************************************
     // for FE system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the FE system ...");
-    m_fesystem.init(m_mesh,m_dofhandler);
-    m_timer.endTimer();
-    m_timer.printElapseTime("FE system is initialized",false);
+    m_FESystem.init(m_FECell,m_DofHandler);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("FE system is initialized",false);
 
     //***************************************
     // for Equation system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the Equation system ...");
-    m_equationsystem.init(m_dofhandler);
+    m_EqSystem.init(m_DofHandler);
     MessagePrinter::printNormalTxt("  Start to create Sparsity pattern ...");
-    m_equationsystem.createSparsityPattern(m_dofhandler);
+    m_EqSystem.createSparsityPattern(m_DofHandler);
     MessagePrinter::printNormalTxt("  Sparsity pattern is ready");
-    m_timer.endTimer();
-    m_timer.printElapseTime("Equation system is initialized",false);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Equation system is initialized",false);
 
     //***************************************
     // for Solution system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the Solution system ...");
-    m_solutionsystem.init(m_dofhandler,m_fe);
-    m_timer.endTimer();
-    m_timer.printElapseTime("Solution system is initialized",false);
+    m_SolnSystem.init(m_DofHandler,m_FE);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Solution system is initialized",false);
 
     //***************************************
     // for Projection system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the Projection system ...");
-    m_projsystem.init(m_mesh,m_dofhandler);
-    m_timer.endTimer();
-    m_timer.printElapseTime("Projection system is initialized",false);
+    m_ProjSystem.init(m_FECell,m_DofHandler);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Projection system is initialized",false);
+
+    //***************************************
+    // for Linear solver system init
+    //***************************************
+    m_Timer.startTimer();
+    MessagePrinter::printNormalTxt("Start to initialize the linear solver ...");
+    m_LinearSolver.init();
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Linear solver is initialized",false);
 
     //***************************************
     // for Nonlinear solver system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the NL solver ...");
-    m_nlsolver.init();
-    m_timer.endTimer();
-    m_timer.printElapseTime("NL solver is initialized",false);
+    m_NLSolver.init(m_LinearSolver);
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("NL solver is initialized",false);
 
     //***************************************
     // for Postprocess system init
     //***************************************
-    m_timer.startTimer();
+    m_Timer.startTimer();
     MessagePrinter::printNormalTxt("Start to initialize the postprocessor ...");
-    m_postprocessor.init();
-    m_timer.endTimer();
-    m_timer.printElapseTime("Postprocessor is initialized",false);
+    m_PostProcessor.init();
+    m_Timer.endTimer();
+    m_Timer.printElapseTime("Postprocessor is initialized",false);
 
     //***************************************
     // for fe control init
     //***************************************
-    m_fectrlinfo.init();
-    m_fectrlinfo.IsDebug=m_jobblock.m_isdebug;
-    m_fectrlinfo.IsDepDebug=m_jobblock.m_isdepdebug;
+    m_FECtrlInfo.init();
+    m_FECtrlInfo.IsDebug=m_JobBlock.m_IsDebug;
+    m_FECtrlInfo.IsDepDebug=m_JobBlock.m_IsDepDebug;
 
 
     //***************************************
     // for print out basic info
     //***************************************
-    m_elmtsystem.printElmtSystemInfo();
-    m_bcsystem.printBCSystemInfo();
-    m_icsystem.printICSystemInfo();
-    m_projsystem.printProjectionInfo();
-    m_fe.printFEInfo();
-    m_nlsolver.printSolverInfo();
-    m_output.printInfo();
-    m_postprocessor.printInfo();
-    if(m_jobblock.m_jobtype==FEJobType::TRANSIENT){
-        m_timestepping.printInfo();
+    m_FECell.printSummaryInfo();
+    m_DofHandler.printBulkDofsInfo();
+    m_ElmtSystem.printElmtSystemInfo();
+    m_BCSystem.printBCSystemInfo();
+    m_ICSystem.printICSystemInfo();
+    m_ProjSystem.printProjectionInfo();
+    m_FE.printFEInfo();
+    m_LinearSolver.printKSPSolverInfo();
+    m_NLSolver.printSolverInfo();
+    m_Output.printInfo();
+    m_PostProcessor.printInfo();
+    if(m_JobBlock.m_JobType==FEJobType::TRANSIENT){
+        m_TimeStepping.printInfo();
     }
-    m_jobblock.printJobInfo();
+    m_JobBlock.printJobInfo();
 }
 //*******************************************
 void FEProblem::finalize(){
-    m_mesh.releaseMemory();
-    m_dofhandler.releaseMemory();
-    m_fe.releaseMemory();
-    m_elmtsystem.releaseMemory();
-    m_bcsystem.releaseMemory();
-    m_icsystem.releaseMemory();
-    m_equationsystem.releaseMemory();
-    m_solutionsystem.releaseMemory();
-    m_projsystem.releaseMemory();
-    m_nlsolver.releaseMemory();
-    m_postprocessor.releaseMemory();
+    m_FECell.releaseMemory();
+    m_DofHandler.releaseMemory();
+    m_FE.releaseMemory();
+    m_ElmtSystem.releaseMemory();
+    m_BCSystem.releaseMemory();
+    m_ICSystem.releaseMemory();
+    m_EqSystem.releaseMemory();
+    m_SolnSystem.releaseMemory();
+    m_ProjSystem.releaseMemory();
+    m_LinearSolver.releaseMemory();
+    m_NLSolver.releaseMemory();
+    m_PostProcessor.releaseMemory();
     
 }

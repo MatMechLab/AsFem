@@ -22,16 +22,16 @@ void SmallStrainDiffusionMaterial::initMaterialProperties(const nlohmann::json &
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 
 }
 
 //********************************************************************
 void SmallStrainDiffusionMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
-                                           const LocalElmtInfo &elmtinfo,
-                                           const LocalElmtSolution &elmtsoln,
-                                           const MaterialsContainer &mateold,
-                                           MaterialsContainer &mate){
+                                                             const LocalElmtInfo &elmtinfo,
+                                                             const LocalElmtSolution &elmtsoln,
+                                                             const MaterialsContainer &mateold,
+                                                             MaterialsContainer &mate){
     //**************************************************************
     //*** get rid of unused warning
     //**************************************************************
@@ -49,13 +49,13 @@ void SmallStrainDiffusionMaterial::computeMaterialProperties(const nlohmann::jso
 
     mate.ScalarMaterial("D")=JsonUtils::getValue(inputparams,"D");// diffusivity
     mate.ScalarMaterial("Omega")=m_Omega;// partial molar volume
-    mate.VectorMaterial("gradc")=elmtsoln.m_gpGradU[1];// the gradient of concentration
+    mate.VectorMaterial("gradc")=elmtsoln.m_QpGradU[1];// the gradient of concentration
 
-    if(elmtinfo.m_dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);// grad(ux), grad(uy)
+    if(elmtinfo.m_Dim==2){
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);// grad(ux), grad(uy)
     }
-    else if(elmtinfo.m_dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
+    else if(elmtinfo.m_Dim==3){
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);// grad(ux), grad(uy)
     }
     else{
         MessagePrinter::printErrorTxt("SmallStrainDiffusionMaterial works only for 2d and 3d case, please check your input file");
@@ -63,13 +63,13 @@ void SmallStrainDiffusionMaterial::computeMaterialProperties(const nlohmann::jso
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_dim,m_GradU,m_totalstrain);
+    computeStrain(elmtinfo.m_Dim,m_GradU,m_totalstrain);
     
-    m_c=elmtsoln.m_gpU[1];
+    m_c=elmtsoln.m_QpU[1];
     m_mechstrain=m_totalstrain-m_I*(m_c-m_cref)*m_Omega/3.0;
     m_dmechstrain_dc=m_I*(-1.0)*m_Omega/3.0;
 
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_mechstrain,m_stress,m_jacobian);
+    computeStressAndJacobian(inputparams,elmtinfo.m_Dim,m_mechstrain,m_stress,m_jacobian);
 
     m_devstress=m_stress.dev();
     m_dstress_dc=m_jacobian.doubledot(m_dmechstrain_dc);

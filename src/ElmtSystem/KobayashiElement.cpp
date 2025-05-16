@@ -17,15 +17,23 @@
 
 #include "ElmtSystem/KobayashiElement.h"
 
-void KobayashiElement::computeAll(const FECalcType &calctype,const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
-            const LocalElmtSolution &soln,const LocalShapeFun &shp,
-            const MaterialsContainer &mate_old,const MaterialsContainer &mate,
-            MatrixXd &localK,VectorXd &localR) {
-    if(calctype==FECalcType::COMPUTERESIDUAL){
-        computeResidual(elmtinfo,soln,shp,mate_old,mate,localR);
+void KobayashiElement::computeAll(const FECalcType &CalcType,
+                                const LocalElmtInfo &ElmtInfo,
+                                const double (&Ctan)[3],
+                                const LocalElmtSolution &ElmtSoln,
+                                const LocalShapeFun &Shp,
+                                const MaterialsContainer &MateOld,
+                                const MaterialsContainer &Mate,
+                                MatrixXd &LocalK,VectorXd &LocalR) {
+    if(CalcType==FECalcType::COMPUTERESIDUAL){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
     }
-    else if(calctype==FECalcType::COMPUTEJACOBIAN){
-        computeJacobian(elmtinfo,ctan,soln,shp,mate_old,mate,localK);
+    else if(CalcType==FECalcType::COMPUTEJACOBIAN){
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
+    }
+    else if(CalcType==FECalcType::COMPUTERESIDUALANDJACOBIAN){
+        computeResidual(ElmtInfo,ElmtSoln,Shp,MateOld,Mate,LocalR);
+        computeJacobian(ElmtInfo,Ctan,ElmtSoln,Shp,MateOld,Mate,LocalK);
     }
     else{
         MessagePrinter::printErrorTxt("unsupported calculation type in KobayashiElement, please check your related code");
@@ -33,83 +41,84 @@ void KobayashiElement::computeAll(const FECalcType &calctype,const LocalElmtInfo
     }
 }
 //***************************************************************************
-void KobayashiElement::computeResidual(const LocalElmtInfo &elmtinfo,
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 VectorXd &localR) {
+void KobayashiElement::computeResidual(const LocalElmtInfo &ElmtInfo,
+                                       const LocalElmtSolution &ElmtSoln,
+                                       const LocalShapeFun &Shp,
+                                       const MaterialsContainer &MateOld,
+                                       const MaterialsContainer &Mate,
+                                       VectorXd &LocalR) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(mate_old.getScalarMaterialsNum()) {}
+    if(MateOld.getScalarMaterialsNum()) {}
 
-    if(elmtinfo.m_dim!=2){
+    if(ElmtInfo.m_Dim!=2){
         MessagePrinter::printErrorTxt("Kobayashi element only works for 2d case");
         MessagePrinter::exitAsFem();
     }
 
-    L=mate.ScalarMaterial("L");
-    K=mate.ScalarMaterial("K");
-    dK=mate.ScalarMaterial("dK");
-    dFdeta=mate.ScalarMaterial("dFdeta");
-    Latent=mate.ScalarMaterial("Latent-heat");
+    L=Mate.ScalarMaterial("L");
+    K=Mate.ScalarMaterial("K");
+    dK=Mate.ScalarMaterial("dK");
+    dFdeta=Mate.ScalarMaterial("dFdeta");
+    Latent=Mate.ScalarMaterial("Latent-heat");
     // For R_eta
-    V(1)=-soln.m_gpGradU[1](2);
-    V(2)= soln.m_gpGradU[1](1);
+    V(1)=-ElmtSoln.m_QpGradU[1](2);
+    V(2)= ElmtSoln.m_QpGradU[1](1);
     V(3)= 0.0;
-    localR(1)=soln.m_gpV[1]*shp.m_test
-             +L*K*dK*(V*shp.m_grad_test)
-             +L*K*K*(soln.m_gpGradU[1]*shp.m_grad_test)
-             +L*dFdeta*shp.m_test;
+    LocalR(1)=ElmtSoln.m_QpV[1]*Shp.m_Test
+             +L*K*dK*(V*Shp.m_GradTest)
+             +L*K*K*(ElmtSoln.m_QpGradU[1]*Shp.m_GradTest)
+             +L*dFdeta*Shp.m_Test;
     // For R_T
-    localR(2)=soln.m_gpV[2]*shp.m_test
-             +soln.m_gpGradU[2]*shp.m_grad_test
-             -Latent*soln.m_gpV[1]*shp.m_test;
+    LocalR(2)=ElmtSoln.m_QpV[2]*Shp.m_Test
+             +ElmtSoln.m_QpGradU[2]*Shp.m_GradTest
+             -Latent*ElmtSoln.m_QpV[1]*Shp.m_Test;
 
 }
 //*****************************************************************************
-void KobayashiElement::computeJacobian(const LocalElmtInfo &elmtinfo,const double (&ctan)[3],
-                                 const LocalElmtSolution &soln,
-                                 const LocalShapeFun &shp,
-                                 const MaterialsContainer &mate_old,
-                                 const MaterialsContainer &mate,
-                                 MatrixXd &localK) {
+void KobayashiElement::computeJacobian(const LocalElmtInfo &ElmtInfo,
+                                       const double (&Ctan)[3],
+                                       const LocalElmtSolution &ElmtSoln,
+                                       const LocalShapeFun &Shp,
+                                       const MaterialsContainer &MateOld,
+                                       const MaterialsContainer &Mate,
+                                       MatrixXd &LocalK) {
     //***********************************************************
     //*** get rid of unused warning
     //***********************************************************
-    if(elmtinfo.m_dt||mate_old.getScalarMaterialsNum()){}
-    L=mate.ScalarMaterial("L");
-    K=mate.ScalarMaterial("K");
-    dK=mate.ScalarMaterial("dK");
-    Latent=mate.ScalarMaterial("Latent-heat");
-    d2Fdeta2=mate.ScalarMaterial("d2Fdeta2");
-    d2FdetadT=mate.ScalarMaterial("d2FdetadT");
-    dKdGradEta=mate.VectorMaterial("dKdGradEta");
-    ddKdGradEta=mate.VectorMaterial("ddKdGradEta");
+    if(ElmtInfo.m_Dt||MateOld.getScalarMaterialsNum()){}
+    L=Mate.ScalarMaterial("L");
+    K=Mate.ScalarMaterial("K");
+    dK=Mate.ScalarMaterial("dK");
+    Latent=Mate.ScalarMaterial("Latent-heat");
+    d2Fdeta2=Mate.ScalarMaterial("d2Fdeta2");
+    d2FdetadT=Mate.ScalarMaterial("d2FdetadT");
+    dKdGradEta=Mate.VectorMaterial("dKdGradEta");
+    ddKdGradEta=Mate.VectorMaterial("ddKdGradEta");
     //************************************************
-    V(1)=-soln.m_gpGradU[1](2);
-    V(2)= soln.m_gpGradU[1](1);
+    V(1)=-ElmtSoln.m_QpGradU[1](2);
+    V(2)= ElmtSoln.m_QpGradU[1](1);
     V(3)= 0.0;
     //************************
-    dV(1)=-shp.m_grad_trial(2);
-    dV(2)= shp.m_grad_trial(1);
+    dV(1)=-Shp.m_GradTrial(2);
+    dV(2)= Shp.m_GradTrial(1);
     dV(3)= 0.0;
     // K_eta,eta
-    localK(1,1)=shp.m_trial*shp.m_test*ctan[1]
-               +L*(dKdGradEta*shp.m_grad_trial)*dK*(V*shp.m_grad_test)*ctan[0]
-               +L*K*(ddKdGradEta*shp.m_grad_trial)*(V*shp.m_grad_test)*ctan[0]
-               +L*K*dK*(dV*shp.m_grad_test)*ctan[0]
-               +L*2*K*(dKdGradEta*shp.m_grad_trial)*(soln.m_gpGradU[1]*shp.m_grad_test)*ctan[0]
-               +L*K*K*(shp.m_grad_trial*shp.m_grad_test)*ctan[0]
-               +L*d2Fdeta2*shp.m_trial*shp.m_test*ctan[0];
+    LocalK(1,1)=Shp.m_Trial*Shp.m_Test*Ctan[1]
+               +L*(dKdGradEta*Shp.m_GradTrial)*dK*(V*Shp.m_GradTest)*Ctan[0]
+               +L*K*(ddKdGradEta*Shp.m_GradTrial)*(V*Shp.m_GradTest)*Ctan[0]
+               +L*K*dK*(dV*Shp.m_GradTest)*Ctan[0]
+               +L*2*K*(dKdGradEta*Shp.m_GradTrial)*(ElmtSoln.m_QpGradU[1]*Shp.m_GradTest)*Ctan[0]
+               +L*K*K*(Shp.m_GradTrial*Shp.m_GradTest)*Ctan[0]
+               +L*d2Fdeta2*Shp.m_Trial*Shp.m_Test*Ctan[0];
     // K_eta,T
-    localK(1,2)=L*d2FdetadT*shp.m_trial*shp.m_test*ctan[0];
+    LocalK(1,2)=L*d2FdetadT*Shp.m_Trial*Shp.m_Test*Ctan[0];
     //*************************************************************
     // K_T,eta
-    localK(2,1)=-Latent*shp.m_trial*shp.m_test*ctan[1];
+    LocalK(2,1)=-Latent*Shp.m_Trial*Shp.m_Test*Ctan[1];
     // K_T,T
-    localK(2,2)=shp.m_trial*shp.m_test*ctan[1]
-               +shp.m_grad_trial*shp.m_grad_test*ctan[0];
+    LocalK(2,2)=Shp.m_Trial*Shp.m_Test*Ctan[1]
+               +Shp.m_GradTrial*Shp.m_GradTest*Ctan[0];
 
 }

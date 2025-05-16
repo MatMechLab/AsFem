@@ -9,9 +9,9 @@ n1=211;
 n2=8;
 n3=16;
 
-dx=0.04;
+dx=0.05;
 dw1=0.0095;
-n1=501;
+n1=401;
 n2=11;
 n3=21;
 n4=81;
@@ -28,8 +28,8 @@ Point(7)={0.5,    0.5,0.0,dx/50.0};
 Point(8)={0.5,0.5-dw1,0.0,dx/50.0};
 Point(9)={0.5,0.5+dw1,0.0,dx/50.0};
 
-Point(10)={1.0,0.5-dw1,0.0,dx};
-Point(11)={1.0,0.5+dw1,0.0,dx};
+Point(10)={1.0,0.5-dw1,0.0,dx/25.0};
+Point(11)={1.0,0.5+dw1,0.0,dx/25.0};
 //+
 Line(1) = {1, 2};
 //+
@@ -83,5 +83,5 @@ Transfinite Curve {6, 3} = n1 Using Progression 1;
 //+
 //Transfinite Curve {5, 4} = n2 Using Progression 1;
 //+
-Transfinite Curve {7} = n3 Using Progression 1;//+
-Transfinite Curve {9} = n4 Using Progression 1;
+//Transfinite Curve {7} = n3 Using Progression 1;//+
+//Transfinite Curve {9} = n4 Using Progression 1;

@@ -16,13 +16,13 @@
 #include "MathUtils/Vector3d.h"
 
 Vector3d::Vector3d(){
-    m_vals[0]=0.0;m_vals[1]=0.0;m_vals[2]=0.0;
+    m_Vals[0]=0.0;m_Vals[1]=0.0;m_Vals[2]=0.0;
 }
 Vector3d::Vector3d(const double &val){
-    m_vals[0]=val;m_vals[1]=val;m_vals[2]=val;
+    m_Vals[0]=val;m_Vals[1]=val;m_Vals[2]=val;
 }
 Vector3d::Vector3d(const Vector3d &a){
-    m_vals[0]=a.m_vals[0];m_vals[1]=a.m_vals[1];m_vals[2]=a.m_vals[2];
+    m_Vals[0]=a.m_Vals[0];m_Vals[1]=a.m_Vals[1];m_Vals[2]=a.m_Vals[2];
 }
 
 Vector3d operator*(const double &val,const Vector3d &a){

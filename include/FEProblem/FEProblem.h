@@ -16,7 +16,7 @@
 #pragma once
 
 #include "InputSystem/InputSystem.h"
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 #include "DofHandler/DofHandler.h"
 #include "ElmtSystem/ElmtSystem.h"
 #include "MateSystem/MateSystem.h"
@@ -27,6 +27,7 @@
 #include "ProjectionSystem/ProjectionSystem.h"
 #include "EquationSystem/EquationSystem.h"
 #include "SolutionSystem/SolutionSystem.h"
+#include "LinearSolver/LinearSolver.h"
 #include "NonlinearSolver/NonlinearSolver.h"
 #include "TimeStepping/TimeStepping.h"
 #include "OutputSystem/OutputSystem.h"
@@ -75,25 +76,26 @@ private:
     void runTransientAnalysis();
     
 private:
-    InputSystem m_inputSystem;/**< input system for input file reading */
-    Mesh m_mesh;/**< mesh class for mesh I/O, mesh generation, etc. */
-    DofHandler m_dofhandler;/**< dof class for Dof map generation and management */
-    ElmtSystem m_elmtsystem;/**< the element system class */
-    MateSystem m_matesystem;/**< the material system class */
-    FE m_fe;/**< the fe space class */
-    FESystem m_fesystem;/**< the FE system class */
-    Timer m_timer;/**< timer class for time counting */
-    BCSystem m_bcsystem;/**< boundary condition system */
-    ICSystem m_icsystem;/**< initial condition system */
-    ProjectionSystem m_projsystem;/**< projection system */
-    EquationSystem m_equationsystem;/**< equation system */
-    SolutionSystem m_solutionsystem;/**< solution system */
-    NonlinearSolver m_nlsolver;/**< the nonlinear solver system */
-    TimeStepping m_timestepping;/**< the time stepping system */
-    OutputSystem m_output;/**< the output system */
-    Postprocessor m_postprocessor;/**< the post processor system */
+    InputSystem m_InputSystem;/**< input system for input file reading */
+    FECell m_FECell;/**< fe cell class for mesh I/O, mesh generation, etc. */
+    DofHandler m_DofHandler;/**< dof class for Dof map generation and management */
+    ElmtSystem m_ElmtSystem;/**< the element system class */
+    MateSystem m_MateSystem;/**< the material system class */
+    FE m_FE;/**< the fe space class */
+    FESystem m_FESystem;/**< the FE system class */
+    Timer m_Timer;/**< timer class for time counting */
+    BCSystem m_BCSystem;/**< boundary condition system */
+    ICSystem m_ICSystem;/**< initial condition system */
+    ProjectionSystem m_ProjSystem;/**< projection system */
+    EquationSystem m_EqSystem;/**< equation system */
+    SolutionSystem m_SolnSystem;/**< solution system */
+    LinearSolver m_LinearSolver;/**< the linear solver system */
+    NonlinearSolver m_NLSolver;/**< the nonlinear solver system */
+    TimeStepping m_TimeStepping;/**< the time stepping system */
+    OutputSystem m_Output;/**< the output system */
+    Postprocessor m_PostProcessor;/**< the post processor system */
 
-    FEJobBlock m_jobblock;/**< the fe job block */
-    FEControlInfo m_fectrlinfo;/**< the fe control block */
+    FEJobBlock m_JobBlock;/**< the fe job block */
+    FEControlInfo m_FECtrlInfo;/**< the fe control block */
 
 };

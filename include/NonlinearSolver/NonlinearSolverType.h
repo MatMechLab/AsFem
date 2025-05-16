@@ -18,12 +18,15 @@
  * the enum class for different types of nonlinear solver
  */
 enum class NonlinearSolverType{
+    ASFEMNR,
     NEWTON,
     NEWTONLS,
+    NEWTONAL,
     NEWTONSECANT,
     NEWTONTR,
     NEWTONCG,
     NEWTONGMRES,
+    NCG,
     RICHARDSON,
     NASM,
     ASPIN,

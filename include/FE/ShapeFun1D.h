@@ -18,8 +18,8 @@
 #include "FE/ShapeFun1DEdge3.h"
 #include "FE/ShapeFun1DEdge4.h"
 
-#include "Mesh/Nodes.h"
-#include "Mesh/MeshType.h"
+#include "FECell/Nodes.h"
+#include "FECell/MeshType.h"
 
 /**
  * This is the 1d lagrange shape function class, responsible for the calculation of shape function value and

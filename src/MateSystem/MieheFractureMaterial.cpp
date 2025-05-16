@@ -39,7 +39,7 @@ void MieheFractureMaterial::initMaterialProperties(const nlohmann::json &inputpa
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]){}
     mate.ScalarMaterial("H")=0.0;
 }
 //********************************************************************
@@ -68,11 +68,11 @@ void MieheFractureMaterial::computeMaterialProperties(const nlohmann::json &inpu
     mate.ScalarMaterial("Gc")=JsonUtils::getValue(inputparams,"Gc");
     mate.ScalarMaterial("eps")=JsonUtils::getValue(inputparams,"eps");
 
-    if(elmtinfo.m_dim==2){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);// grad(ux), grad(uy)
+    if(elmtinfo.m_Dim==2){
+        m_GradU.setFromGradU2D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);// grad(ux), grad(uy)
     }
-    else if(elmtinfo.m_dim==3){
-        m_GradU.setFromGradU(elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3],elmtsoln.m_gpGradU[4]);// grad(ux), grad(uy)
+    else if(elmtinfo.m_Dim==3){
+        m_GradU.setFromGradU3D(elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3],elmtsoln.m_QpGradU[4]);// grad(ux), grad(uy)
     }
     else{
         MessagePrinter::printErrorTxt("MieheFractureMaterial works only for 2d and 3d case, please check your input file");
@@ -80,16 +80,16 @@ void MieheFractureMaterial::computeMaterialProperties(const nlohmann::json &inpu
     }
 
     m_I.setToIdentity();
-    computeStrain(elmtinfo.m_dim,m_GradU,m_strain);
+    computeStrain(elmtinfo.m_Dim,m_GradU,m_strain);
     
-    m_d=elmtsoln.m_gpU[1];
+    m_d=elmtsoln.m_QpU[1];
 
     m_args(1)=m_d;
     computeFreeEnergyAndDerivatives(inputparams,m_args,m_F,m_dFdargs,m_d2Fdargs2);
     
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_strain,m_stress,m_jacobian);
+    computeStressAndJacobian(inputparams,elmtinfo.m_Dim,m_strain,m_stress,m_jacobian);
 
-    if(elmtinfo.m_dim==2){
+    if(elmtinfo.m_Dim==2){
         m_strain(3,3)=m_eps_zz;
     }
 

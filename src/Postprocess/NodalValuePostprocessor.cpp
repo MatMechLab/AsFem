@@ -34,9 +34,9 @@ double NodalValuePostprocessor::computeNodalValue(const int &dofid,
 
     m_nodeid=JsonUtils::getInteger(parameters,"nodeid");
     int iInd=dofhandler.getIthNodeJthDofID(m_nodeid,dofid);
-    soln.m_u_current.makeGhostCopy();
-    m_pps_value=soln.m_u_current.getIthValueFromGhost(iInd);
-    soln.m_u_current.destroyGhostCopy();
+    soln.m_Ucurrent.makeGhostCopy();
+    m_pps_value=soln.m_Ucurrent.getIthValueFromGhost(iInd);
+    soln.m_Ucurrent.destroyGhostCopy();
     return m_pps_value;
 
 }

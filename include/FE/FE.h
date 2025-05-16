@@ -18,7 +18,7 @@
 #include "FE/QPoint.h"
 #include "FE/ShapeFun.h"
 
-#include "Mesh/Mesh.h"
+#include "FECell/FECell.h"
 
 /**
  * This class implement the general function and management of both shape functions and qpoints classes
@@ -31,24 +31,24 @@ public:
     FE();
     /**
      * initialize the FE class, this option assumes that no info is given in your input file
-     * @param t_mesh the mesh class for FE initializing
+     * @param t_FECell the fe cell class for FE initializing
      */
-    void initdefault(const Mesh &t_mesh);
+    void initdefault(const FECell &t_FECell);
 
     /**
      * init the FE class with preset info(defined in your input file)
-     * @param t_mesh the mesh class for FE initializing
+     * @param t_FECell the fe cell class for FE initializing
      */
-    void init(const Mesh &t_mesh);
+    void init(const FECell &t_FECell);
 
     /**
      * get the maximum dim of FE space
      */
-    inline int getMaxDim()const{return m_maxdim;}
+    inline int getMaxDim()const{return m_MaxDim;}
     /**
      * get the mini dim of FE space
      */
-    inline int getMinDim()const{return m_mindim;}
+    inline int getMinDim()const{return m_MinDim;}
 
     /**
      * print out the summary info of FE space
@@ -60,16 +60,16 @@ public:
     void releaseMemory();
 
 public:
-    ShapeFun m_bulk_shp;/**< shapefun for the bulk element */
-    ShapeFun m_surface_shp;/**< shapefun for the surface element (for 3d case) */
-    ShapeFun m_line_shp;/**< shapefun for the line element (for 2d case) */
+    ShapeFun m_BulkShp;/**< shapefun for the bulk element */
+    ShapeFun m_SurfaceShp;/**< shapefun for the surface element (for 3d case) */
+    ShapeFun m_LineShp;/**< shapefun for the line element (for 2d case) */
 
-    QPoint m_bulk_qpoints;/**< gauss integration points for the bulk element */
-    QPoint m_surface_qpoints;/**< gauss integration points for the surface element */
-    QPoint m_line_qpoints;/**< gauss integration points for the line element */
+    QPoint m_BulkQpoints;/**< gauss integration points for the bulk element */
+    QPoint m_SurfaceQpoints;/**< gauss integration points for the surface element */
+    QPoint m_LineQpoints;/**< gauss integration points for the line element */
 
 private:
-    int m_maxdim;/**< the max dimension of fe space */
-    int m_mindim;/**< the min dimension of fe space */
+    int m_MaxDim;/**< the max dimension of fe space */
+    int m_MinDim;/**< the min dimension of fe space */
 
 };

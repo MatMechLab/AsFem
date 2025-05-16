@@ -22,7 +22,7 @@ double SideIntegralRank4MatePostprocessor::computeSideIntegralValue(const int &d
                                             const LocalShapeFun &shp,
                                             SolutionSystem &soln,
                                             ProjectionSystem &projsystem){
-    if(dofid||soln.getDofsNum()||elmtinfo.m_dim){}
+    if(dofid||soln.getDofsNum()||elmtinfo.m_Dim){}
     
     if(!JsonUtils::hasOnlyGivenValues(parameters,vector<string>{"nodeid","rank4mate","i-index","j-index","k-index","l-index"})){
         MessagePrinter::printErrorTxt("Unsupported options in parameters of the NodalRank4MatePostprocessor, "
@@ -59,7 +59,7 @@ double SideIntegralRank4MatePostprocessor::computeSideIntegralValue(const int &d
     
     m_rank4value=projsystem.getIthNodeRank4MateViaMateName(nodeid,m_rank4matename);
     
-    m_ppsvalue=m_rank4value(m_i,m_j,m_k,m_l)*shp.m_test;
+    m_ppsvalue=m_rank4value(m_i,m_j,m_k,m_l)*shp.m_Test;
     
     return m_ppsvalue;
 }

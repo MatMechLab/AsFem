@@ -22,7 +22,7 @@ void SaintVenantMaterial::initMaterialProperties(const nlohmann::json &inputpara
     //***************************************************
     //*** get rid of unused warning
     //***************************************************
-    if(inputparams.size()||elmtinfo.m_dt||elmtsoln.m_gpU[0]||mate.getScalarMaterialsNum()){}
+    if(inputparams.size()||elmtinfo.m_Dt||elmtsoln.m_QpU[0]||mate.getScalarMaterialsNum()){}
 }
 
 void SaintVenantMaterial::computeMaterialProperties(const nlohmann::json &inputparams,
@@ -32,18 +32,18 @@ void SaintVenantMaterial::computeMaterialProperties(const nlohmann::json &inputp
                                            MaterialsContainer &mate){
     if(mateold.getRank2MaterialsNum()){}
     m_gradU.setToZeros();
-    if(elmtinfo.m_dim==1){
-        m_gradU.setFromGradU(elmtsoln.m_gpGradU[1]);
+    if(elmtinfo.m_Dim==1){
+        m_gradU.setFromGradU1D(elmtsoln.m_QpGradU[1]);
     }
-    else if(elmtinfo.m_dim==2){
-        m_gradU.setFromGradU(elmtsoln.m_gpGradU[1],elmtsoln.m_gpGradU[2]);
+    else if(elmtinfo.m_Dim==2){
+        m_gradU.setFromGradU2D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2]);
     }
-    else if(elmtinfo.m_dim==3){
-        m_gradU.setFromGradU(elmtsoln.m_gpGradU[1],elmtsoln.m_gpGradU[2],elmtsoln.m_gpGradU[3]);
+    else if(elmtinfo.m_Dim==3){
+        m_gradU.setFromGradU3D(elmtsoln.m_QpGradU[1],elmtsoln.m_QpGradU[2],elmtsoln.m_QpGradU[3]);
     }
 
-    computeStrain(elmtinfo.m_dim,m_gradU,m_strain);
-    computeStressAndJacobian(inputparams,elmtinfo.m_dim,m_strain,m_pk2_stress,m_jacobian);
+    computeStrain(elmtinfo.m_Dim,m_gradU,m_strain);
+    computeStressAndJacobian(inputparams,elmtinfo.m_Dim,m_strain,m_pk2_stress,m_jacobian);
 
     m_stress=m_F*m_pk2_stress;// convert the 2nd PK stress to 1st PK stress
     m_devStress=m_stress.dev();
@@ -55,10 +55,10 @@ void SaintVenantMaterial::computeMaterialProperties(const nlohmann::json &inputp
     mate.ScalarMaterial("vonMises-strain")=sqrt(1.5*m_devStrain.doubledot(m_devStrain));
     mate.ScalarMaterial("hydrostatic-stress")=m_stress.trace()/3.0;
 
-    mate.VectorMaterial("gradux")=elmtsoln.m_gpGradU[1];
-    if(elmtinfo.m_dim>=2){
-        mate.VectorMaterial("graduy")=elmtsoln.m_gpGradU[2];
-        if(elmtinfo.m_dim==3) mate.VectorMaterial("graduz")=elmtsoln.m_gpGradU[3];
+    mate.VectorMaterial("gradux")=elmtsoln.m_QpGradU[1];
+    if(elmtinfo.m_Dim>=2){
+        mate.VectorMaterial("graduy")=elmtsoln.m_QpGradU[2];
+        if(elmtinfo.m_Dim==3) mate.VectorMaterial("graduz")=elmtsoln.m_QpGradU[3];
     }
     mate.Rank2Material("strain")=m_strain;
     mate.Rank2Material("stress")=m_stress;// the stress should be 1st PK stress, not 2nd PK stress !
