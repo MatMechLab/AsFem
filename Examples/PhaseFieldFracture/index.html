@@ -15,14 +15,14 @@
         <link rel="canonical" href="https://matmechlab.github.io/AsFem/Examples/PhaseFieldFracture/">
       
       
-        <link rel="prev" href="../../Tutorial/step-8/">
+        <link rel="prev" href="../../Tutorial/step-3/">
       
       
-        <link rel="next" href="../../Document/block-mesh/">
+        <link rel="next" href="../NeoHookeanFracture/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
     
     
       
@@ -30,7 +30,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.50c56a3b.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
 
@@ -49,7 +52,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -59,7 +62,14 @@
   </head>
   
   
-    <body dir="ltr">
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -80,19 +90,17 @@
     
       
 
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
       
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
     <div class="md-header__title" data-md-component="header-title">
       <div class="md-header__ellipsis">
@@ -111,37 +119,70 @@
       </div>
     </div>
     
+      
+        <form class="md-header__option" data-md-component="palette">
+  
     
-      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
     
     
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
-      <label class="md-header__button md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
       </label>
-      <div class="md-search" data-md-component="search" role="dialog">
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
       <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
       <label class="md-search__icon md-icon" for="__search">
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
         
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
         </button>
       </nav>
       
     </form>
     <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
         <div class="md-search-result" data-md-component="search-result">
           <div class="md-search-result__meta">
             Initializing search
@@ -152,13 +193,14 @@
     </div>
   </div>
 </div>
+      
     
     
       <div class="md-header__source">
         <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
   </div>
   <div class="md-source__repository">
     MatMechLab/AsFem
@@ -175,6 +217,171 @@
       
         
           
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../about/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../install/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Tutorial/step-0/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tutorial
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Examples
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Document/block-mesh/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Document
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../release/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Release
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -188,13 +395,15 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="AsFem" class="md-nav__button md-logo" aria-label="AsFem" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
     AsFem
@@ -204,7 +413,7 @@
       <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
   </div>
   <div class="md-source__repository">
     MatMechLab/AsFem
@@ -224,8 +433,10 @@
       <a href="../.." class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Home
+    
   </span>
   
 
@@ -244,8 +455,10 @@
       <a href="../../about/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     About
+    
   </span>
   
 
@@ -264,8 +477,10 @@
       <a href="../../install/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Installation
+    
   </span>
   
 
@@ -282,22 +497,40 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
+    
+    
+      
+      
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
       
         
         
+          
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
     Tutorial
+    
   </span>
   
 
@@ -321,8 +554,10 @@
       <a href="../../Tutorial/step-0/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Step-0
+    
   </span>
   
 
@@ -342,8 +577,10 @@
       <a href="../../Tutorial/step-1/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Step-1
+    
   </span>
   
 
@@ -363,8 +600,10 @@
       <a href="../../Tutorial/step-2/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Step-2
+    
   </span>
   
 
@@ -384,113 +623,10 @@
       <a href="../../Tutorial/step-3/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Step-3
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Tutorial/step-4/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Step-4
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Tutorial/step-5/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Step-5
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Tutorial/step-6/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Step-6
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Tutorial/step-7/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Step-7
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../Tutorial/step-8/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Step-8
+    
   </span>
   
 
@@ -517,22 +653,35 @@
   
     
     
-    
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
+  
   
   <span class="md-ellipsis">
     Examples
+    
   </span>
   
 
@@ -556,22 +705,39 @@
   
     
     
-    
-    
-    
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
             
+  
   
   <span class="md-ellipsis">
     PhaseField
+    
   </span>
   
 
@@ -604,8 +770,10 @@
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
+  
   <span class="md-ellipsis">
-    Fracture
+    SmallStrainFracture
+    
   </span>
   
 
@@ -616,6 +784,52 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../NeoHookeanFracture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FiniteStrainFracture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DiffusionACFracture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    DiffusionACFracture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -639,22 +853,52 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
+    
+    
+      
+      
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
       
         
         
+          
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
         
           
           <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
+  
   <span class="md-ellipsis">
     Document
+    
   </span>
   
 
@@ -678,8 +922,10 @@
       <a href="../../Document/block-mesh/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     mesh block
+    
   </span>
   
 
@@ -699,8 +945,10 @@
       <a href="../../Document/block-dofs/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     dofs block
+    
   </span>
   
 
@@ -720,8 +968,10 @@
       <a href="../../Document/block-elmts/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     elmts block
+    
   </span>
   
 
@@ -741,8 +991,10 @@
       <a href="../../Document/block-mates/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     mate block
+    
   </span>
   
 
@@ -762,8 +1014,10 @@
       <a href="../../Document/block-bcs/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     bcs block
+    
   </span>
   
 
@@ -783,8 +1037,10 @@
       <a href="../../Document/block-ics/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     ics block
+    
   </span>
   
 
@@ -804,8 +1060,10 @@
       <a href="../../Document/block-qpoint/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     qpoint block
+    
   </span>
   
 
@@ -825,8 +1083,10 @@
       <a href="../../Document/block-projection/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     projection block
+    
   </span>
   
 
@@ -846,8 +1106,10 @@
       <a href="../../Document/block-nonlinearsolver/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     nonlinear solver block
+    
   </span>
   
 
@@ -867,8 +1129,10 @@
       <a href="../../Document/block-timestepping/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     timestepping block
+    
   </span>
   
 
@@ -895,8 +1159,10 @@
       <a href="../../release/" class="md-nav__link">
         
   
+  
   <span class="md-ellipsis">
     Release
+    
   </span>
   
 
@@ -937,10 +1203,13 @@
                 
                   
 
+
   
   
 
 
+<hr />
+<p><span style="color: #6B7280; font-weight: bold;">Author: Yang Bai</span> • <a href="https://www.x-mol.com/groups/matmechlab">MMlab 🔗</a></p>
 <h1 id="introduction">Introduction</h1>
 <p>In this example, we will try to solve the phase-field fracture model which is implemented based on Prof. Miehe's <a href="https://doi.org/10.1002/nme.2861">Model</a>.</p>
 <h1 id="model">Model</h1>
@@ -1035,45 +1304,51 @@ where <span class="arithmatex">\(\eta\)</span> is the viscosity coefficient. The
 <p>In the example/pffracture folder, there are several <code>geo</code> file, which can be used to generate the <code>msh</code> mesh file for your simulation. Before we start, you should have the mesh file.</p>
 <h2 id="mesh">Mesh</h2>
 <p>In this case, we'll import the mesh from <code>gmsh</code>, which can be done as follows:</p>
-<pre><code>[mesh]
-  type=gmsh
-  file=sample.msh
-[end]
+<pre><code>&quot;mesh&quot;:{
+  &quot;type&quot;:&quot;msh4&quot;,
+  &quot;file&quot;:&quot;tensile.msh&quot;,
+  &quot;savemesh&quot;:true
+},
 </code></pre>
 <p>Here, you should use <a href="https://gmsh.info/">gmsh</a> to generate the related msh file!</p>
 <h2 id="dofs">Dofs</h2>
 <p>Next, you need to define the dofs, it should be <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, and <span class="arithmatex">\(u_{y}\)</span> for 2d case, and <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, <span class="arithmatex">\(u_{y}\)</span>, and <span class="arithmatex">\(u_{z}\)</span> for 3d case. The <code>[dofs]</code> block should looks like:</p>
-<pre><code>[dofs]
-name=d ux uy
-[end]
+<pre><code>&quot;dofs&quot;:{
+  &quot;names&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;]
+},
 </code></pre>
 <p>or</p>
-<pre><code>[dofs]
-name=d ux uy uz
-[end]
+<pre><code>&quot;dofs&quot;:{
+  &quot;names&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;,&quot;uz&quot;]
+},
 </code></pre>
 <p>Here, the sequence of your <code>dofs</code> name matters !!!</p>
 <h2 id="elmts-and-mates">[elmts] and [mates]</h2>
 <p>The governings in Eq.<span class="arithmatex">\(\eqref{eq:stress-equilibrium}\)</span> and Eq.<span class="arithmatex">\(\eqref{eq:damage-equation}\)</span> can be implemented by using the following <code>elmts</code>:</p>
-<pre><code>[elmts]
-  [myfracture]
-    type=miehefrac
-    dofs=d ux uy
-    mate=myfracmate
-  [end]
-[end]
+<pre><code>  &quot;elements&quot;:{
+    &quot;elmt1&quot;:{
+      &quot;type&quot;:&quot;miehefracture&quot;,
+      &quot;dofs&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;],
+      &quot;material&quot;:{
+        &quot;type&quot;:&quot;miehefracture&quot;,
+        &quot;parameters&quot;:{
+          &quot;viscosity&quot;:1.0e-6,
+          &quot;Gc&quot;:2.7e-3,
+          &quot;eps&quot;:0.012,
+          &quot;K&quot;:121.15,
+          &quot;G&quot;:80.77,
+          &quot;stabilizer&quot;:1.0e-6,
+          &quot;finite-strain&quot;:false,
+          &quot;plane-strain&quot;:true
+        }
+      }
+    }
+  },
 </code></pre>
-<p>where <code>type=miehefrac</code> tells AsFem, our users want to call the phase-field fracture model.</p>
-<p>For the material calculation, as mentioned before, several parameters are required, i.e., <span class="arithmatex">\(E\)</span>, <span class="arithmatex">\(\nu\)</span> for the Youngs modulus and poisson ration, <span class="arithmatex">\(\eta\)</span>, <span class="arithmatex">\(\mathcal{G}_{c}\)</span>, and <span class="arithmatex">\(l\)</span> for the damage evolution. Therefore, the related <code>material</code> block can be given as follows:</p>
-<pre><code>[mates]
-  [myfracmate]
-    type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.012  1.0e-6   
-    //     lambda mu    Gc     L      viscosity
-  [end]
-[end]
-</code></pre>
-<p>It should be mentioned that, the de-coupled or staggered solution can be done easily by introducing the <code>usehist</code> parameter as follows:</p>
+<p>where <code>type=miehefracture</code> tells AsFem, our users want to call the phase-field fracture model.</p>
+<p>For the material calculation, as mentioned before, several parameters are required, i.e., <span class="arithmatex">\(E\)</span>, <span class="arithmatex">\(\nu\)</span> for the Youngs modulus and poisson ration, <span class="arithmatex">\(\eta\)</span>, <span class="arithmatex">\(\mathcal{G}_{c}\)</span>, and <span class="arithmatex">\(l\)</span> for the damage evolution.</p>
+<!-- It should be mentioned that, the de-coupled or staggered solution can be done easily by introducing the `usehist` parameter as follows:
+
 <pre><code>[mates]
   [myfracmate]
     type=miehefracmate
@@ -1082,144 +1357,197 @@ name=d ux uy uz
   [end]
 [end]
 </code></pre>
-<p>then, your <span class="arithmatex">\(\mathcal{H}\)</span> will always use the <span class="arithmatex">\(\mathcal{H}_{old}\)</span> value from previous step.</p>
+
+then, your $\mathcal{H}$ will always use the $\mathcal{H}_{old}$ value from previous step. -->
+
 <h2 id="boundary-condition">boundary condition</h2>
 <p>For the tensile test, one can use the following <code>bcs</code>:</p>
-<pre><code>[bcs]
-  [fixux]
-    type=dirichlet
-    dofs=ux
-    value=0.0
-    boundary=left right top bottom
-  [end]
-  [fixuy]
-    type=dirichlet
-    dofs=uy
-    value=0.0
-    boundary=bottom
-  [end]
-  [load]
-    type=dirichlet
-    dofs=uy
-    value=1.0*t
-    boundary=top
-  [end]
-[end]
+<pre><code>&quot;bcs&quot;:{
+  &quot;fixux&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;ux&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;left&quot;,&quot;right&quot;]
+  },
+  &quot;fixuy&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;uy&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;bottom&quot;]
+  },
+  &quot;loading&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;uy&quot;],
+    &quot;bcvalue&quot;:&quot;0.1*t&quot;,
+    &quot;side&quot;:[&quot;top&quot;]
+  }
+},
 </code></pre>
 <p>and for the shear failure test, one can use:</p>
-<pre><code>[bcs]
-  [fixux]
-    type=dirichlet
-    dofs=ux
-    value=0.0
-    boundary=bottom
-  [end]
-  [fixuy]
-    type=dirichlet
-    dofs=uy
-    value=0.0
-    boundary=bottom left right top
-  [end]
-  [load]
-    type=dirichlet
-    dofs=ux
-    value=1.0*t
-    boundary=top
-  [end]
-[end]
+<pre><code>&quot;bcs&quot;:{
+  &quot;fixux&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;ux&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;bottom&quot;]
+  },
+  &quot;fixuy&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;uy&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;left&quot;,&quot;right&quot;,&quot;bottom&quot;]
+  },
+  &quot;loading&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;ux&quot;],
+    &quot;bcvalue&quot;:&quot;0.1*t&quot;,
+    &quot;side&quot;:[&quot;top&quot;]
+  }
+},
 </code></pre>
-<p>Done? Yulp, all the things is done!</p>
+<p>Done? Yep, all the things is done!</p>
 <h1 id="run-it-in-asfem">Run it in AsFem</h1>
-<p>Now, let's try your first phase-field fracture model in AsFem. You can create a new text file and name it as tensile.i or whatever you like. Then copy the following lines into your input file:</p>
-<pre><code>[mesh]
-  type=gmsh
-  file=sample.msh
-[end]
-
-
-[dofs]
-name=d ux uy
-[end]
-
-[elmts]
-  [myfracture]
-    type=miehefrac
-    dofs=d ux uy
-    mate=myfracmate
-  [end]
-[end]
-
-[mates]
-  [myfracmate]
-    type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.012 1.0e-6
-    //     lambda mu    Gc     L     viscosity
-  [end]
-[end]
-
-[nonlinearsolver]
-  type=nr
-  maxiters=15
-  r_rel_tol=1.0e-10
-  r_abs_tol=5.5e-7
-[end]
-
-[ics]
-  [constd]
-    type=const
-    dof=d
-    params=0.0
-  [end]
-[end]
-
-[output]
-  type=vtu
-  interval=20
-[end]
-
-[timestepping]
-  type=be
-  dt=1.0e-5
-  time=5.0e-5
-  adaptive=false
-  optiters=3
-  growthfactor=1.1
-  cutfactor=0.85
-  dtmin=1.0e-12
-  dtmax=1.0e-4
-[end]
-
-[projection]
-scalarmate=vonMises
-[end]
-
-[bcs]
-  [fixux]
-    type=dirichlet
-    dofs=ux
-    value=0.0
-    boundary=left right top bottom
-  [end]
-  [fixuy]
-    type=dirichlet
-    dofs=uy
-    value=0.0
-    boundary=bottom
-  [end]
-  [load]
-    type=dirichlet
-    dofs=uy
-    value=1.0*t
-    boundary=top
-  [end]
-[end]
-
-[job]
-  type=transient
-  debug=dep
-[end]
+<p>Now, let's try your first phase-field fracture model in AsFem. You can create a new text file and name it as tensile.json or whatever you like. Then copy the following lines into your input file:</p>
+<pre><code>{
+  &quot;mesh&quot;:{
+    &quot;type&quot;:&quot;msh4&quot;,
+    &quot;file&quot;:&quot;tensile.msh&quot;,
+    &quot;savemesh&quot;:true
+  },
+  &quot;dofs&quot;:{
+    &quot;names&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;]
+  },
+  &quot;elements&quot;:{
+    &quot;elmt1&quot;:{
+      &quot;type&quot;:&quot;miehefracture&quot;,
+      &quot;dofs&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;],
+      &quot;material&quot;:{
+        &quot;type&quot;:&quot;miehefracture&quot;,
+        &quot;parameters&quot;:{
+          &quot;viscosity&quot;:1.0e-6,
+          &quot;Gc&quot;:2.7e-3,
+          &quot;eps&quot;:0.012,
+          &quot;K&quot;:121.15,
+          &quot;G&quot;:80.77,
+          &quot;stabilizer&quot;:1.0e-6,
+          &quot;finite-strain&quot;:false,
+          &quot;plane-strain&quot;:true
+        }
+      }
+    }
+  },
+  &quot;projection&quot;:{
+    &quot;type&quot;:&quot;leastsquare&quot;,
+    &quot;scalarmate&quot;:[&quot;vonMises-stress&quot;],
+    &quot;rank2mate&quot;:[&quot;stress&quot;,&quot;strain&quot;]
+  },
+  &quot;bcs&quot;:{
+    &quot;fixux&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;ux&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;left&quot;,&quot;right&quot;]
+    },
+    &quot;fixuy&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uy&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;bottom&quot;]
+    },
+    &quot;loading&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uy&quot;],
+      &quot;bcvalue&quot;:&quot;0.1*t&quot;,
+      &quot;side&quot;:[&quot;top&quot;]
+    }
+  },
+  &quot;linearsolver&quot;:{
+    &quot;type&quot;:&quot;mumps&quot;,
+    &quot;preconditioner&quot;:&quot;lu&quot;,
+    &quot;maxiters&quot;:10000,
+    &quot;restarts&quot;:1600,
+    &quot;tolerance&quot;:1.0e-28
+  },
+  &quot;nlsolver&quot;:{
+    &quot;type&quot;:&quot;asfem&quot;,
+    &quot;maxiters&quot;:15,
+    &quot;abs-tolerance&quot;:5.0e-7,
+    &quot;rel-tolerance&quot;:1.0e-13,
+    &quot;s-tolerance&quot;:0.0
+  },
+  &quot;timestepping&quot;:{
+    &quot;type&quot;:&quot;be&quot;,
+    &quot;dt0&quot;:1.0e-4,
+    &quot;dtmax&quot;:5.0e-3,
+    &quot;dtmin&quot;:1.0e-12,
+    &quot;optimize-iters&quot;:5,
+    &quot;end-time&quot;:1.5e0,
+    &quot;growth-factor&quot;:1.05,
+    &quot;cutback-factor&quot;:0.75,
+    &quot;adaptive&quot;:true
+  },
+  &quot;output&quot;:{
+    &quot;type&quot;:&quot;vtu&quot;,
+    &quot;interval&quot;:5
+  },
+  &quot;qpoints&quot;:{
+    &quot;bulk&quot;:{
+      &quot;type&quot;:&quot;gauss-legendre&quot;,
+      &quot;order&quot;:2
+    }
+  },
+  &quot;postprocess&quot;:{
+    &quot;ux&quot;:{
+      &quot;type&quot;:&quot;sideaveragevalue&quot;,
+      &quot;dof&quot;:&quot;ux&quot;,
+      &quot;side&quot;:[&quot;top&quot;]
+    },
+    &quot;uy&quot;:{
+      &quot;type&quot;:&quot;sideaveragevalue&quot;,
+      &quot;dof&quot;:&quot;uy&quot;,
+      &quot;side&quot;:[&quot;top&quot;]
+    },
+    &quot;fx&quot;:{
+      &quot;type&quot;:&quot;sideintegralrank2mate&quot;,
+      &quot;side&quot;:[&quot;top&quot;],
+      &quot;parameters&quot;:{
+        &quot;rank2mate&quot;:&quot;stress&quot;,
+        &quot;i-index&quot;:1,
+        &quot;j-index&quot;:1
+      }
+    },
+    &quot;fxy&quot;:{
+      &quot;type&quot;:&quot;sideintegralrank2mate&quot;,
+      &quot;side&quot;:[&quot;top&quot;],
+      &quot;parameters&quot;:{
+        &quot;rank2mate&quot;:&quot;stress&quot;,
+        &quot;i-index&quot;:1,
+        &quot;j-index&quot;:2
+      }
+    },
+    &quot;fy&quot;:{
+      &quot;type&quot;:&quot;sideintegralrank2mate&quot;,
+      &quot;side&quot;:[&quot;top&quot;],
+      &quot;parameters&quot;:{
+        &quot;rank2mate&quot;:&quot;stress&quot;,
+        &quot;i-index&quot;:2,
+        &quot;j-index&quot;:2
+      }
+    },
+    &quot;damage&quot;:{
+      &quot;type&quot;:&quot;volumeaveragevalue&quot;,
+      &quot;dof&quot;:&quot;d&quot;,
+      &quot;domain&quot;:[&quot;alldomain&quot;]
+    }
+  },
+  &quot;job&quot;:{
+    &quot;type&quot;:&quot;transient&quot;,
+    &quot;print&quot;:&quot;dep&quot;,
+    &quot;restart&quot;:true
+  }
+}
 </code></pre>
-<p>You can also find the complete input file in <code>examples/pffracture/miehe-tensile.i</code>.</p>
+<p>You can also find the complete input file in <code>examples/pffracture/MieheTensile2d.json</code>.</p>
 <p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
 <img alt="shear" src="shear.jpeg" /></p>
 <p><img alt="tensile" src="tensile.jpeg" /></p>
@@ -1245,6 +1573,12 @@ scalarmate=vonMises
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
         
       </main>
       
@@ -1276,10 +1610,12 @@ scalarmate=vonMises
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.e1c3ead8.min.js"></script>
+      <script src="../../assets/javascripts/bundle.56ea9cef.min.js"></script>
       
         <script src="../../javascripts/mathjax.js"></script>
       

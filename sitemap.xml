@@ -2,122 +2,106 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://matmechlab.github.io/AsFem/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/about/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/install/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/release/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-bcs/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-dofs/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-elmts/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-ics/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-mates/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-mesh/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-nonlinearsolver/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-projection/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-qpoint/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Document/block-timestepping/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
+    </url>
+    <url>
+         <loc>https://matmechlab.github.io/AsFem/Examples/DiffusionACFracture/</loc>
+         <lastmod>2025-07-10</lastmod>
+    </url>
+    <url>
+         <loc>https://matmechlab.github.io/AsFem/Examples/NeoHookeanFracture/</loc>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Examples/PhaseFieldFracture/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-0/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-1/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-2/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-3/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-4/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-5/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-6/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-7/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
     <url>
          <loc>https://matmechlab.github.io/AsFem/Tutorial/step-8/</loc>
-         <lastmod>2024-01-30</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2025-07-10</lastmod>
     </url>
 </urlset>

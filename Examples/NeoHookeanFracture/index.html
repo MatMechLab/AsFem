@@ -9,16 +9,16 @@
         <meta name="description" content="Advanced Simulation kit based on Finite Element Method.">
       
       
-        <meta name="author" content="Yang Bai">
+        <meta name="author" content="Mengmeng Li">
       
       
-        <link rel="canonical" href="https://matmechlab.github.io/AsFem/Tutorial/step-0/">
+        <link rel="canonical" href="https://matmechlab.github.io/AsFem/Examples/NeoHookeanFracture/">
       
       
-        <link rel="prev" href="../../install/">
+        <link rel="prev" href="../PhaseFieldFracture/">
       
       
-        <link rel="next" href="../step-1/">
+        <link rel="next" href="../DiffusionACFracture/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Step-0 - AsFem</title>
+        <title>Phasefield fracture model in finite strain case - AsFem</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#write-a-simple-input-file" class="md-skip">
+        <a href="#introduction" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Step-0
+              Phasefield fracture model in finite strain case
             
           </span>
         </div>
@@ -283,13 +283,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../Tutorial/step-0/" class="md-tabs__link">
           
   
   
@@ -307,6 +305,8 @@
   
   
   
+    
+  
   
     
     
@@ -314,11 +314,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../Examples/PhaseFieldFracture/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../PhaseFieldFracture/" class="md-tabs__link">
           
   
   
@@ -491,10 +493,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -510,22 +510,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -538,7 +537,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Tutorial
@@ -549,30 +548,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Step-0
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../Tutorial/step-0/" class="md-nav__link">
         
   
   
@@ -583,33 +562,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#write-a-simple-input-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Write a simple input file:
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -622,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-1/" class="md-nav__link">
+      <a href="../../Tutorial/step-1/" class="md-nav__link">
         
   
   
@@ -645,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-2/" class="md-nav__link">
+      <a href="../../Tutorial/step-2/" class="md-nav__link">
         
   
   
@@ -668,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-3/" class="md-nav__link">
+      <a href="../../Tutorial/step-3/" class="md-nav__link">
         
   
   
@@ -695,8 +647,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -706,21 +660,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -733,7 +688,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Examples
@@ -744,8 +699,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -760,20 +717,21 @@
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
         
           
+          
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1" >
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
             
   
   
@@ -786,7 +744,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5_1">
             <span class="md-nav__icon md-icon"></span>
             PhaseField
@@ -800,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Examples/PhaseFieldFracture/" class="md-nav__link">
+      <a href="../PhaseFieldFracture/" class="md-nav__link">
         
   
   
@@ -820,10 +778,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../Examples/NeoHookeanFracture/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -834,6 +801,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -846,7 +814,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Examples/DiffusionACFracture/" class="md-nav__link">
+      <a href="../DiffusionACFracture/" class="md-nav__link">
         
   
   
@@ -1220,23 +1188,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#write-a-simple-input-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Write a simple input file:
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1255,96 +1208,315 @@
   
 
 
-  <h1>Step-0</h1>
-
-<h2 id="write-a-simple-input-file">Write a simple input file:</h2>
-<p>In your input file (<code>*.json</code> file), the layout of the block should resemble the following:</p>
+<hr />
+<!-- **Author: Mengmeng Li** • [MMlab 🔗](https://www.x-mol.com/groups/matmechlab) -->
+<p><span style="color: #6B7280; font-weight: bold;">Author: Mengmeng Li</span> • <a href="https://www.x-mol.com/groups/matmechlab">MMlab 🔗</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>In this example, we will try to solve the phase-field finite strain fracture model.</p>
+<h1 id="model">Model</h1>
+<p>In this model, the damage phase is described by an order parameter <span class="arithmatex">\(d\)</span> which varies smoothly from 0 (undamaged case) to 1 (fully damaged case). Therefore, the system free energy can be read as follows:
+$$
+\begin{equation}
+\psi=\psi_{\mathrm{ela}}+\psi_{\mathrm{frac}}
+\label{eq:psi}
+\tag{1}
+\end{equation}
+$$
+where
+$$
+\begin{equation}
+\psi_{\mathrm{ela}} = g(d)\psi_{\mathrm{ela}}^{+}+\psi_{\mathrm{ela}}^{-}
+\tag{2}
+\end{equation}
+$$
+where <span class="arithmatex">\(g(d)\)</span> is the degradation function, and the positive energy <span class="arithmatex">\(\psi_{\mathrm{ela}}^{+}\)</span> and the negative energy <span class="arithmatex">\(\psi_{\mathrm{ela}}^{-}\)</span> are given as follows:</p>
+<div class="arithmatex">\[
+\begin{equation}
+\psi_{\mathrm{ela}}^{+}=
+\begin{cases}
+\frac{K}{2}(\frac{J_e^2-1}{2}-\ln(J_e))+\frac{\mu}{2}(\bar{I}_1-3) &amp; \mathrm{if} J_e \geq 1 \\
+\frac{\mu}{2}(\bar{I}_1-3) &amp; \mathrm{if} J_e &lt; 1
+\end{cases}
+\tag{3}
+\label{eq:psi-e-positive}
+\end{equation}
+\]</div>
+<p>and</p>
+<div class="arithmatex">\[
+\begin{equation}
+\psi_{\mathrm{ela}}^{-}=
+\begin{cases}
+0 &amp; \mathrm{if } J_e \geq 1 \\
+\frac{K}{2}\left(\frac{J_e^2-1}{2}-\ln(J_e)\right) &amp; \mathrm{if } J_e &lt; 1
+\end{cases}
+\tag{4}
+\label{eq:psi-e-negative}
+\end{equation}
+\]</div>
+<p>Thus the positive and negative part of the 2nd PK stress <span class="arithmatex">\(\boldsymbol{S}\)</span> can take the following
+forms:</p>
+<div class="arithmatex">\[
+\begin{equation}
+\boldsymbol{S}^+=
+\frac{\partial \psi_{\text{ela}}^+}{\partial \boldsymbol{E}_e} = 2 \frac{\partial \psi_{\text{ela}}^+}{\partial\boldsymbol{C}_e} = \begin{cases}
+\frac{K}{2}(J_e^2-1)\boldsymbol{C}_e^{-1}+\mu J_e^{-\frac{2}{3}}(I-\frac{1}{3}I_1\boldsymbol{C}_e^{-1}) &amp; \mathrm{if } J_e \geq 1 \\
+\mu J_e^{-\frac{2}{3}}(\boldsymbol{I} - \frac{1}{3}I_1 \boldsymbol{C}_e^{-1}) &amp; \text{if } J_e &lt; 1
+\end{cases}
+\tag{5}
+\label{eq:stress-e-positive}
+\end{equation}
+\]</div>
+<p>and </p>
+<div class="arithmatex">\[
+\begin{equation}
+\boldsymbol{S}^-=
+\frac{\partial \psi_{\text{ela}}^-}{\partial \boldsymbol{E}_e} = 2 \frac{\partial \psi_{\text{ela}}^-}{\partial \boldsymbol{C}_e} = \begin{cases}
+0 &amp; \text{if } J_e \geq 1 \\
+\frac{K}{2}(J_e^2 - 1)\boldsymbol{C}_e^{-1} &amp; \text{if } J_e &lt; 1
+\end{cases}
+\tag{6}
+\label{eq:stress-e-negative}
+\end{equation}
+\]</div>
+<p>The fracture free energy can be given by:</p>
+<p>$$
+\begin{equation}
+\psi_{\mathrm{frac}}=\mathcal{G}_{c}(\frac{d^{2}}{2l}+\frac{l}{2}\lvert\nabla d\rvert^{2})
+\label{eq:psi-frac}
+\tag{7}
+\end{equation}
+$$
+with <span class="arithmatex">\(\mathcal{G}_{c}\)</span> and <span class="arithmatex">\(l\)</span> being the critical energy release rate and the length scale parameter, respectively. </p>
+<p>The governing equaitons for this model are list below:
+$$
+\begin{equation}
+\mathbf{\nabla}\cdot\boldsymbol{P}=\boldsymbol{0}
+\label{eq:stress-equilibrium}
+\tag{8}
+\end{equation}
+$$
+and
+$$
+\begin{equation}
+\frac{\partial d}{\partial t}=2(1-d)\mathcal{H}-\frac{\mathcal{G}_{c}}{l}(d-l^{2}\Delta d)
+\label{eq:damage-equation}
+\tag{9}
+\end{equation}
+$$
+The history variable <span class="arithmatex">\(\mathcal{H}\)</span> is calculated as follows:</p>
+<div class="arithmatex">\[
+\begin{equation}
+\mathcal{H}=
+\begin{cases}
+\psi_{e}^{+} &amp; \mathrm{if}\quad\psi_{e}^{+}&gt;\mathcal{H}_{n}\\
+\mathcal{H}_{n} &amp;\mathrm{otherwise}
+\end{cases}
+\label{eq:hist}
+\tag{10}
+\end{equation}
+\]</div>
+<h1 id="input-file">Input file</h1>
+<p>In the example/pffracture folder, there are several <code>geo</code> file, which can be used to generate the <code>msh</code> mesh file for your simulation. Before we start, you should have the mesh file.</p>
+<h2 id="mesh">Mesh</h2>
+<p>In this case, we'll import the mesh from <code>gmsh</code>, which can be done as follows:</p>
 <pre><code>&quot;mesh&quot;:{
-        &quot;type&quot;:&quot;asfem&quot;,
-        &quot;dim&quot;:1,
-        &quot;nx&quot;:20,
-        &quot;xmax&quot;:1.5,
-        &quot;meshtype&quot;:&quot;edge2&quot;,
-        &quot;savemesh&quot;:true
-    }
+    &quot;type&quot;:&quot;msh2&quot;,
+    &quot;file&quot;:&quot;Tensile3D.msh&quot;,
+    &quot;savemesh&quot;:true
+  },
 </code></pre>
-<p>In this context, <code>"mesh"</code> represents the function or module we want to use in AsFem, and it defines a single block in the JSON file. Within this block, you can include multiple options for different purposes.</p>
-<p>In the aforementioned example, <code>"mesh"</code> defines a block for mesh generation, and within the <code>{}</code> bracket pair, you can specify the mesh type (<code>"type":"asfem"</code>), the dimension of the mesh (<code>"dim":1</code>), and other relevant details.</p>
-<p>To create a minimal input file for AsFem, you will need to include at least the following blocks:</p>
-<pre><code>&quot;mesh&quot;: to define the finite element mesh
-&quot;dofs&quot;: to define the degree of freedom
-&quot;elements&quot;: to define the PDE/ODE
-&quot;job&quot;: to define the static/transient analysis job
-</code></pre>
-<p>Within the <code>"dofs"</code> block, you can specify the name or list of names of the <em>Degrees of Freedom</em> (<strong>DoFs</strong>) that will be displayed in Paraview when you open the result file (<code>vtu</code> file). Furthermore, when applying boundary conditions, you will need to provide the name of the relevant <strong>DoFs</strong>.</p>
+<p>Here, you should use <a href="https://gmsh.info/">gmsh</a> to generate the related msh file!</p>
+<h2 id="dofs">Dofs</h2>
+<p>Next, you need to define the dofs, it should be <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, and <span class="arithmatex">\(u_{y}\)</span> for 2d case, and <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, <span class="arithmatex">\(u_{y}\)</span>, and <span class="arithmatex">\(u_{z}\)</span> for 3d case. The <code>[dofs]</code> block should looks like:</p>
 <pre><code>&quot;dofs&quot;:{
-        &quot;names&quot;:[&quot;phi&quot;]
-    }
+  &quot;names&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;,&quot;uz&quot;]
+},
 </code></pre>
-<p>and the element or module you'd like to use:</p>
-<p>Additionally, you will need to specify the element or module you would like to use in the <code>"elements"</code> block. This block defines the residual and jacobian for your PDE/ODE.</p>
+<p>Here, the sequence of your <code>dofs</code> name matters !!!</p>
+<h2 id="elmts-and-mates">elmts and mates</h2>
+<p>The governings in Eq.<span class="arithmatex">\(\eqref{eq:stress-equilibrium}\)</span> and Eq.<span class="arithmatex">\(\eqref{eq:damage-equation}\)</span> can be implemented by using the following <code>elmts</code>:</p>
 <pre><code>&quot;elements&quot;:{
-        &quot;elmt1&quot;:{
-            &quot;type&quot;:&quot;laplace&quot;,
-            &quot;dofs&quot;:[&quot;phi&quot;],
-            &quot;material&quot;:{
-                &quot;type&quot;:&quot;constpoisson&quot;,
-                &quot;parameters&quot;:{
-                    &quot;sigma&quot;:1.0,
-                    &quot;f&quot;:1.0e1
-                }
-            }
-        }
+  &quot;elmt1&quot;:{
+    &quot;type&quot;:&quot;allencahnfracture&quot;,
+    &quot;dofs&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;,&quot;uz&quot;],
+    &quot;material&quot;:{
+      &quot;type&quot;:&quot;neohookeanpffracture&quot;,
+      &quot;parameters&quot;:{
+        &quot;L&quot;:1.0e6,
+        &quot;Gc&quot;:2.7e-3,
+        &quot;eps&quot;:0.012,
+        &quot;K&quot;:121.15,
+        &quot;G&quot;:80.77,
+        &quot;stabilizer&quot;:1.0e-6,
+        &quot;finite-strain&quot;:true
+      }
     }
+  }
+},
 </code></pre>
-<p>In the end, you will also need to provide the necessary information for the analysis within the <code>"job"</code> block.</p>
-<pre><code>&quot;job&quot;:{
-        &quot;type&quot;:&quot;static&quot;,
-        &quot;print&quot;:&quot;dep&quot;,
-        &quot;restart&quot;:true
-    }
+<p>where <code>type=neohookeanpffracture</code> tells AsFem, our users want to call the neohookean fracture model.</p>
+<p>For the material calculation, as mentioned before, several parameters are required, i.e., <span class="arithmatex">\(E\)</span>, <span class="arithmatex">\(\nu\)</span> for the Youngs modulus and poisson ration, <span class="arithmatex">\(\eta\)</span>, <span class="arithmatex">\(\mathcal{G}_{c}\)</span>, and <span class="arithmatex">\(l\)</span> for the damage evolution. Therefore, the related <code>material</code> block can be given as below.</p>
+<p>then, your <span class="arithmatex">\(\mathcal{H}\)</span> will always use the <span class="arithmatex">\(\mathcal{H}_{old}\)</span> value from previous step.</p>
+<h2 id="boundary-condition">boundary condition</h2>
+<p>For the tensile test, one can use the following <code>bcs</code>:</p>
+<pre><code>&quot;bcs&quot;:{
+  &quot;fixux&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;ux&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;bottom&quot;,&quot;top&quot;]
+  },
+  &quot;fixuy&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;uy&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;bottom&quot;]
+  },
+  &quot;fixuz&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;uz&quot;],
+    &quot;bcvalue&quot;:0.0,
+    &quot;side&quot;:[&quot;bottom&quot;,&quot;top&quot;]
+  },
+  &quot;loading&quot;:{
+    &quot;type&quot;:&quot;dirichlet&quot;,
+    &quot;dofs&quot;:[&quot;uy&quot;],
+    &quot;bcvalue&quot;:&quot;0.1*t&quot;,
+    &quot;side&quot;:[&quot;top&quot;]
+  }
+},
 </code></pre>
-<p>To summarize, in order to create a basic input file for AsFem, you will need to include the following blocks:</p>
+<p>Done? Yep, all the things is done!</p>
+<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<p>Now, let's try your first finite strain fracture model in AsFem. You can create a new text file and name it as newhookeanFracture.json or whatever you like. Then copy the following lines into your input file:</p>
 <pre><code>{
-    &quot;mesh&quot;:{
-        &quot;type&quot;:&quot;asfem&quot;,
-        &quot;dim&quot;:2,
-        &quot;nx&quot;:50,
-        &quot;ny&quot;:50,
-        &quot;meshtype&quot;:&quot;quad4&quot;,
-        &quot;savemesh&quot;:true
-    },
-    &quot;dofs&quot;:{
-        &quot;names&quot;:[&quot;phi&quot;]
-    },
-    &quot;elements&quot;:{
-        &quot;elmt1&quot;:{
-            &quot;type&quot;:&quot;laplace&quot;,
-            &quot;dofs&quot;:[&quot;phi&quot;],
-            &quot;material&quot;:{
-                &quot;type&quot;:&quot;constpoisson&quot;,
-                &quot;parameters&quot;:{
-                    &quot;sigma&quot;:1.0,
-                    &quot;f&quot;:1.0e1
-                }
-            }
+  &quot;mesh&quot;:{
+    &quot;type&quot;:&quot;msh2&quot;,
+    &quot;file&quot;:&quot;Tensile3D.msh&quot;,
+    &quot;savemesh&quot;:true
+  },
+  &quot;dofs&quot;:{
+    &quot;names&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;,&quot;uz&quot;]
+  },
+  &quot;elements&quot;:{
+    &quot;elmt1&quot;:{
+      &quot;type&quot;:&quot;allencahnfracture&quot;,
+      &quot;dofs&quot;:[&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;,&quot;uz&quot;],
+      &quot;material&quot;:{
+        &quot;type&quot;:&quot;neohookeanpffracture&quot;,
+        &quot;parameters&quot;:{
+          &quot;L&quot;:1.0e6,
+          &quot;Gc&quot;:2.7e-3,
+          &quot;eps&quot;:0.012,
+          &quot;K&quot;:121.15,
+          &quot;G&quot;:80.77,
+          &quot;stabilizer&quot;:1.0e-6,
+          &quot;finite-strain&quot;:true
         }
-    },
-    &quot;job&quot;:{
-        &quot;type&quot;:&quot;static&quot;,
-        &quot;print&quot;:&quot;dep&quot;
+      }
     }
+  },
+  &quot;projection&quot;:{
+    &quot;type&quot;:&quot;default&quot;,
+    &quot;scalarmate&quot;:[&quot;vonMises-stress&quot;],
+    &quot;rank2mate&quot;:[&quot;Stress&quot;]
+  },
+  &quot;bcs&quot;:{
+    &quot;fixux&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;ux&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;bottom&quot;,&quot;top&quot;]
+    },
+    &quot;fixuy&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uy&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;bottom&quot;]
+    },
+    &quot;fixuz&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uz&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;bottom&quot;,&quot;top&quot;]
+    },
+    &quot;loading&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uy&quot;],
+      &quot;bcvalue&quot;:&quot;0.1*t&quot;,
+      &quot;side&quot;:[&quot;top&quot;]
+    }
+  },
+  &quot;linearsolver&quot;:{
+    &quot;type&quot;:&quot;mumps&quot;,
+    &quot;preconditioner&quot;:&quot;lu&quot;,
+    &quot;maxiters&quot;:10000,
+    &quot;restarts&quot;:3600,
+    &quot;tolerance&quot;:1.0e-26
+  },
+  &quot;nlsolver&quot;:{
+    &quot;type&quot;:&quot;newton&quot;,
+    &quot;maxiters&quot;:35,
+    &quot;abs-tolerance&quot;:8.5e-7,
+    &quot;rel-tolerance&quot;:5.0e-10,
+    &quot;s-tolerance&quot;:0.0
+  },
+  &quot;timestepping&quot;:{
+    &quot;type&quot;:&quot;be&quot;,
+    &quot;dt0&quot;:1.0e-5,
+    &quot;dtmax&quot;:5.0e-3,
+    &quot;dtmin&quot;:1.0e-12,
+    &quot;optimize-iters&quot;:4,
+    &quot;end-time&quot;:5.0e1,
+    &quot;growth-factor&quot;:1.05,
+    &quot;cutback-factor&quot;:0.85,
+    &quot;adaptive&quot;:true
+  },
+  &quot;output&quot;:{
+    &quot;type&quot;:&quot;vtu&quot;,
+    &quot;interval&quot;:10
+  },
+  &quot;qpoints&quot;:{
+    &quot;bulk&quot;:{
+      &quot;type&quot;:&quot;gauss-legendre&quot;,
+      &quot;order&quot;:2
+    }
+  },
+  &quot;postprocess&quot;:{
+    &quot;uy&quot;:{
+      &quot;type&quot;:&quot;sideaveragevalue&quot;,
+      &quot;dof&quot;:&quot;uy&quot;,
+      &quot;side&quot;:[&quot;top&quot;]
+    },
+    &quot;fy&quot;:{
+      &quot;type&quot;:&quot;sideintegralrank2mate&quot;,
+      &quot;side&quot;:[&quot;top&quot;],
+      &quot;parameters&quot;:{
+        &quot;rank2mate&quot;:&quot;Stress&quot;,
+        &quot;i-index&quot;:2,
+        &quot;j-index&quot;:2
+      }
+    }
+  },
+  &quot;job&quot;:{
+    &quot;type&quot;:&quot;transient&quot;,
+    &quot;print&quot;:&quot;dep&quot;
+  }
 }
+
 </code></pre>
-<p>In addition to performing a full FEM analysis workflow, you can use the <code>--read-only</code> option with AsFem to parse and validate the input file without executing the simulation. This option allows you to check the syntax and structure of the input file without actually running a full analysis.</p>
-<p>You can find examples of all the possible blocks that can be included in an AsFem input file in the <code>test_input/input-template.json</code> file.</p>
-<p>In the following steps, we will provide detailed explanations of each block and their functions in AsFem. You can find example input files in the <code>examples/tutorial</code> folder to help you understand the usage of each block.</p>
+<p>You can also find the complete input file in <code>examples/pffracture/neohookeanfrac-3d-tensile-check.json</code>.</p>
+<p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:</p>
+<p><img alt="newHookeanFracture" src="newHookeanFracture.png" /></p>
 
 
 
 
 
 
+
+  
+  
 
 
 

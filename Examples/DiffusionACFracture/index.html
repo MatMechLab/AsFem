@@ -9,16 +9,16 @@
         <meta name="description" content="Advanced Simulation kit based on Finite Element Method.">
       
       
-        <meta name="author" content="Yang Bai">
+        <meta name="author" content="Mengmeng Li">
       
       
-        <link rel="canonical" href="https://matmechlab.github.io/AsFem/Tutorial/step-0/">
+        <link rel="canonical" href="https://matmechlab.github.io/AsFem/Examples/DiffusionACFracture/">
       
       
-        <link rel="prev" href="../../install/">
+        <link rel="prev" href="../NeoHookeanFracture/">
       
       
-        <link rel="next" href="../step-1/">
+        <link rel="next" href="../../Document/block-mesh/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Step-0 - AsFem</title>
+        <title>Phasefield fracture model in chemo-mech coupled case - AsFem</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#write-a-simple-input-file" class="md-skip">
+        <a href="#introduction" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Step-0
+              Phasefield fracture model in chemo-mech coupled case
             
           </span>
         </div>
@@ -283,13 +283,11 @@
   
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../Tutorial/step-0/" class="md-tabs__link">
           
   
   
@@ -307,6 +305,8 @@
   
   
   
+    
+  
   
     
     
@@ -314,11 +314,13 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../Examples/PhaseFieldFracture/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../PhaseFieldFracture/" class="md-tabs__link">
           
   
   
@@ -491,10 +493,8 @@
       
   
   
-    
   
   
-  
     
     
       
@@ -510,22 +510,21 @@
     
     
       
-        
-        
-      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -538,7 +537,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             Tutorial
@@ -549,30 +548,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    Step-0
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../Tutorial/step-0/" class="md-nav__link">
         
   
   
@@ -583,33 +562,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#write-a-simple-input-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Write a simple input file:
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -622,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-1/" class="md-nav__link">
+      <a href="../../Tutorial/step-1/" class="md-nav__link">
         
   
   
@@ -645,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-2/" class="md-nav__link">
+      <a href="../../Tutorial/step-2/" class="md-nav__link">
         
   
   
@@ -668,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../step-3/" class="md-nav__link">
+      <a href="../../Tutorial/step-3/" class="md-nav__link">
         
   
   
@@ -695,8 +647,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -706,21 +660,22 @@
     
     
       
+        
+        
+      
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   
@@ -733,7 +688,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Examples
@@ -744,8 +699,10 @@
                 
   
   
+    
   
   
+  
     
     
       
@@ -760,20 +717,21 @@
     
       
       
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
         
           
+          
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1" >
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_1" checked>
         
           
-          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="">
             
   
   
@@ -786,7 +744,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_5_1">
             <span class="md-nav__icon md-icon"></span>
             PhaseField
@@ -800,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Examples/PhaseFieldFracture/" class="md-nav__link">
+      <a href="../PhaseFieldFracture/" class="md-nav__link">
         
   
   
@@ -823,7 +781,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../Examples/NeoHookeanFracture/" class="md-nav__link">
+      <a href="../NeoHookeanFracture/" class="md-nav__link">
         
   
   
@@ -843,10 +801,19 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../Examples/DiffusionACFracture/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -857,6 +824,7 @@
   
 
       </a>
+      
     </li>
   
 
@@ -1220,23 +1188,8 @@
   
   
   
+    
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#write-a-simple-input-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      Write a simple input file:
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
   
 </nav>
                   </div>
@@ -1255,96 +1208,248 @@
   
 
 
-  <h1>Step-0</h1>
+<hr />
+<p><span style="color: #6B7280; font-weight: bold;">Author: Mengmeng Li</span> • <a href="https://www.x-mol.com/groups/matmechlab">MMlab 🔗</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>In this example, we will try to solve the coupling diffusion and Allen–Cahn Fracture model.</p>
+<h1 id="model">Model</h1>
+<p>In this model, the damage phase is described by an order parameter <span class="arithmatex">\(d\)</span> which varies smoothly from 0 (undamaged case) to 1 (fully damaged case). Therefore, the system free energy can be read as follows:</p>
+<p>The fracture model follows Allen–Cahn Fracture equation:
+$$
+\begin{equation}
+\frac{\partial \eta}{\partial t} = -L \frac{\delta \psi}{\delta \eta}
+\label{eq:AC_equation}
+\tag{1}
+\end{equation}
+$$</p>
+<p>The diffusion model is list as follows:
+$$
+\begin{equation}
+\frac{\partial c}{\partial t} = \nabla \cdot (D \nabla c -D c\Omega \nabla{\sigma_{h}})
+\label{eq:diffusion_equation}
+\tag{2}
+\end{equation}
+$$
+where <span class="arithmatex">\(\sigma_{h}\)</span> is hrdyostatic stress.</p>
+<p>The governing equaitons for this model are list below:
+$$
+\begin{equation}
+\mathbf{\nabla}\cdot\boldsymbol{\sigma}=\boldsymbol{0}
+\label{eq:stress-equilibrium}
+\tag{3}
+\end{equation}
+$$</p>
+<!-- The driving force for damage development is listed below: -->
+<!--
+$$
+\begin{equation}
+\frac{\partial d}{\partial t}=2(1-d)\mathcal{H}-\frac{\mathcal{G}_{c}}{l}(d-l^{2}\Delta d)
+\label{eq:damage-equation}
+\tag{4}
+\end{equation}
+$$ -->
 
-<h2 id="write-a-simple-input-file">Write a simple input file:</h2>
-<p>In your input file (<code>*.json</code> file), the layout of the block should resemble the following:</p>
+<h1 id="input-file">Input file</h1>
+<p>In the example/pffracture folder, there are several <code>geo</code> file, which can be used to generate the <code>msh</code> mesh file for your simulation. Before we start, you should have the mesh file.</p>
+<h2 id="mesh">Mesh</h2>
+<p>In this case, we'll import the mesh from <code>gmsh</code>, which can be done as follows:</p>
 <pre><code>&quot;mesh&quot;:{
-        &quot;type&quot;:&quot;asfem&quot;,
-        &quot;dim&quot;:1,
-        &quot;nx&quot;:20,
-        &quot;xmax&quot;:1.5,
-        &quot;meshtype&quot;:&quot;edge2&quot;,
-        &quot;savemesh&quot;:true
-    }
+  &quot;type&quot;:&quot;msh2&quot;,
+  &quot;file&quot;:&quot;rect50grs.msh&quot;,
+  &quot;savemesh&quot;:true
+},
 </code></pre>
-<p>In this context, <code>"mesh"</code> represents the function or module we want to use in AsFem, and it defines a single block in the JSON file. Within this block, you can include multiple options for different purposes.</p>
-<p>In the aforementioned example, <code>"mesh"</code> defines a block for mesh generation, and within the <code>{}</code> bracket pair, you can specify the mesh type (<code>"type":"asfem"</code>), the dimension of the mesh (<code>"dim":1</code>), and other relevant details.</p>
-<p>To create a minimal input file for AsFem, you will need to include at least the following blocks:</p>
-<pre><code>&quot;mesh&quot;: to define the finite element mesh
-&quot;dofs&quot;: to define the degree of freedom
-&quot;elements&quot;: to define the PDE/ODE
-&quot;job&quot;: to define the static/transient analysis job
-</code></pre>
-<p>Within the <code>"dofs"</code> block, you can specify the name or list of names of the <em>Degrees of Freedom</em> (<strong>DoFs</strong>) that will be displayed in Paraview when you open the result file (<code>vtu</code> file). Furthermore, when applying boundary conditions, you will need to provide the name of the relevant <strong>DoFs</strong>.</p>
+<p>Here, you should use <a href="https://gmsh.info/">gmsh</a> to generate the related msh file!</p>
+<h2 id="dofs">Dofs</h2>
+<p>Next, you need to define the dofs, it should be <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, and <span class="arithmatex">\(u_{y}\)</span> for 2d case, and <span class="arithmatex">\(d\)</span>, <span class="arithmatex">\(u_{x}\)</span>, <span class="arithmatex">\(u_{y}\)</span>, and <span class="arithmatex">\(u_{z}\)</span> for 3d case. The <code>[dofs]</code> block should looks like:</p>
 <pre><code>&quot;dofs&quot;:{
-        &quot;names&quot;:[&quot;phi&quot;]
-    }
+  &quot;names&quot;:[&quot;c&quot;,&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;]
+},
 </code></pre>
-<p>and the element or module you'd like to use:</p>
-<p>Additionally, you will need to specify the element or module you would like to use in the <code>"elements"</code> block. This block defines the residual and jacobian for your PDE/ODE.</p>
+<pre><code>&quot;dofs&quot;:{
+  &quot;names&quot;:[&quot;c&quot;,&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;,&quot;uz&quot;]
+},
+</code></pre>
+<p>Here, the sequence of your <code>dofs</code> name matters !!!</p>
+<h2 id="elmts-and-mates">elmts and mates</h2>
+<p>The governings in Eq.<span class="arithmatex">\(\eqref{eq:stress-equilibrium}\)</span> and Eq.<span class="arithmatex">\(\eqref{eq:damage-equation}\)</span> can be implemented by using the following <code>elmts</code>:</p>
 <pre><code>&quot;elements&quot;:{
-        &quot;elmt1&quot;:{
-            &quot;type&quot;:&quot;laplace&quot;,
-            &quot;dofs&quot;:[&quot;phi&quot;],
-            &quot;material&quot;:{
-                &quot;type&quot;:&quot;constpoisson&quot;,
-                &quot;parameters&quot;:{
-                    &quot;sigma&quot;:1.0,
-                    &quot;f&quot;:1.0e1
-                }
-            }
-        }
+  &quot;elmt1&quot;:{
+    &quot;type&quot;:&quot;diffusionacfracture&quot;,
+    &quot;dofs&quot;:[&quot;c&quot;,&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;],
+    &quot;domain&quot;:[&quot;1&quot;],
+    &quot;material&quot;:{
+      &quot;type&quot;:&quot;diffusionacfracture&quot;,
+      &quot;parameters&quot;:{
+        &quot;stabilizer&quot;:1.0e-5,
+        &quot;L&quot;:1.0e4,
+        &quot;Gc&quot;:2.7e-3,
+        &quot;eps&quot;:0.01,
+        &quot;K&quot;:121.15,
+        &quot;G&quot;:80.77,
+        &quot;Cref&quot;:0.0,
+        &quot;D&quot;:0.1,
+        &quot;Omega&quot;: 5.65895e-02
+      }
     }
+  },
 </code></pre>
-<p>In the end, you will also need to provide the necessary information for the analysis within the <code>"job"</code> block.</p>
-<pre><code>&quot;job&quot;:{
-        &quot;type&quot;:&quot;static&quot;,
-        &quot;print&quot;:&quot;dep&quot;,
-        &quot;restart&quot;:true
+<p>The parameter <code>type=diffusionacfracture</code> instructs AsFem to call the diffusion and Allen-Cahn fracture model. This example demonstrates a polycrystalline model where <code>elmt1</code> represents the first grain, , with each grain assigned a different value of <span class="arithmatex">\(\Omega\)</span>. The complete input file is available at <code>examples/pffracture/rect50grsdifffrac.json</code>.</p>
+<p>As mentioned previously, several material parameters are essential for the calculations: the bulk modulus (<span class="arithmatex">\(K\)</span>), shear modulus (<span class="arithmatex">\(G\)</span>), fracture energy (<span class="arithmatex">\(\mathcal{G}_{c}\)</span>), and the regularization length (<span class="arithmatex">\(l\)</span>, also denoted as <code>eps</code>) which governs damage evolution.</p>
+<h2 id="boundary-condition">boundary condition</h2>
+<p>For the tensile test, one can use the following <code>bcs</code>:</p>
+<pre><code>  &quot;bcs&quot;:{
+    &quot;fixux&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;ux&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;left&quot;]
+    },
+    &quot;fixuy&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uy&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;bottom&quot;]
+    },
+    &quot;load&quot;:{
+      &quot;type&quot;:&quot;neumann&quot;,
+      &quot;dofs&quot;:[&quot;c&quot;],
+      &quot;bcvalue&quot;:&quot;-0.015&quot;,
+      &quot;side&quot;:[&quot;top&quot;,&quot;right&quot;]
     }
+  },
 </code></pre>
-<p>To summarize, in order to create a basic input file for AsFem, you will need to include the following blocks:</p>
+<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<p>Now, let's try your first finite strain fracture model in AsFem. You can create a new text file and name it as <code>diffusionacfracture.json</code> or whatever you like. A part of input file is as follows:</p>
 <pre><code>{
-    &quot;mesh&quot;:{
-        &quot;type&quot;:&quot;asfem&quot;,
-        &quot;dim&quot;:2,
-        &quot;nx&quot;:50,
-        &quot;ny&quot;:50,
-        &quot;meshtype&quot;:&quot;quad4&quot;,
-        &quot;savemesh&quot;:true
-    },
-    &quot;dofs&quot;:{
-        &quot;names&quot;:[&quot;phi&quot;]
-    },
-    &quot;elements&quot;:{
-        &quot;elmt1&quot;:{
-            &quot;type&quot;:&quot;laplace&quot;,
-            &quot;dofs&quot;:[&quot;phi&quot;],
-            &quot;material&quot;:{
-                &quot;type&quot;:&quot;constpoisson&quot;,
-                &quot;parameters&quot;:{
-                    &quot;sigma&quot;:1.0,
-                    &quot;f&quot;:1.0e1
-                }
-            }
+  &quot;mesh&quot;:{
+    &quot;type&quot;:&quot;msh2&quot;,
+    &quot;file&quot;:&quot;rect50grs.msh&quot;,
+    &quot;savemesh&quot;:true
+  },
+  &quot;dofs&quot;:{
+    &quot;names&quot;:[&quot;c&quot;,&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;]
+  },
+  &quot;elements&quot;:{
+    &quot;elmt1&quot;:{
+      &quot;type&quot;:&quot;diffusionacfracture&quot;,
+      &quot;dofs&quot;:[&quot;c&quot;,&quot;d&quot;,&quot;ux&quot;,&quot;uy&quot;],
+      &quot;domain&quot;:[&quot;1&quot;],
+      &quot;material&quot;:{
+        &quot;type&quot;:&quot;diffusionacfracture&quot;,
+        &quot;parameters&quot;:{
+          &quot;stabilizer&quot;:1.0e-5,
+          &quot;L&quot;:1.0e4,
+          &quot;Gc&quot;:2.7e-3,
+          &quot;eps&quot;:0.01,
+          &quot;K&quot;:121.15,
+          &quot;G&quot;:80.77,
+          &quot;Cref&quot;:0.0,
+          &quot;D&quot;:0.1,
+          &quot;Omega&quot;:   5.65895e-02
         }
+      }
     },
-    &quot;job&quot;:{
-        &quot;type&quot;:&quot;static&quot;,
-        &quot;print&quot;:&quot;dep&quot;
+
+  ...............................................................
+  ...............................................................
+  },
+
+  &quot;projection&quot;:{
+    &quot;type&quot;:&quot;default&quot;,
+    &quot;scalarmate&quot;:[&quot;vonMises-stress&quot;,&quot;vonMises-strain&quot;,&quot;hydrostatic-stress&quot;],
+    &quot;rank2mate&quot;:[&quot;stress&quot;]
+  },
+  &quot;linearsolver&quot;:{
+    &quot;type&quot;:&quot;mumps&quot;,
+    &quot;preconditioner&quot;:&quot;lu&quot;,
+    &quot;maxiters&quot;:10000,
+    &quot;restarts&quot;:2600,
+    &quot;tolerance&quot;:1.0e-26
+  },
+  &quot;nlsolver&quot;:{
+    &quot;type&quot;:&quot;newton&quot;,
+    &quot;maxiters&quot;:100,
+    &quot;abs-tolerance&quot;:7.5e-7,
+    &quot;rel-tolerance&quot;:1.0e-10,
+    &quot;s-tolerance&quot;:0.0
+  },
+  &quot;output&quot;:{
+    &quot;type&quot;:&quot;vtu&quot;,
+    &quot;interval&quot;:10
+  },
+  &quot;bcs&quot;:{
+    &quot;fixux&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;ux&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;left&quot;]
+    },
+    &quot;fixuy&quot;:{
+      &quot;type&quot;:&quot;dirichlet&quot;,
+      &quot;dofs&quot;:[&quot;uy&quot;],
+      &quot;bcvalue&quot;:0.0,
+      &quot;side&quot;:[&quot;bottom&quot;]
+    },
+    &quot;load&quot;:{
+      &quot;type&quot;:&quot;neumann&quot;,
+      &quot;dofs&quot;:[&quot;c&quot;],
+      &quot;bcvalue&quot;:&quot;-0.015&quot;,
+      &quot;side&quot;:[&quot;top&quot;,&quot;right&quot;]
     }
+  },
+  &quot;qpoints&quot;:{
+    &quot;bulk&quot;:{
+      &quot;type&quot;:&quot;gauss-legendre&quot;,
+      &quot;order&quot;:2
+    }
+  },
+  &quot;timestepping&quot;:{
+    &quot;type&quot;:&quot;be&quot;,
+    &quot;dt0&quot;:1.0e-6,
+    &quot;dtmax&quot;:1.0e-1,
+    &quot;dtmin&quot;:1.0e-12,
+    &quot;optimize-iters&quot;:5,
+    &quot;end-time&quot;:4.8e1,
+    &quot;growth-factor&quot;:1.1,
+    &quot;cutback-factor&quot;:0.85,
+    &quot;adaptive&quot;:true
+  },
+  &quot;postprocess&quot;:{
+    &quot;vonMises-stress&quot;:{
+      &quot;type&quot;:&quot;nodalscalarmate&quot;,
+      &quot;parameters&quot;:{
+        &quot;nodeid&quot;:662,
+        &quot;scalarmate&quot;:&quot;vonMises-stress&quot;
+      }
+    },
+    &quot;uy&quot;:{
+      &quot;type&quot;:&quot;nodalvalue&quot;,
+      &quot;dof&quot;:&quot;uy&quot;,
+      &quot;parameters&quot;:{
+        &quot;nodeid&quot;:662
+      }
+    }
+  },
+  &quot;job&quot;:{
+    &quot;type&quot;:&quot;transient&quot;,
+    &quot;print&quot;:&quot;dep&quot;
+  }
 }
+
 </code></pre>
-<p>In addition to performing a full FEM analysis workflow, you can use the <code>--read-only</code> option with AsFem to parse and validate the input file without executing the simulation. This option allows you to check the syntax and structure of the input file without actually running a full analysis.</p>
-<p>You can find examples of all the possible blocks that can be included in an AsFem input file in the <code>test_input/input-template.json</code> file.</p>
-<p>In the following steps, we will provide detailed explanations of each block and their functions in AsFem. You can find example input files in the <code>examples/tutorial</code> folder to help you understand the usage of each block.</p>
+<p>Due to space constraints, only element1 is displayed here. For the complete input file, please refer to <code>examples/pffracture/rect50grsdifffrac.json</code>.</p>
+<p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:</p>
+<p><img alt="diffusionacFracture" src="diffusionacFracture.png" /></p>
 
 
 
 
 
 
+
+  
+  
 
 
 
