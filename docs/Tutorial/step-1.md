@@ -47,8 +47,8 @@ quad4,quad8,quad9 // in 2D case
 hex8, hex20,hex27 // in 3D case
 ```
 
-If users want to save the mesh created by AsFem, they need to set the "savemesh" option within the "mesh" block to **true**. The mesh will be saved as a *.vtu* file named as 'your_input_file_name' + _mesh.vtu (the *.i* extension in the input file name is removed). For example, if the input file name is *test.json*, the mesh file name will be *test_mesh.vtu*.
-
+If users want to save the mesh created by AsFem, they need to set the "savemesh" option within the "mesh" block to **true**. The mesh will be saved as a *.vtu* file named as 'your_input_file_name' + _mesh.vtu (the *.i* extension in the input file name is removed). For example, if the input file name is *test.json*, the mesh fie name will be *test_mesh.vtu*.
+l
 
 # 2D and 3D mesh
 

@@ -16,6 +16,8 @@ tags:
 - phase field
 - fracture
 ---
+---
+<span style="color: #6B7280; font-weight: bold;">Author: Yang Bai</span> • [MMlab 🔗](https://www.x-mol.com/groups/matmechlab)
 
 # Introduction
 In this example, we will try to solve the phase-field fracture model which is implemented based on Prof. Miehe's [Model](https://doi.org/10.1002/nme.2861).
@@ -123,52 +125,57 @@ In the example/pffracture folder, there are several `geo` file, which can be use
 ## Mesh
 In this case, we'll import the mesh from `gmsh`, which can be done as follows:
 ```
-[mesh]
-  type=gmsh
-  file=sample.msh
-[end]
+"mesh":{
+  "type":"msh4",
+  "file":"tensile.msh",
+  "savemesh":true
+},
 ```
 Here, you should use [gmsh](https://gmsh.info/) to generate the related msh file!
 
 ## Dofs
 Next, you need to define the dofs, it should be $d$, $u_{x}$, and $u_{y}$ for 2d case, and $d$, $u_{x}$, $u_{y}$, and $u_{z}$ for 3d case. The `[dofs]` block should looks like:
 ```
-[dofs]
-name=d ux uy
-[end]
+"dofs":{
+  "names":["d","ux","uy"]
+},
 ```
 or
 ```
-[dofs]
-name=d ux uy uz
-[end]
+"dofs":{
+  "names":["d","ux","uy","uz"]
+},
 ```
 Here, the sequence of your `dofs` name matters !!!
 
 ## [elmts] and [mates]
 The governings in Eq.$\eqref{eq:stress-equilibrium}$ and Eq.$\eqref{eq:damage-equation}$ can be implemented by using the following `elmts`:
 ```
-[elmts]
-  [myfracture]
-    type=miehefrac
-    dofs=d ux uy
-    mate=myfracmate
-  [end]
-[end]
+  "elements":{
+    "elmt1":{
+      "type":"miehefracture",
+      "dofs":["d","ux","uy"],
+      "material":{
+        "type":"miehefracture",
+        "parameters":{
+          "viscosity":1.0e-6,
+          "Gc":2.7e-3,
+          "eps":0.012,
+          "K":121.15,
+          "G":80.77,
+          "stabilizer":1.0e-6,
+          "finite-strain":false,
+          "plane-strain":true
+        }
+      }
+    }
+  },
 ```
-where `type=miehefrac` tells AsFem, our users want to call the phase-field fracture model.
+where `type=miehefracture` tells AsFem, our users want to call the phase-field fracture model.
 
-For the material calculation, as mentioned before, several parameters are required, i.e., $E$, $\nu$ for the Youngs modulus and poisson ration, $\eta$, $\mathcal{G}_{c}$, and $l$ for the damage evolution. Therefore, the related `material` block can be given as follows:
-```
-[mates]
-  [myfracmate]
-    type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.012  1.0e-6   
-    //     lambda mu    Gc     L      viscosity
-  [end]
-[end]
-```
-It should be mentioned that, the de-coupled or staggered solution can be done easily by introducing the `usehist` parameter as follows:
+For the material calculation, as mentioned before, several parameters are required, i.e., $E$, $\nu$ for the Youngs modulus and poisson ration, $\eta$, $\mathcal{G}_{c}$, and $l$ for the damage evolution.
+
+<!-- It should be mentioned that, the de-coupled or staggered solution can be done easily by introducing the `usehist` parameter as follows:
 ```
 [mates]
   [myfracmate]
@@ -178,152 +185,201 @@ It should be mentioned that, the de-coupled or staggered solution can be done ea
   [end]
 [end]
 ```
-then, your $\mathcal{H}$ will always use the $\mathcal{H}_{old}$ value from previous step.
+then, your $\mathcal{H}$ will always use the $\mathcal{H}_{old}$ value from previous step. -->
 
 ## boundary condition
 For the tensile test, one can use the following `bcs`:
 ```
-[bcs]
-  [fixux]
-    type=dirichlet
-    dofs=ux
-    value=0.0
-    boundary=left right top bottom
-  [end]
-  [fixuy]
-    type=dirichlet
-    dofs=uy
-    value=0.0
-    boundary=bottom
-  [end]
-  [load]
-    type=dirichlet
-    dofs=uy
-    value=1.0*t
-    boundary=top
-  [end]
-[end]
+"bcs":{
+  "fixux":{
+    "type":"dirichlet",
+    "dofs":["ux"],
+    "bcvalue":0.0,
+    "side":["left","right"]
+  },
+  "fixuy":{
+    "type":"dirichlet",
+    "dofs":["uy"],
+    "bcvalue":0.0,
+    "side":["bottom"]
+  },
+  "loading":{
+    "type":"dirichlet",
+    "dofs":["uy"],
+    "bcvalue":"0.1*t",
+    "side":["top"]
+  }
+},
 ```
 and for the shear failure test, one can use:
 ```
-[bcs]
-  [fixux]
-    type=dirichlet
-    dofs=ux
-    value=0.0
-    boundary=bottom
-  [end]
-  [fixuy]
-    type=dirichlet
-    dofs=uy
-    value=0.0
-    boundary=bottom left right top
-  [end]
-  [load]
-    type=dirichlet
-    dofs=ux
-    value=1.0*t
-    boundary=top
-  [end]
-[end]
+"bcs":{
+  "fixux":{
+    "type":"dirichlet",
+    "dofs":["ux"],
+    "bcvalue":0.0,
+    "side":["bottom"]
+  },
+  "fixuy":{
+    "type":"dirichlet",
+    "dofs":["uy"],
+    "bcvalue":0.0,
+    "side":["left","right","bottom"]
+  },
+  "loading":{
+    "type":"dirichlet",
+    "dofs":["ux"],
+    "bcvalue":"0.1*t",
+    "side":["top"]
+  }
+},
 ```
 
-Done? Yulp, all the things is done!
-
-
+Done? Yep, all the things is done!
 
 # Run it in AsFem
-Now, let's try your first phase-field fracture model in AsFem. You can create a new text file and name it as tensile.i or whatever you like. Then copy the following lines into your input file:
+Now, let's try your first phase-field fracture model in AsFem. You can create a new text file and name it as tensile.json or whatever you like. Then copy the following lines into your input file:
 ```
-[mesh]
-  type=gmsh
-  file=sample.msh
-[end]
-
-
-[dofs]
-name=d ux uy
-[end]
-
-[elmts]
-  [myfracture]
-    type=miehefrac
-    dofs=d ux uy
-    mate=myfracmate
-  [end]
-[end]
-
-[mates]
-  [myfracmate]
-    type=miehefracmate
-    params=121.15 80.77 2.7e-3 0.012 1.0e-6
-    //     lambda mu    Gc     L     viscosity
-  [end]
-[end]
-
-[nonlinearsolver]
-  type=nr
-  maxiters=15
-  r_rel_tol=1.0e-10
-  r_abs_tol=5.5e-7
-[end]
-
-[ics]
-  [constd]
-    type=const
-    dof=d
-    params=0.0
-  [end]
-[end]
-
-[output]
-  type=vtu
-  interval=20
-[end]
-
-[timestepping]
-  type=be
-  dt=1.0e-5
-  time=5.0e-5
-  adaptive=false
-  optiters=3
-  growthfactor=1.1
-  cutfactor=0.85
-  dtmin=1.0e-12
-  dtmax=1.0e-4
-[end]
-
-[projection]
-scalarmate=vonMises
-[end]
-
-[bcs]
-  [fixux]
-    type=dirichlet
-    dofs=ux
-    value=0.0
-    boundary=left right top bottom
-  [end]
-  [fixuy]
-    type=dirichlet
-    dofs=uy
-    value=0.0
-    boundary=bottom
-  [end]
-  [load]
-    type=dirichlet
-    dofs=uy
-    value=1.0*t
-    boundary=top
-  [end]
-[end]
-
-[job]
-  type=transient
-  debug=dep
-[end]
+{
+  "mesh":{
+    "type":"msh4",
+    "file":"tensile.msh",
+    "savemesh":true
+  },
+  "dofs":{
+    "names":["d","ux","uy"]
+  },
+  "elements":{
+    "elmt1":{
+      "type":"miehefracture",
+      "dofs":["d","ux","uy"],
+      "material":{
+        "type":"miehefracture",
+        "parameters":{
+          "viscosity":1.0e-6,
+          "Gc":2.7e-3,
+          "eps":0.012,
+          "K":121.15,
+          "G":80.77,
+          "stabilizer":1.0e-6,
+          "finite-strain":false,
+          "plane-strain":true
+        }
+      }
+    }
+  },
+  "projection":{
+    "type":"leastsquare",
+    "scalarmate":["vonMises-stress"],
+    "rank2mate":["stress","strain"]
+  },
+  "bcs":{
+    "fixux":{
+      "type":"dirichlet",
+      "dofs":["ux"],
+      "bcvalue":0.0,
+      "side":["left","right"]
+    },
+    "fixuy":{
+      "type":"dirichlet",
+      "dofs":["uy"],
+      "bcvalue":0.0,
+      "side":["bottom"]
+    },
+    "loading":{
+      "type":"dirichlet",
+      "dofs":["uy"],
+      "bcvalue":"0.1*t",
+      "side":["top"]
+    }
+  },
+  "linearsolver":{
+    "type":"mumps",
+    "preconditioner":"lu",
+    "maxiters":10000,
+    "restarts":1600,
+    "tolerance":1.0e-28
+  },
+  "nlsolver":{
+    "type":"asfem",
+    "maxiters":15,
+    "abs-tolerance":5.0e-7,
+    "rel-tolerance":1.0e-13,
+    "s-tolerance":0.0
+  },
+  "timestepping":{
+    "type":"be",
+    "dt0":1.0e-4,
+    "dtmax":5.0e-3,
+    "dtmin":1.0e-12,
+    "optimize-iters":5,
+    "end-time":1.5e0,
+    "growth-factor":1.05,
+    "cutback-factor":0.75,
+    "adaptive":true
+  },
+  "output":{
+    "type":"vtu",
+    "interval":5
+  },
+  "qpoints":{
+    "bulk":{
+      "type":"gauss-legendre",
+      "order":2
+    }
+  },
+  "postprocess":{
+    "ux":{
+      "type":"sideaveragevalue",
+      "dof":"ux",
+      "side":["top"]
+    },
+    "uy":{
+      "type":"sideaveragevalue",
+      "dof":"uy",
+      "side":["top"]
+    },
+    "fx":{
+      "type":"sideintegralrank2mate",
+      "side":["top"],
+      "parameters":{
+        "rank2mate":"stress",
+        "i-index":1,
+        "j-index":1
+      }
+    },
+    "fxy":{
+      "type":"sideintegralrank2mate",
+      "side":["top"],
+      "parameters":{
+        "rank2mate":"stress",
+        "i-index":1,
+        "j-index":2
+      }
+    },
+    "fy":{
+      "type":"sideintegralrank2mate",
+      "side":["top"],
+      "parameters":{
+        "rank2mate":"stress",
+        "i-index":2,
+        "j-index":2
+      }
+    },
+    "damage":{
+      "type":"volumeaveragevalue",
+      "dof":"d",
+      "domain":["alldomain"]
+    }
+  },
+  "job":{
+    "type":"transient",
+    "print":"dep",
+    "restart":true
+  }
+}
 ```
-You can also find the complete input file in `examples/pffracture/miehe-tensile.i`.
+You can also find the complete input file in `examples/pffracture/MieheTensile2d.json`.
 
 
 
