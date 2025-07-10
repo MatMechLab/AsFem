@@ -1,0 +1,88 @@
+site_name: AsFem
+site_url: https://matmechlab.github.io/AsFem/
+site_author: Yang Bai
+site_description: >-
+  Advanced Simulation kit based on Finite Element Method.
+
+# Copyright
+copyright: Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
+
+# Repository
+repo_name: MatMechLab/AsFem
+repo_url: https://github.com/MatMechLab/AsFem
+
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+plugins:
+  - search
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.share
+    # - navigation.instant    # Faster page loading
+    # - navigation.tracking   # URL updates with scroll position
+    - navigation.indexes    # Section index pages
+    # - toc.integrate        # TOC integrated into navigation
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Roboto      
+    code: Roboto Mono 
+
+nav:
+  - Home: index.md
+  - About: about.md
+  - Installation: install.md
+  - Tutorial:
+    - Step-0: Tutorial/step-0.md
+    - Step-1: Tutorial/step-1.md
+    - Step-2: Tutorial/step-2.md
+    - Step-3: Tutorial/step-3.md
+    # - Step-4: Tutorial/step-4.md
+    # - Step-5: Tutorial/step-5.md
+    # - Step-6: Tutorial/step-6.md
+    # - Step-7: Tutorial/step-7.md
+    # - Step-8: Tutorial/step-8.md
+  - Examples:
+    - PhaseField:
+      - SmallStrainFracture: Examples/PhaseFieldFracture.md
+      - FiniteStrainFracture: Examples/NeoHookeanFracture.md
+      - DiffusionACFracture: Examples/DiffusionACFracture.md
+  - Document:
+    - mesh block: Document/block-mesh.md
+    - dofs block: Document/block-dofs.md
+    - elmts block: Document/block-elmts.md
+    - mate block: Document/block-mates.md
+    - bcs block: Document/block-bcs.md
+    - ics block: Document/block-ics.md
+    - qpoint block: Document/block-qpoint.md
+    - projection block: Document/block-projection.md
+    - nonlinear solver block: Document/block-nonlinearsolver.md
+    - timestepping block: Document/block-timestepping.md
+  - Release: release.md
