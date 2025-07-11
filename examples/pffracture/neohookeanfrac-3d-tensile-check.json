@@ -1,6 +1,6 @@
 {
 	"mesh":{
-		"type":"msh4",
+		"type":"msh2",
 		"file":"Tensile3D.msh",
 		"savemesh":true
 	},
@@ -16,10 +16,10 @@
 				"parameters":{
 					"L":1.0e6,
 					"Gc":2.7e-3,
-					"eps":0.015,
+					"eps":0.012,
 					"K":121.15,
 					"G":80.77,
-					"stabilizer":1.0e-5,
+					"stabilizer":1.0e-6,
 					"finite-strain":true
 				}
 			}
@@ -64,20 +64,20 @@
 		"tolerance":1.0e-26
 	},
 	"nlsolver":{
-		"type":"asfem",
-		"maxiters":12,
-		"abs-tolerance":5.0e-7,
+		"type":"newton",
+		"maxiters":35,
+		"abs-tolerance":8.5e-7,
 		"rel-tolerance":5.0e-10,
 		"s-tolerance":0.0
 	},
 	"timestepping":{
 		"type":"be",
-		"dt0":1.0e-4,
-		"dtmax":1.0e-3,
+		"dt0":1.0e-5,
+		"dtmax":5.0e-3,
 		"dtmin":1.0e-12,
 		"optimize-iters":4,
-		"end-time":2.5e-1,
-		"growth-factor":1.1,
+		"end-time":5.0e1,
+		"growth-factor":1.05,
 		"cutback-factor":0.85,
 		"adaptive":true
 	},
@@ -88,7 +88,7 @@
 	"qpoints":{
 		"bulk":{
 			"type":"gauss-legendre",
-			"order":1
+			"order":2
 		}
 	},
 	"postprocess":{
