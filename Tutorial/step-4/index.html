@@ -15,10 +15,17 @@
         <link rel="canonical" href="https://matmechlab.github.io/AsFem/Tutorial/step-4/">
       
       
+        <link rel="prev" href="../step-3/">
+      
+      
+        <link rel="next" href="../step-5/">
+      
+      
+        
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -26,10 +33,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -52,7 +59,6 @@
     
       
 
-    
     
     
   </head>
@@ -86,7 +92,9 @@
     
       
 
-<header class="md-header" data-md-component="header">
+  
+
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="AsFem" class="md-header__button md-logo" aria-label="AsFem" data-md-component="logo">
       
@@ -176,6 +184,8 @@
         </button>
       </nav>
       
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
     </form>
     <div class="md-search__output">
       <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
@@ -196,7 +206,7 @@
         <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
   </div>
   <div class="md-source__repository">
     MatMechLab/AsFem
@@ -206,14 +216,8 @@
     
   </nav>
   
-</header>
     
-    <div class="md-container" data-md-component="container">
       
-      
-        
-          
-            
 <nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
   <div class="md-grid">
     <ul class="md-tabs__list">
@@ -279,10 +283,12 @@
   
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../step-0/" class="md-tabs__link">
           
   
@@ -304,15 +310,8 @@
   
     
     
-      
-  
-  
-  
-  
-    
-    
       <li class="md-tabs__item">
-        <a href="../../Examples/PhaseFieldFracture/" class="md-tabs__link">
+        <a href="../../Examples/Poisson/" class="md-tabs__link">
           
   
   
@@ -322,9 +321,6 @@
 
         </a>
       </li>
-    
-  
-
     
   
 
@@ -373,7 +369,13 @@
     </ul>
   </div>
 </nav>
-          
+    
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
         
       
       <main class="md-main" data-md-component="main">
@@ -405,7 +407,7 @@
       <a href="https://github.com/MatMechLab/AsFem" title="Go to repository" class="md-source" data-md-component="source">
   <div class="md-source__icon md-icon">
     
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
   </div>
   <div class="md-source__repository">
     MatMechLab/AsFem
@@ -427,9 +429,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Home
+  
+
     
   </span>
+  
   
 
       </a>
@@ -449,9 +456,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     About
+  
+
     
   </span>
+  
   
 
       </a>
@@ -471,9 +483,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Installation
+  
+
     
   </span>
+  
   
 
       </a>
@@ -485,8 +502,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -498,41 +517,61 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     
+      
+        
+        
       
       
         
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
-        
-          
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   
   <span class="md-ellipsis">
+    
+  
     Tutorial
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Tutorial
+            
+  
+    Tutorial
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -548,9 +587,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Step-0
+  
+
     
   </span>
+  
   
 
       </a>
@@ -571,9 +615,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Step-1
+  
+
     
   </span>
+  
   
 
       </a>
@@ -594,9 +643,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Step-2
+  
+
     
   </span>
+  
   
 
       </a>
@@ -617,9 +671,164 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Step-3
+  
+
     
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step-4
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step-5
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step-6
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-7/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step-7
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../step-8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Step-8
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -643,6 +852,16 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
       
         
       
@@ -669,9 +888,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Examples
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -680,7 +904,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Examples
+            
+  
+    Examples
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -690,8 +918,150 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../Examples/Poisson/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Poisson
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Examples/Diffusion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diffusion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Examples/PhaseField/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PhaseField
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Examples/Mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Examples/Coupled/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coupled
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
+      
+        
       
         
       
@@ -714,28 +1084,65 @@
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_1" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_6" >
         
           
-          <label class="md-nav__link" for="__nav_5_1" id="__nav_5_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5_6" id="__nav_5_6_label" tabindex="0">
             
   
   
   <span class="md-ellipsis">
-    PhaseField
+    
+  
+    Fracture
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_6">
             <span class="md-nav__icon md-icon"></span>
-            PhaseField
+            
+  
+    Fracture
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Examples/Fracture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -749,9 +1156,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     SmallStrainFracture
+  
+
     
   </span>
+  
   
 
       </a>
@@ -772,9 +1184,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     FiniteStrainFracture
+  
+
     
   </span>
+  
   
 
       </a>
@@ -795,9 +1212,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     DiffusionACFracture
+  
+
     
   </span>
+  
   
 
       </a>
@@ -829,6 +1251,16 @@
   
     
     
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
       
         
       
@@ -873,9 +1305,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Document
+  
+
     
   </span>
+  
   
 
             <span class="md-nav__icon md-icon"></span>
@@ -884,7 +1321,11 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
-            Document
+            
+  
+    Document
+  
+
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -900,9 +1341,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     mesh block
+  
+
     
   </span>
+  
   
 
       </a>
@@ -923,9 +1369,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     dofs block
+  
+
     
   </span>
+  
   
 
       </a>
@@ -946,9 +1397,14 @@
   
   
   <span class="md-ellipsis">
-    elmts block
+    
+  
+    elements block
+  
+
     
   </span>
+  
   
 
       </a>
@@ -969,9 +1425,14 @@
   
   
   <span class="md-ellipsis">
-    mate block
+    
+  
+    materials in elements
+  
+
     
   </span>
+  
   
 
       </a>
@@ -992,9 +1453,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     bcs block
+  
+
     
   </span>
+  
   
 
       </a>
@@ -1015,9 +1481,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     ics block
+  
+
     
   </span>
+  
   
 
       </a>
@@ -1038,9 +1509,42 @@
   
   
   <span class="md-ellipsis">
-    qpoint block
+    
+  
+    qpoints block
+  
+
     
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-shapefuns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    shapefuns block
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1061,9 +1565,42 @@
   
   
   <span class="md-ellipsis">
+    
+  
     projection block
+  
+
     
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-linearsolver/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    linearsolver block
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1084,9 +1621,70 @@
   
   
   <span class="md-ellipsis">
-    nonlinear solver block
+    
+  
+    nlsolver block
+  
+
     
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-output/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    output block
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-postprocess/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    postprocess block
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1107,9 +1705,42 @@
   
   
   <span class="md-ellipsis">
+    
+  
     timestepping block
+  
+
     
   </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Document/block-job/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    job block
+  
+
+    
+  </span>
+  
   
 
       </a>
@@ -1137,9 +1768,14 @@
   
   
   <span class="md-ellipsis">
+    
+  
     Release
+  
+
     
   </span>
+  
   
 
       </a>
@@ -1175,39 +1811,97 @@
           
           
             <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../step-0/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Tutorial
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+              
               <article class="md-content__inner md-typeset">
                 
                   
 
 
   
+    <a href="https://github.com/MatMechLab/AsFem/edit/main/docs/Tutorial/step-4.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
+    </a>
+  
+  
+    
+      
+    
+    <a href="https://github.com/MatMechLab/AsFem/raw/main/docs/Tutorial/step-4.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0 8a5 5 0 0 1-5-5 5 5 0 0 1 5-5 5 5 0 0 1 5 5 5 5 0 0 1-5 5m0-12.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5"/></svg>
+    </a>
   
 
 
-<h1 id="introduction">Introduction</h1>
+<h1 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h1>
 <p>In this step, we will try to solve the linear diffusion problem.</p>
-<h1 id="the-diffusion-equation">The diffusion equation</h1>
-<p>The problem we want to solve is the diffusion equation that reads as follows:
-$$
-\begin{equation}
+<h1 id="the-diffusion-equation">The diffusion equation<a class="headerlink" href="#the-diffusion-equation" title="Permanent link">&para;</a></h1>
+<p>The problem we want to solve is the diffusion equation that reads as follows:</p>
+<div class="arithmatex">\[
 \frac{\partial c}{\partial t}=\nabla\cdot(D\nabla c)
 \label{eq:diffusion-eq}
 \tag{1}
-\end{equation}
-$$
-where <span class="arithmatex">\(c\)</span> denotes the concentration of the species. <span class="arithmatex">\(D\)</span> is the diffusion coefficient</p>
-<p>The related boundary conditions can be read as:
-$$
-\begin{equation}
+\]</div>
+<p>where <span class="arithmatex">\(c\)</span> denotes the concentration of the species. <span class="arithmatex">\(D\)</span> is the diffusion coefficient</p>
+<p>The related boundary conditions can be read as:</p>
+<div class="arithmatex">\[
 -D\nabla c\cdot\vec{n}=-0.5\qquad\mathrm{on}\quad\partial\Omega_{N}
 \label{eq:flux}
 \tag{2}
-\end{equation}
-$$
-where the flux (<em>Neumann</em>) boundary condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>.</p>
-<h1 id="define-the-mesh">Define the mesh</h1>
+\]</div>
+<p>where the flux (<em>Neumann</em>) boundary condition is assumed in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>.</p>
+<h1 id="define-the-mesh">Define the mesh<a class="headerlink" href="#define-the-mesh" title="Permanent link">&para;</a></h1>
 <p>For our calculation, we use a cubic domain here, and then the <code>[mesh]</code> block can be given as:</p>
-<pre><code>[mesh]
+<p><code>[mesh]
   type=asfem
   dim=3
   xmax=1.0
@@ -1217,68 +1911,62 @@ where the flux (<em>Neumann</em>) boundary condition is assumed in Eq.<span clas
   ny=5
   nz=50
   meshtype=hex8
-[end]
-</code></pre>
+[end]</code></p>
 <p>where a <span class="arithmatex">\(1\times1\times10\)</span> mesh is defined.</p>
-<h1 id="define-the-dofs">Define the DoFs</h1>
+<h1 id="define-the-dofs">Define the DoFs<a class="headerlink" href="#define-the-dofs" title="Permanent link">&para;</a></h1>
 <p>The DoFs used in this step is the concentration, namely <span class="arithmatex">\(c\)</span>. Then the <code>[dofs]</code> block can be read as:</p>
-<pre><code>[dofs]
+<p><code>[dofs]
 name=c
-[end]
-</code></pre>
-<h1 id="element-for-the-diffusion-equation">Element for the diffusion equation</h1>
+[end]</code></p>
+<h1 id="element-for-the-diffusion-equation">Element for the diffusion equation<a class="headerlink" href="#element-for-the-diffusion-equation" title="Permanent link">&para;</a></h1>
 <p>The model in Eq.<span class="arithmatex">\(\eqref{eq:diffusion-eq}\)</span> can be applied in the following lines</p>
-<pre><code>[elmts]
+<p><code>[elmts]
   [mydiffusion]
     type=diffusion
     dofs=c
     mate=mymate
   [end]
-[end]
-</code></pre>
+[end]</code></p>
 <p>where <code>type=diffusion</code> option specifies the element we want to use for the diffusion problem. Moreover, we will use the constant diffusivity material property, therefore, the related material definition will be given in <code>mymate</code> block.</p>
-<h2 id="constant-diffusivity-material-property">Constant diffusivity material property</h2>
+<h2 id="constant-diffusivity-material-property">Constant diffusivity material property<a class="headerlink" href="#constant-diffusivity-material-property" title="Permanent link">&para;</a></h2>
 <p>Via the following lines in your <code>[mates]</code> block, the constant diffusivity <span class="arithmatex">\(D\)</span> can be easily defined:</p>
-<pre><code>[mates]
+<p><code>[mates]
   [mymate]
     type=constdiffusion
     params=1.0e1
   [end]
-[end]
-</code></pre>
+[end]</code></p>
 <p>where <code>type=constdiffusion</code> specifies constant diffusivity material type. <code>params=</code> defines the diffusivity <span class="arithmatex">\(D\)</span> (<span class="arithmatex">\(D=10.0\)</span>).</p>
-<h1 id="boundary-conditions">Boundary conditions</h1>
+<h1 id="boundary-conditions">Boundary conditions<a class="headerlink" href="#boundary-conditions" title="Permanent link">&para;</a></h1>
 <p>The boundary conditions, as mentioned in Eq.<span class="arithmatex">\(\eqref{eq:flux}\)</span>, can be applied via the <code>[bcs]</code> block. In our case, only the <em>flux</em> boundary (<strong>Neumann</strong>) condition needs to be considered:</p>
-<pre><code>[bcs]
+<p><code>[bcs]
   [flux]
     type=neumann
     dof=c
     value=-0.5
     boundary=front
   [end]
-[end]
-</code></pre>
+[end]</code></p>
 <p>where we apply a constant flux to the front surface of our cubic domain.</p>
-<h1 id="transient-analysis">Transient analysis</h1>
+<h1 id="transient-analysis">Transient analysis<a class="headerlink" href="#transient-analysis" title="Permanent link">&para;</a></h1>
 <p>Again, we need a <code>[job]</code> block to start the FEM calculation, which can be given as follows:</p>
-<pre><code>[job]
+<p><code>[job]
   type=transient
   debug=dep
-[end]
-</code></pre>
-<h1 id="timestepping">Timestepping</h1>
+[end]</code></p>
+<h1 id="timestepping">Timestepping<a class="headerlink" href="#timestepping" title="Permanent link">&para;</a></h1>
 <p>Wait for a minute, where are the settings for the transient analysis, for instance the initial <span class="arithmatex">\(\Delta_t\)</span> and the final time? Noooo worries, the <code>[timestepping]</code> block can help you to set the different time stepping method as well as the <span class="arithmatex">\(\Delta_t\)</span>, <span class="arithmatex">\(T_{\mathrm{final}}\)</span> stuffs. The layout of this block looks like below:</p>
-<pre><code>[timestepping]
+<p><code>[timestepping]
   type=be
   dt=1.0e-3
   time=1.0e0
-[end]
-</code></pre>
+[end]</code></p>
 <p>where <code>type=be</code> specifies the <em>Backward-Euler</em> (be) method for implicit time integration. It should be mentioned that, AsFem only support the implicit method, the explicit method like <em>Forward-Euler</em> (fe) is not supported! <code>dt=1.0e-3</code> defines that the initial <span class="arithmatex">\(\Delta_{t}\)</span> is <span class="arithmatex">\(10^{-3}\)</span>, while <code>time=1.0e0</code> means the final time is 1.0.</p>
 <p>Done!</p>
-<h1 id="run-it-in-asfem">Run it in AsFem</h1>
+<h1 id="run-it-in-asfem">Run it in AsFem<a class="headerlink" href="#run-it-in-asfem" title="Permanent link">&para;</a></h1>
 <p>Now, let's try your fourth example in AsFem. You can create a new text file and name it as step3.i or whatever you like. Then copy the following lines into your input file:</p>
-<pre><code>[mesh]
+<p>```
+[mesh]
   type=asfem
   dim=3
   xmax=1.0
@@ -1288,53 +1976,47 @@ name=c
   ny=5
   nz=50
   meshtype=hex8
-[end]
-
-[dofs]
+[end]</p>
+<p>[dofs]
 name=c
-[end]
-
-[elmts]
+[end]</p>
+<p>[elmts]
   [mydiffusion]
     type=diffusion
     dofs=c
     mate=mymate
   [end]
-[end]
-
-[mates]
+[end]</p>
+<p>[mates]
   [mymate]
     type=constdiffusion
     params=1.0e1
   [end]
-[end]
-
-[bcs]
+[end]</p>
+<p>[bcs]
   [flux]
     type=neumann
     dof=c
     value=-0.5
     boundary=front
   [end]
-[end]
-
-[timestepping]
+[end]</p>
+<p>[timestepping]
   type=be
   dt=1.0e-3
   time=1.0e0
-[end]
-
-[job]
+[end]</p>
+<p>[job]
   type=transient
   debug=dep
 [end]
-</code></pre>
+```</p>
 <p>You can also find the complete input file in <code>examples/tutorial/step4.i</code>.</p>
 <p>If everything goes well, you can see the following image in your <a href="https://www.paraview.org/download/">Paraview</a>:
 <img alt="" src="step4.jpeg" /></p>
-<h1 id="the-outputs">The outputs</h1>
+<h1 id="the-outputs">The outputs<a class="headerlink" href="#the-outputs" title="Permanent link">&para;</a></h1>
 <p>You may see the following outputs from your terminal:</p>
-<pre><code>***-----------------------------------------------------------------------***
+<p><code>***-----------------------------------------------------------------------***
 ***   SNES solver:iters=  0,|R|= 1.4306e-02,|dU|= 3.0700e+00,dt=1.00e-03  ***
 ***   SNES solver:iters=  1,|R|= 1.3957e-15,|dU|= 2.4301e-03,dt=1.00e-03  ***
 *** Time step=     999, time=  9.99000e-01, dt=  1.00000e-03              ***
@@ -1347,8 +2029,7 @@ name=c
 ***-----------------------------------------------------------------------***
 *** Time step=      -1, time=  1.00000e+00, dt=  1.00000e-03              ***
 *** Write result to step4-000000-1.vtu                                    ***
-***-----------------------------------------------------------------------***
-</code></pre>
+***-----------------------------------------------------------------------***</code></p>
 <p>One can see that, when the current time <span class="arithmatex">\(t\)</span> reaches <span class="arithmatex">\(1.0\)</span>, the related output file name is <code>step4-00001000.vtu</code> (for the 1000-th step). Moreover, AsFem will also give the final output <code>step4-000000-1.vtu</code>, which could be very helpful when <span class="arithmatex">\(t_{\mathrm{old}}+\Delta_{t}&gt;T_{\mathrm{final}}\)</span>.</p>
 
 
@@ -1370,6 +2051,8 @@ name=c
             </div>
           
           
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
@@ -1383,12 +2066,52 @@ name=c
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../step-3/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Step-3">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Step-3
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../step-5/" class="md-footer__link md-footer__link--next" aria-label="Next: Step-5">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Step-5
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright &copy; 2020 - 2024 Yang Bai/MM-Lab
+      Copyright &copy; 2020 - 2026 Yang Bai/MM-Lab
     </div>
   
   
@@ -1408,19 +2131,20 @@ name=c
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight", "search.share", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.footer", "navigation.top", "navigation.tracking", "navigation.path", "search.highlight", "search.suggest", "search.share", "content.code.copy", "content.tabs.link", "content.action.edit", "content.action.view", "toc.follow", "header.autohide", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.56ea9cef.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="../../javascripts/mathjax.js"></script>
       
-        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-      
-        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
     
   </body>
