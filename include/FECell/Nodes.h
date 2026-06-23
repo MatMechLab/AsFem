@@ -156,6 +156,10 @@ public:
     */
     inline double* getData(){return m_Coordinates.data();}
     /**
+     * get the read-only data pointer of the coordinates vector
+    */
+    inline const double* getDataPtr()const{return m_Coordinates.data();}
+    /**
      * get the reference of coordinate vector
     */
     inline vector<double>& getDataRef(){return m_Coordinates;}
