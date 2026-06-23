@@ -76,12 +76,10 @@ elseif(UNIX)
             message(FATAL_ERROR " PETSc lib dir can\'t be found!")
         endif()
         find_library(METIS_LIB NAMES metis HINTS ${PETSC_DIR}/lib ${PETSC_DIR}/lib64)
-        # ###
-        # if(NOT METIS_LIB)
-        #     message(FATAL_ERROR " METIS lib dir can\'t be found!")
-        # endif()
-        # message("    METIS library is: ${METIS_LIB}")
-        # link_libraries("${METIS_LIB}")
+        if(NOT METIS_LIB)
+            message(FATAL_ERROR " METIS lib dir can't be found!")
+        endif()
+        message("    METIS library is: ${METIS_LIB}")
     else()
         message (WARNING "PETSc location (PETSC_DIR) is not defined in your PATH, AsFem will try to use the default one installed in your system. If your PETSC_DIR path is not correct, please modifiy PETSC_INC and PETSC_LIB in your CMakeList.txt")
         find_path(PETSC_INC NAMES petsc.h 
@@ -212,8 +210,7 @@ include(SourceCode.cmake)
 ##################################################
 add_executable(asfem ${inc} ${src})
 
-# target_link_libraries(asfem ${MPI_LIB} ${PETSC_LIB} ${METIS_LIB} ${GKLIB})
-target_link_libraries(asfem ${MPI_LIB} ${PETSC_LIB})
+target_link_libraries(asfem ${MPI_LIB} ${PETSC_LIB} ${METIS_LIB})
 
 ###############################################
 ### set LTO for asfem                       ###

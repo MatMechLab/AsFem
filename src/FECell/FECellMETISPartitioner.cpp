@@ -24,36 +24,10 @@ void FECellMETISPartitioner::partitionFECell(FECellData &t_CellData) {
         /**
          * using METIS to partition the bulk elements
          */
-        vector<int> ElmtPtr;
-        vector<int> ElmtNodeIDs;
         int ElmtsNum,NodesNum;
 
         ElmtsNum=t_CellData.BulkElmtsNum;
         NodesNum=t_CellData.NodesNum;
-
-        ElmtPtr.resize(ElmtsNum+1,0);
-        ElmtNodeIDs.clear();
-        for (int e=1;e<=ElmtsNum;e++) {
-            ElmtPtr[e]=ElmtPtr[e-1]+t_CellData.MeshCell_Total[e-1].NodesNumPerElmt;
-            for (int i=1;i<=t_CellData.MeshCell_Total[e-1].NodesNumPerElmt;i++) {
-                ElmtNodeIDs.push_back(t_CellData.MeshCell_Total[e-1].ElmtConn[i-1]);
-            }
-        }
-
-        // int options[METIS_NOPTIONS];
-        // METIS_SetDefaultOptions(options);
-        // options[METIS_OPTION_NUMBERING]=1;// let the partition rank start from 0
-
-        int CommonNodes,ObjVal;
-        vector<int> NodesPartInfo;
-
-        CommonNodes=1;
-        if(t_CellData.MaxDim==3){
-            CommonNodes=t_CellData.NodesNumPerSurfElmt;
-        }
-        else if(t_CellData.MaxDim==2){
-            CommonNodes=t_CellData.NodesNumPerLineElmt;
-        }
 
         if (size>ElmtsNum) {
             MessagePrinter::printErrorTxt("The mesh number(="+to_string(ElmtsNum)+") is less than the total cpus(="+to_string(size)+"),"
@@ -63,65 +37,83 @@ void FECellMETISPartitioner::partitionFECell(FECellData &t_CellData) {
 
         t_CellData.RanksElmtsNum_Global.resize(size,0);
         t_CellData.BulkCellPartionInfo_Global.resize(ElmtsNum,0);
-        NodesPartInfo.resize(NodesNum,0);
 
         if (size>1) {
-            // int error=METIS_PartMeshDual(&ElmtsNum,
-            //                              &NodesNum,
-            //                              ElmtPtr.data(),
-            //                              ElmtNodeIDs.data(),
-            //                              NULL,
-            //                              NULL,
-            //                              &CommonNodes,
-            //                              &size,
-            //                              NULL,
-            //                              options,
-            //                              &ObjVal,
-            //                              t_CellData.BulkCellPartionInfo_Global.data(),
-            //                              NodesPartInfo.data());
-            if(CommonNodes||ObjVal){}
-            int error=1;
             /**
-             * If you use the METIS pacakge from PETSc, the partition rank-id is start from 0,
-             * however, if one call the METIS from the original METIS package, the id will start from 1 instead of 0. 
-             * Be careful !!!
+             * Build the element-node connectivity in CSR form (eptr/eind) for
+             * METIS. METIS uses its own integer type idx_t (32- or 64-bit,
+             * depending on how the library was built), so dedicated idx_t
+             * buffers are used here and the result is copied back into the
+             * (int) global partition vector.
              */
+            vector<idx_t> eptr(ElmtsNum+1,0);
+            vector<idx_t> eind;
+            // reserve to avoid repeated reallocations while flattening connectivity
+            eind.reserve(static_cast<size_t>(ElmtsNum)*t_CellData.MeshCell_Total[0].NodesNumPerElmt);
+            for (int e=1;e<=ElmtsNum;e++) {
+                const int nnodes=t_CellData.MeshCell_Total[e-1].NodesNumPerElmt;
+                eptr[e]=eptr[e-1]+nnodes;
+                for (int i=0;i<nnodes;i++) {
+                    // AsFem node ids are 1-based; METIS is told to use 0-based numbering below
+                    eind.push_back(static_cast<idx_t>(t_CellData.MeshCell_Total[e-1].ElmtConn[i]-1));
+                }
+            }
+
+            /**
+             * Two elements are neighbours in the dual graph when they share a
+             * complete face (3D) or edge (2D), i.e. NodesNumPerSurfElmt /
+             * NodesNumPerLineElmt common nodes.
+             */
+            idx_t ncommon=1;
+            if(t_CellData.MaxDim==3) ncommon=static_cast<idx_t>(t_CellData.NodesNumPerSurfElmt);
+            else if(t_CellData.MaxDim==2) ncommon=static_cast<idx_t>(t_CellData.NodesNumPerLineElmt);
+            if(ncommon<1) ncommon=1;
+
+            idx_t ne=static_cast<idx_t>(ElmtsNum);
+            idx_t nn=static_cast<idx_t>(NodesNum);
+            idx_t nparts=static_cast<idx_t>(size);
+            idx_t objval=0;
+            vector<idx_t> epart(ElmtsNum,0),npart(NodesNum,0);
+
+            idx_t options[METIS_NOPTIONS];
+            METIS_SetDefaultOptions(options);
+            options[METIS_OPTION_NUMBERING]=0;// 0-based node ids and 0-based partition (rank) ids
+
+            int error=METIS_PartMeshDual(&ne,&nn,eptr.data(),eind.data(),
+                                         NULL,NULL,&ncommon,&nparts,NULL,options,
+                                         &objval,epart.data(),npart.data());
+
             if(error==METIS_OK){
-                MessagePrinter::printNormalTxt("METIS partition is done, everyting is ok");
+                MessagePrinter::printNormalTxt("METIS partition is done, edge-cut="+to_string(static_cast<long long>(objval)));
             }
             else if(error==METIS_ERROR_INPUT){
-                MessagePrinter::printNormalTxt("METIS partition fails, you have an input error");
+                MessagePrinter::printErrorTxt("METIS partition fails, you have an input error");
                 MessagePrinter::exitAsFem();
             }
             else if(error==METIS_ERROR_MEMORY){
-                MessagePrinter::printNormalTxt("METIS partition fails, it could not allocate the required memory");
+                MessagePrinter::printErrorTxt("METIS partition fails, it could not allocate the required memory");
                 MessagePrinter::exitAsFem();
             }
-            else if(error==METIS_ERROR){
-                MessagePrinter::printNormalTxt("METIS partition fails, you have other types of error");
+            else{
+                MessagePrinter::printErrorTxt("METIS partition fails, you have other types of error");
                 MessagePrinter::exitAsFem();
             }
 
-            // If one call the METIS package from PETSc, the rank will automatically start from 0, instead of 1 !!!
-            // then you don\'t need the following lines.
+            /**
+             * METIS (as built by PETSc) returns 0-based partition ids, which
+             * directly map onto the mpi rank ids used by AsFem.
+             */
             int MaxRank,MinRank;
-            MaxRank=-1;MinRank=1000000;
-            for (int e=1;e<=ElmtsNum;e++) {
-                if(t_CellData.BulkCellPartionInfo_Global[e-1]>MaxRank) MaxRank=t_CellData.BulkCellPartionInfo_Global[e-1];
-                if(t_CellData.BulkCellPartionInfo_Global[e-1]<MinRank) MinRank=t_CellData.BulkCellPartionInfo_Global[e-1];
-                // if (t_CellData.BulkCellPartionInfo_Global[e-1]<1||
-                //     t_CellData.BulkCellPartionInfo_Global[e-1]>size) {
-                //     // MessagePrinter::printErrorTxt("the rank id of "+to_string(e)+"-th bulk element is invalid(rank="+to_string(t_CellData.BulkCellPartionInfo_Global[e-1])+"), your METIS partitioner fails");
-                //     // MessagePrinter::exitAsFem();
-                // }
-                // else {
-                //     t_CellData.BulkCellPartionInfo_Global[e-1]-=1;// let the rank id start from 0, instead of 1 !!!
-                // }
+            MaxRank=-1;MinRank=size;
+            for (int e=0;e<ElmtsNum;e++) {
+                t_CellData.BulkCellPartionInfo_Global[e]=static_cast<int>(epart[e]);
+                if(t_CellData.BulkCellPartionInfo_Global[e]>MaxRank) MaxRank=t_CellData.BulkCellPartionInfo_Global[e];
+                if(t_CellData.BulkCellPartionInfo_Global[e]<MinRank) MinRank=t_CellData.BulkCellPartionInfo_Global[e];
             }
             MessagePrinter::printNormalTxt("METIS partition: max rank="+to_string(MaxRank)+", min rank="+to_string(MinRank));
         }
         else {
-            // if one has only 1 cpu, then no partition is required anymore
+            // only 1 cpu, all the bulk cells stay on rank 0
             t_CellData.BulkCellPartionInfo_Global.resize(ElmtsNum,0);
         }
 
