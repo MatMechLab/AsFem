@@ -56,6 +56,22 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
             }
         }
 
+        // Identify the whole-bulk-domain physical group (dim==MaxDim and size==BulkElmtsNum,
+        // e.g. the built-in "alldomain"). Its per-rank slice is element-for-element identical to
+        // MeshCell_Local, so instead of transferring it as a physical group it is aliased to the
+        // bulk cells on every rank — avoiding a second (mesh-sized) copy over the wire.
+        // detect via PhyDimVector/PhyGroupElmtsNumVector (the SAME values the workers receive as
+        // metadata), so master and workers agree on exactly which group is skipped/aliased.
+        int fullbulk_id=-100; string fullbulk_name="";
+        for(phynum=0;phynum<t_CellData.PhyGroupNum_Global;phynum++){
+            if(t_CellData.PhyDimVector_Global[phynum]==t_CellData.MaxDim &&
+               t_CellData.PhyGroupElmtsNumVector_Global[phynum]==t_CellData.BulkElmtsNum){
+                fullbulk_id=t_CellData.PhyIDVector_Global[phynum];
+                fullbulk_name=t_CellData.PhyNameVector_Global[phynum];
+                break;
+            }
+        }
+
         for(cpuid=0;cpuid<size;cpuid++){
             /**
              * for elemental physical cell set
@@ -63,6 +79,9 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
             for(phynum=0;phynum<t_CellData.PhyGroupNum_Global;phynum++){
                 phyid=t_CellData.PhyIDVector_Global[phynum];
                 phyname=t_CellData.PhyNameVector_Global[phynum];
+
+                // the whole-bulk-domain group is aliased to the bulk cells below, not transferred
+                if(phyid==fullbulk_id) continue;
 
                 datasize=static_cast<int>(t_CellData.PhyID2MeshCellVectorMap_Global[phyid].size());
                 ranksize=datasize/size;
@@ -81,8 +100,10 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
                     t_CellData.PhyName2MeshCellVectorMap_Local[phyname]=LocalCellVector;
                 }
                 else{
+                    // transfer the per-group cells only once (id-keyed); the receiver builds the
+                    // (consumed) name-keyed map from the same data locally. Previously the
+                    // identical cell vector was transferred twice (once per key).
                     MPIDataBus::sendPhyID2MeshCellMapToOthers(phyid,LocalCellVector,60,cpuid);
-                    MPIDataBus::sendPhyName2MeshCellMapToOthers(phyname,LocalCellVector,80,cpuid);
                 }
             }// end-of-physical-group-loop
             /**
@@ -103,6 +124,11 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
 
             if(cpuid==0){
                 t_CellData.MeshCell_Local=LocalCellVector;
+                // alias the whole-bulk-domain group to the local bulk cells (identical data)
+                if(fullbulk_id!=-100){
+                    t_CellData.PhyID2MeshCellVectorMap_Local[fullbulk_id]=t_CellData.MeshCell_Local;
+                    t_CellData.PhyName2MeshCellVectorMap_Local[fullbulk_name]=t_CellData.MeshCell_Local;
+                }
             }
             else{
                 MPIDataBus::sendMeshCellToOthers(LocalCellVector,100,cpuid);
@@ -183,6 +209,7 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
         t_CellData.PhyNameVector_Global.clear();
         t_CellData.PhyID2NameMap_Global.clear();
         t_CellData.PhyName2IDMap_Global.clear();
+        int recv_fullbulk_id=-100; string recv_fullbulk_name="";
         for(phynum=0;phynum<t_CellData.PhyGroupNum_Global;phynum++){
             MPIDataBus::receiveIntegerFromMaster(phyid,10);
             MPIDataBus::receiveIntegerFromMaster(dim,20);
@@ -197,23 +224,28 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
             t_CellData.PhyID2NameMap_Global[phyid]=phyname;
             t_CellData.PhyName2IDMap_Global[phyname]=phyid;
 
-            MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_CellData.PhyID2MeshCellVectorMap_Local,60);
-            MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_CellData.PhyName2MeshCellVectorMap_Local,80);
+            // the whole-bulk-domain group's cells are not transferred (aliased to MeshCell_Local
+            // after it is received below). All other groups are transferred once (id-keyed) and
+            // the consumed name-keyed map is built from the same data locally.
+            if(dim==t_CellData.MaxDim && datasize==t_CellData.BulkElmtsNum){
+                recv_fullbulk_id=phyid; recv_fullbulk_name=phyname;
+            }
+            else{
+                MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_CellData.PhyID2MeshCellVectorMap_Local,60);
+                t_CellData.PhyName2MeshCellVectorMap_Local[phyname]=t_CellData.PhyID2MeshCellVectorMap_Local[phyid];
+            }
         }
         /**
          * for all domain
          */
         MPIDataBus::receiveMeshCellFromMaster(t_CellData.MeshCell_Local,100);
-
-        t_CellData.NodeIDs_Local.clear();
-        for (const auto &cell:t_CellData.MeshCell_Local) {
-            for (const auto &id:cell.ElmtConn) {
-                t_CellData.NodeIDs_Local.push_back(id);
-            }
+        // alias the whole-bulk-domain group to the local bulk cells (identical data)
+        if(recv_fullbulk_id!=-100){
+            t_CellData.PhyID2MeshCellVectorMap_Local[recv_fullbulk_id]=t_CellData.MeshCell_Local;
+            t_CellData.PhyName2MeshCellVectorMap_Local[recv_fullbulk_name]=t_CellData.MeshCell_Local;
         }
-        // remove the duplicate ids
-        sort(t_CellData.NodeIDs_Local.begin(),t_CellData.NodeIDs_Local.end());
-        t_CellData.NodeIDs_Local.erase(unique(t_CellData.NodeIDs_Local.begin(),t_CellData.NodeIDs_Local.end()),t_CellData.NodeIDs_Local.end());
+        // NodeIDs_Local is overwritten below by the contiguous ownership range received from the
+        // master (tag 300); the previous connectivity-derived computation here was dead code.
 
         /**
          * for nodal physical group set
