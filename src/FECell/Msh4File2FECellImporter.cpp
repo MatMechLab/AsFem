@@ -69,16 +69,16 @@ int Msh4File2FECellImporter::getMaxMeshDim(const string &filename)const{
 
 int Msh4File2FECellImporter::getPhysicalIDViaEntityTag(const int &entityDim,const int &entityTag)const{
     if(entityDim==0){
-        return m_PointsEntityPhyIDs[entityTag-1];
+        return m_PointsEntityPhyIDs.count(entityTag)?m_PointsEntityPhyIDs.at(entityTag):0;
     }
     else if(entityDim==1){
-        return m_CurvesEntityPhyIDS[entityTag-1];
+        return m_CurvesEntityPhyIDS.count(entityTag)?m_CurvesEntityPhyIDS.at(entityTag):0;
     }
     else if(entityDim==2){
-        return m_SurfaceEntityPhyIDs[entityTag-1];
+        return m_SurfaceEntityPhyIDs.count(entityTag)?m_SurfaceEntityPhyIDs.at(entityTag):0;
     }
     else if(entityDim==3){
-        return m_VolumesEntityPhyIDs[entityTag-1];
+        return m_VolumesEntityPhyIDs.count(entityTag)?m_VolumesEntityPhyIDs.at(entityTag):0;
     }
     else{
         MessagePrinter::printErrorTxt("entityDim="+to_string(entityDim)+" is invalid for msh4 file, please check your mesh");
@@ -234,11 +234,12 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 numSurfaces=static_cast<int>(numbers[3-1]);
                 numVolumes=static_cast<int>(numbers[4-1]);
                 
-                // factor=20 to avoid the unordered entitie index(especially the nodal entities)
-                m_PointsEntityPhyIDs.resize(numPoints*100,0);
-                m_CurvesEntityPhyIDS.resize(numCurves*100,0);
-                m_SurfaceEntityPhyIDs.resize(numSurfaces*100,0);
-                m_VolumesEntityPhyIDs.resize(numVolumes*100,0);
+                // tag-keyed maps: no fixed sizing needed and any (possibly sparse) entity
+                // tag is handled safely. Cleared in case the importer object is reused.
+                m_PointsEntityPhyIDs.clear();
+                m_CurvesEntityPhyIDS.clear();
+                m_SurfaceEntityPhyIDs.clear();
+                m_VolumesEntityPhyIDs.clear();
                 
                 int i,j;
                 int nodeid,curveid,surfaceid,volumeid;
@@ -248,7 +249,7 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     numbers=StringUtils::splitStrNum(str);
                     nodeid=static_cast<int>(numbers[1-1]);
                     if(static_cast<int>(numbers[5-1])>0){
-                        m_PointsEntityPhyIDs[nodeid-1]=static_cast<int>(numbers[6-1]);
+                        m_PointsEntityPhyIDs[nodeid]=static_cast<int>(numbers[6-1]);
                     }
                 }
                 //*** read curvess entities
@@ -258,7 +259,7 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     curveid=static_cast<int>(numbers[1-1]);
                     j=static_cast<int>(numbers[8-1]);
                     if(j>0){
-                        m_CurvesEntityPhyIDS[curveid-1]=static_cast<int>(numbers[8+j-1]);
+                        m_CurvesEntityPhyIDS[curveid]=static_cast<int>(numbers[8+j-1]);
                     }
                 }
                 //*** read surfaces entities
@@ -268,7 +269,7 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     surfaceid=static_cast<int>(numbers[1-1]);
                     j=static_cast<int>(numbers[8-1]);
                     if(j>0){
-                        m_SurfaceEntityPhyIDs[surfaceid-1]=static_cast<int>(numbers[8+j-1]);
+                        m_SurfaceEntityPhyIDs[surfaceid]=static_cast<int>(numbers[8+j-1]);
                     }
                 }
                 //*** read volumes entities
@@ -278,7 +279,7 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                     volumeid=static_cast<int>(numbers[1-1]);
                     j=static_cast<int>(numbers[8-1]);
                     if(j>0){
-                        m_VolumesEntityPhyIDs[volumeid-1]=static_cast<int>(numbers[8+j-1]);
+                        m_VolumesEntityPhyIDs[volumeid]=static_cast<int>(numbers[8+j-1]);
                     }
                 }
             }
@@ -612,13 +613,48 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 }
             }
         }
-        if(maxnodeid<=numNodes){
-            t_celldata.NodesNum=maxnodeid;
-        }
-        else if(maxnodeid>numNodes){
+        if(maxnodeid>numNodes){
             MessagePrinter::printErrorTxt("The maximum node id used by your msh4 element is larger than your total nodes number,"
                                           " please check your msh4 file");
-                                          MessagePrinter::exitAsFem();
+            MessagePrinter::exitAsFem();
+        }
+        // Drop orphan nodes (present in $Nodes but referenced by no element). The previous code
+        // set NodesNum=maxnodeid, which only dropped trailing orphans and otherwise left NodesNum
+        // inconsistent with NodeCoords_Global (and the dof handler then errors on an unconnected
+        // node). Re-compact so only referenced nodes are kept with contiguous ids. With no orphan
+        // nodes (the common case) newcount==numNodes and nothing is remapped.
+        {
+            vector<int> refflag(numNodes+1,0);
+            for(int e=0;e<maxElementTag;e++){
+                if(ElmtIDFlag[e]>0){
+                    for(size_t i=0;i<ElmtConn[e].size();i++) refflag[ElmtConn[e][i]]=1;
+                }
+            }
+            vector<int> remap(numNodes+1,0);
+            int newcount=0;
+            for(int id=1;id<=numNodes;id++){
+                if(refflag[id]) remap[id]=++newcount;
+            }
+            if(newcount<numNodes){
+                // remap element connectivity to the contiguous referenced-only ids
+                for(int e=0;e<maxElementTag;e++){
+                    if(ElmtIDFlag[e]>0){
+                        for(size_t i=0;i<ElmtConn[e].size();i++) ElmtConn[e][i]=remap[ElmtConn[e][i]];
+                    }
+                }
+                // compact the nodal coordinate array to match
+                vector<double> newcoords(static_cast<size_t>(newcount)*3,0.0);
+                for(int id=1;id<=numNodes;id++){
+                    if(refflag[id]){
+                        newcoords[(remap[id]-1)*3+0]=t_celldata.NodeCoords_Global[(id-1)*3+0];
+                        newcoords[(remap[id]-1)*3+1]=t_celldata.NodeCoords_Global[(id-1)*3+1];
+                        newcoords[(remap[id]-1)*3+2]=t_celldata.NodeCoords_Global[(id-1)*3+2];
+                    }
+                }
+                t_celldata.NodeCoords_Global=newcoords;
+                MessagePrinter::printWarningTxt("dropped "+to_string(numNodes-newcount)+" orphan node(s) (not used by any element) while importing the msh4 file");
+            }
+            t_celldata.NodesNum=newcount;
         }
         
         vector<int> ElmtDimVecCopy,ElmtPhyIDVecCopy;
@@ -955,8 +991,10 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
                 phyid=mshNodalPhyGroupIDVec[i];
                 phyname=mshNodalPhyGroupNameVec[i];
 
-                t_celldata.NodalPhyIDVector_Global.push_back(phyid);
-                t_celldata.NodalPhyNameVector_Global.push_back(phyname);
+                // assign by index: the vectors were already resized to NodalPhyGroupNum_Global
+                // above, so push_back here would double their length (leaving the first half 0/empty)
+                t_celldata.NodalPhyIDVector_Global[i]=phyid;
+                t_celldata.NodalPhyNameVector_Global[i]=phyname;
 
                 t_celldata.NodalPhyID2NameMap_Global[phyid]=phyname;
                 t_celldata.NodalPhyName2IDMap_Global[phyname]=phyid;
@@ -1036,6 +1074,10 @@ bool Msh4File2FECellImporter::importMeshFile(const string &filename,FECellData &
      * Share some common variables among ranks
      */
     MPI_Bcast(&t_celldata.MeshOrder,1,MPI_INT,0,MPI_COMM_WORLD);
+    // MinDim is the minimum element dimension; it is computed only on the master rank, so it
+    // must be broadcast or non-master ranks keep the default 0 and mis-configure the FE setup
+    // for 3D meshes (where FE.cpp reads getFeCellMinDim()).
+    MPI_Bcast(&t_celldata.MinDim,1,MPI_INT,0,MPI_COMM_WORLD);
 
     MPI_Bcast(&t_celldata.BulkElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&t_celldata.LineElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);

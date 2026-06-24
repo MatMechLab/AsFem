@@ -46,6 +46,9 @@ private:
     int getPhysicalIDViaEntityTag(const int &entityDim,const int &entityTag)const;
 
 private:
-    vector<int> m_PointsEntityPhyIDs,m_CurvesEntityPhyIDS,m_SurfaceEntityPhyIDs,m_VolumesEntityPhyIDs;
+    // entity-tag -> physical-id maps. Gmsh entity tags are arbitrary positive integers
+    // (not bounded by the entity count), so these are keyed by the raw tag instead of a
+    // fixed-size vector indexed by tag-1, which could read/write out of bounds.
+    map<int,int> m_PointsEntityPhyIDs,m_CurvesEntityPhyIDS,m_SurfaceEntityPhyIDs,m_VolumesEntityPhyIDs;
 
 };

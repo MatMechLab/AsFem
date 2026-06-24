@@ -109,7 +109,8 @@ bool Gmsh2File2FECellImporter::importMeshFile(const string &filename,FECellData 
         
         mshMaxDim=getMaxMeshDim(filename);
         t_celldata.MaxDim=mshMaxDim;
-        
+        mshMinDim=mshMaxDim;// initialize before the per-element minimum reduction below
+
         mshBulkPhyGroupNum=0;
         mshPhyGroupNum=0;
         mshPhyGroupDimVec.clear();
@@ -687,6 +688,34 @@ bool Gmsh2File2FECellImporter::importMeshFile(const string &filename,FECellData 
 
         t_celldata.BulkCellPartionInfo_Global.resize(t_celldata.BulkElmtsNum,0);
 
+        // store the minimum element dimension computed while parsing the elements; it used to
+        // be discarded, leaving MinDim at 0 on every rank
+        t_celldata.MinDim=mshMinDim;
+
+        // populate the global nodal (point) physical group info. These were parsed above but
+        // never written into t_celldata, so nodal/point sets were silently dropped on import.
+        // (gmsh2 does not renumber nodes, so the parsed node ids match the mesh connectivity.)
+        t_celldata.NodalPhyGroupNum_Global=mshNodalPhyGroupNum;
+        t_celldata.NodalPhyIDVector_Global.resize(mshNodalPhyGroupNum,0);
+        t_celldata.NodalPhyNameVector_Global.resize(mshNodalPhyGroupNum);
+        t_celldata.NodalPhyGroupNodesNumVector_Global.resize(mshNodalPhyGroupNum,0);
+        t_celldata.NodalPhyID2NameMap_Global.clear();
+        t_celldata.NodalPhyName2IDMap_Global.clear();
+        t_celldata.NodalPhyName2NodeIDVecMap_Global.clear();
+        for(int i=0;i<mshNodalPhyGroupNum;i++){
+            const int npid=mshNodalPhyGroupIDVec[i];
+            const string npname=mshNodalPhyGroupNameVec[i];
+            vector<int> npnodes=NodeSetPhyID2IndexMap[npid];
+            std::sort(npnodes.begin(),npnodes.end());
+            npnodes.erase(std::unique(npnodes.begin(),npnodes.end()),npnodes.end());
+            t_celldata.NodalPhyIDVector_Global[i]=npid;
+            t_celldata.NodalPhyNameVector_Global[i]=npname;
+            t_celldata.NodalPhyGroupNodesNumVector_Global[i]=static_cast<int>(npnodes.size());
+            t_celldata.NodalPhyID2NameMap_Global[npid]=npname;
+            t_celldata.NodalPhyName2IDMap_Global[npname]=npid;
+            t_celldata.NodalPhyName2NodeIDVecMap_Global[npname]=npnodes;
+        }
+
         // send basic physical group info to other ranks
         int tag;
         for(int cpuid=1;cpuid<size;cpuid++){
@@ -730,6 +759,7 @@ bool Gmsh2File2FECellImporter::importMeshFile(const string &filename,FECellData 
      * Share some common variables among ranks
      */
     MPI_Bcast(&t_celldata.MeshOrder,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&t_celldata.MinDim,1,MPI_INT,0,MPI_COMM_WORLD);
 
     MPI_Bcast(&t_celldata.BulkElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Bcast(&t_celldata.LineElmtsNum,1,MPI_INT,0,MPI_COMM_WORLD);
