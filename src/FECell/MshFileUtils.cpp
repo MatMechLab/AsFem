@@ -1155,8 +1155,31 @@ void MshFileUtils::reorderNodesIndex(const int &elmttype,vector<int> &elmtconn){
             elmtconn[10-1]=i;
             }
             return;
-        case 12:
+        case 12:{
             // 27-node second order hexahedron
+            // Gmsh(type 12) ---> VTK_TRIQUADRATIC_HEXAHEDRON node ordering.
+            // corners 1..8 identical; edge mid-nodes 9..20 remapped (same as hex20),
+            // face-centers 21..25 remapped; node 26 (z+ face) and 27 (center) unchanged.
+            // A whole-vector snapshot is required: the edge remap contains a 9-cycle, so
+            // an in-place reassignment would overwrite values still needed as sources.
+            vector<int> temp=elmtconn;
+            elmtconn[10-1]=temp[12-1];
+            elmtconn[11-1]=temp[14-1];
+            elmtconn[12-1]=temp[10-1];
+            elmtconn[13-1]=temp[17-1];
+            elmtconn[14-1]=temp[19-1];
+            elmtconn[15-1]=temp[20-1];
+            elmtconn[16-1]=temp[18-1];
+            elmtconn[17-1]=temp[11-1];
+            elmtconn[18-1]=temp[13-1];
+            elmtconn[19-1]=temp[15-1];
+            elmtconn[20-1]=temp[16-1];
+            elmtconn[21-1]=temp[23-1];
+            elmtconn[22-1]=temp[24-1];
+            elmtconn[23-1]=temp[22-1];
+            elmtconn[24-1]=temp[25-1];
+            elmtconn[25-1]=temp[21-1];
+            }
             return;
         case 13:
             // 18-node second order prism
@@ -1170,8 +1193,23 @@ void MshFileUtils::reorderNodesIndex(const int &elmttype,vector<int> &elmtconn){
         case 16:
             // 8-node second order quadrangle
             return;
-        case 17:
+        case 17:{
             // 20-node second order hexahedron
+            // Gmsh(type 17) ---> VTK_QUADRATIC_HEXAHEDRON node ordering.
+            // corners 1..8 are identical; only edge mid-nodes 9..20 differ.
+            vector<int> temp=elmtconn;
+            elmtconn[10-1]=temp[12-1];
+            elmtconn[11-1]=temp[14-1];
+            elmtconn[12-1]=temp[10-1];
+            elmtconn[13-1]=temp[17-1];
+            elmtconn[14-1]=temp[19-1];
+            elmtconn[15-1]=temp[20-1];
+            elmtconn[16-1]=temp[18-1];
+            elmtconn[17-1]=temp[11-1];
+            elmtconn[18-1]=temp[13-1];
+            elmtconn[19-1]=temp[15-1];
+            elmtconn[20-1]=temp[16-1];
+            }
             return;
         case 18:
             // 15-node second order prism

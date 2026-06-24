@@ -246,6 +246,44 @@ void MPIDataBus::receiveAlignedVectorOfIntegerVectorFromMaster(vector<vector<int
     tempvec=vector<int>(0);
 }
 //********************************************************
+void MPIDataBus::broadcastAlignedVectorOfIntegerVector(vector<vector<int>> &Vec,const int &root){
+    /**
+     * Collective broadcast of an aligned (same-width) vector of integer vector. The data
+     * is flattened on root, broadcast in one shot, then rebuilt on the other ranks. This
+     * is used for rank-independent data (e.g. the global dof map) where a per-rank send
+     * loop would scale as O(nranks).
+     */
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    int nrows,width;
+    nrows=width=0;
+    if(rank==root){
+        nrows=static_cast<int>(Vec.size());
+        width=nrows>0?static_cast<int>(Vec[0].size()):0;
+    }
+    MPI_Bcast(&nrows,1,MPI_INT,root,MPI_COMM_WORLD);
+    MPI_Bcast(&width,1,MPI_INT,root,MPI_COMM_WORLD);
+    //
+    vector<int> flat(static_cast<size_t>(nrows)*static_cast<size_t>(width),0);
+    if(rank==root){
+        int k=0;
+        for(int i=0;i<nrows;i++){
+            for(int j=0;j<width;j++) flat[k++]=Vec[i][j];
+        }
+    }
+    if(nrows*width>0){
+        MPI_Bcast(flat.data(),nrows*width,MPI_INT,root,MPI_COMM_WORLD);
+    }
+    if(rank!=root){
+        Vec.assign(nrows,vector<int>(width,0));
+        int k=0;
+        for(int i=0;i<nrows;i++){
+            for(int j=0;j<width;j++) Vec[i][j]=flat[k++];
+        }
+    }
+    flat=vector<int>(0);
+}
+//********************************************************
 void MPIDataBus::sentStringVectorToOthers(const vector<string> &Vec,const int &Tag,const int &Cpuid){
     MPI_Request request;
     int datasize,vecsize;

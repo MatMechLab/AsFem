@@ -263,7 +263,7 @@ bool Lagrange2DQuad9MeshCellGenerator::generateFECell(FECellData &t_celldata){
                     leftconn[j-1].ElmtNodeCoords(3,2)=t_celldata.NodeCoords_Global[(i1-1)*3+2-1];
                     leftconn[j-1].ElmtNodeCoords(3,3)=t_celldata.NodeCoords_Global[(i1-1)*3+3-1];
                     //
-                    leftconn[j-1].ElmtNodeCoords0=leftconn[1-1].ElmtNodeCoords;
+                    leftconn[j-1].ElmtNodeCoords0=leftconn[j-1].ElmtNodeCoords;
 
                     leftnodes.push_back(i4);
                     leftnodes.push_back(i8);

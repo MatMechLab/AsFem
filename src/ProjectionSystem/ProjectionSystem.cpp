@@ -54,7 +54,7 @@ void ProjectionSystem::init(const FECell &t_fecell,const DofHandler &t_dofhandle
         for (auto &it:m_Data.m_ScalarProjMateVecList) it.resize(m_NodesNum*(1+1),0.0);
     }
     if(getVectorMaterialNum()){
-        m_Data.m_VectorProjMateVecList.resize(m_Data.m_VectorProjMateNum,0.0);
+        m_Data.m_VectorProjMateVecList.resize(m_Data.m_VectorProjMateNum);
         for (auto &it:m_Data.m_VectorProjMateVecList) it.resize(m_NodesNum*(1+3),0.0);
     }
     if(getRank2MaterialNum()){

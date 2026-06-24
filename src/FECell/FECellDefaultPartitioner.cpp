@@ -43,16 +43,16 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
             /**
              * send out the physical group info to other ranks
              */
-            MPIDataBus::sendIntegerToOthers(t_CellData.PhyGroupNum_Global,1000*cpuid+0,cpuid);
+            MPIDataBus::sendIntegerToOthers(t_CellData.PhyGroupNum_Global,0,cpuid);
             for(phynum=0;phynum<t_CellData.PhyGroupNum_Global;phynum++){
                 phyid=t_CellData.PhyIDVector_Global[phynum];
                 phyname=t_CellData.PhyNameVector_Global[phynum];
                 datasize=t_CellData.PhyGroupElmtsNumVector_Global[phynum];
                 dim=t_CellData.PhyDimVector_Global[phynum];
-                MPIDataBus::sendIntegerToOthers(phyid,1000*cpuid+10,cpuid);
-                MPIDataBus::sendIntegerToOthers(dim,1000*cpuid+20,cpuid);
-                MPIDataBus::sendIntegerToOthers(datasize,1000*cpuid+30,cpuid);
-                MPIDataBus::sendStringToOthers(phyname,1000*cpuid+40,cpuid);
+                MPIDataBus::sendIntegerToOthers(phyid,10,cpuid);
+                MPIDataBus::sendIntegerToOthers(dim,20,cpuid);
+                MPIDataBus::sendIntegerToOthers(datasize,30,cpuid);
+                MPIDataBus::sendStringToOthers(phyname,40,cpuid);
             }
         }
 
@@ -81,8 +81,8 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
                     t_CellData.PhyName2MeshCellVectorMap_Local[phyname]=LocalCellVector;
                 }
                 else{
-                    MPIDataBus::sendPhyID2MeshCellMapToOthers(phyid,LocalCellVector,1000*cpuid+60,cpuid);
-                    MPIDataBus::sendPhyName2MeshCellMapToOthers(phyname,LocalCellVector,1000*cpuid+80,cpuid);
+                    MPIDataBus::sendPhyID2MeshCellMapToOthers(phyid,LocalCellVector,60,cpuid);
+                    MPIDataBus::sendPhyName2MeshCellMapToOthers(phyname,LocalCellVector,80,cpuid);
                 }
             }// end-of-physical-group-loop
             /**
@@ -105,21 +105,21 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
                 t_CellData.MeshCell_Local=LocalCellVector;
             }
             else{
-                MPIDataBus::sendMeshCellToOthers(LocalCellVector,1000*cpuid+100,cpuid);
+                MPIDataBus::sendMeshCellToOthers(LocalCellVector,100,cpuid);
             }
 
             /**
              * for nodal physical group sets
              */
-            if(cpuid!=0) MPIDataBus::sendIntegerToOthers(t_CellData.NodalPhyGroupNum_Global,1000*cpuid+200,cpuid);
+            if(cpuid!=0) MPIDataBus::sendIntegerToOthers(t_CellData.NodalPhyGroupNum_Global,200,cpuid);
             for(phynum=0;phynum<t_CellData.NodalPhyGroupNum_Global;phynum++){
                 phyid=t_CellData.NodalPhyIDVector_Global[phynum];
                 datasize=t_CellData.NodalPhyGroupNodesNumVector_Global[phynum];
                 phyname=t_CellData.NodalPhyNameVector_Global[phynum];
 
-                if(cpuid!=0) MPIDataBus::sendIntegerToOthers(phyid,1000*cpuid+210,cpuid);
-                if(cpuid!=0) MPIDataBus::sendIntegerToOthers(datasize,1000*cpuid+220,cpuid);
-                if(cpuid!=0) MPIDataBus::sendStringToOthers(phyname,1000*cpuid+230,cpuid);
+                if(cpuid!=0) MPIDataBus::sendIntegerToOthers(phyid,210,cpuid);
+                if(cpuid!=0) MPIDataBus::sendIntegerToOthers(datasize,220,cpuid);
+                if(cpuid!=0) MPIDataBus::sendStringToOthers(phyname,230,cpuid);
 
                 ranksize=static_cast<int>(t_CellData.NodalPhyName2NodeIDVecMap_Global[phyname].size())/size;
                 iStart=cpuid*ranksize;
@@ -134,7 +134,7 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
                     t_CellData.NodalPhyName2NodeIDVecMap_Local[phyname]=nodeids;
                 }
                 else{
-                    MPIDataBus::sendPhyName2NodeIDVecMapToOthers(phyname,nodeids,1000*cpuid+240,cpuid);
+                    MPIDataBus::sendPhyName2NodeIDVecMapToOthers(phyname,nodeids,240,cpuid);
                 }
             }
         }// end-of-cpuid-loop
@@ -144,8 +144,8 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
          * these two vectors are shared among ranks
          */
         for(cpuid=1;cpuid<size;cpuid++){
-            MPIDataBus::sentIntegerVectorToOthers(t_CellData.BulkCellPartionInfo_Global,1000*cpuid+260,cpuid);
-            MPIDataBus::sentIntegerVectorToOthers(t_CellData.RanksElmtsNum_Global,1000*cpuid+280,cpuid);
+            MPIDataBus::sentIntegerVectorToOthers(t_CellData.BulkCellPartionInfo_Global,260,cpuid);
+            MPIDataBus::sentIntegerVectorToOthers(t_CellData.RanksElmtsNum_Global,280,cpuid);
         }
         /**
          * distribute and send the node ids
@@ -165,7 +165,7 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
                 t_CellData.NodeIDs_Local=NodeIDs;
             }
             else {
-                MPIDataBus::sentIntegerVectorToOthers(NodeIDs,1000*cpuid+300,cpuid);
+                MPIDataBus::sentIntegerVectorToOthers(NodeIDs,300,cpuid);
             }
         }
     }// end of rank-0
@@ -180,7 +180,7 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
         t_CellData.PhyID2MeshCellVectorMap_Local.clear();
         t_CellData.PhyName2MeshCellVectorMap_Local.clear();
 
-        MPIDataBus::receiveIntegerFromMaster(t_CellData.PhyGroupNum_Global,1000*rank+0);
+        MPIDataBus::receiveIntegerFromMaster(t_CellData.PhyGroupNum_Global,0);
 
         t_CellData.PhyIDVector_Global.clear();
         t_CellData.PhyDimVector_Global.clear();
@@ -189,10 +189,10 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
         t_CellData.PhyID2NameMap_Global.clear();
         t_CellData.PhyName2IDMap_Global.clear();
         for(phynum=0;phynum<t_CellData.PhyGroupNum_Global;phynum++){
-            MPIDataBus::receiveIntegerFromMaster(phyid,1000*rank+10);
-            MPIDataBus::receiveIntegerFromMaster(dim,1000*rank+20);
-            MPIDataBus::receiveIntegerFromMaster(datasize,1000*rank+30);
-            MPIDataBus::receiveStringFromMaster(phyname,1000*rank+40);
+            MPIDataBus::receiveIntegerFromMaster(phyid,10);
+            MPIDataBus::receiveIntegerFromMaster(dim,20);
+            MPIDataBus::receiveIntegerFromMaster(datasize,30);
+            MPIDataBus::receiveStringFromMaster(phyname,40);
 
             t_CellData.PhyIDVector_Global.push_back(phyid);
             t_CellData.PhyDimVector_Global.push_back(dim);
@@ -202,13 +202,13 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
             t_CellData.PhyID2NameMap_Global[phyid]=phyname;
             t_CellData.PhyName2IDMap_Global[phyname]=phyid;
 
-            MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_CellData.PhyID2MeshCellVectorMap_Local,1000*rank+60);
-            MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_CellData.PhyName2MeshCellVectorMap_Local,1000*rank+80);
+            MPIDataBus::receivePhyID2MeshCellMapFromMaster(t_CellData.PhyID2MeshCellVectorMap_Local,60);
+            MPIDataBus::receivePhyName2MeshCellMapFromMaster(t_CellData.PhyName2MeshCellVectorMap_Local,80);
         }
         /**
          * for all domain
          */
-        MPIDataBus::receiveMeshCellFromMaster(t_CellData.MeshCell_Local,1000*rank+100);
+        MPIDataBus::receiveMeshCellFromMaster(t_CellData.MeshCell_Local,100);
 
         t_CellData.NodeIDs_Local.clear();
         for (const auto &cell:t_CellData.MeshCell_Local) {
@@ -223,7 +223,7 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
         /**
          * for nodal physical group set
          */
-        MPIDataBus::receiveIntegerFromMaster(t_CellData.NodalPhyGroupNum_Global,1000*rank+200);
+        MPIDataBus::receiveIntegerFromMaster(t_CellData.NodalPhyGroupNum_Global,200);
         t_CellData.NodalPhyGroupNodesNumVector_Global.clear();
         t_CellData.NodalPhyIDVector_Global.clear();
         t_CellData.NodalPhyNameVector_Global.clear();
@@ -231,10 +231,10 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
         t_CellData.NodalPhyName2IDMap_Global.clear();
         t_CellData.NodalPhyName2NodeIDVecMap_Local.clear();
         for(phynum=0;phynum<t_CellData.NodalPhyGroupNum_Global;phynum++){
-            MPIDataBus::receiveIntegerFromMaster(phyid,1000*rank+210);
-            MPIDataBus::receiveIntegerFromMaster(datasize,1000*rank+220);
-            MPIDataBus::receiveStringFromMaster(phyname,1000*rank+230);
-            MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_CellData.NodalPhyName2NodeIDVecMap_Local,1000*rank+240);
+            MPIDataBus::receiveIntegerFromMaster(phyid,210);
+            MPIDataBus::receiveIntegerFromMaster(datasize,220);
+            MPIDataBus::receiveStringFromMaster(phyname,230);
+            MPIDataBus::receivePhyName2NodeIDVecMapFromMaster(t_CellData.NodalPhyName2NodeIDVecMap_Local,240);
 
             t_CellData.NodalPhyIDVector_Global.push_back(phyid);
             t_CellData.NodalPhyGroupNodesNumVector_Global.push_back(datasize);
@@ -247,11 +247,11 @@ void FECellDefaultPartitioner::partitionFECell(FECellData &t_CellData){
         /**
          * Receive bulk element's partition info and ranks elemts number info from master rank
          */
-        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.BulkCellPartionInfo_Global,1000*rank+260);
-        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.RanksElmtsNum_Global,1000*rank+280);
+        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.BulkCellPartionInfo_Global,260);
+        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.RanksElmtsNum_Global,280);
         /**
          * for the local node ids
          */
-        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.NodeIDs_Local,1000*rank+300);
+        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.NodeIDs_Local,300);
     }// end-of-other-ranks
 }

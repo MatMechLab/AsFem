@@ -690,18 +690,18 @@ bool Gmsh2File2FECellImporter::importMeshFile(const string &filename,FECellData 
         // send basic physical group info to other ranks
         int tag;
         for(int cpuid=1;cpuid<size;cpuid++){
-            tag=cpuid*1000+1;
+            tag=10;
             MPIDataBus::sendIntegerToOthers(t_celldata.PhyGroupNum_Global,tag,cpuid);
-            tag=cpuid*1000+2;
+            tag=20;
             MPIDataBus::sentIntegerVectorToOthers(t_celldata.PhyDimVector_Global,tag,cpuid);
-            tag=cpuid*1000+3;
+            tag=30;
             MPIDataBus::sentStringVectorToOthers(t_celldata.PhyNameVector_Global,tag,cpuid);
             //
-            tag=cpuid*1000+4;
+            tag=40;
             MPIDataBus::sendMeshTypeToOthers(t_celldata.BulkElmtMeshType,tag,cpuid);
-            tag=cpuid*1000+5;
+            tag=50;
             MPIDataBus::sendMeshTypeToOthers(t_celldata.SurfElmtMeshType,tag,cpuid);
-            tag=cpuid*1000+6;
+            tag=60;
             MPIDataBus::sendMeshTypeToOthers(t_celldata.LineElmtMeshType,tag,cpuid);
         }
 
@@ -709,20 +709,20 @@ bool Gmsh2File2FECellImporter::importMeshFile(const string &filename,FECellData 
     else {
         // setup the basic physical group info
         int tag;
-        tag=rank*1000+1;
+        tag=10;
         MPIDataBus::receiveIntegerFromMaster(t_celldata.PhyGroupNum_Global,tag);
-        tag=rank*1000+2;
+        tag=20;
         MPIDataBus::receiveIntegerVectorFromMaster(t_celldata.PhyDimVector_Global,tag);
-        tag=rank*1000+3;
+        tag=30;
         MPIDataBus::receiveStringVectorFromMaster(t_celldata.PhyNameVector_Global,tag);
         //
-        tag=rank*1000+4;
+        tag=40;
         MPIDataBus::receiveMeshTypeFromMater(t_celldata.BulkElmtMeshType,tag);
         //
-        tag=rank*1000+5;
+        tag=50;
         MPIDataBus::receiveMeshTypeFromMater(t_celldata.SurfElmtMeshType,tag);
         //
-        tag=rank*1000+6;
+        tag=60;
         MPIDataBus::receiveMeshTypeFromMater(t_celldata.LineElmtMeshType,tag);
     }
 

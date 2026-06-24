@@ -125,6 +125,16 @@ public:
     static void receiveAlignedVectorOfIntegerVectorFromMaster(vector<vector<int>> &Vec,const int &Tag);
 
     /**
+     * Broadcast an aligned (same-width) vector of integer vector from the root rank to
+     * every rank. This is meant for data that is identical on all ranks (e.g. the global
+     * dof map), so it replaces an O(nranks) point-to-point master->worker send loop with
+     * a single collective (O(log nranks)).
+     * @param Vec the aligned vector of integer vector, valid on root and filled on others
+     * @param root the rank id that holds the source data
+     */
+    static void broadcastAlignedVectorOfIntegerVector(vector<vector<int>> &Vec,const int &root);
+
+    /**
      * Send the string vector to other ranks
      * @param Vec the vector stores strings
      * @param Tag the id of the sending message

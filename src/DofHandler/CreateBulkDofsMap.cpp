@@ -129,39 +129,34 @@ void BulkDofHandler::createBulkDofsMap(FECell &t_fecell,const ElmtSystem &t_elmt
                 Rank2ElementalDofIDsMap[cpuid].push_back(m_ElementalDofIDs_Global[e-1]);//stores the local element dof id of each local rank
             }
         }
+        // The local elemental dof map is the only piece that differs per rank, so it is
+        // the only thing distributed with a point-to-point send. The global maps and the
+        // two NNZ counts are identical on every rank and are broadcast collectively below.
         for(cpuid=1;cpuid<size;cpuid++){
             if(static_cast<int>(Rank2ElementalDofIDsMap[cpuid].size())!=t_fecell.getIthRanksBulkElmtsNum(cpuid)){
                 MessagePrinter::printErrorTxt("Rank-"+to_string(cpuid)+" owns different local bulk elmts number from the one given in FECell,"+
                                               "please check your code in CreateBulkDofsMap.cpp");
                 MessagePrinter::exitAsFem();
             }
-            tag=cpuid*1000+0;
-            MPIDataBus::sendIntegerToOthers(m_MaxNNZ,tag,cpuid);
-            tag=cpuid*1000+1;
-            MPIDataBus::sendIntegerToOthers(m_MaxRowNNZ,tag,cpuid);
-            // send out nodal dof id and elemental dof id
-            tag=cpuid*1000+2;
-            MPIDataBus::sendAlignedVectorOfIntegerVectorToOthers(m_NodalDofIDs_Global,tag,cpuid);
-            tag=cpuid*1000+3;
-            MPIDataBus::sendAlignedVectorOfIntegerVectorToOthers(m_ElementalDofIDs_Global,tag,cpuid);
-            tag=cpuid*1000+4;
+            tag=30;
             MPIDataBus::sendAlignedVectorOfIntegerVectorToOthers(Rank2ElementalDofIDsMap[cpuid],tag,cpuid);
         }
         Rank2ElementalDofIDsMap.clear();
     }// end-of-master-rank
     else{
-        int tag;
-        tag=rank*1000+0;
-        MPIDataBus::receiveIntegerFromMaster(m_MaxNNZ,tag);
-        tag=rank*1000+1;
-        MPIDataBus::receiveIntegerFromMaster(m_MaxRowNNZ,tag);
-        tag=rank*1000+2;
-        MPIDataBus::receiveAlignedVectorOfIntegerVectorFromMaster(m_NodalDofIDs_Global,tag);
-        tag=rank*1000+3;
-        MPIDataBus::receiveAlignedVectorOfIntegerVectorFromMaster(m_ElementalDofIDs_Global,tag);
-        tag=rank*1000+4;
-        MPIDataBus::receiveAlignedVectorOfIntegerVectorFromMaster(m_ElementalDofIDs_Local,tag);
+        MPIDataBus::receiveAlignedVectorOfIntegerVectorFromMaster(m_ElementalDofIDs_Local,30);
     }
+    /**
+     * Broadcast the rank-independent dof-map data with collectives instead of the previous
+     * O(nranks) master->worker send loop. m_NodalDofIDs_Global/m_ElementalDofIDs_Global and
+     * the two NNZ counts are identical on every rank, so MPI_Bcast (O(log nranks)) is both
+     * correct and far cheaper at large rank counts, where this fan-out used to dominate the
+     * dof-map setup cost.
+     */
+    MPI_Bcast(&m_MaxNNZ,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPI_Bcast(&m_MaxRowNNZ,1,MPI_INT,0,MPI_COMM_WORLD);
+    MPIDataBus::broadcastAlignedVectorOfIntegerVector(m_NodalDofIDs_Global,0);
+    MPIDataBus::broadcastAlignedVectorOfIntegerVector(m_ElementalDofIDs_Global,0);
     MPI_Bcast(&m_ActiveDofs,1,MPI_INT,0,MPI_COMM_WORLD);
     MPI_Barrier(MPI_COMM_WORLD);
 

@@ -631,7 +631,7 @@ public:
 private:
     bool m_Allocated=false;/**< boolean flag for the status of allocation */
     Vec m_Vector;/** petsc vector for current vector class */
-    int m_Size;/** the size of current vector */
+    int m_Size=0;/** the size of current vector (default-initialized so assemble()'s m_Size<1 guard is never read uninitialized) */
 
     bool m_GhostAllocated=false;/**< boolean flag for ghost processor allocation */
     Vec m_VectorGhost;/**< the ghost copy of m_vector, which should be destroy after use */

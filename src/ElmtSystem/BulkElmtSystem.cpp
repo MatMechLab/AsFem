@@ -74,14 +74,14 @@ void BulkElmtSystem::init(const FECell &t_fecell){
                 m_LocalElemental_ElmtBlockID.push_back(m_GlobalElemental_ElmtBlockID[e-1]);
             }
             else{
-                MPIDataBus::sentIntegerVectorToOthers(m_GlobalElemental_ElmtBlockID[e-1],rankid*1000+1,rankid);
+                MPIDataBus::sentIntegerVectorToOthers(m_GlobalElemental_ElmtBlockID[e-1],1,rankid);
             }
         }
     }// end-of-master-rank
     else{
         vector<int> idvec;
         for(int e=0;e<t_fecell.getLocalFECellBulkElmtsNum();e++){
-            MPIDataBus::receiveIntegerVectorFromMaster(idvec,rank*1000+1);
+            MPIDataBus::receiveIntegerVectorFromMaster(idvec,1);
             m_LocalElemental_ElmtBlockID.push_back(idvec);
         }
     }// end-of-other-ranks

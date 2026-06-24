@@ -45,8 +45,13 @@ Vector::Vector(const int &n,const double &val){
 Vector::Vector(const Vector &a){
     VecDuplicate(a.getVectorCopy(),&m_Vector);
     VecCopy(a.m_Vector,m_Vector);
-    assemble();
+    // m_Size MUST be set before assemble(): assemble() does "if(m_Size<1) return;" and then
+    // a collective VecAssemblyBegin/End. With m_Size still uninitialized here, the branch was
+    // taken on garbage that differs from rank to rank, so different ranks issued a different
+    // number of collective MPI calls -> partition-dependent deadlock (e.g. projection init at
+    // high rank counts copy-constructs Vectors via std::vector::resize).
     m_Size=a.getSize();
+    assemble();
     m_Allocated=true;
     m_GhostAllocated=false;
 }
