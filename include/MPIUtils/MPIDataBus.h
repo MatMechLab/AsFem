@@ -135,6 +135,15 @@ public:
     static void broadcastAlignedVectorOfIntegerVector(vector<vector<int>> &Vec,const int &root);
 
     /**
+     * Broadcast an integer vector from the root rank to every rank (size first, then data).
+     * Used for data that is identical on all ranks (e.g. the bulk-cell partition info), so it
+     * replaces an O(nranks) point-to-point master->worker send loop with a single collective.
+     * @param Vec the integer vector, valid on root and (re)sized+filled on the others
+     * @param root the rank id that holds the source data
+     */
+    static void broadcastIntegerVector(vector<int> &Vec,const int &root);
+
+    /**
      * Send the string vector to other ranks
      * @param Vec the vector stores strings
      * @param Tag the id of the sending message

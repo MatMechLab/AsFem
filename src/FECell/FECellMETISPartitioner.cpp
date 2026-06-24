@@ -234,14 +234,9 @@ void FECellMETISPartitioner::partitionFECell(FECellData &t_CellData) {
             }
         }// end-of-cpuid-loop
 
-        /**
-         * Now we send the BulkCellPartionInfo_Global and RanksElmtsNum_Global to other ranks,
-         * these two vectors are shared among ranks
-         */
-        for(cpuid=1;cpuid<size;cpuid++){
-            MPIDataBus::sentIntegerVectorToOthers(t_CellData.BulkCellPartionInfo_Global,260,cpuid);
-            MPIDataBus::sentIntegerVectorToOthers(t_CellData.RanksElmtsNum_Global,280,cpuid);
-        }
+        // BulkCellPartionInfo_Global and RanksElmtsNum_Global are identical on every rank, so
+        // they are broadcast collectively after the rank-0/worker branches below (replacing the
+        // previous O(nranks) per-rank send loop).
         /**
          * distribute and send the node ids
          */
@@ -340,13 +335,12 @@ void FECellMETISPartitioner::partitionFECell(FECellData &t_CellData) {
         }
 
         /**
-         * Receive bulk element's partition info and ranks elemts number info from master rank
-         */
-        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.BulkCellPartionInfo_Global,260);
-        MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.RanksElmtsNum_Global,280);
-        /**
          * for the local node ids
          */
         MPIDataBus::receiveIntegerVectorFromMaster(t_CellData.NodeIDs_Local,300);
     }
+
+    // Broadcast the rank-independent partition info collectively (it is identical on every rank).
+    MPIDataBus::broadcastIntegerVector(t_CellData.BulkCellPartionInfo_Global,0);
+    MPIDataBus::broadcastIntegerVector(t_CellData.RanksElmtsNum_Global,0);
 }

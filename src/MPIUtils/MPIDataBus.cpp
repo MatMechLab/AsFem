@@ -284,6 +284,15 @@ void MPIDataBus::broadcastAlignedVectorOfIntegerVector(vector<vector<int>> &Vec,
     flat=vector<int>(0);
 }
 //********************************************************
+void MPIDataBus::broadcastIntegerVector(vector<int> &Vec,const int &root){
+    int rank;
+    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+    int n=(rank==root)?static_cast<int>(Vec.size()):0;
+    MPI_Bcast(&n,1,MPI_INT,root,MPI_COMM_WORLD);
+    if(rank!=root) Vec.resize(n,0);
+    if(n>0) MPI_Bcast(Vec.data(),n,MPI_INT,root,MPI_COMM_WORLD);
+}
+//********************************************************
 void MPIDataBus::sentStringVectorToOthers(const vector<string> &Vec,const int &Tag,const int &Cpuid){
     MPI_Request request;
     int datasize,vecsize;
