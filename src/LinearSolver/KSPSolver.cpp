@@ -151,6 +151,17 @@ bool KSPSolver::solve(SparseMatrix &A,Vector &b,Vector &x) {
     KSPSetOperators(m_KSP,A.getReference(),A.getReference());
     KSPSolve(m_KSP,b.getVectorRef(),x.getVectorRef());
     KSPGetIterationNumber(m_KSP,&m_Iterations);
+    // check that the linear solve actually converged; a negative reason means it
+    // diverged (max-iters/breakdown/singular PC), which would silently feed a bad
+    // step to the nonlinear solver. Warn and report failure instead of returning ok.
+    KSPConvergedReason reason;
+    KSPGetConvergedReason(m_KSP,&reason);
+    if(reason<0){
+        MessagePrinter::printWarningTxt("linear solver did not converge (KSPConvergedReason="
+                                        +to_string(static_cast<int>(reason))+", iters="
+                                        +to_string(m_Iterations)+"); the nonlinear step may be inaccurate");
+        return false;
+    }
     return true;
 }
 void KSPSolver::printKSPSolverInfo()const {
