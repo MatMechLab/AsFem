@@ -247,6 +247,16 @@ bool SNESSolver::solve(FECell &t_FECell,
         m_Timer.printElapseTime("SNES solver is done");
         return true;
     }
+    else if(m_SNESConvergeReason>0){
+        // PETSc convention: any positive reason means "converged" (e.g.
+        // SNES_CONVERGED_ITS for some solver types). Treat it as success rather
+        // than mislabelling it a divergence/failure.
+        snprintf(buff,68,"  SNES solver: iters=%3d,|R0|=%12.5e,|R|=%12.5e",m_Iterations,m_MonCtx.rnorm0,m_RNorm);
+        str=buff;
+        MessagePrinter::printNormalTxt(str);
+        m_Timer.printElapseTime("SNES solver is done");
+        return true;
+    }
     else{
         snprintf(buff,68,"  Divergent, SNES nonlinear solver failed, iters=%3d",m_MonCtx.iters);
         str=buff;

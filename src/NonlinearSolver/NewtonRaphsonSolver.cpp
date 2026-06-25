@@ -45,6 +45,10 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
     m_IsConverged=false;
     m_Iterations=0;
     while (m_Iterations<m_MaxIterations && !m_IsConverged) {
+        // keep Ucopy tracking the current iterate (Utemp); the boundary-condition
+        // routines read it as the "current solution" (needed for solution-dependent
+        // BCs). The SNES path refreshes it on every evaluation; do the same here.
+        t_SolnSystem.m_Ucopy.copyFrom(t_SolnSystem.m_Utemp);
         t_BCSystem.applyPresetBoundaryConditions(FECalcType::UPDATEU,
                                              t_FECtrlInfo.Dt+t_FECtrlInfo.T,
                                              t_FECell,
@@ -87,7 +91,11 @@ bool NewtonRaphsonSolver::solve(FECell &t_FECell,
                                            t_SolnSystem.m_V,
                                            t_EqSystem.m_AMATRIX,
                                            t_EqSystem.m_RHS);
-        t_EqSystem.m_AMATRIX*=-1.0;// in this NR iteration, the K=-dR/dU, which is different from the one in SNES solver !!!
+        // Newton update: solve K*dU = -R, then U += dU.  We negate the residual
+        // (R) instead of the whole matrix (K): the resulting step dU = -K^{-1}R is
+        // identical, but K keeps its sign/definiteness, so symmetric/CG-type KSPs
+        // still work and we scale an O(n) vector instead of an O(nnz) matrix.
+        t_EqSystem.m_RHS*=-1.0;
         t_LinearSolver.solve(t_EqSystem.m_AMATRIX,t_EqSystem.m_RHS,t_SolnSystem.m_dU);
         t_SolnSystem.m_Utemp+=t_SolnSystem.m_dU;
         m_Iterations+=1;
