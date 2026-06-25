@@ -627,6 +627,26 @@ public:
         return val;
     }
 
+    /**
+     * Get the read-only array pointer of the ghost (to-all) copy. The ghost holds the FULL
+     * global vector on every rank (VecScatterCreateToAll), so element i (1-based) is arr[i-1],
+     * identical to getIthValueFromGhost(i) but without a per-value VecGetValues call. Use this
+     * for tight loops that read many ghost values; pair every call with restoreGhostArrayRead()
+     * before destroyGhostCopy().
+     */
+    inline const PetscScalar* getGhostArrayRead()const{
+        const PetscScalar *arr=nullptr;
+        VecGetArrayRead(m_VectorGhost,&arr);
+        return arr;
+    }
+    /**
+     * Release a pointer obtained from getGhostArrayRead().
+     * @param arr address of the pointer returned by getGhostArrayRead()
+     */
+    inline void restoreGhostArrayRead(const PetscScalar **arr)const{
+        VecRestoreArrayRead(m_VectorGhost,arr);
+    }
+
 
 private:
     bool m_Allocated=false;/**< boolean flag for the status of allocation */

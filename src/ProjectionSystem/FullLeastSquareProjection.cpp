@@ -318,6 +318,14 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
     for (auto &it:Data.m_Rank2ProjMateVecList) it.setToZero();
     for (auto &it:Data.m_Rank4ProjMateVecList) it.setToZero();
 
+    // read-only ghost array pointer for every projection vector (released before the final assemble)
+    vector<const PetscScalar*> _gS(Data.m_ScalarProjMateNum),_gV(Data.m_VectorProjMateNum),
+                               _gR2(Data.m_Rank2ProjMateNum),_gR4(Data.m_Rank4ProjMateNum);
+    for(int m=0;m<Data.m_ScalarProjMateNum;m++) _gS[m]=Data.m_ScalarProjMateVecList[m].getGhostArrayRead();
+    for(int m=0;m<Data.m_VectorProjMateNum;m++) _gV[m]=Data.m_VectorProjMateVecList[m].getGhostArrayRead();
+    for(int m=0;m<Data.m_Rank2ProjMateNum;m++) _gR2[m]=Data.m_Rank2ProjMateVecList[m].getGhostArrayRead();
+    for(int m=0;m<Data.m_Rank4ProjMateNum;m++) _gR4[m]=Data.m_Rank4ProjMateVecList[m].getGhostArrayRead();
+
     for (const auto &GlobalNodeID:t_FECell.getLocalFECellNodeIDsCopy()) {
         //****************************************
         // for scalar materials
@@ -326,9 +334,9 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         if (nproj) {
             for (j = 1; j <= nproj; j++) {
                 iInd = (GlobalNodeID - 1) * (1 + 1) + 1;
-                weight = Data.m_ScalarProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                weight = _gS[j-1][iInd-1];
                 iInd = (GlobalNodeID - 1) * (1 + 1) + 2;
-                value = Data.m_ScalarProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                value = _gS[j-1][iInd-1];
                 if (abs(weight) > 1.0e-15) {
                     newvalue = value / weight;
                 } else {
@@ -344,10 +352,10 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         if (nproj) {
             for (j = 1; j <= nproj; j++) {
                 iInd = (GlobalNodeID - 1) * (1 + 3) + 0 + 1;
-                weight = Data.m_VectorProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                weight = _gV[j-1][iInd-1];
                 for (k = 1; k <= 3; k++) {
                     iInd = (GlobalNodeID - 1) * (3 + 1)+ k + 1;
-                    value = Data.m_VectorProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                    value = _gV[j-1][iInd-1];
                     if (abs(weight) > 1.0e-15) {
                         newvalue = value / weight;
                     } else {
@@ -364,10 +372,10 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         if (nproj) {
             for (j = 1; j <= nproj; j++) {
                 iInd = (GlobalNodeID - 1) * (1 + 9) + 0 + 1;
-                weight = Data.m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                weight = _gR2[j-1][iInd-1];
                 for (k = 1; k <= 9; k++) {
                     iInd = (GlobalNodeID - 1) * (9 + 1) + k + 1;
-                    value = Data.m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                    value = _gR2[j-1][iInd-1];
                     if (abs(weight) > 1.0e-15) {
                         newvalue = value / weight;
                     } else {
@@ -384,10 +392,10 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         if (nproj) {
             for (j = 1; j <= nproj; j++) {
                 iInd = (GlobalNodeID - 1) * (1 + 36) + 0 + 1;
-                weight = Data.m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                weight = _gR4[j-1][iInd-1];
                 for (k = 1; k <= 36; k++) {
                     iInd = (GlobalNodeID - 1) * (36 + 1)+ k + 1;
-                    value = Data.m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                    value = _gR4[j-1][iInd-1];
                     if (abs(weight) > 1.0e-15) {
                         newvalue = value / weight;
                     } else {
@@ -399,6 +407,11 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         }
     } //end-of-local-element-nodes-loop
 
+    // release the ghost array pointers BEFORE the assemble
+    for(int m=0;m<Data.m_ScalarProjMateNum;m++) Data.m_ScalarProjMateVecList[m].restoreGhostArrayRead(&_gS[m]);
+    for(int m=0;m<Data.m_VectorProjMateNum;m++) Data.m_VectorProjMateVecList[m].restoreGhostArrayRead(&_gV[m]);
+    for(int m=0;m<Data.m_Rank2ProjMateNum;m++) Data.m_Rank2ProjMateVecList[m].restoreGhostArrayRead(&_gR2[m]);
+    for(int m=0;m<Data.m_Rank4ProjMateNum;m++) Data.m_Rank4ProjMateVecList[m].restoreGhostArrayRead(&_gR4[m]);
 
     // finish the final assemble
     for (auto &it:Data.m_ScalarProjMateVecList) it.assemble();
@@ -479,6 +492,13 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
     const int _cacheW=m_BulkElmtNodesNum*_maxDofsPerNode;
     vector<double> _cUolder(_cacheW,0.0),_cUold(_cacheW,0.0),_cU(_cacheW,0.0),_cV(_cacheW,0.0),_cA(_cacheW,0.0);
 
+    // read-only pointers to the to-all ghost arrays; released after the element loop (before any assemble)
+    const PetscScalar *_aUolder=t_SolnSystem.m_Uolder.getGhostArrayRead();
+    const PetscScalar *_aUold  =t_SolnSystem.m_Uold.getGhostArrayRead();
+    const PetscScalar *_aU     =t_SolnSystem.m_Ucurrent.getGhostArrayRead();
+    const PetscScalar *_aV     =t_SolnSystem.m_V.getGhostArrayRead();
+    const PetscScalar *_aA     =t_SolnSystem.m_A.getGhostArrayRead();
+
     for (int e=1;e<=t_FECell.getLocalFECellBulkElmtsNum();e++) {
         m_LocalElmtInfo.m_Dim=MyLocalCellVec[e-1].Dim;
         m_LocalElmtInfo.m_NodesNum=MyLocalCellVec[e-1].NodesNumPerElmt;
@@ -496,11 +516,11 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
                 const int gdof=t_DofHandler.getIthNodeJthDofID(gnode,d);
                 if(gdof>=1){
                     const int idx=(jn-1)*_maxDofsPerNode+(d-1);
-                    _cUolder[idx]=t_SolnSystem.m_Uolder.getIthValueFromGhost(gdof);
-                    _cUold[idx]  =t_SolnSystem.m_Uold.getIthValueFromGhost(gdof);
-                    _cU[idx]     =t_SolnSystem.m_Ucurrent.getIthValueFromGhost(gdof);
-                    _cV[idx]     =t_SolnSystem.m_V.getIthValueFromGhost(gdof);
-                    _cA[idx]     =t_SolnSystem.m_A.getIthValueFromGhost(gdof);
+                    _cUolder[idx]=_aUolder[gdof-1];
+                    _cUold[idx]  =_aUold[gdof-1];
+                    _cU[idx]     =_aU[gdof-1];
+                    _cV[idx]     =_aV[gdof-1];
+                    _cA[idx]     =_aA[gdof-1];
                 }
             }
         }
@@ -638,6 +658,13 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
         }
         localProjectionAction(m_BulkElmtNodesNum,e,QpointsNum,Al,Ar,m_ElmtConn,Volume,t_SolnSystem,Data);
     }// end-of-element-loop
+
+    // release the ghost array pointers before destroying the ghost copies (and before any assemble)
+    t_SolnSystem.m_Uolder.restoreGhostArrayRead(&_aUolder);
+    t_SolnSystem.m_Uold.restoreGhostArrayRead(&_aUold);
+    t_SolnSystem.m_Ucurrent.restoreGhostArrayRead(&_aU);
+    t_SolnSystem.m_V.restoreGhostArrayRead(&_aV);
+    t_SolnSystem.m_A.restoreGhostArrayRead(&_aA);
 
     t_SolnSystem.m_Ucurrent.destroyGhostCopy();//
     t_SolnSystem.m_Uold.destroyGhostCopy();
