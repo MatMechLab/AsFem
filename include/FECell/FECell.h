@@ -295,6 +295,19 @@ public:
         return vector<SingleMeshCell>(0);
     }
     /**
+     * Get a const reference (zero-copy) to the local cell vector via its physical name
+     * @param phyname the physical-group name
+     */
+    inline const vector<SingleMeshCell>& getLocalMeshCellVectorRefViaPhyName(const string &phyname)const{
+        if (m_CellData.PhyName2MeshCellVectorMap_Local.count(phyname)) {
+            return m_CellData.PhyName2MeshCellVectorMap_Local.at(phyname);
+        }
+        MessagePrinter::printErrorTxt("phyname="+phyname+" does not exist in your local mesh cell vector, please check your mesh file");
+        MessagePrinter::exitAsFem();
+        static const vector<SingleMeshCell> s_empty;
+        return s_empty;
+    }
+    /**
      * Get the copy of the local physical name to fe cell vector mapping
      */
     inline map<string,vector<SingleMeshCell>> getLocalPhyName2MeshCellVectorMapCopy()const{

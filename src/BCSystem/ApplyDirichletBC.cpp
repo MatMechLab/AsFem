@@ -42,7 +42,7 @@ void BCSystem::applyDirichletBC(const FECalcType &CalcType,
     V.makeGhostCopy();
 
     for(const auto &name:BCNameList){
-        for (const auto &cell:t_FECell.getLocalMeshCellVectorCopyViaPhyName(name)){
+        for (const auto &cell:t_FECell.getLocalMeshCellVectorRefViaPhyName(name)){
             m_LocalElmtInfo.m_Dim=cell.Dim;
             m_LocalElmtInfo.m_DofsNum=static_cast<int>(DofIDs.size());
             for(i=1;i<=cell.NodesNumPerElmt;i++){

@@ -43,7 +43,7 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
     V.makeGhostCopy();    
 
     for(const auto &name:BCNameList){
-        for (const auto &cell:t_FECell.getLocalMeshCellVectorCopyViaPhyName(name)) {
+        for (const auto &cell:t_FECell.getLocalMeshCellVectorRefViaPhyName(name)) {
             nNodesPerBCElmt=cell.NodesNumPerElmt;
             m_LocalElmtInfo.m_Dim=cell.Dim;
             if(m_LocalElmtInfo.m_Dim>2 || m_LocalElmtInfo.m_Dim<0){
@@ -159,31 +159,38 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                             
                     for(i=1;i<=nNodesPerBCElmt;i++){
                         iInd=cell.ElmtConn[i-1];
+                        const double N=t_FE.m_LineShp.shape_value(i);
+                        const Vector3d dN=t_FE.m_LineShp.shape_grad(i);
                         for(k=1;k<=m_LocalElmtInfo.m_DofsNum;k++){
                             GlobalDofID=t_DofHandler.getIthNodeJthDofID(iInd,DofIDs[k-1]);
+                            // fetch each ghost value once (was re-fetched once per gradient component)
+                            const double u  =U.getIthValueFromGhost(GlobalDofID);
+                            const double uo =Uold.getIthValueFromGhost(GlobalDofID);
+                            const double uoo=Uolder.getIthValueFromGhost(GlobalDofID);
+                            const double v  =V.getIthValueFromGhost(GlobalDofID);
 
-                            m_LocalElmtSoln.m_QpU[k]     +=t_FE.m_LineShp.shape_value(i)*U.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpUold[k]  +=t_FE.m_LineShp.shape_value(i)*Uold.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpUolder[k]+=t_FE.m_LineShp.shape_value(i)*Uolder.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpV[k]     +=t_FE.m_LineShp.shape_value(i)*V.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpU[k]     +=N*u;
+                            m_LocalElmtSoln.m_QpUold[k]  +=N*uo;
+                            m_LocalElmtSoln.m_QpUolder[k]+=N*uoo;
+                            m_LocalElmtSoln.m_QpV[k]     +=N*v;
 
-                            m_LocalElmtSoln.m_QpGradU[k](1)+=t_FE.m_LineShp.shape_grad(i)(1)*U.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradU[k](2)+=t_FE.m_LineShp.shape_grad(i)(2)*U.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradU[k](3)+=t_FE.m_LineShp.shape_grad(i)(3)*U.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpGradU[k](1)+=dN(1)*u;
+                            m_LocalElmtSoln.m_QpGradU[k](2)+=dN(2)*u;
+                            m_LocalElmtSoln.m_QpGradU[k](3)+=dN(3)*u;
 
-                            m_LocalElmtSoln.m_QpGradUold[k](1)+=t_FE.m_LineShp.shape_grad(i)(1)*Uold.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUold[k](2)+=t_FE.m_LineShp.shape_grad(i)(2)*Uold.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUold[k](3)+=t_FE.m_LineShp.shape_grad(i)(3)*Uold.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpGradUold[k](1)+=dN(1)*uo;
+                            m_LocalElmtSoln.m_QpGradUold[k](2)+=dN(2)*uo;
+                            m_LocalElmtSoln.m_QpGradUold[k](3)+=dN(3)*uo;
 
-                            m_LocalElmtSoln.m_QpGradUolder[k](1)+=t_FE.m_LineShp.shape_grad(i)(1)*Uolder.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUolder[k](2)+=t_FE.m_LineShp.shape_grad(i)(2)*Uolder.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUolder[k](3)+=t_FE.m_LineShp.shape_grad(i)(3)*Uolder.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpGradUolder[k](1)+=dN(1)*uoo;
+                            m_LocalElmtSoln.m_QpGradUolder[k](2)+=dN(2)*uoo;
+                            m_LocalElmtSoln.m_QpGradUolder[k](3)+=dN(3)*uoo;
                         }
-                                
-                        m_LocalElmtInfo.m_QpCoords0(1)+=t_FE.m_LineShp.shape_value(i)*cell.ElmtNodeCoords0(i,1);
-                        m_LocalElmtInfo.m_QpCoords0(2)+=t_FE.m_LineShp.shape_value(i)*cell.ElmtNodeCoords0(i,2);
-                        m_LocalElmtInfo.m_QpCoords0(3)+=t_FE.m_LineShp.shape_value(i)*cell.ElmtNodeCoords0(i,3);
-                            
+
+                        m_LocalElmtInfo.m_QpCoords0(1)+=N*cell.ElmtNodeCoords0(i,1);
+                        m_LocalElmtInfo.m_QpCoords0(2)+=N*cell.ElmtNodeCoords0(i,2);
+                        m_LocalElmtInfo.m_QpCoords0(3)+=N*cell.ElmtNodeCoords0(i,3);
+
                     }// end-of-node-loop-for-phy-quantities
 
                     if(CalcType==FECalcType::COMPUTERESIDUAL||
@@ -286,31 +293,38 @@ void BCSystem::applyIntegratedBC(const FECalcType &CalcType,
                     m_LocalElmtInfo.m_QpCoords0=0.0;
                     for(i=1;i<=nNodesPerBCElmt;i++){
                         iInd=cell.ElmtConn[i-1];
+                        const double N=t_FE.m_SurfaceShp.shape_value(i);
+                        const Vector3d dN=t_FE.m_SurfaceShp.shape_grad(i);
                         for(k=1;k<=m_LocalElmtInfo.m_DofsNum;k++){
                             GlobalDofID=t_DofHandler.getIthNodeJthDofID(iInd,DofIDs[k-1]);
+                            // fetch each ghost value once (was re-fetched once per gradient component)
+                            const double u  =U.getIthValueFromGhost(GlobalDofID);
+                            const double uo =Uold.getIthValueFromGhost(GlobalDofID);
+                            const double uoo=Uolder.getIthValueFromGhost(GlobalDofID);
+                            const double v  =V.getIthValueFromGhost(GlobalDofID);
 
-                            m_LocalElmtSoln.m_QpU[k]     +=t_FE.m_SurfaceShp.shape_value(i)*U.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpUold[k]  +=t_FE.m_SurfaceShp.shape_value(i)*Uold.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpUolder[k]+=t_FE.m_SurfaceShp.shape_value(i)*Uolder.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpV[k]     +=t_FE.m_SurfaceShp.shape_value(i)*V.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpU[k]     +=N*u;
+                            m_LocalElmtSoln.m_QpUold[k]  +=N*uo;
+                            m_LocalElmtSoln.m_QpUolder[k]+=N*uoo;
+                            m_LocalElmtSoln.m_QpV[k]     +=N*v;
 
-                            m_LocalElmtSoln.m_QpGradU[k](1)+=t_FE.m_SurfaceShp.shape_grad(i)(1)*U.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradU[k](2)+=t_FE.m_SurfaceShp.shape_grad(i)(2)*U.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradU[k](3)+=t_FE.m_SurfaceShp.shape_grad(i)(3)*U.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpGradU[k](1)+=dN(1)*u;
+                            m_LocalElmtSoln.m_QpGradU[k](2)+=dN(2)*u;
+                            m_LocalElmtSoln.m_QpGradU[k](3)+=dN(3)*u;
 
-                            m_LocalElmtSoln.m_QpGradUold[k](1)+=t_FE.m_SurfaceShp.shape_grad(i)(1)*Uold.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUold[k](2)+=t_FE.m_SurfaceShp.shape_grad(i)(2)*Uold.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUold[k](3)+=t_FE.m_SurfaceShp.shape_grad(i)(3)*Uold.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpGradUold[k](1)+=dN(1)*uo;
+                            m_LocalElmtSoln.m_QpGradUold[k](2)+=dN(2)*uo;
+                            m_LocalElmtSoln.m_QpGradUold[k](3)+=dN(3)*uo;
 
-                            m_LocalElmtSoln.m_QpGradUolder[k](1)+=t_FE.m_SurfaceShp.shape_grad(i)(1)*Uolder.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUolder[k](2)+=t_FE.m_SurfaceShp.shape_grad(i)(2)*Uolder.getIthValueFromGhost(GlobalDofID);
-                            m_LocalElmtSoln.m_QpGradUolder[k](3)+=t_FE.m_SurfaceShp.shape_grad(i)(3)*Uolder.getIthValueFromGhost(GlobalDofID);
+                            m_LocalElmtSoln.m_QpGradUolder[k](1)+=dN(1)*uoo;
+                            m_LocalElmtSoln.m_QpGradUolder[k](2)+=dN(2)*uoo;
+                            m_LocalElmtSoln.m_QpGradUolder[k](3)+=dN(3)*uoo;
                         }
-                                
-                        m_LocalElmtInfo.m_QpCoords0(1)+=t_FE.m_SurfaceShp.shape_value(i)*cell.ElmtNodeCoords0(i,1);
-                        m_LocalElmtInfo.m_QpCoords0(2)+=t_FE.m_SurfaceShp.shape_value(i)*cell.ElmtNodeCoords0(i,2);
-                        m_LocalElmtInfo.m_QpCoords0(3)+=t_FE.m_SurfaceShp.shape_value(i)*cell.ElmtNodeCoords0(i,3);
-                    
+
+                        m_LocalElmtInfo.m_QpCoords0(1)+=N*cell.ElmtNodeCoords0(i,1);
+                        m_LocalElmtInfo.m_QpCoords0(2)+=N*cell.ElmtNodeCoords0(i,2);
+                        m_LocalElmtInfo.m_QpCoords0(3)+=N*cell.ElmtNodeCoords0(i,3);
+
                     }// end-of-node-loop-for-phy-quantities
 
                     if(CalcType==FECalcType::COMPUTERESIDUAL||
