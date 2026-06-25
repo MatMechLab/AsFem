@@ -9,10 +9,12 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2022.08.22
-//+++ Purpose: Defines the abstract class for result output
+//+++ Purpose: Write the result to the vtu (VTK unstructured grid) file
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #include "OutputSystem/VTUWriter.h"
+#include <charconv>
+#include <string>
 
 void VTUWriter::saveResults(const string &t_filename,
                             const FECell &t_fecell,
@@ -32,77 +34,94 @@ void VTUWriter::saveResults(const string &t_filename,
 
     if(m_rank==0){
         std::ofstream out;
-        out.open(t_filename,std::ios::out);
+        out.open(t_filename,std::ios::out|std::ios::binary);
         if(!out.is_open()){
             MessagePrinter::printErrorTxt("can\'t create/open "+t_filename+", please make sure you have the write permission");
             MessagePrinter::exitAsFem();
         }
 
-        int i,j,k,iInd,e;
-        if(i||j||k||iInd||e){}
+        const int nNodes=t_fecell.getFECellNodesNum();
+        const int nElmts=t_fecell.getFECellBulkElmtsNum();
 
-        out << "<?xml version=\"1.0\"?>\n";
-        out << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\">\n";
-        out << "<UnstructuredGrid>\n";
-        out << "<Piece NumberOfPoints=\"" << t_fecell.getFECellNodesNum() << "\" NumberOfCells=\"" << t_fecell.getFECellBulkElmtsNum() << "\">\n";
-        out << "<Points>\n";
-        out << "<DataArray type=\"Float64\" Name=\"nodes\"  NumberOfComponents=\"3\"  format=\"ascii\">\n";
+        // Fast formatted output: format each value with std::to_chars (no locale / no format-string
+        // parsing, far faster than ostream<< number formatting). scientific-with-precision-6 is
+        // byte-for-byte identical to the previous "%.6e"/scientific<<setprecision(6) output, and the
+        // integer form is unique, so the resulting file is bit-identical. Values are accumulated into
+        // an in-memory buffer and written out in ~1MB chunks (one bulk write instead of hundreds of
+        // thousands of per-value stream insertions).
+        std::string sbuf;
+        sbuf.reserve(1u<<21);// 2 MB
+        char nb[48];
+        auto FLUSH=[&](){ if(!sbuf.empty()){ out.write(sbuf.data(),static_cast<std::streamsize>(sbuf.size())); sbuf.clear(); } };
+        auto CHECK=[&](){ if(sbuf.size()>=(1u<<20)) FLUSH(); };// flush at ~1 MB
+        auto D=[&](const double v){ auto r=std::to_chars(nb,nb+sizeof(nb),v,std::chars_format::scientific,6); sbuf.append(nb,static_cast<size_t>(r.ptr-nb)); };
+        auto LI=[&](const long v){ auto r=std::to_chars(nb,nb+sizeof(nb),v); sbuf.append(nb,static_cast<size_t>(r.ptr-nb)); };
+
+        sbuf+="<?xml version=\"1.0\"?>\n";
+        sbuf+="<VTKFile type=\"UnstructuredGrid\" version=\"1.0\">\n";
+        sbuf+="<UnstructuredGrid>\n";
+        sbuf+="<Piece NumberOfPoints=\""; LI(nNodes); sbuf+="\" NumberOfCells=\""; LI(nElmts); sbuf+="\">\n";
+        sbuf+="<Points>\n";
+        sbuf+="<DataArray type=\"Float64\" Name=\"nodes\"  NumberOfComponents=\"3\"  format=\"ascii\">\n";
 
         //*****************************
         // print out node coordinates
-        out <<std::scientific << std::setprecision(6);
-        for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
-            out << t_fecell.getFECellIthNodeJthCoord(i, 1) << " ";
-            out << t_fecell.getFECellIthNodeJthCoord(i, 2) << " ";
-            out << t_fecell.getFECellIthNodeJthCoord(i, 3) << "\n";
+        for (int i=1;i<=nNodes;i++){
+            D(t_fecell.getFECellIthNodeJthCoord(i,1)); sbuf+=' ';
+            D(t_fecell.getFECellIthNodeJthCoord(i,2)); sbuf+=' ';
+            D(t_fecell.getFECellIthNodeJthCoord(i,3)); sbuf+='\n';
+            CHECK();
         }
-        out << "</DataArray>\n";
-        out << "</Points>\n";
+        sbuf+="</DataArray>\n";
+        sbuf+="</Points>\n";
 
         //***************************************
-        //*** For cell information
+        //*** For cell connectivity
         //***************************************
-        out << "<Cells>\n";
-        out << "<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
-        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
-            for (j = 1; j <= t_fecell.getFECellIthBulkElmtNodesNum(e); j++){
-                out << t_fecell.getFECellIthBulkElmtJthNodeID(e,j) - 1 << " ";
+        sbuf+="<Cells>\n";
+        sbuf+="<DataArray type=\"Int32\" Name=\"connectivity\" NumberOfComponents=\"1\" format=\"ascii\">\n";
+        for (int e=1;e<=nElmts;e++){
+            const int nn=t_fecell.getFECellIthBulkElmtNodesNum(e);
+            for (int j=1;j<=nn;j++){
+                LI(t_fecell.getFECellIthBulkElmtJthNodeID(e,j)-1); sbuf+=' ';
             }
-            out << "\n";
+            sbuf+='\n';
+            CHECK();
         }
-        out << "</DataArray>\n";
+        sbuf+="</DataArray>\n";
 
         //***************************************
         //*** For offset
         //***************************************
-        out << "<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
-        int offset = 0;
-        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
-            offset += t_fecell.getFECellIthBulkElmtNodesNum(e);
-            out << offset << "\n";
+        sbuf+="<DataArray type=\"Int32\" Name=\"offsets\" NumberOfComponents=\"1\" format=\"ascii\">\n";
+        long offset=0;
+        for (int e=1;e<=nElmts;e++){
+            offset+=t_fecell.getFECellIthBulkElmtNodesNum(e);
+            LI(offset); sbuf+='\n';
+            CHECK();
         }
-        out << "</DataArray>\n";
+        sbuf+="</DataArray>\n";
 
         //***************************************
-        //*** For connectivity
+        //*** For cell types
         //***************************************
-        out << "<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
-        for (e = 1; e <= t_fecell.getFECellBulkElmtsNum(); e++){
-            out << t_fecell.getFECellIthBulkElmtVTKCellType(e) << "\n";
+        sbuf+="<DataArray type=\"Int32\" Name=\"types\"  NumberOfComponents=\"1\"  format=\"ascii\">\n";
+        for (int e=1;e<=nElmts;e++){
+            LI(t_fecell.getFECellIthBulkElmtVTKCellType(e)); sbuf+='\n';
+            CHECK();
         }
-        out << "</DataArray>\n";
-        out << "</Cells>\n";
-
+        sbuf+="</DataArray>\n";
+        sbuf+="</Cells>\n";
 
         //***************************************
-        //*** For solutions
+        //*** For the PointData header
         //***************************************
+        int i,j,k,iInd;
         string dofname;
-        double value;
         string ScalarName,VectorName,Rank2Name,Rank4Name,TensorName;
 
         ScalarName="<PointData Scalar=\"";
-        for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
+        for (j=1;j<=t_dofHandler.getMaxDofsPerNode();j++){
             ScalarName+=t_dofHandler.getIthDofName(j)+" ";
         }
         for(j=1;j<=t_projection.getScalarMaterialNum();j++){
@@ -131,107 +150,112 @@ void VTUWriter::saveResults(const string &t_filename,
             TensorName+="\" ";
         }
 
-        out << ScalarName<< VectorName<< TensorName<<">\n";
+        sbuf+=ScalarName; sbuf+=VectorName; sbuf+=TensorName; sbuf+=">\n";
 
         //**************************************
-        //*** for solution output
+        //*** for solution (nodal dofs) output
         //**************************************
-        for (j = 1;j<=t_dofHandler.getMaxDofsPerNode();j++){
-            dofname =t_dofHandler.getIthDofName(j);
-            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
-            out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
-                iInd = t_dofHandler.getIthNodeJthDofID(i,j);
-                value=t_solution.m_Ucurrent.getIthValueFromGhost(iInd);
-                out << value << "\n";
+        const PetscScalar *usol=t_solution.m_Ucurrent.getGhostArrayRead();
+        for (j=1;j<=t_dofHandler.getMaxDofsPerNode();j++){
+            dofname=t_dofHandler.getIthDofName(j);
+            sbuf+="<DataArray type=\"Float64\" Name=\""; sbuf+=dofname; sbuf+="\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
+            for (i=1;i<=nNodes;i++){
+                iInd=t_dofHandler.getIthNodeJthDofID(i,j);
+                D(usol[iInd-1]); sbuf+='\n';
+                CHECK();
             }
-            out << "</DataArray>\n\n";
+            sbuf+="</DataArray>\n\n";
         }
+        t_solution.m_Ucurrent.restoreGhostArrayRead(&usol);
 
         int nproj;
         //**************************************
         //*** for projected scalar output
         //**************************************
         nproj=t_projection.getScalarMaterialNum();
-        for (j = 1;j<=nproj;j++){
-            dofname = t_projection.getIthScalarMateName(j);
-            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
-            out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
-                iInd = (i-1)*(1+1)+2;
-                value=t_projection.getProjectionDataRef().m_ScalarProjMateVecList[j-1].getIthValueFromGhost(iInd);
-                out << value << "\n";
+        for (j=1;j<=nproj;j++){
+            const PetscScalar *parr=t_projection.getProjectionDataRef().m_ScalarProjMateVecList[j-1].getGhostArrayRead();
+            dofname=t_projection.getIthScalarMateName(j);
+            sbuf+="<DataArray type=\"Float64\" Name=\""; sbuf+=dofname; sbuf+="\"  NumberOfComponents=\"1\" format=\"ascii\">\n";
+            for (i=1;i<=nNodes;i++){
+                iInd=(i-1)*(1+1)+2;
+                D(parr[iInd-1]); sbuf+='\n';
+                CHECK();
             }
-            out << "</DataArray>\n\n";
+            sbuf+="</DataArray>\n\n";
+            t_projection.getProjectionDataRef().m_ScalarProjMateVecList[j-1].restoreGhostArrayRead(&parr);
         }
 
         //**************************************
         //*** for projected vector output
         //**************************************
         nproj=t_projection.getVectorMaterialNum();
-        for (j = 1;j<=nproj;j++){
-            dofname = t_projection.getIthVectorMateName(j);
-            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"3\" format=\"ascii\">\n";
-            out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+        for (j=1;j<=nproj;j++){
+            const PetscScalar *parr=t_projection.getProjectionDataRef().m_VectorProjMateVecList[j-1].getGhostArrayRead();
+            dofname=t_projection.getIthVectorMateName(j);
+            sbuf+="<DataArray type=\"Float64\" Name=\""; sbuf+=dofname; sbuf+="\"  NumberOfComponents=\"3\" format=\"ascii\">\n";
+            for (i=1;i<=nNodes;i++){
                 for(k=1;k<=3;k++){
-                    iInd = (i-1)*(1+3)+k+1;
-                    value=t_projection.getProjectionDataRef().m_VectorProjMateVecList[j-1].getIthValueFromGhost(iInd);
-                    out << value << " ";
+                    iInd=(i-1)*(1+3)+k+1;
+                    D(parr[iInd-1]); sbuf+=' ';
                 }
-                out <<"\n";
+                sbuf+='\n';
+                CHECK();
             }
-            out << "</DataArray>\n\n";
+            sbuf+="</DataArray>\n\n";
+            t_projection.getProjectionDataRef().m_VectorProjMateVecList[j-1].restoreGhostArrayRead(&parr);
         }
 
         //**************************************
         //*** for projected rank-2 output
         //**************************************
         nproj=t_projection.getRank2MaterialNum();
-        for (j = 1;j<=nproj;j++){
-            dofname = t_projection.getIthRank2MateName(j);
-            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"9\" format=\"ascii\">\n";
-            out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+        for (j=1;j<=nproj;j++){
+            const PetscScalar *parr=t_projection.getProjectionDataRef().m_Rank2ProjMateVecList[j-1].getGhostArrayRead();
+            dofname=t_projection.getIthRank2MateName(j);
+            sbuf+="<DataArray type=\"Float64\" Name=\""; sbuf+=dofname; sbuf+="\"  NumberOfComponents=\"9\" format=\"ascii\">\n";
+            for (i=1;i<=nNodes;i++){
                 for(k=1;k<=9;k++){
-                    iInd = (i-1)*(1+9)+k+1;
-                    value=t_projection.getProjectionDataRef().m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
-                    out << value << " ";
+                    iInd=(i-1)*(1+9)+k+1;
+                    D(parr[iInd-1]); sbuf+=' ';
                 }
-                out <<"\n";
+                sbuf+='\n';
+                CHECK();
             }
-            out << "</DataArray>\n\n";
+            sbuf+="</DataArray>\n\n";
+            t_projection.getProjectionDataRef().m_Rank2ProjMateVecList[j-1].restoreGhostArrayRead(&parr);
         }
 
         //**************************************
         //*** for projected rank-4 output
         //**************************************
         nproj=t_projection.getRank4MaterialNum();
-        for (j = 1;j<=nproj;j++){
-            dofname = t_projection.getIthRank4MateName(j);
-            out<<"<DataArray type=\"Float64\" Name=\"" << dofname << "\"  NumberOfComponents=\"36\" format=\"ascii\">\n";
-            out<<std::scientific<<std::setprecision(6);
-            for (i = 1; i <= t_fecell.getFECellNodesNum(); i++){
+        for (j=1;j<=nproj;j++){
+            const PetscScalar *parr=t_projection.getProjectionDataRef().m_Rank4ProjMateVecList[j-1].getGhostArrayRead();
+            dofname=t_projection.getIthRank4MateName(j);
+            sbuf+="<DataArray type=\"Float64\" Name=\""; sbuf+=dofname; sbuf+="\"  NumberOfComponents=\"36\" format=\"ascii\">\n";
+            for (i=1;i<=nNodes;i++){
                 for(k=1;k<=36;k++){
-                    iInd = (i-1)*(1+36)+k+1;
-                    value=t_projection.getProjectionDataRef().m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
-                    out << value << " ";
+                    iInd=(i-1)*(1+36)+k+1;
+                    D(parr[iInd-1]); sbuf+=' ';
                 }
-                out <<"\n";
+                sbuf+='\n';
+                CHECK();
             }
-            out << "</DataArray>\n\n";
+            sbuf+="</DataArray>\n\n";
+            t_projection.getProjectionDataRef().m_Rank4ProjMateVecList[j-1].restoreGhostArrayRead(&parr);
         }
 
         //***************************************
         //*** End of output
         //***************************************
-        out << "</PointData>\n";
-        out << "</Piece>\n";
-        out << "</UnstructuredGrid>\n";
-        out << "</VTKFile>" << endl;
+        sbuf+="</PointData>\n";
+        sbuf+="</Piece>\n";
+        sbuf+="</UnstructuredGrid>\n";
+        sbuf+="</VTKFile>\n";
+        FLUSH();
 
         out.close();
-
     }// end-of-master-rank-process
 
     t_solution.m_Ucurrent.destroyGhostCopy();
