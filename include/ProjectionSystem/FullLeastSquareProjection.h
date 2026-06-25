@@ -199,6 +199,7 @@ private:
 
     Eigen::MatrixXd A,AT,Al,Ar,W;/**< the extrapolate matrix */
     Eigen::VectorXd QpSolnVec,NodalSolnVec,RHSVec;/**< the right hand side vector and the solution vector */
+    Eigen::FullPivLU<Eigen::MatrixXd> m_AlSolver;/**< LU of Al, factorized once per element and reused for every material/component */
 
     bool IsFirstSetup;
 

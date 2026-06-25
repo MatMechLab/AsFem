@@ -106,7 +106,7 @@ void FullLeastSquareProjection::projectLocalScalarMate2Global(const int &NodesNu
                     QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsScalarMaterials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first);
                 }
                 RHSVec=ARight*QpSolnVec;
-                NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                NodalSolnVec=m_AlSolver.solve(RHSVec);
                 HasName=true;
                 for(j=1;j<=NodesNum;j++) {
                     iInd=ElConn[j-1];
@@ -160,7 +160,7 @@ void FullLeastSquareProjection::projectLocalVectorMate2Global(const int &NodesNu
                         QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsVectorMaterials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first)(component);
                     }
                     RHSVec=ARight*QpSolnVec;
-                    NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                    NodalSolnVec=m_AlSolver.solve(RHSVec);
                     for (j=1;j<=NodesNum;j++) {
                         iInd=ElConn[j-1];
                         jInd=(iInd-1)*(1+3)+1+component;
@@ -216,7 +216,7 @@ void FullLeastSquareProjection::projectLocalRank2Mate2Global(const int &NodesNum
                             QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsRank2Materials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first)(i1,j1);
                         }
                         RHSVec=ARight*QpSolnVec;
-                        NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                        NodalSolnVec=m_AlSolver.solve(RHSVec);
                         ii+=1;
                         for(j=1;j<=NodesNum;j++) {
                             iInd=ElConn[j-1];
@@ -273,7 +273,7 @@ void FullLeastSquareProjection::projectLocalRank4Mate2Global(const int &NodesNum
                             QpSolnVec.coeffRef(qp-1)=SolnSystem.m_QpointsRank4Materials_Local[(ElmtID-1)*QPointsNum+qp-1].at(it.first).getVoigtComponent(i1,j1);
                         }
                         RHSVec=ARight*QpSolnVec;
-                        NodalSolnVec=ALeft.fullPivLu().solve(RHSVec);
+                        NodalSolnVec=m_AlSolver.solve(RHSVec);
 
                         ii+=1;
                         for(j=1;j<=NodesNum;j++) {
@@ -448,14 +448,12 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
     double xi,eta,zeta,w,J,JxW,Volume;
 
     int SubElmtBlockID;
-    int GlobalDofID,GlobalNodeID;
 
     m_LocalElmtInfo.m_Dim=t_FECell.getFECellMaxDim();
     m_LocalElmtInfo.m_NodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
-    vector<SingleMeshCell> MyLocalCellVec;
-
-    MyLocalCellVec=t_FECell.getLocalBulkFECellVecCopy();
+    // reference (not a copy) of the local cells: the loop only reads them
+    const vector<SingleMeshCell> &MyLocalCellVec=t_FECell.getLocalBulkFECellVecRef();
     m_BulkElmtNodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
     QpointsNum=t_FE.m_BulkQpoints.getQPointsNum();
@@ -475,6 +473,12 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
         IsFirstSetup=false;
     }
 
+    // per-element cache of the nodal solution values, indexed by (node, dof); fetched ONCE per
+    // element instead of from the ghost vectors at every quadrature point (a VecGetValues per access)
+    const int _maxDofsPerNode=t_DofHandler.getMaxDofsPerNode();
+    const int _cacheW=m_BulkElmtNodesNum*_maxDofsPerNode;
+    vector<double> _cUolder(_cacheW,0.0),_cUold(_cacheW,0.0),_cU(_cacheW,0.0),_cV(_cacheW,0.0),_cA(_cacheW,0.0);
+
     for (int e=1;e<=t_FECell.getLocalFECellBulkElmtsNum();e++) {
         m_LocalElmtInfo.m_Dim=MyLocalCellVec[e-1].Dim;
         m_LocalElmtInfo.m_NodesNum=MyLocalCellVec[e-1].NodesNumPerElmt;
@@ -484,6 +488,22 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
         m_Nodes=MyLocalCellVec[e-1].ElmtNodeCoords;
         m_Nodes0=MyLocalCellVec[e-1].ElmtNodeCoords0;
         m_ElmtConn=MyLocalCellVec[e-1].ElmtConn;
+
+        // build the per-element nodal-value cache once
+        for(int jn=1;jn<=m_BulkElmtNodesNum;jn++){
+            const int gnode=MyLocalCellVec[e-1].ElmtConn[jn-1];
+            for(int d=1;d<=_maxDofsPerNode;d++){
+                const int gdof=t_DofHandler.getIthNodeJthDofID(gnode,d);
+                if(gdof>=1){
+                    const int idx=(jn-1)*_maxDofsPerNode+(d-1);
+                    _cUolder[idx]=t_SolnSystem.m_Uolder.getIthValueFromGhost(gdof);
+                    _cUold[idx]  =t_SolnSystem.m_Uold.getIthValueFromGhost(gdof);
+                    _cU[idx]     =t_SolnSystem.m_Ucurrent.getIthValueFromGhost(gdof);
+                    _cV[idx]     =t_SolnSystem.m_V.getIthValueFromGhost(gdof);
+                    _cA[idx]     =t_SolnSystem.m_A.getIthValueFromGhost(gdof);
+                }
+            }
+        }
 
         A.setZero();
         AT.setZero();
@@ -556,31 +576,37 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
 
                     m_LocalElmtSoln.m_QpGradV[i]=0.0;
                     for (int j=1;j<=m_BulkElmtNodesNum;j++) {
-                        GlobalNodeID=MyLocalCellVec[e-1].ElmtConn[j-1];
-                        GlobalDofID=t_DofHandler.getIthNodeJthDofID(GlobalNodeID,m_SubElmtDofIDs[i-1]);
+                        // read the (node j, sub-dof i) nodal values from the per-element cache
+                        const int cidx=(j-1)*_maxDofsPerNode+(m_SubElmtDofIDs[i-1]-1);
+                        const double uolder=_cUolder[cidx];
+                        const double uold  =_cUold[cidx];
+                        const double u     =_cU[cidx];
+                        const double v     =_cV[cidx];
+                        const double a     =_cA[cidx];
+                        const double N=t_FE.m_BulkShp.shape_value(j);
+                        const Vector3d dN=t_FE.m_BulkShp.shape_grad(j);
 
-                        m_LocalElmtSoln.m_QpUolder[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpUold[i]  +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpU[i]     +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpUolder[i]+=N*uolder;
+                        m_LocalElmtSoln.m_QpUold[i]  +=N*uold;
+                        m_LocalElmtSoln.m_QpU[i]     +=N*u;
+                        m_LocalElmtSoln.m_QpV[i]     +=N*v;
+                        m_LocalElmtSoln.m_QpA[i]     +=N*a;
 
-                        m_LocalElmtSoln.m_QpV[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpA[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_A.getIthValueFromGhost(GlobalDofID);
-
-                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=dN(1)*uolder;
+                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=dN(2)*uolder;
+                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=dN(3)*uolder;
                         //
-                        m_LocalElmtSoln.m_QpGradUold[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUold[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUold[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUold[i](1)+=dN(1)*uold;
+                        m_LocalElmtSoln.m_QpGradUold[i](2)+=dN(2)*uold;
+                        m_LocalElmtSoln.m_QpGradUold[i](3)+=dN(3)*uold;
                         //
-                        m_LocalElmtSoln.m_QpGradU[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradU[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradU[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradU[i](1)+=dN(1)*u;
+                        m_LocalElmtSoln.m_QpGradU[i](2)+=dN(2)*u;
+                        m_LocalElmtSoln.m_QpGradU[i](3)+=dN(3)*u;
 
-                        m_LocalElmtSoln.m_QpGradV[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradV[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradV[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradV[i](1)+=dN(1)*v;
+                        m_LocalElmtSoln.m_QpGradV[i](2)+=dN(2)*v;
+                        m_LocalElmtSoln.m_QpGradV[i](3)+=dN(3)*v;
                     }
                 }// end-of-sub-element-dofs-loop
 
@@ -605,7 +631,8 @@ void FullLeastSquareProjection::executeMyProjection(const FECell &t_FECell,
         // which means, this is the elemental operation !!!
         Al=AT*W*A;
         Ar=AT*W;
-        if (Al.fullPivLu().rcond()<1.0e-12) {
+        m_AlSolver.compute(Al);// factorize Al ONCE per element; reused for every material/component
+        if (m_AlSolver.rcond()<1.0e-12) {
             MessagePrinter::printErrorTxt("The extrapolation matrix is singular for the FullLeastSquare projection, please check your code");
             MessagePrinter::exitAsFem();
         }
