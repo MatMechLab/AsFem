@@ -54,15 +54,21 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
     double xi,eta,zeta,w,J,JxW;
 
     int SubElmtBlockID;
-    int GlobalDofID,GlobalNodeID;
     int GlobalI,GlobalJ;
 
-    int rank;
-    MPI_Comm_rank(MPI_COMM_WORLD,&rank);
-
-    vector<SingleMeshCell> MyLocalCellVec;
-    MyLocalCellVec=t_FECell.getLocalBulkFECellVecCopy();
+    // Reference (not a copy) to the local cells: the loop only reads them, so the previous
+    // per-assembly deep copy of every local cell (coords/connectivity/dof-ids) was pure waste.
+    vector<SingleMeshCell>& MyLocalCellVec=t_FECell.getLocalBulkFECellVecRef();
     m_LocalElmtInfo.m_ElmtsNum=t_FECell.getLocalFECellBulkElmtsNum();
+
+    // Per-element cache of the nodal solution values, indexed by (node, dof). These are
+    // element-constant, so they are fetched ONCE per element here instead of from the ghost
+    // vectors at every quadrature point inside the interpolation loop (a VecGetValues per access).
+    const int _maxDofsPerNode=t_DofHandler.getMaxDofsPerNode();
+    const int _maxNodesPerElmt=t_FECell.getFECellNodesNumPerBulkElmt();
+    const int _cacheW=_maxNodesPerElmt*_maxDofsPerNode;
+    vector<double> _cUolder(_cacheW,0.0),_cUold(_cacheW,0.0),_cU(_cacheW,0.0),_cV(_cacheW,0.0),_cA(_cacheW,0.0);
+
     for(int e=1;e<=m_LocalElmtInfo.m_ElmtsNum;e++){
         m_LocalElmtInfo.m_Dim=MyLocalCellVec[e-1].Dim;
         m_LocalElmtInfo.m_DofsNum=static_cast<int>(MyLocalCellVec[e-1].ElmtDofIDs.size());
@@ -74,21 +80,29 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
 
         m_Nodes=MyLocalCellVec[e-1].ElmtNodeCoords;
         m_ElmtConn=MyLocalCellVec[e-1].ElmtConn;
-        t_DofHandler.getIthLocalBulkElmtDofIDs(e,m_ElmtDofIDs);
-        for(int i=0;i<t_DofHandler.getMaxDofsPerElmt();i++){
-            m_ElmtUolder[i]=t_SolnSystem.m_Uolder.getIthValueFromGhost(m_ElmtDofIDs[i]);
-            m_ElmtUold[i]  =t_SolnSystem.m_Uold.getIthValueFromGhost(m_ElmtDofIDs[i]);
-            m_ElmtU[i]     =t_SolnSystem.m_Utemp.getIthValueFromGhost(m_ElmtDofIDs[i]);
-            
-            m_ElmtV[i]=t_SolnSystem.m_V.getIthValueFromGhost(m_ElmtDofIDs[i]);
-            m_ElmtA[i]=t_SolnSystem.m_A.getIthValueFromGhost(m_ElmtDofIDs[i]);
+        // NOTE: the per-element m_ElmtU/Uold/Uolder/V/A gather that used to be here was removed:
+        // those arrays were filled with maxDofsPerElmt ghost lookups but never read anywhere.
+
+        // Build the per-element nodal-value cache once (was re-fetched for every quadrature point).
+        for(int j=1;j<=m_BulkElmtNodesNum;j++){
+            const int gnode=MyLocalCellVec[e-1].ElmtConn[j-1];
+            for(int d=1;d<=_maxDofsPerNode;d++){
+                const int gdof=t_DofHandler.getIthNodeJthDofID(gnode,d);
+                if(gdof>=1){
+                    const int idx=(j-1)*_maxDofsPerNode+(d-1);
+                    _cUolder[idx]=t_SolnSystem.m_Uolder.getIthValueFromGhost(gdof);
+                    _cUold[idx]  =t_SolnSystem.m_Uold.getIthValueFromGhost(gdof);
+                    _cU[idx]     =t_SolnSystem.m_Utemp.getIthValueFromGhost(gdof);
+                    _cV[idx]     =t_SolnSystem.m_V.getIthValueFromGhost(gdof);
+                    _cA[idx]     =t_SolnSystem.m_A.getIthValueFromGhost(gdof);
+                }
+            }
         }
 
         /**
          * Now, we execute the qpoint integration
          */
         m_LocalElmtInfo.m_QpointsNum=t_FE.m_BulkQpoints.getQPointsNum();
-        MyLocalCellVec[e-1].Volume=0.0;
         for(int qp=1;qp<=m_LocalElmtInfo.m_QpointsNum;qp++){
             m_LocalElmtInfo.m_QpointID=qp;
             w=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,0);
@@ -109,7 +123,6 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
             t_FE.m_BulkShp.calc(xi,eta,zeta,m_Nodes,true);
             J=t_FE.m_BulkShp.getJacDet();
             JxW=J*w;
-            MyLocalCellVec[e-1].Volume+=1.0*JxW;/**< for the volume of the current fe cell */
 
             m_LocalElmtInfo.m_QpCoords=0.0;
             for (int i=1;i<=m_LocalElmtInfo.m_NodesNum;i++) {
@@ -169,31 +182,38 @@ void BulkFESystem::formBulkFE(const FECalcType &t_CalcType,
 
                     m_LocalElmtSoln.m_QpGradV[i]=0.0;
                     for (int j=1;j<=m_BulkElmtNodesNum;j++) {
-                        GlobalNodeID=MyLocalCellVec[e-1].ElmtConn[j-1];
-                        GlobalDofID=t_DofHandler.getIthNodeJthDofID(GlobalNodeID,m_SubElmtDofIDs[i-1]);
+                        // read the (node j, sub-dof i) nodal values from the per-element cache
+                        // (these were re-fetched from the ghost vectors at every qpoint before).
+                        const int cidx=(j-1)*_maxDofsPerNode+(m_SubElmtDofIDs[i-1]-1);
+                        const double uolder=_cUolder[cidx];
+                        const double uold  =_cUold[cidx];
+                        const double u     =_cU[cidx];
+                        const double v     =_cV[cidx];
+                        const double a     =_cA[cidx];
+                        const double N=t_FE.m_BulkShp.shape_value(j);
+                        const Vector3d dN=t_FE.m_BulkShp.shape_grad(j);
 
-                        m_LocalElmtSoln.m_QpUolder[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpUold[i]  +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpU[i]     +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Utemp.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpUolder[i]+=N*uolder;
+                        m_LocalElmtSoln.m_QpUold[i]  +=N*uold;
+                        m_LocalElmtSoln.m_QpU[i]     +=N*u;
+                        m_LocalElmtSoln.m_QpV[i]     +=N*v;
+                        m_LocalElmtSoln.m_QpA[i]     +=N*a;
 
-                        m_LocalElmtSoln.m_QpV[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpA[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_A.getIthValueFromGhost(GlobalDofID);
-
-                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=dN(1)*uolder;
+                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=dN(2)*uolder;
+                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=dN(3)*uolder;
                         //
-                        m_LocalElmtSoln.m_QpGradUold[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUold[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUold[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUold[i](1)+=dN(1)*uold;
+                        m_LocalElmtSoln.m_QpGradUold[i](2)+=dN(2)*uold;
+                        m_LocalElmtSoln.m_QpGradUold[i](3)+=dN(3)*uold;
                         //
-                        m_LocalElmtSoln.m_QpGradU[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Utemp.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradU[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Utemp.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradU[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Utemp.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradU[i](1)+=dN(1)*u;
+                        m_LocalElmtSoln.m_QpGradU[i](2)+=dN(2)*u;
+                        m_LocalElmtSoln.m_QpGradU[i](3)+=dN(3)*u;
 
-                        m_LocalElmtSoln.m_QpGradV[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradV[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradV[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradV[i](1)+=dN(1)*v;
+                        m_LocalElmtSoln.m_QpGradV[i](2)+=dN(2)*v;
+                        m_LocalElmtSoln.m_QpGradV[i](3)+=dN(3)*v;
                     }
                 }// end-of-sub-element-dofs-loop
 
