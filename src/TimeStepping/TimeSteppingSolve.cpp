@@ -114,7 +114,11 @@ bool TimeStepping::solve(FECell &t_FECell,
                                   t_SolnSystem,
                                   t_EqSystem.m_AMATRIX,
                                   t_EqSystem.m_RHS);
-
+            // commit the converged qpoint material state as the new "old" state, so that
+            // history-dependent materials (e.g. plasticity) carry their state to the next step.
+            // Without this the old state stays frozen at its initial value, which only happens
+            // to give the right answer for monotonic loading.
+            t_SolnSystem.updateMaterialsSolution();
 
             if(t_FECtrlInfo.CurrentStep%t_Output.getIntervalNum()==0){
                 t_ProjSystem.executeProjection(t_FECell,t_DofHandler,t_ElmtSystem,t_MateSystem,t_FE,t_SolnSystem,t_FECtrlInfo);
