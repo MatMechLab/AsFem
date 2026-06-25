@@ -80,7 +80,14 @@ bool TimeStepping::solve(FECell &t_FECell,
     MessagePrinter::printStars();
 
     IsLastStepFailed=true;
-    for(t_FECtrlInfo.T=0.0;t_FECtrlInfo.T<=m_Data.m_FinalTime;){
+    // tolerance (relative to the final time) for deciding we have reached the final time
+    const double finaltimetol=1.0e-10*m_Data.m_FinalTime;
+    for(t_FECtrlInfo.T=0.0;t_FECtrlInfo.T<m_Data.m_FinalTime-finaltimetol;){
+        // clamp the increment so the last step lands exactly on the final time instead of
+        // overshooting it by up to one dt
+        if(t_FECtrlInfo.T+t_FECtrlInfo.Dt>m_Data.m_FinalTime){
+            t_FECtrlInfo.Dt=m_Data.m_FinalTime-t_FECtrlInfo.T;
+        }
         snprintf(buff,68,"Time=%13.5e, step=%8d, dt=%13.5e",t_FECtrlInfo.T+t_FECtrlInfo.Dt,t_FECtrlInfo.CurrentStep+1,t_FECtrlInfo.Dt);
         str=buff;
         MessagePrinter::printNormalTxt(str);
