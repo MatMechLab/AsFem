@@ -88,30 +88,28 @@ void LeastSquareProjection::projectLocalScalarMate2Global(const int &NodesNum,
         MessagePrinter::exitAsFem();
     }
     bool HasName;
-    double w;
+    double w,mateval;
     int j,k,jInd,iInd;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getScalarMaterialsCopy()){
-                if(it.first==ScalarMateNameList[k-1]){
-                    HasName=true;
-                    jInd=(iInd-1)*(1+1)+1;
-                    ScalarProjMateVecList[k-1].addValue(jInd,w);
-                    jInd=(iInd-1)*(1+1)+2;
-                    ScalarProjMateVecList[k-1].addValue(jInd,w*it.second);
-                    break;
-                }
-            }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the scalar material ("+ScalarMateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
-            }
+    const auto &scalmat=Mate.getScalarMaterialsRef();// const ref: no per-node map copy
+    for(k=1;k<=ProjNum;k++){
+        // locate the projected material value ONCE (was copied+searched for every node)
+        HasName=false; mateval=0.0;
+        for(const auto &it:scalmat){
+            if(it.first==ScalarMateNameList[k-1]){ HasName=true; mateval=it.second; break; }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the scalar material ("+ScalarMateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
+        }
+        for(j=1;j<=NodesNum;j++){
+            iInd=ElConn[j-1];
+            w=DetJac*Shp.shape_value(j);
+            jInd=(iInd-1)*(1+1)+1;
+            ScalarProjMateVecList[k-1].addValue(jInd,w);
+            jInd=(iInd-1)*(1+1)+2;
+            ScalarProjMateVecList[k-1].addValue(jInd,w*mateval);
         }
     }
-    
 }
 //******************************************************
 void LeastSquareProjection::projectLocalVectorMate2Global(const int &NodesNum,
@@ -129,30 +127,28 @@ void LeastSquareProjection::projectLocalVectorMate2Global(const int &NodesNum,
     bool HasName;
     double w;
     int j,k,jInd,iInd;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getVectorMaterialsCopy()){
-                if(it.first==VectorMateNameList[k-1]){
-                    HasName=true;
-                    jInd=(iInd-1)*(1+3)+1;
-                    VectorProjMateVecList[k-1].addValue(jInd,w);
-                    //
-                    jInd=(iInd-1)*(1+3)+2;
-                    VectorProjMateVecList[k-1].addValue(jInd,it.second(1)*w);
-                    jInd=(iInd-1)*(1+3)+3;
-                    VectorProjMateVecList[k-1].addValue(jInd,it.second(2)*w);
-                    jInd=(iInd-1)*(1+3)+4;
-                    VectorProjMateVecList[k-1].addValue(jInd,it.second(3)*w);
-                    break;
-                }
-            }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the vector material ("+VectorMateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
-            }
+    Vector3d matevec;
+    const auto &vecmat=Mate.getVectorMaterialsRef();// const ref: no per-node map copy
+    for(k=1;k<=ProjNum;k++){
+        HasName=false; matevec=0.0;
+        for(const auto &it:vecmat){
+            if(it.first==VectorMateNameList[k-1]){ HasName=true; matevec=it.second; break; }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the vector material ("+VectorMateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
+        }
+        for(j=1;j<=NodesNum;j++){
+            iInd=ElConn[j-1];
+            w=DetJac*Shp.shape_value(j);
+            jInd=(iInd-1)*(1+3)+1;
+            VectorProjMateVecList[k-1].addValue(jInd,w);
+            jInd=(iInd-1)*(1+3)+2;
+            VectorProjMateVecList[k-1].addValue(jInd,matevec(1)*w);
+            jInd=(iInd-1)*(1+3)+3;
+            VectorProjMateVecList[k-1].addValue(jInd,matevec(2)*w);
+            jInd=(iInd-1)*(1+3)+4;
+            VectorProjMateVecList[k-1].addValue(jInd,matevec(3)*w);
         }
     }
 }
@@ -173,30 +169,29 @@ void LeastSquareProjection::projectLocalRank2Mate2Global(const int &NodesNum,
     double w;
     int j,k,jInd,iInd;
     int i1,j1,ii;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getRank2MaterialsCopy()){
-                if(it.first==Rank2MateNameList[k-1]){
-                    HasName=true;
-                    jInd=(iInd-1)*(9+1)+0+1;
-                    Rank2ProjMateVecList[k-1].addValue(jInd,w);
-                    ii=0;
-                    for(i1=1;i1<=3;i1++){
-                        for(j1=1;j1<=3;j1++){
-                            ii+=1;
-                            jInd=(iInd-1)*(9+1)+ii+1;
-                            Rank2ProjMateVecList[k-1].addValue(jInd,it.second(i1,j1)*w);
-                        }
-                    }
-                    break;
+    Rank2Tensor mate2;
+    const auto &rank2mat=Mate.getRank2MaterialsRef();// const ref: no per-node map copy
+    for(k=1;k<=ProjNum;k++){
+        HasName=false; mate2.setToZeros();
+        for(const auto &it:rank2mat){
+            if(it.first==Rank2MateNameList[k-1]){ HasName=true; mate2=it.second; break; }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the rank-2 material ("+Rank2MateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
+        }
+        for(j=1;j<=NodesNum;j++){
+            iInd=ElConn[j-1];
+            w=DetJac*Shp.shape_value(j);
+            jInd=(iInd-1)*(9+1)+0+1;
+            Rank2ProjMateVecList[k-1].addValue(jInd,w);
+            ii=0;
+            for(i1=1;i1<=3;i1++){
+                for(j1=1;j1<=3;j1++){
+                    ii+=1;
+                    jInd=(iInd-1)*(9+1)+ii+1;
+                    Rank2ProjMateVecList[k-1].addValue(jInd,mate2(i1,j1)*w);
                 }
-            }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the rank-2 material ("+Rank2MateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
             }
         }
     }
@@ -218,30 +213,29 @@ void LeastSquareProjection::projectLocalRank4Mate2Global(const int &NodesNum,
     double w;
     int j,k,jInd,iInd;
     int i1,j1,ii;
-    for(j=1;j<=NodesNum;j++){
-        iInd=ElConn[j-1];
-        w=DetJac*Shp.shape_value(j);
-        for(k=1;k<=ProjNum;k++){
-            HasName=false;
-            for(const auto &it:Mate.getRank4MaterialsCopy()){
-                if(it.first==Rank4MateNameList[k-1]){
-                    HasName=true;
-                    ii=0;
+    Rank4Tensor mate4;
+    const auto &rank4mat=Mate.getRank4MaterialsRef();// const ref: no per-node map copy
+    for(k=1;k<=ProjNum;k++){
+        HasName=false; mate4.setToZeros();
+        for(const auto &it:rank4mat){
+            if(it.first==Rank4MateNameList[k-1]){ HasName=true; mate4=it.second; break; }
+        }
+        if(!HasName){
+            MessagePrinter::printErrorTxt("can\'t find the rank-4 material ("+Rank4MateNameList[k-1]+") for projection, please check either your input file or your material code");
+            MessagePrinter::exitAsFem();
+        }
+        for(j=1;j<=NodesNum;j++){
+            iInd=ElConn[j-1];
+            w=DetJac*Shp.shape_value(j);
+            ii=0;
+            jInd=(iInd-1)*(36+1)+ii+1;
+            Rank4ProjMateVecList[k-1].addValue(jInd,w);
+            for(i1=1;i1<=6;i1++){
+                for(j1=1;j1<=6;j1++){
+                    ii+=1;
                     jInd=(iInd-1)*(36+1)+ii+1;
-                    Rank4ProjMateVecList[k-1].addValue(jInd,w);
-                    for(i1=1;i1<=6;i1++){
-                        for(j1=1;j1<=6;j1++){
-                            ii+=1;
-                            jInd=(iInd-1)*(36+1)+ii+1;
-                            Rank4ProjMateVecList[k-1].addValue(jInd,it.second.getVoigtComponent(i1,j1)*w);
-                        }
-                    }
-                    break;
+                    Rank4ProjMateVecList[k-1].addValue(jInd,mate4.getVoigtComponent(i1,j1)*w);
                 }
-            }
-            if(!HasName){
-                MessagePrinter::printErrorTxt("can\'t find the rank-4 material ("+Rank4MateNameList[k-1]+") for projection, please check either your input file or your material code");
-                MessagePrinter::exitAsFem();
             }
         }
     }
@@ -338,16 +332,16 @@ void LeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         if (nproj) {
             for (j = 1; j <= nproj; j++) {
                 iInd = (GlobalNodeID - 1) * (1 + 36) + 0 + 1;
-                weight = Data.m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                weight = Data.m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                 for (k = 1; k <= 36; k++) {
                     iInd = (GlobalNodeID - 1) * (36 + 1)+ k + 1;
-                    value = Data.m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                    value = Data.m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     if (abs(weight) > 1.0e-15) {
                         newvalue = value / weight;
                     } else {
                         newvalue = value /1.0e-8;
                     }
-                    Data.m_Rank2ProjMateVecList[j-1].addValue(iInd, newvalue);
+                    Data.m_Rank4ProjMateVecList[j-1].addValue(iInd, newvalue);
                 }
             }
         }
@@ -402,18 +396,22 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
     double xi,eta,zeta,w,J,JxW;
 
     int SubElmtBlockID;
-    int GlobalDofID,GlobalNodeID;
 
     m_LocalElmtInfo.m_Dim=t_FECell.getFECellMaxDim();
     m_LocalElmtInfo.m_NodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
-    vector<SingleMeshCell> MyLocalCellVec;
-
-    MyLocalCellVec=t_FECell.getLocalBulkFECellVecCopy();
+    // reference (not a copy) of the local cells: the loop only reads them
+    const vector<SingleMeshCell> &MyLocalCellVec=t_FECell.getLocalBulkFECellVecRef();
     m_BulkElmtNodesNum=t_FECell.getFECellNodesNumPerBulkElmt();
 
     QpointsNum=t_FE.m_BulkQpoints.getQPointsNum();
     m_LocalElmtInfo.m_QpointsNum=QpointsNum;
+
+    // per-element cache of the nodal solution values, indexed by (node, dof); fetched ONCE per
+    // element instead of from the ghost vectors at every quadrature point (a VecGetValues per access)
+    const int _maxDofsPerNode=t_DofHandler.getMaxDofsPerNode();
+    const int _cacheW=m_BulkElmtNodesNum*_maxDofsPerNode;
+    vector<double> _cUolder(_cacheW,0.0),_cUold(_cacheW,0.0),_cU(_cacheW,0.0),_cV(_cacheW,0.0),_cA(_cacheW,0.0);
 
     for (int e=1;e<=t_FECell.getLocalFECellBulkElmtsNum();e++) {
         m_LocalElmtInfo.m_Dim=MyLocalCellVec[e-1].Dim;
@@ -424,6 +422,23 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
         m_Nodes=MyLocalCellVec[e-1].ElmtNodeCoords;
         m_Nodes0=MyLocalCellVec[e-1].ElmtNodeCoords0;
         m_ElmtConn=MyLocalCellVec[e-1].ElmtConn;
+
+        // build the per-element nodal-value cache once
+        for(int jn=1;jn<=m_BulkElmtNodesNum;jn++){
+            const int gnode=MyLocalCellVec[e-1].ElmtConn[jn-1];
+            for(int d=1;d<=_maxDofsPerNode;d++){
+                const int gdof=t_DofHandler.getIthNodeJthDofID(gnode,d);
+                if(gdof>=1){
+                    const int idx=(jn-1)*_maxDofsPerNode+(d-1);
+                    _cUolder[idx]=t_SolnSystem.m_Uolder.getIthValueFromGhost(gdof);
+                    _cUold[idx]  =t_SolnSystem.m_Uold.getIthValueFromGhost(gdof);
+                    _cU[idx]     =t_SolnSystem.m_Ucurrent.getIthValueFromGhost(gdof);
+                    _cV[idx]     =t_SolnSystem.m_V.getIthValueFromGhost(gdof);
+                    _cA[idx]     =t_SolnSystem.m_A.getIthValueFromGhost(gdof);
+                }
+            }
+        }
+
         for (int qp=1;qp<=QpointsNum;qp++) {
             w=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,0);
             xi=t_FE.m_BulkQpoints.getIthPointJthCoord(qp,1);
@@ -481,31 +496,39 @@ void LeastSquareProjection::executeMyProjection(const FECell &t_FECell,
 
                     m_LocalElmtSoln.m_QpGradV[i]=0.0;
                     for (int j=1;j<=m_BulkElmtNodesNum;j++) {
-                        GlobalNodeID=MyLocalCellVec[e-1].ElmtConn[j-1];
-                        GlobalDofID=t_DofHandler.getIthNodeJthDofID(GlobalNodeID,m_SubElmtDofIDs[i-1]);
+                        // read the (node j, sub-dof i) nodal values from the per-element cache
+                        // (each value fetched once per element instead of re-read every qpoint,
+                        //  and once per value instead of once per gradient component)
+                        const int cidx=(j-1)*_maxDofsPerNode+(m_SubElmtDofIDs[i-1]-1);
+                        const double uolder=_cUolder[cidx];
+                        const double uold  =_cUold[cidx];
+                        const double u     =_cU[cidx];
+                        const double v     =_cV[cidx];
+                        const double a     =_cA[cidx];
+                        const double N=t_FE.m_BulkShp.shape_value(j);
+                        const Vector3d dN=t_FE.m_BulkShp.shape_grad(j);
 
-                        m_LocalElmtSoln.m_QpUolder[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpUold[i]  +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpU[i]     +=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpUolder[i]+=N*uolder;
+                        m_LocalElmtSoln.m_QpUold[i]  +=N*uold;
+                        m_LocalElmtSoln.m_QpU[i]     +=N*u;
+                        m_LocalElmtSoln.m_QpV[i]     +=N*v;
+                        m_LocalElmtSoln.m_QpA[i]     +=N*a;
 
-                        m_LocalElmtSoln.m_QpV[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpA[i]+=t_FE.m_BulkShp.shape_value(j)*t_SolnSystem.m_A.getIthValueFromGhost(GlobalDofID);
-
-                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uolder.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUolder[i](1)+=dN(1)*uolder;
+                        m_LocalElmtSoln.m_QpGradUolder[i](2)+=dN(2)*uolder;
+                        m_LocalElmtSoln.m_QpGradUolder[i](3)+=dN(3)*uolder;
                         //
-                        m_LocalElmtSoln.m_QpGradUold[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUold[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradUold[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Uold.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradUold[i](1)+=dN(1)*uold;
+                        m_LocalElmtSoln.m_QpGradUold[i](2)+=dN(2)*uold;
+                        m_LocalElmtSoln.m_QpGradUold[i](3)+=dN(3)*uold;
                         //
-                        m_LocalElmtSoln.m_QpGradU[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradU[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradU[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_Ucurrent.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradU[i](1)+=dN(1)*u;
+                        m_LocalElmtSoln.m_QpGradU[i](2)+=dN(2)*u;
+                        m_LocalElmtSoln.m_QpGradU[i](3)+=dN(3)*u;
 
-                        m_LocalElmtSoln.m_QpGradV[i](1)+=t_FE.m_BulkShp.shape_grad(j)(1)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradV[i](2)+=t_FE.m_BulkShp.shape_grad(j)(2)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
-                        m_LocalElmtSoln.m_QpGradV[i](3)+=t_FE.m_BulkShp.shape_grad(j)(3)*t_SolnSystem.m_V.getIthValueFromGhost(GlobalDofID);
+                        m_LocalElmtSoln.m_QpGradV[i](1)+=dN(1)*v;
+                        m_LocalElmtSoln.m_QpGradV[i](2)+=dN(2)*v;
+                        m_LocalElmtSoln.m_QpGradV[i](3)+=dN(3)*v;
                     }
                 }// end-of-sub-element-dofs-loop
 

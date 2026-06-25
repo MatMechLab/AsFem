@@ -384,16 +384,16 @@ void FullLeastSquareProjection::globalProjectionAction(const FECell &t_FECell,
         if (nproj) {
             for (j = 1; j <= nproj; j++) {
                 iInd = (GlobalNodeID - 1) * (1 + 36) + 0 + 1;
-                weight = Data.m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                weight = Data.m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                 for (k = 1; k <= 36; k++) {
                     iInd = (GlobalNodeID - 1) * (36 + 1)+ k + 1;
-                    value = Data.m_Rank2ProjMateVecList[j-1].getIthValueFromGhost(iInd);
+                    value = Data.m_Rank4ProjMateVecList[j-1].getIthValueFromGhost(iInd);
                     if (abs(weight) > 1.0e-15) {
                         newvalue = value / weight;
                     } else {
                         newvalue = value /1.0e-8;
                     }
-                    Data.m_Rank2ProjMateVecList[j-1].addValue(iInd, newvalue);
+                    Data.m_Rank4ProjMateVecList[j-1].addValue(iInd, newvalue);
                 }
             }
         }

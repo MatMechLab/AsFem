@@ -248,6 +248,10 @@ public:
      * Get the reference of the local bulk mesh cell vector
      */
     inline vector<SingleMeshCell>& getLocalBulkFECellVecRef(){return m_CellData.MeshCell_Local;}
+    /**
+     * Get a const reference of the local bulk mesh cell vector (zero-copy read access)
+     */
+    inline const vector<SingleMeshCell>& getLocalBulkFECellVecRef()const{return m_CellData.MeshCell_Local;}
 
     /**
      * Get the copy of local physical id to fe cell vector mapping

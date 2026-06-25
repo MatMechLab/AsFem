@@ -152,6 +152,12 @@ public:
         return m_ScalarMaterials;
     }
     /**
+     * get a const reference of scalar materials (zero-copy read access)
+     */
+    inline const ScalarMateType& getScalarMaterialsRef()const{
+        return m_ScalarMaterials;
+    }
+    /**
      * get the copy of scalar materials
      */
     inline ScalarMateType getScalarMaterialsCopy()const{
@@ -162,6 +168,12 @@ public:
      * get the reference of vector materials
      */
     inline VectorMateType& getVectorMaterialsRef(){
+        return m_VectorMaterials;
+    }
+    /**
+     * get a const reference of vector materials (zero-copy read access)
+     */
+    inline const VectorMateType& getVectorMaterialsRef()const{
         return m_VectorMaterials;
     }
     /**
@@ -178,6 +190,12 @@ public:
         return m_Rank2Materials;
     }
     /**
+     * get a const reference of rank-2 materials (zero-copy read access)
+     */
+    inline const Rank2MateType& getRank2MaterialsRef()const{
+        return m_Rank2Materials;
+    }
+    /**
      * get the copy of rank-2 materials
      */
     inline Rank2MateType getRank2MaterialsCopy()const{
@@ -188,6 +206,12 @@ public:
      * get the reference of rank-4 materials
      */
     inline Rank4MateType& getRank4MaterialsRef(){
+        return m_Rank4Materials;
+    }
+    /**
+     * get a const reference of rank-4 materials (zero-copy read access)
+     */
+    inline const Rank4MateType& getRank4MaterialsRef()const{
         return m_Rank4Materials;
     }
     /**

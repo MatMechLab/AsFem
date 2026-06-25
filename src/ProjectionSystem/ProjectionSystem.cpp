@@ -102,7 +102,7 @@ void ProjectionSystem::releaseMemory(){
     for (auto &it:m_Data.m_ScalarProjMateVecList) it.releaseMemory();
     for (auto &it:m_Data.m_VectorProjMateVecList) it.releaseMemory();
     for (auto &it:m_Data.m_Rank2ProjMateVecList) it.releaseMemory();
-    for (auto it:m_Data.m_Rank4ProjMateVecList) it.releaseMemory();
+    for (auto &it:m_Data.m_Rank4ProjMateVecList) it.releaseMemory();
 
     m_LocalElmtSoln.m_QpU.clear();
     m_LocalElmtSoln.m_QpUold.clear();
