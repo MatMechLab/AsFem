@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21)
 
 project(AsFem
-        VERSION 0.8.0
+        VERSION 0.9.0
         DESCRIPTION "Advanced Simulation kit based on Finite Element Method"
         HOMEPAGE_URL "https://github.com/MatMechLab/AsFem"
         LANGUAGES CXX)

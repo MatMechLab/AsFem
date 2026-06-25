@@ -9,7 +9,7 @@
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //+++ Author : Yang Bai
 //+++ Date   : 2020.12.28
-//+++ Update : 2024.01.31
+//+++ Update : 2026.06.25
 //+++ Purpose: the main program of the whole AsFem framework
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -23,10 +23,10 @@ int main(int args,char *argv[]){
 
     if(myapp.init(args,argv)) return 1;
 
-    const int Year=2024;
-    const int Month=10;
-    const int Day=19;
-    const double Version=0.8;
+    const int Year=2026;
+    const int Month=6;
+    const int Day=25;
+    const double Version=0.9;
     myapp.printAppInfo(Year,Month,Day,Version);
 
 
