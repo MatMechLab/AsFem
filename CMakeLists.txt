@@ -55,6 +55,12 @@ find_package(MPI REQUIRED COMPONENTS CXX)
 message(STATUS "MPI: ${MPI_CXX_COMPILER} (MPI_HOME=${MPI_HOME})")
 
 #################################################################
+### Header-only dependencies provided by the build environment ###
+#################################################################
+find_package(Eigen3 CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+
+#################################################################
 ### Dependency: PETSc (+ the METIS it ships with)             ###
 ### Primary: pkg-config (the portable & conda-native way).    ###
 ### Fallback: locate libpetsc/petsc.h directly, honouring     ###
@@ -117,12 +123,12 @@ include(SourceCode.cmake)
 add_executable(asfem ${inc} ${src})
 
 target_include_directories(asfem PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/include"
-    "${CMAKE_CURRENT_SOURCE_DIR}/external"        # nlohmann/json
-    "${CMAKE_CURRENT_SOURCE_DIR}/external/eigen") # Eigen (header-only)
+    "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 target_link_libraries(asfem PRIVATE
     MPI::MPI_CXX
+    Eigen3::Eigen
+    nlohmann_json::nlohmann_json
     ${ASFEM_PETSC_TARGET}
     ${METIS_LIBRARY})
 

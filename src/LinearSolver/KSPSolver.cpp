@@ -16,6 +16,7 @@
 #include "LinearSolver/KSPSolver.h"
 
 KSPSolver::KSPSolver() {
+    m_IsAllocated=false;
     m_Iterations=0;
     m_MaxIterations=10000;
     m_GMRESRestartNumber=1500;
